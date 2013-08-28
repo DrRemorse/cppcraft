@@ -1,0 +1,40 @@
+#version 130
+#define PLANETOID
+uniform vec4 lightVector;
+uniform vec3 planetoid;
+
+out vec3 texCoord;
+out vec4 colordata;
+out float vertdist;
+out float worldLight;
+
+const float VERTEX_SCALE
+
+void main() {
+
+	texCoord = gl_MultiTexCoord0.xyz;
+	texCoord.st /= VERTEX_SCALE;
+	
+	vec4 position = vec4(gl_Vertex.xyz / VERTEX_SCALE, 1.0);
+	position = gl_ModelViewMatrix * position;
+	
+#ifdef PLANETOID
+	vertdist = length(position.xz);
+	if (vertdist > planetoid[0]) {
+		position = vec4(gl_Vertex.xyz / VERTEX_SCALE, 1.0);
+		float strength = (vertdist - planetoid[0]) / (planetoid[1] - planetoid[0]);
+		position.y -= strength * strength * planetoid[2];
+		position = gl_ModelViewMatrix * position;
+	}
+#endif
+	
+	const float ambience = 0.5;
+	float dotlight = 0.3 + 0.3 * dot(gl_Normal, lightVector.xyz);
+	if (gl_Normal.y < -0.5) dotlight = clamp(dotlight, 0.1, 0.2);
+	
+	worldLight = min(ambience + dotlight, 1.0);
+	
+	vertdist = length(position);
+	gl_Position = gl_ProjectionMatrix * position;
+	colordata = gl_Color;
+}

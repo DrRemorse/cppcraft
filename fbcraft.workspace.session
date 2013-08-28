@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Session Name="C:\Dropbox\fbcraft\fbcraft.workspace">
+  <int Value="6" Name="m_selectedTab"/>
+  <wxString Value="C:\Dropbox\fbcraft\fbcraft.workspace" Name="m_workspaceName"/>
+  <TabInfoArray Name="TabInfoArray">
+    <TabInfo>
+      <wxString Value="C:\Dropbox\fbcraft\makefile" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="11" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="C:\Dropbox\fbcraft\source\blockmodels_stairs.cpp" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="10" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="C:\Dropbox\fbcraft\source\render_scene_camera.cpp" Name="FileName"/>
+      <int Value="10" Name="FirstVisibleLine"/>
+      <int Value="32" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="C:\Dropbox\fbcraft\source\player.cpp" Name="FileName"/>
+      <int Value="83" Name="FirstVisibleLine"/>
+      <int Value="117" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="C:\Dropbox\fbcraft\source\worldmanager.cpp" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="19" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="C:\Dropbox\fbcraft\source\player_translate.cpp" Name="FileName"/>
+      <int Value="180" Name="FirstVisibleLine"/>
+      <int Value="212" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="C:\Dropbox\fbcraft\source\renderman.cpp" Name="FileName"/>
+      <int Value="21" Name="FirstVisibleLine"/>
+      <int Value="30" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+  </TabInfoArray>
+  <SerializedObject Name="m_breakpoints">
+    <long Value="0" Name="Count"/>
+  </SerializedObject>
+</Session>

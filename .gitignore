@@ -11,3 +11,10 @@
 *.lai
 *.la
 *.a
+
+# compressed chunks
+*.compressed
+# raw chunks
+*.chunk
+# temporary files
+*.temp

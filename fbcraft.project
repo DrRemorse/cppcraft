@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Project Name="fbcraft" InternalType="Console">
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00010001N0005Debug000000000000]]>
+    </Plugin>
+  </Plugins>
+  <VirtualDirectory Name="Debug">
+    <VirtualDirectory Name="shaders">
+      <File Name="Debug/shaders/atmosphere.glsl"/>
+      <File Name="Debug/shaders/blocks_water.glsl"/>
+      <File Name="Debug/shaders/blur.glsl"/>
+      <File Name="Debug/shaders/bump.glsl"/>
+      <File Name="Debug/shaders/clouds.glsl"/>
+      <File Name="Debug/shaders/compass.glsl"/>
+      <File Name="Debug/shaders/culledalpha.glsl"/>
+      <File Name="Debug/shaders/degamma.glsl"/>
+      <File Name="Debug/shaders/degamma_voxel.glsl"/>
+      <File Name="Debug/shaders/dumb.glsl"/>
+      <File Name="Debug/shaders/finalcolor.glsl"/>
+      <File Name="Debug/shaders/gamma_voxel.glsl"/>
+      <File Name="Debug/shaders/gui.glsl"/>
+      <File Name="Debug/shaders/horizonfade.glsl"/>
+      <File Name="Debug/shaders/lensflare.glsl"/>
+      <File Name="Debug/shaders/lighting.glsl"/>
+      <File Name="Debug/shaders/lighting2.glsl"/>
+      <File Name="Debug/shaders/lightw.glsl"/>
+      <File Name="Debug/shaders/minimap.glsl"/>
+      <File Name="Debug/shaders/moon.glsl"/>
+      <File Name="Debug/shaders/noise.glsl"/>
+      <File Name="Debug/shaders/particles.glsl"/>
+      <File Name="Debug/shaders/playerlight.glsl"/>
+      <File Name="Debug/shaders/quintic.glsl"/>
+      <File Name="Debug/shaders/screenspace.glsl"/>
+      <File Name="Debug/shaders/selection.glsl"/>
+      <File Name="Debug/shaders/srdnoise.glsl"/>
+      <File Name="Debug/shaders/standard.glsl"/>
+      <File Name="Debug/shaders/stdalpha.glsl"/>
+      <File Name="Debug/shaders/stdfog.glsl"/>
+      <File Name="Debug/shaders/stdlight.glsl"/>
+      <File Name="Debug/shaders/sun.glsl"/>
+      <File Name="Debug/shaders/sunproj.glsl"/>
+      <File Name="Debug/shaders/worldlight.glsl"/>
+      <File Name="Debug/shaders/worldlight_frag.glsl"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <VirtualDirectory Name="source">
+    <VirtualDirectory Name="library">
+      <VirtualDirectory Name="bitmap">
+        <File Name="source/library/bitmap/bitmap.cpp"/>
+        <File Name="source/library/bitmap/bitmap.hpp"/>
+        <File Name="source/library/bitmap/colortools.cpp"/>
+        <File Name="source/library/bitmap/colortools.hpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="compression">
+        <File Name="source/library/compression/lzo.cpp"/>
+        <File Name="source/library/compression/lzo.hpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="math">
+        <File Name="source/library/math/baseconv.cpp"/>
+        <File Name="source/library/math/baseconv.hpp"/>
+        <File Name="source/library/math/frustum.cpp"/>
+        <File Name="source/library/math/frustum.hpp"/>
+        <File Name="source/library/math/matrix.cpp"/>
+        <File Name="source/library/math/matrix.hpp"/>
+        <File Name="source/library/math/quaternion.cpp"/>
+        <File Name="source/library/math/quaternion.hpp"/>
+        <File Name="source/library/math/toolbox.hpp"/>
+        <File Name="source/library/math/vector.cpp"/>
+        <File Name="source/library/math/vector.hpp"/>
+        <File Name="source/library/math/voronoi.cpp"/>
+        <File Name="source/library/math/voronoi.hpp"/>
+        <File Name="source/library/math/vec3.cpp"/>
+        <File Name="source/library/math/vec4.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="network">
+        <File Name="source/library/network/hostaddr.cpp"/>
+        <File Name="source/library/network/hostaddr.hpp"/>
+        <File Name="source/library/network/socket.cpp"/>
+        <File Name="source/library/network/socket.hpp"/>
+        <File Name="source/library/network/tcpsocket.cpp"/>
+        <File Name="source/library/network/tcpsocket.hpp"/>
+        <File Name="source/library/network/tcpsocket_thread.hpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="noise">
+        <File Name="source/library/noise/cosnoise.cpp"/>
+        <File Name="source/library/noise/cosnoise.hpp"/>
+        <File Name="source/library/noise/gabor.c"/>
+        <File Name="source/library/noise/gabor.h"/>
+        <File Name="source/library/noise/multifractal.c"/>
+        <File Name="source/library/noise/multifractal.h"/>
+        <File Name="source/library/noise/noise1234.c"/>
+        <File Name="source/library/noise/noise1234.h"/>
+        <File Name="source/library/noise/sdnoise1234.c"/>
+        <File Name="source/library/noise/sdnoise1234.h"/>
+        <File Name="source/library/noise/simplex1234.c"/>
+        <File Name="source/library/noise/simplex1234.h"/>
+        <File Name="source/library/noise/srdnoise23.c"/>
+        <File Name="source/library/noise/srdnoise23.h"/>
+        <File Name="source/library/noise/torusnoise.c"/>
+        <File Name="source/library/noise/torusnoise.h"/>
+        <File Name="source/library/noise/turbulence.c"/>
+        <File Name="source/library/noise/worley.c"/>
+        <File Name="source/library/noise/worley.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="opengl">
+        <File Name="source/library/opengl/oglfont.cpp"/>
+        <File Name="source/library/opengl/oglfont.hpp"/>
+        <File Name="source/library/opengl/opengl.cpp"/>
+        <File Name="source/library/opengl/opengl.hpp"/>
+        <File Name="source/library/opengl/openglext.cpp"/>
+        <File Name="source/library/opengl/shader.cpp"/>
+        <File Name="source/library/opengl/shader.hpp"/>
+        <File Name="source/library/opengl/texture.cpp"/>
+        <File Name="source/library/opengl/texture.hpp"/>
+        <File Name="source/library/opengl/window.cpp"/>
+        <File Name="source/library/opengl/window.hpp"/>
+        <File Name="source/library/opengl/vao.hpp"/>
+        <File Name="source/library/opengl/fbo.hpp"/>
+        <File Name="source/library/opengl/fbo.cpp"/>
+        <File Name="source/library/opengl/vao.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="sound">
+        <File Name="source/library/sound/sound.cpp"/>
+        <File Name="source/library/sound/sound.hpp"/>
+        <File Name="source/library/sound/stream_channel.cpp"/>
+        <File Name="source/library/sound/stream_channel.hpp"/>
+        <File Name="source/library/sound/stream.cpp"/>
+        <File Name="source/library/sound/stream.hpp"/>
+        <File Name="source/render_fsblur.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="threading">
+        <File Name="source/library/threading/thread_controller.cpp"/>
+        <File Name="source/library/threading/thread_controller.hpp"/>
+        <File Name="source/library/threading/thread_worker.cpp"/>
+        <File Name="source/library/threading/thread_worker.hpp"/>
+        <File Name="source/library/threading/thread_pool.cpp"/>
+        <File Name="source/library/threading/thread_pool.hpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="timing">
+        <File Name="source/library/timing/highperf.cpp"/>
+        <File Name="source/library/timing/highperf.hpp"/>
+        <File Name="source/library/timing/timer.hpp"/>
+        <File Name="source/library/timing/timer.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="voxels">
+        <File Name="source/library/voxels/voxelizer.cpp"/>
+        <File Name="source/library/voxels/voxelizer.hpp"/>
+      </VirtualDirectory>
+      <File Name="source/library/config.cpp"/>
+      <File Name="source/library/config.hpp"/>
+      <File Name="source/library/log.cpp"/>
+      <File Name="source/library/log.hpp"/>
+    </VirtualDirectory>
+    <File Name="source/atmosphere.cpp"/>
+    <File Name="source/atmosphere.hpp"/>
+    <File Name="source/biome.cpp"/>
+    <File Name="source/biome.hpp"/>
+    <File Name="source/blockmodels.cpp"/>
+    <File Name="source/blockmodels.hpp"/>
+    <File Name="source/blockmodels_crosses.cpp"/>
+    <File Name="source/blockmodels_cubes.cpp"/>
+    <File Name="source/blocks.cpp"/>
+    <File Name="source/blocks.hpp"/>
+    <File Name="source/chat.cpp"/>
+    <File Name="source/chat.hpp"/>
+    <File Name="source/chunks.cpp"/>
+    <File Name="source/chunks.hpp"/>
+    <File Name="source/columns.cpp"/>
+    <File Name="source/columns.hpp"/>
+    <File Name="source/compilers.cpp"/>
+    <File Name="source/compilers.hpp"/>
+    <File Name="source/compressor.cpp"/>
+    <File Name="source/compressor.hpp"/>
+    <File Name="source/drawq.cpp"/>
+    <File Name="source/drawq.hpp"/>
+    <File Name="source/flatlands.cpp"/>
+    <File Name="source/flatlands.hpp"/>
+    <File Name="source/frustum.cpp"/>
+    <File Name="source/frustum.hpp"/>
+    <File Name="source/generator.cpp"/>
+    <File Name="source/generator.hpp"/>
+    <File Name="source/items.cpp"/>
+    <File Name="source/items.hpp"/>
+    <File Name="source/lighting.cpp"/>
+    <File Name="source/lighting.hpp"/>
+    <File Name="source/lighttable.cpp"/>
+    <File Name="source/lighttable.hpp"/>
+    <File Name="source/main.cpp"/>
+    <File Name="source/menu.hpp"/>
+    <File Name="source/minimap.cpp"/>
+    <File Name="source/minimap.hpp"/>
+    <File Name="source/player.cpp"/>
+    <File Name="source/player.hpp"/>
+    <File Name="source/precompiler.cpp"/>
+    <File Name="source/precompiler.hpp"/>
+    <File Name="source/precompq.cpp"/>
+    <File Name="source/precompq.hpp"/>
+    <File Name="source/precomp_thread.cpp"/>
+    <File Name="source/precomp_thread.hpp"/>
+    <File Name="source/precomp_thread_process.cpp"/>
+    <File Name="source/precomp_vemitter.cpp"/>
+    <File Name="source/renderconst.hpp"/>
+    <File Name="source/rendergrid.cpp"/>
+    <File Name="source/rendergrid.hpp"/>
+    <File Name="source/renderman.cpp"/>
+    <File Name="source/renderman.hpp"/>
+    <File Name="source/seamless.cpp"/>
+    <File Name="source/seamless.hpp"/>
+    <File Name="source/sector.cpp"/>
+    <File Name="source/sector.hpp"/>
+    <File Name="source/sectors.cpp"/>
+    <File Name="source/sectors.hpp"/>
+    <File Name="source/shaderman.cpp"/>
+    <File Name="source/shaderman.hpp"/>
+    <File Name="source/soundman.cpp"/>
+    <File Name="source/soundman.hpp"/>
+    <File Name="source/spiders.cpp"/>
+    <File Name="source/spiders.hpp"/>
+    <File Name="source/sun.cpp"/>
+    <File Name="source/sun.hpp"/>
+    <File Name="source/textureman.cpp"/>
+    <File Name="source/textureman.hpp"/>
+    <File Name="source/threading.cpp"/>
+    <File Name="source/threading.hpp"/>
+    <File Name="source/tiles.cpp"/>
+    <File Name="source/tiles.hpp"/>
+    <File Name="source/torchlight.cpp"/>
+    <File Name="source/torchlight.hpp"/>
+    <File Name="source/voxelmodels.cpp"/>
+    <File Name="source/voxelmodels.hpp"/>
+    <File Name="source/world.cpp"/>
+    <File Name="source/world.hpp"/>
+    <File Name="source/worldbuilder.cpp"/>
+    <File Name="source/worldbuilder.hpp"/>
+    <File Name="source/worldmanager.cpp"/>
+    <File Name="source/worldmanager.hpp"/>
+    <File Name="source/render_scene.cpp"/>
+    <File Name="source/render_sky.cpp"/>
+    <File Name="source/input.cpp"/>
+    <File Name="source/input.hpp"/>
+    <File Name="source/render_scene.hpp"/>
+    <File Name="source/render_sky.hpp"/>
+    <File Name="source/render_sky_clouds.cpp"/>
+    <File Name="source/player_inputs.cpp"/>
+    <File Name="source/precomp_vcrosses.cpp"/>
+    <File Name="source/precomp_thread_ao.cpp"/>
+    <File Name="source/render_fs.hpp"/>
+    <File Name="source/render_fsflare.cpp"/>
+    <File Name="source/render_fs.cpp"/>
+    <File Name="source/torchlight_calc.cpp"/>
+    <File Name="source/torchlight_gatherer.cpp"/>
+    <File Name="source/render_gui.cpp"/>
+    <File Name="source/render_gui.hpp"/>
+    <File Name="source/particles.cpp"/>
+    <File Name="source/particles.hpp"/>
+    <File Name="source/particles_render.cpp"/>
+    <File Name="source/player_translate.cpp"/>
+    <VirtualDirectory Name="tests">
+      <File Name="source/tests/gltest.cpp"/>
+      <File Name="source/tests/sleep.hpp"/>
+      <File Name="source/tests/socktest.cpp"/>
+      <File Name="source/tests/testmain.cpp"/>
+      <File Name="source/tests/threadtest.cpp"/>
+      <File Name="source/tests/timetest.cpp"/>
+    </VirtualDirectory>
+    <File Name="source/player_inputs.hpp"/>
+    <File Name="source/render_scene_camera.cpp"/>
+    <File Name="source/player_actions.cpp"/>
+    <File Name="source/blockmodels_leafs.cpp"/>
+    <File Name="source/render_scene_terrain.cpp"/>
+    <File Name="source/spiders_modify.cpp"/>
+    <File Name="source/player_logic.cpp"/>
+    <File Name="source/player_logic.hpp"/>
+    <File Name="source/player_physics.cpp"/>
+    <File Name="source/player_physics.hpp"/>
+    <File Name="source/render_gui_crosshair.cpp"/>
+    <File Name="source/textureman_generated.cpp"/>
+    <File Name="source/spiders_world.cpp"/>
+    <File Name="source/blockmodels_ladders.cpp"/>
+    <File Name="source/blockmodels_lanterns.cpp"/>
+    <File Name="source/blockmodels_poles.cpp"/>
+    <File Name="source/precomp_vladders.cpp"/>
+    <File Name="source/precomp_vlantern.cpp"/>
+    <File Name="source/precomp_vpoles.cpp"/>
+    <File Name="source/precomp_vsloped.cpp"/>
+    <File Name="source/render_gui_compass.cpp"/>
+    <File Name="source/precomp_vstairs.cpp"/>
+    <File Name="source/blockmodels_stairs.cpp"/>
+    <File Name="source/precomp_vfences.cpp"/>
+    <File Name="source/blockmodels_fences.cpp"/>
+    <File Name="source/precomp_vdoors.cpp"/>
+    <File Name="source/render_gui_playerhand.cpp"/>
+    <File Name="source/render_gui_quickbar.cpp"/>
+    <File Name="source/vertex_block.hpp"/>
+    <File Name="source/vertex_selection.hpp"/>
+    <File Name="source/render_player_selection.cpp"/>
+    <File Name="source/render_player_selection.hpp"/>
+  </VirtualDirectory>
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="misc">
+    <File Name="makefile"/>
+    <File Name="Debug/config.ini"/>
+    <File Name="res/cppcraft.rc"/>
+  </VirtualDirectory>
+  <Settings Type="Executable">
+    <GlobalSettings>
+      <Compiler Options="" C_Options="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="">
+        <LibraryPath Value="."/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-std=gnu++11;-g;-pthread;-Wall;-Wno-write-strings" C_Options="-g;-O0;-Wall" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
+        <IncludePath Value="."/>
+        <IncludePath Value="inc"/>
+      </Compiler>
+      <Linker Options="" Required="yes">
+        <LibraryPath Value="lib"/>
+        <Library Value="winmm"/>
+        <Library Value="bass"/>
+        <Library Value="glfw"/>
+        <Library Value="opengl32"/>
+      </Linker>
+      <ResourceCompiler Options="" Required="no">
+        <IncludePath Value="."/>
+      </ResourceCompiler>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./cppcraft" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="yes">
+        <RebuildCommand>mingw32-make rebuild</RebuildCommand>
+        <CleanCommand>mingw32-make clean</CleanCommand>
+        <BuildCommand>mingw32-make</BuildCommand>
+        <PreprocessFileCommand/>
+        <SingleFileCommand>mingw32-make $(currentFile)</SingleFileCommand>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-O2;-Wall" C_Options="-O2;-Wall" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Release" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+  </Settings>
+</CodeLite_Project>

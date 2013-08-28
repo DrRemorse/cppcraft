@@ -1,0 +1,17 @@
+#version 130
+out vec3 texCoord;
+out vec4 colordata;
+
+const float VERTEX_SCALE
+
+void main() {
+	
+	texCoord = gl_MultiTexCoord0.stp;
+	texCoord.st /= VERTEX_SCALE;
+	
+	vec4 position = vec4(gl_Vertex.xyz / VERTEX_SCALE, 1.0);
+	
+	gl_Position = gl_ModelViewProjectionMatrix * position;
+	colordata = gl_Color;
+	
+}

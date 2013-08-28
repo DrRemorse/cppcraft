@@ -1,0 +1,25 @@
+TODO:
+walking through ice
+no de-stucking in ice
+
+mountable lanterns
+mountable torches
+
+put bottom/top of pole at end of array for culling
+put bottoms of fence at end of array for culling
+
+selection meshes for blocks
+selection mesh for stairs
+selection mesh for fence
+selection mesh for pole
+selection meshes for doors
+
+quickbar gui renderer
+
+menu item renderer
+
+font renderer
+
+gui inventory items & rabble
+
+voxel items

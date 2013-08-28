@@ -1,0 +1,284 @@
+#include "soundman.hpp"
+
+#include <stdlib.h>
+#include <time.h>
+#include <sstream>
+
+#include "library/log.hpp"
+#include "library/sound/stream_channel.hpp"
+#include "biome.hpp"
+#include "blocks.hpp"
+#include "flatlands.hpp"
+#include "player.hpp"
+#include "player_logic.hpp"
+#include <bass.h>
+
+using namespace library;
+
+namespace cppcraft
+{
+	Soundman soundman;
+	
+	void Soundman::init()
+	{
+		logger << Log::INFO << "* Initializing sound system" << Log::ENDL;
+		
+		if (BASS_Init(-1, 44100, 0, 0, nullptr) == 0)
+			throw std::string("Soundman(): Error initializing BASS library");
+		
+		// load sounds
+		soundPlaylist();
+		// load music & ambience
+		musicPlaylist();
+		
+		logger << Log::INFO << "* Sound system initialized" << Log::ENDL;
+	}
+	
+	Soundman::~Soundman()
+	{
+		BASS_Free();
+	}
+	
+	void Soundman::playSound(named_sound_t s, vec3 v)
+	{
+		this->sounds[s].play( v );
+	}
+	void Soundman::playSound(named_sound_t s)
+	{
+		this->sounds[s].play();
+	}
+	
+	void Soundman::loadMaterialSound(material_sound_t sindex, std::string basename)
+	{
+		// base index
+		int index = (int)sindex * SOUNDS_PER_MAT;
+		// load sounds
+		for (int i = 0; i < SOUNDS_PER_MAT; i++)
+		{
+			// create filename
+			std::stringstream ss;
+			ss << "sound/materials/" << basename << (i + 1) << ".ogg";
+			
+			matsounds[index + i] = Sound(ss.str(), MAX_SAMPLES);
+		}
+	}
+	
+	void Soundman::soundPlaylist()
+	{
+		const int MEDIUM_SAMPLES = 2;
+		
+		sounds[SND_DOOR_OPEN]  = Sound("sound/interaction/door_open.ogg", MEDIUM_SAMPLES);
+		sounds[SND_DOOR_CLOSE] = Sound("sound/interaction/door_close.ogg", MEDIUM_SAMPLES);
+		
+		sounds[SND_PICKUP] = Sound("sound/interaction/pickup.ogg", MEDIUM_SAMPLES);
+		sounds[SND_PLACE]  = Sound("sound/interaction/place.ogg", MEDIUM_SAMPLES);
+		
+		sounds[SND_SPLASH]     = Sound("sound/liquid/splash1.ogg");
+		sounds[SND_SPLASH_BIG] = Sound("sound/liquid/splash2.ogg");
+		
+		sounds[SND_WATER]   = Sound("sound/liquid/water.ogg");
+		sounds[SND_LAVA]    = Sound("sound/liquid/lava.ogg");
+		sounds[SND_LAVAPOP] = Sound("sound/liquid/lavapop.ogg");
+		
+		loadMaterialSound(MS_CLOTH, "cloth");
+		loadMaterialSound(MS_GLASS, "glass");
+		loadMaterialSound(MS_GRASS, "grass");
+		loadMaterialSound(MS_GRAVEL,"gravel");
+		loadMaterialSound(MS_SAND,  "sand");
+		loadMaterialSound(MS_SNOW,  "snow");
+		loadMaterialSound(MS_STONE, "stone");
+		loadMaterialSound(MS_WOOD,  "wood");
+		
+	}
+	
+	void Soundman::musicPlaylist()
+	{
+		// background music streams
+		music[MUSIC_AUTUMN].load("music/ANW1402_09_Exodus.mp3");
+		music[MUSIC_DESERT].load("music/ANW1401_03_Call-to-Beroea.mp3");
+		music[MUSIC_FOREST].load("music/ANW1332_07_Intimate-Moment.mp3");
+		music[MUSIC_ISLANDS].load("music/ANW1247_05_Ancient-Times.mp3");
+		music[MUSIC_JUNGLE].load("music/ANW1501_06_Denouement.mp3");
+		music[MUSIC_WINTER].load("music/ANW1332_04_Farewell-My-Dear.mp3");
+		
+		// ambience streams
+		ambience[MA_AUTUMN].load("music/ambience/autumn.mp3");
+		ambience[MA_DESERT].load("music/ambience/desert.mp3");
+		ambience[MA_FOREST].load("music/ambience/forest.mp3");
+		ambience[MA_ISLANDS].load("music/ambience/islands.mp3");
+		ambience[MA_JUNGLE].load("music/ambience/jungle.mp3");
+		ambience[MA_WINTER].load("music/ambience/winter.mp3");
+		
+		ambience[MA_UNDERWATER].load("music/ambience/underwater.mp3");
+		ambience[MA_CAVES].load("music/ambience/cave.mp3");
+	}
+	
+	// our always-on never-ending, amazing and intolerable background music
+	StreamChannel musicPlayer(0.0005, 0.3);
+	StreamChannel ambiencePlayer(0.001, 0.4);
+	
+	// returns the id of a random song in the playlist
+	void Soundman::handleSounds(int terrain)
+	{
+		// if player is under the terrain, somehow change
+		// ambience & music to cave themes
+		int skyLevel    = Flatlands.getSkyLevel(player.X, player.Z);
+		int groundLevel = Flatlands.getGroundLevel(player.X, player.Z);
+		const int CAVE_DEPTH = 6;
+		
+		bool inCaves = (player.Y < groundLevel - CAVE_DEPTH);
+		
+		if (inCaves)
+		{
+			musicPlayer.stop();
+		}
+		else
+		{
+			// set music stream by terrain
+			switch (terrain)
+			{
+			case Biomes::T_AUTUMN:
+				musicPlayer.play(music[MUSIC_AUTUMN]);
+				break;
+			case Biomes::T_DESERT:
+				musicPlayer.play(music[MUSIC_DESERT]);
+				break;
+			case Biomes::T_MUSHROOMS:
+			case Biomes::T_GRASS:
+				musicPlayer.play(music[MUSIC_FOREST]);
+				break;
+			case Biomes::T_ISLANDS:
+				musicPlayer.play(music[MUSIC_ISLANDS]);
+				break;
+			case Biomes::T_MARSH:
+			case Biomes::T_JUNGLE:
+				musicPlayer.play(music[MUSIC_JUNGLE]);
+				break;
+			case Biomes::T_ICECAP:
+			case Biomes::T_SNOW:
+				musicPlayer.play(music[MUSIC_WINTER]);
+				break;
+			}
+		}
+		// ambience stream
+		if (plogic.FullySubmerged) // submerged priority over caves
+		{
+			ambiencePlayer.play(ambience[MA_UNDERWATER]);
+		}
+		else if (inCaves)
+		{
+			ambiencePlayer.play(ambience[MA_CAVES]);
+		}
+		else
+		{
+			// by terrain
+			switch (terrain)
+			{
+			case Biomes::T_AUTUMN:
+				ambiencePlayer.play(ambience[MA_AUTUMN]);
+				break;
+			case Biomes::T_DESERT:
+				ambiencePlayer.play(ambience[MA_DESERT]);
+				break;
+			case Biomes::T_MUSHROOMS:
+			case Biomes::T_GRASS:
+				ambiencePlayer.play(ambience[MA_FOREST]);
+				break;
+			case Biomes::T_ISLANDS:
+				ambiencePlayer.play(ambience[MA_ISLANDS]);
+				break;
+			case Biomes::T_MARSH:
+			case Biomes::T_JUNGLE:
+				ambiencePlayer.play(ambience[MA_JUNGLE]);
+				break;
+			case Biomes::T_ICECAP:
+			case Biomes::T_SNOW:
+				ambiencePlayer.play(ambience[MA_WINTER]);
+				break;
+			}
+			
+		} // ambience
+		
+		// slowly crossfade in/out streams as needed
+		//musicPlayer.integrate();
+		//ambiencePlayer.integrate();
+	}
+	
+	int Soundman::blockToMaterial(int id) const
+	{
+		if (id >= STONE_START && id <= STONE_END)
+		{
+			return MS_STONE;
+		}
+		else if (id >= _SNOWSOIL && id <= _SNOWGRASS)
+		{
+			return MS_SNOW;
+		}
+		else if (id >= SOIL_START && id <= SOIL_END)
+		{
+			return MS_GRASS;
+		}
+		else if (id >= SAND_START && id <= SAND_END)
+		{
+			return MS_SAND;
+		}
+		else if (id == _GLASS)
+		{
+			return MS_GLASS;
+		}
+		else if (id >= _WOODBROWN && id <= _PUMPKIN)
+		{
+			return MS_WOOD;
+		}
+		else if (id >= _GRAVEL1 && id <= _CLAYRED)
+		{
+			return MS_GRAVEL;
+		}
+		
+		// specific ids
+		switch (id)
+		{
+		case _ICECUBE:
+		case _LOWICE:
+			return MS_STONE;
+			
+		case _LOWSNOW:
+			return MS_SNOW;
+			
+		case _WOODSTAIR:
+		case _WOODDOOR:
+		case _WOODPOLE:
+		case _WOODFENCE:
+			return MS_WOOD;
+			
+		case _STONESTAIR:
+		case _STONEDOOR:
+		case _LANTERN:
+		case _BRICKSTAIR:
+		case _BRICKWALL:
+		case _BRICKWALL2:
+			return MS_STONE;
+			
+		}
+		
+		return MS_CLOTH;
+	}
+	
+	void Soundman::playMaterial(int id, int num)
+	{
+		int sound = blockToMaterial(id);
+		if (sound != -1)
+		{
+			this->matsounds[sound * SOUNDS_PER_MAT + num].play();
+		}
+	}
+	void Soundman::playMaterial(int id, int num, vec3 v)
+	{
+		int sound = blockToMaterial(id);
+		if (sound != -1)
+		{
+			this->matsounds[sound * SOUNDS_PER_MAT + num].play(v);
+		}
+	}
+	
+}
