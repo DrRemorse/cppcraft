@@ -18,3 +18,6 @@
 *.chunk
 # temporary files
 *.temp
+
+# Music
+*.mp3
