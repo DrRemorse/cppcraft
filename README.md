@@ -1,2 +1,2 @@
-platformer
+cppcraft
 ==========
