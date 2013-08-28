@@ -41,7 +41,7 @@ namespace cppcraft
 			VOXEL,
 			PLAYERMODEL,
 			
-			BLURGAUSS,
+			GAUSS,
 			BLUR,
 			LENSFLARE,
 			CREPUSCULAR,

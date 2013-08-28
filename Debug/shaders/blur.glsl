@@ -16,7 +16,7 @@ void main(void)
 #ifdef FRAGMENT_PROGRAM
 uniform sampler2D texture;
 uniform int Width; // samples in each direction
-uniform vec2 od;   // (1 / w, 0.0) etc.
+uniform vec2 dir;   // (1 / w, 0.0) etc.
 
 in vec2 texCoord;
 
@@ -29,7 +29,7 @@ void main()
 	for(int i = -Width; i <= Width; i++)
 	{
 		width = kernel - abs(float(i));
-		color += texture2D(texture, texCoord + float(i) * od) * width;
+		color += texture2D(texture, texCoord + float(i) * dir) * width;
 		sum += width;
 	}
 	

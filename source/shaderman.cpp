@@ -187,9 +187,11 @@ namespace cppcraft
 		shaders[LENSFLARE].sendFloat("Intensity", 2.5);
 		shaders[LENSFLARE].sendVec3("Distortion", vec3(0.95, 0.97, 1.0));
 		
-		// blur shader
-		shaders[BLUR] = Shader("shaders/blur.glsl", tokenizer, linkstage);
+		// blur shaders
+		shaders[BLUR] = Shader("shaders/blur.glsl", nullptr, linkstage);
 		shaders[BLUR].sendInteger("texture", 0);
+		shaders[GAUSS] = Shader("shaders/blurGaussian.glsl", nullptr, linkstage);
+		shaders[GAUSS].sendInteger("texture", 0);
 		
 		// screenspace terrain shader
 		shaders[FSTERRAIN] = Shader("shaders/fsterrain.glsl", tokenizer, linkstage);

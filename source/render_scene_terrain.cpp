@@ -258,9 +258,6 @@ namespace cppcraft
 		GLint loc_vtrans, location;
 		vec3  position(-1);
 		
-		// skybuffer at texture slot 5
-		//textureman.bind(5, Textureman::T_SKYBUFFER);
-		
 		// bind skybox at slot 4
 		textureman.bind(4, Textureman::T_SKYBOX);
 		

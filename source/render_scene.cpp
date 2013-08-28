@@ -151,8 +151,6 @@ namespace cppcraft
 		textureman.bind(5, Textureman::T_SKYBUFFER);
 		textureman.copyScreen(renderer.gamescr, Textureman::T_SKYBUFFER);
 		
-		//glClear(GL_COLOR_BUFFER_BIT);
-		
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		glDepthMask(GL_TRUE);
