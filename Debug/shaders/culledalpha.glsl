@@ -37,7 +37,7 @@ const float VERTEX_SCALE
 const float ZFAR
 // gonzo's royally homemade deforms
 const float LEAFWIND_STRENGTH = 0.1;
-const float PI2               = 3.141592653 * 2.0;
+const float PI2 = 3.141592653 * 2.0;
 
 void main(void)
 {
@@ -74,10 +74,6 @@ void main(void)
 
 uniform sampler2DArray texture;
 uniform sampler2DArray tonemap;
-uniform sampler2D   skybuffer;
-uniform samplerCube skymap;
-
-uniform vec3 screendata;
 
 uniform float daylight;
 uniform vec4  playerLight;

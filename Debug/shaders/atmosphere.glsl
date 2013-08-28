@@ -129,14 +129,8 @@ void main (void)
 		final = mix(final, stars, darkness * darkness);
 	}
 	
-	//final = vec3(1.0) - exp(final * -exposure);
-#ifdef POSTPROCESS
 	final = pow(final, vec3(1.0/2.2)) * 1.05;
-#else
-	//final *= 1.05;
-#endif
-	
-	gl_FragData[0] = vec4(final, 1.0);
+	gl_FragData[0] = vec4(final, 0.0);
 }
 
 #endif

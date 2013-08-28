@@ -83,11 +83,11 @@ void main(void)
 
 #ifdef FRAGMENT_PROGRAM
 #extension GL_EXT_gpu_shader4 : enable
+precision highp float;
 
 uniform sampler2DArray texture;
 uniform sampler2D underwatermap;
 uniform sampler2D wavenormals;
-uniform sampler2D   skybuffer;
 uniform samplerCube skymap;
 
 uniform mat4 matview;
@@ -180,7 +180,7 @@ void main(void)
 	refcoord.xy += Normal.xz * 0.0025;
 	
 	// start with underwater color
-	vec3 color = texture2D(underwatermap, refcoord.xy).rgb;
+	vec4 color = texture2D(underwatermap, refcoord.xy);
 	#define POSTPROCESS
 	#ifndef POSTPROCESS
 		color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
@@ -194,7 +194,7 @@ void main(void)
 	color.rgb *= pow(vec3(dep), vec3(2.0, 1.4, 1.0));
 	
 	vec3 waterColor = mix(deepwater, shallowwater, dep * dep);
-	color = mix(waterColor, color, dep);
+	color.rgb = mix(waterColor, color.rgb, dep);
 	
 	// fettskit
 	//color *= max(0.25, 1.0 - fresnel);
@@ -203,13 +203,13 @@ void main(void)
 	
 	// mix in sky reflection
 	vec3 reflection = textureCube(skymap, Reflect).rgb * daylight;
-	color = mix(color, reflection, 0.1 + 0.6 * fresnel);
+	color.rgb = mix(color.rgb, reflection, 0.1 + 0.6 * fresnel);
 	
 	// fake waves
-	color *= 1.0 + (dot(Normal, l_normal) + 0.75) * 0.2;
+	color.rgb *= 1.0 + (dot(Normal, l_normal) + 0.75) * 0.2;
 	
 	// degamma
-	color = pow(color, vec3(1.0 / 2.2));
+	color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
 	
 	//- lighting (we need shadow later) -//
 	#include "lightw.glsl"
@@ -223,12 +223,12 @@ void main(void)
 	float spec = max(0.0, dot(reflect(-vLight, viewNormal), vEye));
 	
 	vec3 specular = SUNCOLOR * SUNSPEC * pow(spec, 16.0) + pow(spec, 4.0) * 0.2;
-	color += specular * pow(shine, SUNSHINE) * daylight * shadow;
+	color.rgb += specular * pow(shine, SUNSHINE) * daylight * shadow;
 	
 #ifdef SUPERFOG
 	// super fog
 	float fogdist = 1.0 - vertdist / ZFAR;
-	superFog(color, fogdist, vEye, vLight);
+	superFog(color.rgb, fogdist, vEye, vLight);
 #endif
 	
 	#include "horizonfade.glsl"

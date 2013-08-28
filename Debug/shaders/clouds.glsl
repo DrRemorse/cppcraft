@@ -23,7 +23,7 @@ out vec3 v_ldir;
 out vec3 v_eye;
 
 const float ZFAR
-const float planetoid = 48.0;
+const float planetoid = 32.0;
 const float skyslope  =  2.0;
 
 void main()

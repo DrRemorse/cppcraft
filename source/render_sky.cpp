@@ -32,6 +32,7 @@ namespace cppcraft
 	void SkyRenderer::render(SceneRenderer& scene, double dtime)
 	{
 		// render background / atmosphere, sun and moon
+		glDisable(GL_BLEND);
 		
 		// render sky dome
 		Atmosphere::render(scene.playerY);
@@ -50,6 +51,8 @@ namespace cppcraft
 		
 		// render moon texture
 		renderMoon();
+		
+		glDisable(GL_BLEND);
 	}
 	
 	void SkyRenderer::renderSun()

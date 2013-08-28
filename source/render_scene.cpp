@@ -11,6 +11,7 @@
 #include "player.hpp"
 #include "player_logic.hpp"
 #include "renderman.hpp"
+#include "render_fs.hpp"
 #include "render_sky.hpp"
 #include "shaderman.hpp"
 #include "textureman.hpp"
@@ -139,9 +140,7 @@ namespace cppcraft
 			compressRenderingQueue();
 		}
 		
-		glDisable(GL_BLEND);
-		glDisable(GL_CULL_FACE);
-		
+		glDisable(GL_CULL_FACE); // because the lower half hemisphere is inverted
 		glDisable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
 		
@@ -152,18 +151,41 @@ namespace cppcraft
 		textureman.bind(5, Textureman::T_SKYBUFFER);
 		textureman.copyScreen(renderer.gamescr, Textureman::T_SKYBUFFER);
 		
+		//glClear(GL_COLOR_BUFFER_BIT);
+		
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		glDepthMask(GL_TRUE);
 		
-		glDisable(GL_BLEND);
 		glEnable(GL_CULL_FACE);
-		
 		glEnable(GL_MULTISAMPLE_ARB);
+		
+		/// render physical scene w/depth ///
 		
 		renderScene(renderer);
 		
 		glDisable(GL_MULTISAMPLE_ARB);
+		glDisable(GL_CULL_FACE); // because the lower half hemisphere is inverted
+		
+		glDisable(GL_DEPTH_TEST);
+		glDepthMask(GL_FALSE);
+		
+		/// take snapshot of scene ///
+		// there are no more things in the depth buffer after rendering scene
+		textureman.bind(1, Textureman::T_DEPTHBUFFER);
+		textureman.copyScreen(renderer.gamescr, Textureman::T_DEPTHBUFFER);
+		
+		// first snapshot of world
+		textureman.bind(0, Textureman::T_RENDERBUFFER);
+		textureman.copyScreen(renderer.gamescr, Textureman::T_RENDERBUFFER);
+		
+		// blur the render buffer
+		screenspace.blur(renderer.gamescr);
+		
+		// without affecting depth, use screenspace renderer to render blurred terrain
+		// and also blend terrain against sky background
+		
+		screenspace.terrain(renderer.gamescr);
 		
 		glEnable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
@@ -171,7 +193,6 @@ namespace cppcraft
 		
 		glEnable(GL_BLEND);
 		glDisable(GL_CULL_FACE);
-		
 		
 		// render clouds
 		skyrenderer.renderClouds(*this, renderer.frametick);

@@ -57,16 +57,54 @@ namespace cppcraft
 		
 	}
 	
+	void FSRenderer::blur(WindowClass& gamescr)
+	{
+		// bind screenspace VAO
+		glBindVertexArray(screenVAO);
+		
+		; //if (renderconf.highq_blur)
+		{
+			// downsize to blur-texture size
+			glViewport(0, 0, blurTxW, blurTxH);
+			// create blurred image from scene (current backbuffer image)
+			renderBlur();
+			// upsize to regular screen size
+			glViewport(0, 0, gamescr.SW, gamescr.SH);
+		}
+		
+		glBindVertexArray(0);
+	}
+	
+	void FSRenderer::terrain(WindowClass& gamescr)
+	{
+		textureman.bind(0, Textureman::T_RENDERBUFFER);
+		textureman.bind(1, Textureman::T_DEPTHBUFFER);
+		textureman.bind(2, Textureman::T_BLURBUFFER2);
+		textureman.bind(3, Textureman::T_SKYBUFFER);
+		
+		// postprocessing shader
+		Shader& shd = shaderman[Shaderman::FSTERRAIN];
+		shd.bind();
+		
+		// render fullscreen quad
+		glBindVertexArray(screenVAO);
+		glDrawArrays(GL_QUADS, 0, 4);
+		
+		// unbind screenspace VAO
+		glBindVertexArray(0);
+	}
+	
 	void FSRenderer::render(WindowClass& gamescr)
 	{
 		glBindVertexArray(0);
 		
-		textureman.bind(1, Textureman::T_DEPTHBUFFER);
-		textureman.copyScreen(gamescr, Textureman::T_DEPTHBUFFER);
+		//textureman.bind(1, Textureman::T_DEPTHBUFFER);
+		//textureman.copyScreen(gamescr, Textureman::T_DEPTHBUFFER);
 		
+		// copy the current screen buffer
 		textureman.bind(0, Textureman::T_RENDERBUFFER);
 		textureman.copyScreen(gamescr, Textureman::T_RENDERBUFFER);
-		glGenerateMipmap(GL_TEXTURE_2D);
+		//glGenerateMipmap(GL_TEXTURE_2D);
 		
 		glEnable(GL_BLEND);
 		
@@ -82,6 +120,7 @@ namespace cppcraft
 		glDisable(GL_DEPTH_TEST); // mui importante!
 		glDepthMask(GL_FALSE);
 		
+		/*
 		// bind screenspace VAO
 		glBindVertexArray(screenVAO);
 		
@@ -96,11 +135,11 @@ namespace cppcraft
 			// upsize to regular screen size
 			glViewport(0, 0, gamescr.SW, gamescr.SH);
 		}
+		*/
 		
 		textureman.bind(0, Textureman::T_RENDERBUFFER);
 		textureman.bind(1, Textureman::T_DEPTHBUFFER);
 		textureman.bind(2, Textureman::T_LENSFLARE);
-		textureman.bind(3, Textureman::T_BLURBUFFER2);
 		
 		// postprocessing shader
 		Shader& shd = shaderman[Shaderman::POSTPROCESS];
@@ -108,6 +147,7 @@ namespace cppcraft
 		shd.sendInteger("submerged", plogic.FullySubmerged);
 		
 		// render fullscreen quad
+		glBindVertexArray(screenVAO);
 		glDrawArrays(GL_QUADS, 0, 4);
 		
 		// unbind screenspace VAO

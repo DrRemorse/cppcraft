@@ -1,7 +1,6 @@
 #version 130
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
-
 precision mediump float;
 
 #ifdef VERTEX_PROGRAM
@@ -90,8 +89,6 @@ void main(void)
 
 uniform sampler2DArray texture;
 uniform sampler2DArray tonemap;
-uniform sampler2D   skybuffer;
-uniform samplerCube skymap;
 
 uniform vec3 screendata;
 uniform vec3 lightVector;

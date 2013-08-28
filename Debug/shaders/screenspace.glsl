@@ -21,9 +21,6 @@ uniform sampler2D depthtexture;
 #ifdef LENSFLARE
 uniform sampler2D lensflare;
 #endif
-#ifdef HIGHQ_BLUR
-uniform sampler2D blurtexture;
-#endif
 uniform int submerged;
 
 in vec2 texCoord;
@@ -32,9 +29,8 @@ const vec3 SUB_WATER = vec3(0.01, 0.08, 0.3);
 const vec3 SUB_LAVA  = vec3(0.28, 0.06, 0.0);
 
 const float MOTION_BLUR = 0.225;
-const float FAR_DEPTH   = 0.8;
 
-float linearizeDepth(vec2 coord);
+float linearizeDepth(float Z);
 
 const float ZFAR
 const float ZNEAR
@@ -54,36 +50,25 @@ vec3 Uncharted2Tonemap(vec3 x)
 
 void main()
 {
-	float depth = linearizeDepth(texCoord);
-	// avoid blurring sky/atmosphere
-	if (depth > 0.99) depth = 0.65;
+	float depth = texture2D(depthtexture, texCoord).x;
+	depth = linearizeDepth(depth);
 	
-#ifdef HIGHQ_BLUR
-	const float BLURMULT    = 1.0;
-	float mixAmount = smoothstep(0.2, 1.0, depth) * BLURMULT;
-	
-	vec3 color = mix(texture2D(texture, texCoord).rgb, texture2D(blurtexture, texCoord).rgb, mixAmount);
-#else
-	const float BLURMULT    = 2.0;
-	float mixAmount = smoothstep(0.2, 0.9, depth * depth) * BLURMULT;
-	
-	vec3 color = texture2DLod(texture, texCoord, mixAmount).rgb;
-#endif
+	vec4 color = texture2D(texture, texCoord);
 	
 	if (submerged == 1)
 	{	// submerged in water
-		color = mix(color, SUB_WATER, 0.4 + 0.6 * smoothstep(0.0, 0.15, depth));
+		color.rgb = mix(color.rgb, SUB_WATER, 0.4 + 0.6 * smoothstep(0.0, 0.15, depth));
 	}
 	else if (submerged == 2)
 	{	// submerged in lava
-		color = mix(color, SUB_LAVA, 0.6 + 0.4 * smoothstep(0.0, 0.1, depth));
+		color.rgb = mix(color.rgb, SUB_LAVA, 0.6 + 0.4 * smoothstep(0.0, 0.1, depth));
 	}
 	
-	color = pow(color, vec3(2.2));
+	color.rgb = pow(color.rgb, vec3(2.2));
 	
 #ifdef LENSFLARE
 	// add lens flare & dirt
-	color += texture2D(lensflare, texCoord).rgb;
+	color.rgb += texture2D(lensflare, texCoord).rgb;
 #endif
 	
 	/*
@@ -102,12 +87,12 @@ void main()
 	//color = pow(color, vec3(1.0/2.2));
 	*/
 	
-	gl_FragData[0] = vec4(color, 1.0);
+	gl_FragData[0] = vec4(color.rgb, 1.0);
 }
 
-float linearizeDepth(vec2 coord)
+float linearizeDepth(float Z)
 {
-	float depth = 2 * texture2D(depthtexture, coord).r - 1;
+	float depth = 2 * Z - 1;
 	
 	// linearize to [0, 1]
 	return 2.0 * ZNEAR / (ZFAR + ZNEAR - depth * (ZFAR - ZNEAR)); // * ZFAR

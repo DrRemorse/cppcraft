@@ -3,7 +3,7 @@
 #define FRAGMENT_PROGRAM
 
 #ifdef VERTEX_PROGRAM
-//precision mediump float;
+precision mediump float;
 
 uniform mat4 matproj;
 uniform mat4 matview;
@@ -73,11 +73,9 @@ void main(void)
 
 #ifdef FRAGMENT_PROGRAM
 #extension GL_EXT_gpu_shader4 : enable
-precision mediump float;
 
 uniform sampler2DArray texture;
 uniform sampler2DArray tonemap;
-uniform sampler2D   skybuffer;
 uniform samplerCube skymap;
 
 uniform vec3 screendata;

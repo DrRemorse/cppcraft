@@ -22,17 +22,17 @@ in vec2 texCoord;
 
 void main()
 {
-	vec3 color = vec3(0.0);
+	vec4 color = vec4(0.0);
 	float kernel = float(Width + 1);
 	float width, sum = 0.0;
 	
 	for(int i = -Width; i <= Width; i++)
 	{
 		width = kernel - abs(float(i));
-		color += texture2D(texture, texCoord + float(i) * od).rgb * width;
+		color += texture2D(texture, texCoord + float(i) * od) * width;
 		sum += width;
 	}
 	
-	gl_FragData[0] = vec4(color / sum, 1.0);
+	gl_FragData[0] = color / sum;
 }
 #endif

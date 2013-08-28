@@ -117,7 +117,7 @@ namespace cppcraft
 			shaders[sbase + i].sendInteger("texture", 0);
 			shaders[sbase + i].sendInteger("tonemap", 1);
 			shaders[sbase + i].sendInteger("skymap",  4);
-			shaders[sbase + i].sendInteger("skybuffer", 5);
+			//shaders[sbase + i].sendInteger("skybuffer", 5);
 			
 			// send viewport size & aspect
 			shaders[sbase + i].sendVec3("screendata", vecScreen);
@@ -191,12 +191,18 @@ namespace cppcraft
 		shaders[BLUR] = Shader("shaders/blur.glsl", tokenizer, linkstage);
 		shaders[BLUR].sendInteger("texture", 0);
 		
-		// screenspace shader
+		// screenspace terrain shader
+		shaders[FSTERRAIN] = Shader("shaders/fsterrain.glsl", tokenizer, linkstage);
+		shaders[FSTERRAIN].sendInteger("terrain",      0);
+		shaders[FSTERRAIN].sendInteger("depthtexture", 1);
+		shaders[FSTERRAIN].sendInteger("blurtexture",  2);
+		shaders[FSTERRAIN].sendInteger("skytexture",   3);
+		
+		// screenspace postprocessing shader
 		shaders[POSTPROCESS] = Shader("shaders/screenspace.glsl", tokenizer, linkstage);
 		shaders[POSTPROCESS].sendInteger("texture",      0);
 		shaders[POSTPROCESS].sendInteger("depthtexture", 1);
 		shaders[POSTPROCESS].sendInteger("lensflare",    2);
-		shaders[POSTPROCESS].sendInteger("blurtexture",  3);
 		
 		// minimap shader
 		shaders[MINIMAP] = Shader("shaders/minimap.glsl", tokenizer, linkstage);

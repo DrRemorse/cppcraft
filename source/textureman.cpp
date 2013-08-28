@@ -186,10 +186,10 @@ namespace cppcraft
 		
 		// fullscreen colorbuffer
 		textures[T_RENDERBUFFER] = Texture(GL_TEXTURE_2D);
-		textures[T_RENDERBUFFER].create(true, 3, gamescr.SW, gamescr.SH);
+		textures[T_RENDERBUFFER].create(false, 0, gamescr.SW, gamescr.SH);
 		// fullscreen depthbuffer
 		textures[T_DEPTHBUFFER] = Texture(GL_TEXTURE_2D);
-		textures[T_DEPTHBUFFER].createDepth(false, gamescr.SW, gamescr.SH);
+		textures[T_DEPTHBUFFER].createDepth(true, gamescr.SW, gamescr.SH);
 		// fullscreen skybuffer
 		textures[T_SKYBUFFER] = Texture(GL_TEXTURE_2D);
 		textures[T_SKYBUFFER].create(false, 0, gamescr.SW, gamescr.SH);

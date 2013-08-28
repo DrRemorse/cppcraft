@@ -6,6 +6,7 @@
 #include "drawq.hpp"
 #include "frustum.hpp"
 #include "player.hpp"
+#include "player_logic.hpp"
 #include "rendergrid.hpp"
 #include "renderman.hpp"
 #include "render_player_selection.hpp"
@@ -258,7 +259,7 @@ namespace cppcraft
 		vec3  position(-1);
 		
 		// skybuffer at texture slot 5
-		textureman.bind(5, Textureman::T_SKYBUFFER);
+		//textureman.bind(5, Textureman::T_SKYBUFFER);
 		
 		// bind skybox at slot 4
 		textureman.bind(4, Textureman::T_SKYBOX);
@@ -339,9 +340,8 @@ namespace cppcraft
 				// render player selection
 				renderPlayerSelection();
 				
-				//glEnable(GL_CULL_FACE);
-				// if (waterFaceCulling == false)
-				//glDisable(GL_CULL_FACE);
+				if (plogic.FullySubmerged == plogic.PS_None)
+					glEnable(GL_CULL_FACE);
 				
 				position = vec3(-1);
 				

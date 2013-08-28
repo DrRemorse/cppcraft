@@ -16,7 +16,7 @@ namespace library
 	Texture::Texture(GLenum target)
 	{
 		this->type   = target;
-		this->format = GL_RGBA;
+		this->format = GL_RGBA8;
 		glGenTextures(1, &this->id);
 		this->boundUnit = 0;
 		this->isMipmapped = false;

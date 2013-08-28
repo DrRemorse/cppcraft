@@ -35,10 +35,10 @@ namespace cppcraft
 		WindowConfig wndconf;
 		
 		wndconf.title = windowTitle;
+		wndconf.SW    = config.get("screen.width", 1280);
+		wndconf.SH    = config.get("screen.height", 720);
+		wndconf.vsync = config.get("opengl.vsync", true);
 		wndconf.fullscreen  = config.get("opengl.fullscreen", false);
-		wndconf.vsync       = config.get("opengl.vsync", true);
-		wndconf.SW = config.get("screen.width", 1280);
-		wndconf.SH = config.get("screen.height", 720);
 		wndconf.multisample = config.get("multisampling", 0);
 		
 		// initialize GLFW window
@@ -59,7 +59,7 @@ namespace cppcraft
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 		
 		// buffer cleared color
-		glClearColor(0.0, 0.0, 0.0, 1.0);
+		glClearColor(0.0, 0.0, 0.0, 0.0);
 		// (initial) depth settings
 		glClearDepth(1.0);
 		glDepthRange(0.0, 1.0);
