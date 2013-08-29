@@ -48,7 +48,7 @@ namespace cppcraft
 		Shader& blur = shaderman[Shaderman::BLUR];
 		blur.bind();
 		blur.sendInteger("Width", 2);
-		blur.sendVec2("od", vec2(1.0 / flareTxW, 0.0));
+		blur.sendVec2("dir", vec2(1.0 / flareTxW, 0.0));
 		
 		//  render
 		glDrawArrays(GL_QUADS, 0, 4);
@@ -61,7 +61,7 @@ namespace cppcraft
 		
 		textureman.bind(0, Textureman::T_LENSFLARE3);
 		
-		blur.sendVec2("od", vec2(0.0, 1.0 / flareTxH));
+		blur.sendVec2("dir", vec2(0.0, 1.0 / flareTxH));
 		
 		//  render
 		glDrawArrays(GL_QUADS, 0, 4);
@@ -77,7 +77,7 @@ namespace cppcraft
 		textureman.bind(0, Textureman::T_LENSFLARE2);
 		
 		blur.sendInteger("Width", 6);
-		blur.sendVec2("od", vec2(1.0 / flareTxW, 0.0));
+		blur.sendVec2("dir", vec2(1.0 / flareTxW, 0.0));
 		
 		//  render
 		glDrawArrays(GL_QUADS, 0, 4);
@@ -93,7 +93,7 @@ namespace cppcraft
 		
 		textureman.bind(0, Textureman::T_LENSFLARE);
 		
-		blur.sendVec2("od", vec2(0.0, 1.0 / flareTxH));
+		blur.sendVec2("dir", vec2(0.0, 1.0 / flareTxH));
 		
 		//  render
 		glDrawArrays(GL_QUADS, 0, 4);

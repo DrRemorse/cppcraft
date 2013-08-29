@@ -129,7 +129,7 @@ void main (void)
 		final = mix(final, stars, darkness * darkness);
 	}
 	
-	final = pow(final, vec3(1.0/2.2)) * 1.05;
+	final = pow(final, vec3(1.0 / 2.2)) * 1.05;
 	gl_FragData[0] = vec4(final, 0.0);
 }
 

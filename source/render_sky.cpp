@@ -29,7 +29,7 @@ namespace cppcraft
 		createClouds();
 	}
 	
-	void SkyRenderer::render(SceneRenderer& scene, double dtime)
+	void SkyRenderer::render(SceneRenderer& scene, bool underwater)
 	{
 		// render background / atmosphere, sun and moon
 		glDisable(GL_BLEND);
@@ -42,17 +42,20 @@ namespace cppcraft
 		glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
 		
 		glEnable(GL_BLEND);
+		glColorMask(1, 1, 1, 0);
 		
 		// render regular sun
-		//if ((renderconf.lensflare && renderconf.postprocess) == false)
-		//{
-		//	renderSun();
-		//}
+		if (underwater)
+		{
+			renderSun();
+		}
 		
 		// render moon texture
 		renderMoon();
 		
 		glDisable(GL_BLEND);
+		glColorMask(1, 1, 1, 1);
+		
 	}
 	
 	void SkyRenderer::renderSun()

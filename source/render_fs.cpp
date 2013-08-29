@@ -98,17 +98,13 @@ namespace cppcraft
 	{
 		glBindVertexArray(0);
 		
-		//textureman.bind(1, Textureman::T_DEPTHBUFFER);
-		//textureman.copyScreen(gamescr, Textureman::T_DEPTHBUFFER);
-		
 		// copy the current screen buffer
 		textureman.bind(0, Textureman::T_RENDERBUFFER);
 		textureman.copyScreen(gamescr, Textureman::T_RENDERBUFFER);
-		//glGenerateMipmap(GL_TEXTURE_2D);
 		
-		glEnable(GL_BLEND);
+		glDisable(GL_BLEND);
 		
-		; //if (renderconf.lensflare)
+		if (true) //renderconf.lensflare)
 		{
 			// render sun flare
 			renderLensflare(gamescr);
@@ -116,26 +112,10 @@ namespace cppcraft
 		
 		// clear buffers
 		// glClear(GL_DEPTH_BUFFER_BIT)
-		glDisable(GL_BLEND);
 		glDisable(GL_DEPTH_TEST); // mui importante!
 		glDepthMask(GL_FALSE);
 		
-		/*
-		// bind screenspace VAO
-		glBindVertexArray(screenVAO);
-		
-		; //if (renderconf.highq_blur)
-		{
-			// downsize to blur-texture size
-			glViewport(0, 0, blurTxW, blurTxH);
-			// bind texture containing scene
-			textureman.bind(0, Textureman::T_RENDERBUFFER);
-			// create blurred image from scene (current backbuffer image)
-			renderBlur();
-			// upsize to regular screen size
-			glViewport(0, 0, gamescr.SW, gamescr.SH);
-		}
-		*/
+		/// fullscreen postprocessing ///
 		
 		textureman.bind(0, Textureman::T_RENDERBUFFER);
 		textureman.bind(1, Textureman::T_DEPTHBUFFER);

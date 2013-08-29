@@ -2,7 +2,12 @@
 #define VOXELMODELS_HPP
 
 #include <vector>
-#include "library/bitmap/bitmap.hpp"
+
+namespace library
+{
+	class Bitmap;
+	class VoxelModel;
+}
 
 namespace cppcraft
 {
@@ -40,24 +45,16 @@ namespace cppcraft
 #define VOXB_FIRE              50
 #define VOXB_HANGINGAPPLE      51
 
-	struct voxelmodel_t;
 	typedef unsigned short block_t;
 	
 	class VoxelModels
 	{
 	public:
-		static const int VOXELITEMS_MAX = 256;
-		static const int VOXELBLOCKS_MAX = 64;
+		static const int VOXELITEMS_MAX  = 256;
+		static const int VOXELBLOCKS_MAX =  64;
 		
 		// z extrude scale 1:Z
 		const float VOXELMODELS_ZSCALE = 0.05;
-		
-		typedef struct
-		{
-			unsigned int vao, vbo;
-			int vertices;
-			
-		} voxelmodel_t;
 		
 		int  isVoxelBlock(block_t id);
 		int  getVoxelId  (block_t id);
@@ -69,14 +66,17 @@ namespace cppcraft
 		void renderBlock(int modelid);
 		
 	private:
-		// voxelized blocks
-		voxelmodel_t* voxelBlocks[VOXELBLOCKS_MAX] = {nullptr};
-		// voxelized items
-		voxelmodel_t* voxelItems[VOXELITEMS_MAX] = {nullptr};
 		
-		void createModel(voxelmodel_t* model, library::Bitmap& bmp, int tileID, int tw, int th);
-		void createModelTall(voxelmodel_t* model, library::Bitmap& bmp, int tileBot, int tileTop, int tw, int th);
-		void renderModel(voxelmodel_t* model);
+		// voxelized blocks
+		library::VoxelModel* voxelBlocks[VOXELBLOCKS_MAX] = {nullptr};
+		// voxelized items
+		library::VoxelModel* voxelItems[VOXELITEMS_MAX] = {nullptr};
+		
+		void createModel    (library::VoxelModel*& model, library::Bitmap& bmp, int tileID, int tw, int th);
+		void createModelTall(library::VoxelModel*& model, library::Bitmap& bmp, int tileBot, int tileTop, int tw, int th);
+		
+		void renderModel(library::VoxelModel* model);
+		
 	};
 	extern VoxelModels voxels;
 }

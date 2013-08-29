@@ -239,7 +239,7 @@ namespace cppcraft
 	
 	// checks which action the player is performing (if any) and execute on it
 	// if no action is being performed, try to select a block (in the world) instead
-	void PlayerActions::handleActions(double frametime)
+	void PlayerActions::handleActions()
 	{
 		block_t facing  = player.getBlockFacing();
 		vec3 lookVector = player.getLookVector();
@@ -295,7 +295,7 @@ namespace cppcraft
 			// handle hand animation & cooldown timing
 			if (action != PA_Nothing)
 			{
-				cooldown(frametime);
+				cooldown();
 				return;
 			}
 		}
@@ -445,6 +445,8 @@ namespace cppcraft
 			if (action == playeraction_t::PA_Mineblock)
 			{
 				// reset any mining process, when we lost selection
+				// but not cancel it entirely, because mouse is still "held", 
+				// and we could start mining again soon(TM)
 				mineTimer = 2000;
 				mineMax   = 2000;
 				minimizer = -1;

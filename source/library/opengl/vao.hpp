@@ -36,6 +36,12 @@ namespace library
 		void render(GLenum mode);
 		// render a part of the mesh
 		void render(GLenum mode, GLint first, GLsizei count);
+		
+		// getters
+		inline GLsizei getVertices() const
+		{
+			return this->vertices;
+		}
 	};
 }
 #endif

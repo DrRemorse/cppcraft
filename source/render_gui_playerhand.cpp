@@ -125,6 +125,7 @@ namespace cppcraft
 			else
 				hand.z = -1.25 - fabs(sin(period)) * 1.5;
 			
+			if (lastMode != mode) lastTime = frameCounter - paction.cooldownTime;
 			mode = 3;
 		}
 		else

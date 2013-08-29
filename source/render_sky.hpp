@@ -16,8 +16,8 @@ namespace cppcraft
 		
 	public:
 		void init();
-		void render(SceneRenderer& scene, double dtime);
-		void renderClouds(SceneRenderer& scene, double dtime);
+		void render(SceneRenderer& scene, bool underwater);
+		void renderClouds(SceneRenderer& scene, double frameCounter);
 		
 		library::Matrix renderSunProj(unsigned int samples);
 		

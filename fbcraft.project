@@ -146,6 +146,8 @@
       <VirtualDirectory Name="voxels">
         <File Name="source/library/voxels/voxelizer.cpp"/>
         <File Name="source/library/voxels/voxelizer.hpp"/>
+        <File Name="source/library/voxels/voxelmodel.cpp"/>
+        <File Name="source/library/voxels/voxelmodel.hpp"/>
       </VirtualDirectory>
       <File Name="source/library/config.cpp"/>
       <File Name="source/library/config.hpp"/>

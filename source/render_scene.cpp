@@ -39,6 +39,7 @@ namespace cppcraft
 	void SceneRenderer::render(Renderer& renderer, WorldManager& worldman)
 	{
 		bool frustumRecalc = false;
+		bool underwater    = false;
 		
 		// render each blah, because of blah-bah
 		if (mtx.sectorseam.try_lock())
@@ -55,6 +56,8 @@ namespace cppcraft
 				
 				this->playerSectorX = playerX / 16; //Sector::BLOCKS_XZ;
 				this->playerSectorZ = playerZ / 16; //Sector::BLOCKS_XZ;
+				
+				underwater = plogic.FullySubmerged != PlayerLogic::PS_None;
 				
 				frustumRecalc = frustum.recalc;
 				frustum.recalc = false;
@@ -145,7 +148,19 @@ namespace cppcraft
 		glDepthMask(GL_FALSE);
 		
 		// render sky
-		skyrenderer.render(*this, renderer.dtime);
+		skyrenderer.render(*this, underwater);
+		
+		if (underwater)
+		{
+			glEnable(GL_BLEND);
+			glColorMask(1, 1, 1, 0);
+			
+			// render clouds
+			skyrenderer.renderClouds(*this, renderer.frametick);
+			
+			glDisable(GL_BLEND);
+			glColorMask(1, 1, 1, 1);
+		}
 		
 		// copy sky to texture (skybuffer)
 		textureman.bind(5, Textureman::T_SKYBUFFER);
@@ -188,12 +203,15 @@ namespace cppcraft
 		glEnable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
 		glDepthFunc(GL_LEQUAL);
-		
 		glEnable(GL_BLEND);
-		glDisable(GL_CULL_FACE);
 		
-		// render clouds
-		skyrenderer.renderClouds(*this, renderer.frametick);
+		if (!underwater)
+		{
+			glDisable(GL_CULL_FACE);
+			
+			// render clouds
+			skyrenderer.renderClouds(*this, renderer.frametick);
+		}
 		
 		// render particles
 		particleSystem.render(snapWX, snapWZ);

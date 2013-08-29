@@ -181,10 +181,8 @@ void main(void)
 	
 	// start with underwater color
 	vec4 color = texture2D(underwatermap, refcoord.xy);
-	#define POSTPROCESS
-	#ifndef POSTPROCESS
-		color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
-	#endif
+	// gamme
+	color.rgb = pow(color.rgb, vec3(2.2));
 	
 	// mix in seacolor based on 'depth'
 	const vec3 deepwater = vec3(0.02, 0.10, 0.20);

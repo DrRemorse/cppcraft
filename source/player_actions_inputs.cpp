@@ -5,7 +5,7 @@
 
 namespace cppcraft
 {
-	void PlayerActions::handleInputs(double frametime)
+	void PlayerActions::handleInputs()
 	{
 		// left mouse button
 		if (input.getMouse(GLFW_MOUSE_BUTTON_1))
@@ -18,6 +18,20 @@ namespace cppcraft
 				// add block
 				handWave();
 				action = PA_Addblock;
+			}
+		}
+		else if (input.getMouse(GLFW_MOUSE_BUTTON_2))
+		{
+			if (input.getMouse(GLFW_MOUSE_BUTTON_2) == Input::KEY_PRESSED)
+			{
+				// lock this button
+				input.holdMouse(GLFW_MOUSE_BUTTON_2);
+				// enable mining
+				handWave();
+				mineTimer = 2000;
+				mineMax   = 2000;
+				minimizer = -1; // CRC
+				action = PA_Mineblock;
 			}
 		}
 		else

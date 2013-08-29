@@ -5,6 +5,7 @@ namespace cppcraft
 	PlayerActions paction;
 	// timing intervals
 	const double PlayerActions::MINE_SPEED = 0.04;
+	double _actiontime;
 	
 	void PlayerActions::init()
 	{
@@ -16,8 +17,10 @@ namespace cppcraft
 	
 	void PlayerActions::handle(double frametime)
 	{
-		this->handleInputs(frametime);
-		this->handleActions(frametime);
+		_actiontime = frametime;
+		
+		this->handleInputs();
+		this->handleActions();
 		
 		if (action == playeraction_t::PA_Cooldown)
 		{
@@ -62,20 +65,20 @@ namespace cppcraft
 	{
 		action = playeraction_t::PA_Cooldown;
 		mineTimer = MINE_COOLDOWN;
+		cooldownTime = _actiontime;
 		/*
-		cooldowntime = fru.uptimed
-		if (network.mymine = false)
+		if (network.mymine == false)
 		{
-			networkSend("PMINE 1")
-			network.mymine = TRUE
+			networkSend("PMINE 1");
+			network.mymine = true;
 		}*/
 	}
 	
-	void PlayerActions::cooldown(double frametime)
+	void PlayerActions::cooldown()
 	{
 		action = PA_Cooldown;
 		mineTimer = MINE_COOLDOWN;
-		cooldownTime = frametime;
+		cooldownTime = _actiontime;
 	}
 	
 	void PlayerActions::swingTool(InventoryItem& item)

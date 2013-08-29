@@ -1,7 +1,8 @@
 #include "voxelmodels.hpp"
 
-//#include "engine/bitmap.hpp"
+#include "library/bitmap/bitmap.hpp"
 #include "library/voxels/voxelizer.hpp"
+#include "library/voxels/voxelmodel.hpp"
 #include "library/opengl/opengl.hpp"
 #include "blocks.hpp"
 #include "items.hpp"
@@ -60,7 +61,7 @@ namespace cppcraft
 		createModel(voxelBlocks[VOXB_HANGINGAPPLE], bmp, Block::cubeFaceById(_HANGINGAPPLE, 0, 0), tiles.txW, tiles.txH);
 	}
 	
-	void VoxelModels::createModel(voxelmodel_t* model, Bitmap& bmp, int tileID, int tw, int th)
+	void VoxelModels::createModel(VoxelModel*& model, Bitmap& bmp, int tileID, int tw, int th)
 	{
 		// create temporary bitmap
 		Bitmap tmp(tw, th, 32);
@@ -76,33 +77,15 @@ namespace cppcraft
 		// create model from bitmap
 		xmod.extrude(tmp, offset, scale);
 		
-		// create vao
-		glGenVertexArrays(1, &model->vao);
-		glGenBuffers     (1, &model->vbo);
-		
-		glBindVertexArray(model->vao);
-		glBindBuffer(GL_ARRAY_BUFFER_ARB, model->vbo);
-		
-		glBufferData(GL_ARRAY_BUFFER_ARB, xmod.vertices() * sizeof(xvertex_t), xmod.data(), GL_STATIC_DRAW);
-		
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT,         GL_FALSE, sizeof(xvertex_t), (GLvoid*)  0); // position
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 4, GL_BYTE,          GL_TRUE,  sizeof(xvertex_t), (GLvoid*) 12); // normal
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE,  sizeof(xvertex_t), (GLvoid*) 16); // color
-		
-		glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
-		glBindVertexArray(0);
-		
-		// set number of vertices to render
-		model->vertices = xmod.vertices();
+		// create model
+		model = new VoxelModel();
+		model->create(xmod.vertices(), xmod.data());
 		
 		for (unsigned int i = 0; i < 3; i++)
 			glDisableVertexAttribArray(i);
 	}
 	
-	void VoxelModels::createModelTall(voxelmodel_t* model, Bitmap& bmp, int tile_bot, int tile_top, int tw, int th)
+	void VoxelModels::createModelTall(VoxelModel*& model, Bitmap& bmp, int tile_bot, int tile_top, int tw, int th)
 	{
 		// create temporary bitmap
 		Bitmap tmp(tw, th * 2, 4);
@@ -121,44 +104,17 @@ namespace cppcraft
 		// create model from bitmap
 		xmod.extrude(tmp, offset, scale);
 		
-		// create vao
-		glGenVertexArrays(1, &model->vao);
-		glGenBuffers     (1, &model->vbo);
-		
-		glBindVertexArray(model->vao);
-		
-		glBindBuffer(GL_ARRAY_BUFFER_ARB, model->vbo);
-		glBufferData(GL_ARRAY_BUFFER_ARB, xmod.vertices() * sizeof(xvertex_t), xmod.data(), GL_STATIC_DRAW);
-		
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT,         GL_FALSE, sizeof(xvertex_t), (GLvoid*)  0); // position
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 4, GL_BYTE,          GL_TRUE,  sizeof(xvertex_t), (GLvoid*) 12); // normal
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE,  sizeof(xvertex_t), (GLvoid*) 16); // color
-		
-		glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
-		glBindVertexArray(0);
-		
-		// set number of vertices to render
-		model->vertices = xmod.vertices();
-		
-		for (unsigned int i = 0; i < 3; i++)
-			glDisableVertexAttribArray(i);
+		// create model
+		model = new VoxelModel();
+		model->create(xmod.vertices(), xmod.data());
 		
 	}
 	
-	void VoxelModels::renderModel(voxelmodel_t* model)
+	void VoxelModels::renderModel(VoxelModel* model)
 	{
-		if (model->vao == 0) return;
+		if (model->isGood() == false) return;
 		
-		glBindVertexArray(model->vao);
-		//glBindBufferARB(GL_ARRAY_BUFFER_ARB, mymodel->vbo)
-		
-		glDrawArrays(GL_QUADS, 0, model->vertices);
-		
-		//glBindBufferARB(GL_ARRAY_BUFFER_ARB, null)
-		glBindVertexArray(0);
+		model->render();
 	}
 	
 	void VoxelModels::renderItem(int modelid)
@@ -215,14 +171,14 @@ namespace cppcraft
 			return VOXB_HANGINGAPPLE;
 		}
 		
-		throw "getVoxelId: Invalid voxel id";
+		throw std::string("getVoxelId: Invalid voxel id");
 		
 	} // getVoxelId
 	
 	void VoxelModels::renderBlock(int modelid)
 	{
 		modelid = getVoxelId(modelid);
-		if (modelid == -1) throw "VoxelModels::renderBlock(): Exigent circumstances";
+		if (modelid == -1) throw std::string("VoxelModels::renderBlock(): Exigent circumstances");
 		
 		renderModel(voxelBlocks[modelid]);
 	}

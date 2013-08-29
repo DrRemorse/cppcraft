@@ -32,13 +32,13 @@ namespace cppcraft
 		void cancelDig(); // cancel digging (networked)
 		void handWave();  // wave hand (networked)
 		// start cooldown animation
-		void cooldown(double frametime);
+		void cooldown();
 		
 		/// input related ///
-		void handleInputs(double frametime);
+		void handleInputs();
 		
 		/// all action related ///
-		void handleActions(double frametime);
+		void handleActions();
 		// activate a block in the world
 		void activate(InventoryItem& item);
 		// perform an action with an item
@@ -61,6 +61,8 @@ namespace cppcraft
 		// action related
 		playeraction_t action;
 		
+		
+		friend class PlayerHand;
 	};
 	extern PlayerActions paction;
 }

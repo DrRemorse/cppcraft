@@ -31,7 +31,7 @@ namespace library
 	};
 	
 	// initialize xvertex dump
-	xvertex_t* XModel::xv_dump = nullptr;
+	XModel::xvertex_t* XModel::xv_dump = nullptr;
 	
 	// empty model
 	XModel::XModel()
@@ -52,8 +52,9 @@ namespace library
 		xv_dump = (xvertex_t*) malloc(VOXELIZER_MAX_VERTICES * sizeof(xvertex_t));
 	}
 	
-	inline bool XModel::culltest(xcolor_t value)
+	inline bool culltest(XModel::xcolor_t value)
 	{
+		// returns true if the alpha-channel value is 0
 		return ((value >> 24) == 0);
 	}
 	
@@ -245,7 +246,7 @@ namespace library
 		
 	}
 	
-	xvertex_t* XModel::data()
+	XModel::xvertex_t* XModel::data()
 	{
 		return this->vdata;
 	}

@@ -118,7 +118,7 @@ void main(void)
 	
 	vec4 noise = texture2D(texture, texCoord); // independent read
 	
-	vec3 normal = (noise.rgb * vec3(2.0) - vec3(1.0));
+	vec3 normal = noise.rgb * 2.0 - vec3(1.0);
 	
 	const vec3 in_normal  = vec3( 0.0,  1.0,  0.0);
 	const vec3 in_tangent = vec3( 1.0,  0.0,  0.0);
@@ -157,11 +157,11 @@ void main(void)
 	color *= vec4(vec3(daylight * daylight), daylight);
 	
 	// sun -> clouds
-	vec3 sunBaseColor = color.rgb * vec3(1.0, 0.9, 0.8);
-	float sunAmount = max( -dot( v_eye, v_ldir ), 0.0 ) * 1.3;
+	//vec3 sunBaseColor = color.rgb * vec3(1.0, 0.9, 0.8);
+	//float sunAmount = max( -dot( v_eye, v_ldir ), 0.0 ) * 1.3;
 	
 	// sun -> clouds
-	color.rgb = mix(color.rgb, sunBaseColor, pow(sunAmount, 4.0) * 0.3);
+	//color.rgb = mix(color.rgb, sunBaseColor, pow(sunAmount, 4.0) * 0.3);
 	
 	#ifdef POSTPROCESS
 		gl_FragData[0] = color;

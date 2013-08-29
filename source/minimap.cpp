@@ -171,11 +171,10 @@ namespace cppcraft
 		Block b = Spiders::getBlock(s, x, y, z);
 		Bitmap::color_rgba8_t c;
 		
-		if (b.getID() >= STONE_START && b.getID() <= STONE_END)
+		if (isStone(b.getID()))
 		{
-			c = fgetColor(s, x, z, Biomes::CL_STONE);
-			c = mixColor(c, RGBA8(160, 160, 160, 255), 0.25);
-			
+			//c = fgetColor(s, x, z, Biomes::CL_STONE);
+			c = RGBA8(64, 64, 64, 255);
 		}
 		else if (b.getID() == _SNOWGRASS || b.getID() == _SNOWGRASS_S || b.getID() == _LOWSNOW)
 		{
@@ -217,7 +216,7 @@ namespace cppcraft
 			c = fgetColor(s, x, z, Biomes::CL_TREES);
 			c = mixColor(c, RGBA8(80, 200, 0, 255), 0.25);
 		}
-		else if (b.getID() >= SAND_START && b.getID() <= SAND_END)
+		else if (isSand(b.getID()))
 		{
 			c = RGBA8(220, 210, 174, 255); // sandy
 		}

@@ -75,7 +75,7 @@ namespace cppcraft
 		
 		// point sprites
 		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE_ARB);
-		glTexEnvi( GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE );
+		glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
 		
 		// texturing
 		// seamless cubemaps globally
