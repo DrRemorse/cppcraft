@@ -7,19 +7,6 @@ namespace cppcraft
 {
 	class Block;
 	class Sector;
-	class InventoryItem;
-	
-	enum playeraction_t
-	{
-		PA_Nothing   = 0,
-		PA_Addblock  = 1,
-		PA_Mineblock = 2,
-		PA_Remblock  = 3,
-		PA_Cooldown  = 4,
-		PA_Use       = 5,
-		PA_Swingtool = 6
-		
-	};
 	
 	enum movestate_t
 	{
@@ -93,53 +80,16 @@ namespace cppcraft
 		static const short JETPACK_SOUNDWAIT = 24;
 	#endif
 		
-		// mining related
-		float cooldownTime;
-		unsigned short mineMax;
-		unsigned short mineTimer;
-		double mineTiming;
-		int    minimizer;
-		// action related
-		playeraction_t action;
-		float actionTimer;
-		
-		static const int MINE_SOUNDMOD = 6;
-		static const int MINE_COOLDOWN = 4;
-		static const double MINE_SPEED;
-		int lastlanding;
-		
 		// player standing on this:
 		Block* block;
 		Block* lastblock;
 		
-		// timers
-		int lastwater;
-		
-		// hand interpolation
-		library::vec3 lasthand; // vec3?
-		
-		// declarations
-		void cancelDig(); // cancel digging (networked)
-		void handWave();  // wave hand (networked)
-		
 		// returns true if the player has selected a block in the world
 		bool hasSelection() const;
-		
 		
 		/// all movement & speed related ///
 		void translatePlayer();
 		void handlePlayerJumping();
-		/// all action related ///
-		void handleActions();
-		// activate a block in the world
-		void activate(InventoryItem& item);
-		// perform an action with an item
-		void itemAction(InventoryItem& item);
-		// place a block
-		void build(InventoryItem& item);
-		void swingTool(InventoryItem& item);
-		// placing blocks shite
-		bool playerBlockPlaceTest();
 		
 		// walking / etc. sounds
 		void playerSounds();

@@ -10,41 +10,12 @@ namespace cppcraft
 {
 	// PlayerLogicClass
 	PlayerLogic plogic;
-	// timing intervals
-	const double PlayerLogic::MINE_SPEED	= 0.04;
 	// sound timing intervals
 	///...
 	
 	bool PlayerLogic::hasSelection() const
 	{
 		return (selection.block != nullptr);
-	}
-	
-	void PlayerLogic::cancelDig()
-	{
-		if (action != playeraction_t::PA_Cooldown)
-		{
-			action = playeraction_t::PA_Nothing;
-			/*
-			if (network.mymine == true)
-			{
-				networkSend("PMINE 0");
-				network.mymine = false;
-			}*/
-		}
-	}
-	
-	void PlayerLogic::handWave()
-	{
-		action = playeraction_t::PA_Cooldown;
-		mineTimer = plogic.MINE_COOLDOWN;
-		/*
-		cooldowntime = fru.uptimed
-		if (network.mymine = false)
-		{
-			networkSend("PMINE 1")
-			network.mymine = TRUE
-		}*/
 	}
 	
 	const int TIME_BETWEEN_CROUCH  = 50;

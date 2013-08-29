@@ -964,231 +964,236 @@ namespace cppcraft
 		}
 	}
 	
-	std::string Block::getBlockName() const
+	std::string Block::getName() const
+	{
+		return Block::getBlockName(this->getID());
+	}
+	
+	std::string Block::getBlockName(block_t id)
 	{
 		std::string ret;
 		
-		switch (this->getID())
+		switch (id)
 		{
-			case _AIR:
-				ret = "Air";
-				break;
-				
-			case _FOG:
-				ret = "Fog";
-				break;
-				
-			case _ASPHALT:
-				ret = "Asphalt";
-				break;
-				
-			case _BLUESHROOM:
-				ret = "Blue mushroom";
-				break;
-				
-			case _BOOKCASE:
-				ret = "Book case";
-				break;
-				
-			case _BRICKWALL:
-			case _BRICKWALL2:
-				ret = "Brick wall";
-				break;
-				
-			case _BRICKSTAIR:
-				ret = "Brick stair";
-				break;
-				
-			case _BUSH2:
-			case _BUSH3:
-			case _BUSH4:
-			case _BUSH5:
-				ret = "Bush";
-				break;
-				
-			case _BUSH_HOLLY:
-				ret = "Holly bush";
-				break;
-				
-			case _BUSH_MRSPIKY:
-				ret = "Mr. Spiky";
-				break;
-				
-			case _BUSH_PINKROSE:
-				ret = "Pink rose bush";
-				break;
-				
-			case _GRADIENT_HARD:
-			case _GRADIENT_SOFT:
-				ret = "Colored block";
-				break;
-				
-			case _GRAVEL1:
-			case _GRAVEL2:
-				ret = "Gravel";
-				break;
-				
-			case _CLAY:
-			case _CLAYRED:
-				ret = "Clay";
-				break;
-				
-			case _HALFBRICK:
-			case _HALFBRICK2:
-				ret = "Brick";
-				break;
-				
-			case _HALFSTONE:
-				ret = "Stone";
-				break;
-				
-			case _HALFSTONETILE:
-				ret = "Stone tile";
-				break;
-				
-			case _HALFWOOD:
-				ret = "Wooden plank";
-				break;
-				
-			case _ICECUBE:
-				ret = "Ice cube";
-				break;
-				
-			case _LADDER:
-				ret = "Ladder";
-				break;
-				
-			case _LANTERN:
-				ret = "Lantern";
-				break;
-				
-			case _LIVINGSTONE:
-				ret = "Living stone";
-				break;
-				
-			case _LAVABLOCK:
-				ret = "Lava";
-				break;
-				
-			case _LOWICE:
-				ret = "Ice";
-				break;
-				
-			case _LOWSNOW:
-				ret = "Snow";
-				break;
-				
-			case _LOWSTONETILE:
-			case _LOWSTONETILE2:
-				ret = "Stone tile";
-				break;
-				
-			case _SANDBEACH:
-				ret = "Beach sand";
-				break;
-				
-			case _SANDOCEAN:
-				ret = "Ocean sand";
-				break;
-				
-			case _OCEANFLOOR:
-				ret = "Ocean floor";
-				break;
-				
-			case _DESERTSAND:
-				ret = "Desert sand";
-				break;
-				
-			case _STONE:
-				ret = "Stone";
-				break;
-				
-			case _STONEGRASS:
-				ret = "Stonegrass";
-				break;
-				
-			case _STONEHEAP:
-				ret = "Cobblestone";
-				break;
-				
-			case _STONESTAIR:
-				ret = "Stone stair";
-				break;
-				
-			case _STONEDOOR:
-				return "Stone door";
-				break;
-				
-			case _MOLTENSTONE:
-				ret = "Molten stone";
-				break;
-				
-			case _STONEPATTERN:
-				ret = "Patterned stone";
-				break;
-				
-			case _WOODPALM:
-			case _WOODBJORK:
-			case _WOODBROWN:
-			case _WOODPINE:
-				return "Wood";
-				break;
-				
-			case _CACTUS:
-				ret = "Cactus";
-				break;
-				
-			case _PUMPKIN:
-				ret = "Pumpkin";
-				break;
-				
-			case _TORCH:
-				ret = "Torch";
-				break;
-				
-			case _WATER:
-				ret = "Water";
-				break;
-				
-			case _WOODDOOR:
-				ret = "Wooden door";
-				break;
-				
-			case _WOODFENCE:
-				ret = "Wooden fence";
-				break;
-				
-			case _WOODPOLE:
-				ret = "Wooden pole";
-				break;
-				
-			case _WOODSIGN:
-				ret = "Signpost";
-				break;
-				
-			case _WOODSTAIR:
-				ret = "Wooden stair";
-				break;
-				
-			case _PLANK:
-				ret = "Wooden planks";
-				break;
-				
-			// generic names
-			default:
-				if (getID() >= CROSS_START && getID() <= CROSS_END)
-					ret = "Cross";
-				else if (getID() >= SOIL_START && getID() <= SOIL_END)
-					ret = "Soil";
-				else if (getID() >= TREES_START && getID() <= TREES_END)
-					ret = "Leaves";
-				else
-					ret = "Unknown"; // lazy copout (TM)
-				
+		case _AIR:
+			ret = "Air";
+			break;
+			
+		case _FOG:
+			ret = "Fog";
+			break;
+			
+		case _ASPHALT:
+			ret = "Asphalt";
+			break;
+			
+		case _BLUESHROOM:
+			ret = "Blue mushroom";
+			break;
+			
+		case _BOOKCASE:
+			ret = "Book case";
+			break;
+			
+		case _BRICKWALL:
+		case _BRICKWALL2:
+			ret = "Brick wall";
+			break;
+			
+		case _BRICKSTAIR:
+			ret = "Brick stair";
+			break;
+			
+		case _BUSH2:
+		case _BUSH3:
+		case _BUSH4:
+		case _BUSH5:
+			ret = "Bush";
+			break;
+			
+		case _BUSH_HOLLY:
+			ret = "Holly bush";
+			break;
+			
+		case _BUSH_MRSPIKY:
+			ret = "Mr. Spiky";
+			break;
+			
+		case _BUSH_PINKROSE:
+			ret = "Pink rose bush";
+			break;
+			
+		case _GRADIENT_HARD:
+		case _GRADIENT_SOFT:
+			ret = "Colored block";
+			break;
+			
+		case _GRAVEL1:
+		case _GRAVEL2:
+			ret = "Gravel";
+			break;
+			
+		case _CLAY:
+		case _CLAYRED:
+			ret = "Clay";
+			break;
+			
+		case _HALFBRICK:
+		case _HALFBRICK2:
+			ret = "Brick";
+			break;
+			
+		case _HALFSTONE:
+			ret = "Stone";
+			break;
+			
+		case _HALFSTONETILE:
+			ret = "Stone tile";
+			break;
+			
+		case _HALFWOOD:
+			ret = "Wooden plank";
+			break;
+			
+		case _ICECUBE:
+			ret = "Ice cube";
+			break;
+			
+		case _LADDER:
+			ret = "Ladder";
+			break;
+			
+		case _LANTERN:
+			ret = "Lantern";
+			break;
+			
+		case _LIVINGSTONE:
+			ret = "Living stone";
+			break;
+			
+		case _LAVABLOCK:
+			ret = "Lava";
+			break;
+			
+		case _LOWICE:
+			ret = "Ice";
+			break;
+			
+		case _LOWSNOW:
+			ret = "Snow";
+			break;
+			
+		case _LOWSTONETILE:
+		case _LOWSTONETILE2:
+			ret = "Stone tile";
+			break;
+			
+		case _SANDBEACH:
+			ret = "Beach sand";
+			break;
+			
+		case _SANDOCEAN:
+			ret = "Ocean sand";
+			break;
+			
+		case _OCEANFLOOR:
+			ret = "Ocean floor";
+			break;
+			
+		case _DESERTSAND:
+			ret = "Desert sand";
+			break;
+			
+		case _STONE:
+			ret = "Stone";
+			break;
+			
+		case _STONEGRASS:
+			ret = "Stonegrass";
+			break;
+			
+		case _STONEHEAP:
+			ret = "Cobblestone";
+			break;
+			
+		case _STONESTAIR:
+			ret = "Stone stair";
+			break;
+			
+		case _STONEDOOR:
+			return "Stone door";
+			break;
+			
+		case _MOLTENSTONE:
+			ret = "Molten stone";
+			break;
+			
+		case _STONEPATTERN:
+			ret = "Patterned stone";
+			break;
+			
+		case _WOODPALM:
+		case _WOODBJORK:
+		case _WOODBROWN:
+		case _WOODPINE:
+			return "Wood";
+			break;
+			
+		case _CACTUS:
+			ret = "Cactus";
+			break;
+			
+		case _PUMPKIN:
+			ret = "Pumpkin";
+			break;
+			
+		case _TORCH:
+			ret = "Torch";
+			break;
+			
+		case _WATER:
+			ret = "Water";
+			break;
+			
+		case _WOODDOOR:
+			ret = "Wooden door";
+			break;
+			
+		case _WOODFENCE:
+			ret = "Wooden fence";
+			break;
+			
+		case _WOODPOLE:
+			ret = "Wooden pole";
+			break;
+			
+		case _WOODSIGN:
+			ret = "Signpost";
+			break;
+			
+		case _WOODSTAIR:
+			ret = "Wooden stair";
+			break;
+			
+		case _PLANK:
+			ret = "Wooden planks";
+			break;
+			
+		// generic names
+		default:
+			if (isCross(id))
+				ret = "Cross";
+			else if (id >= SOIL_START && id <= SOIL_END)
+				ret = "Soil";
+			else if (isLeaf(id))
+				ret = "Leaves";
+			else
+				ret = "Unknown"; // lazy copout (TM)
+			
 		} // switch (id)
 		
 		std::stringstream ss;
-		ss << ret << " (" << getID() << ")";
+		ss << ret << " (" << id << ")";
 		return ss.str();
 	}
 

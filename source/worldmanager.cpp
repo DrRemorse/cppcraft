@@ -85,7 +85,7 @@ namespace cppcraft
 			}
 			
 			// if the player moved, or is doing stuff we will be doing it here
-			player.handleActions();
+			player.handleActions(_localtime);
 			
 			//----------------------------------//
 			//        SEAMLESS TRANSITION       //

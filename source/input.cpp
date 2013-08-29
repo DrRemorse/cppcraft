@@ -70,6 +70,20 @@ namespace cppcraft
 			keys[key].action = KEY_PRESSED;
 	}
 	
+	
+	const Input::input_t& Input::getMouseEx(int button) const
+	{
+		return mouse[button];
+	}
+	Input::key_t Input::getMouse(int button) const
+	{
+		return getMouseEx(button).action;
+	}
+	void  Input::holdMouse(int button)
+	{
+		mouse[button].action = KEY_LOCKED;
+	}
+	
 	int  Input::getWheel()
 	{
 		int wheel = this->wheel;

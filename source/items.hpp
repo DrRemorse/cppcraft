@@ -68,20 +68,74 @@ namespace cppcraft
 	
 	class InventoryItem
 	{
+	private:
+		item_t id;              // identifies this item in combination with type, if id is 0 the item is always (no item)
+		unsigned short count;   // if count is 0 this item is (no item), otherwise id will be read
+		unsigned char special;  // special property of an item, often the same as block special property
+		unsigned char type;     // type of inventory item, such as block, item or even particle
+		unsigned char health;   // the health of the item, which when reaches 0 destroys the item
+		
 	public:
 		static const int MAX_STACK = 64;
-		
-		item_t id;
-		unsigned short count;
-		unsigned char special;
-		unsigned char type;
-		unsigned char health;
 		
 		InventoryItem();
 		InventoryItem(item_t itemID, unsigned short icount);
 		InventoryItem(item_t itemID, itemtype_t itype, unsigned short icount);
 		
+		inline void setID(item_t id) noexcept
+		{
+			this->id = id;
+		}
+		inline item_t getID() const noexcept
+		{
+			return this->id;
+		}
+		
+		inline void setCount(unsigned short count) noexcept
+		{
+			this->count = count;
+		}
+		inline unsigned short getCount() const noexcept
+		{
+			return this->count;
+		}
+		
+		inline void setSpecial(unsigned char special) noexcept
+		{
+			this->special = special;
+		}
+		inline unsigned char getSpecial() const noexcept
+		{
+			return this->special;
+		}
+		
+		inline void setType(unsigned char type) noexcept
+		{
+			this->type = type;
+		}
+		inline unsigned char getType() const noexcept
+		{
+			return this->type;
+		}
+		
+		inline void setHealth(unsigned char health) noexcept
+		{
+			this->health = health;
+		}
+		inline unsigned char getHealth() const noexcept
+		{
+			return this->health;
+		}
+		
+		std::string getName() const;
+		
+		bool isItem() const;
 		bool isActionItem() const;
+		bool isToolItem() const;
+		
+		// returns the appropriate tile ID
+		// regardless of item type
+		int tileByID() const;
 	};
 	
 	class ItemsClass
@@ -90,9 +144,8 @@ namespace cppcraft
 		int itemW, itemH;
 		int itemsX, itemsY;
 		
-		int tileByID(int id);
-		
 		std::string getName(item_t id);
+		int tileByID(item_t id);
 	};
 	extern ItemsClass items;
 }

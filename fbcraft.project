@@ -296,6 +296,11 @@
     <File Name="source/vertex_selection.hpp"/>
     <File Name="source/render_player_selection.cpp"/>
     <File Name="source/render_player_selection.hpp"/>
+    <File Name="source/menu.cpp"/>
+    <File Name="source/menuitem.hpp"/>
+    <File Name="source/player_actions_inputs.cpp"/>
+    <File Name="source/player_actions_handlers.cpp"/>
+    <File Name="source/player_actions.hpp"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>

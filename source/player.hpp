@@ -37,7 +37,7 @@ namespace cppcraft
 		// then, for each tick passed we run this
 		void handlePlayerTicks();
 		// then finally, we finish by running this once
-		void handleActions();
+		void handleActions(double frametime);
 		
 		// signals rotation of player, used for networking
 		void rotated();

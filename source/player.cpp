@@ -3,6 +3,7 @@
 #include "library/log.hpp"
 #include "library/math/vector.hpp"
 #include "frustum.hpp"
+#include "player_actions.hpp"
 #include "player_logic.hpp"
 #include "player_physics.hpp"
 #include "renderconst.hpp"
@@ -33,9 +34,11 @@ namespace cppcraft
 		//plogic.jetpacking = false;
 		player.Flying = true;
 		
-		// initialize action/interaction system
+		// initialize block selection system
 		plogic.selection = playerselect_t();
-		plogic.action = playeraction_t::PA_Nothing;
+		
+		// initialize action/interaction system
+		paction.init();
 		
 		// misc
 		plogic.terrain = 0;
@@ -108,7 +111,7 @@ namespace cppcraft
 		plogic.playerSounds();
 	}
 	
-	void PlayerClass::handleActions()
+	void PlayerClass::handleActions(double frametime)
 	{
 		// if the player has moved from his snapshot, we need to synch with renderer
 		mtx.playermove.lock();
@@ -137,7 +140,7 @@ namespace cppcraft
 		mtx.playermove.unlock();
 		
 		// handle player selection, actions and building
-		plogic.handleActions();
+		paction.handle(frametime);
 	}
 	
 }

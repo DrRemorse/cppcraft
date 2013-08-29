@@ -1,7 +1,6 @@
 #version 130
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
-#define HIGHQ_BLUR
 #define LENSFLARE
 
 #ifdef VERTEX_PROGRAM

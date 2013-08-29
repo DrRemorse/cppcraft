@@ -1,286 +1,106 @@
-[7:3:10] INFO: Starting up...
-[7:3:10] INFO: *** Loaded 76 variables from config.
-[7:3:11] INFO: * Initializing flatlands
-[7:3:11] INFO: * Initializing compressor
-[7:3:11] INFO: * Initializing block meshes
-[7:3:11] INFO: Precomputing vertex data
-[7:3:11] INFO: * Initializing torchlight
-[7:3:11] INFO: * Initializing precompiler
-[7:3:11] INFO: * Initializing particles
-[7:3:11] INFO: * Initializing sound system
-[7:3:11] INFO: * Sound system initialized
-[7:3:11] INFO: * Preparing renderer
-[7:3:11] INFO: * Initializing compilers
-[7:3:11] INFO: * Initializing columns
-[7:3:11] INFO: * Initializing frustum
-[7:3:11] INFO: * Initializing tiles
-[7:3:11] INFO: * Loading & processing textures
-[7:3:11] INFO: * Loading & processing shaders
-[7:3:11] INFO: * Initializing rendering queue
-[7:3:11] INFO: * Initializing minimap
-[7:3:11] INFO: * Starting renderer...
-[7:6:30] INFO: Ending...
-[7:17:41] INFO: Starting up...
-[7:17:41] INFO: *** Loaded 76 variables from config.
-[7:17:41] INFO: * Initializing flatlands
-[7:17:41] INFO: * Initializing compressor
-[7:17:41] INFO: * Initializing block meshes
-[7:17:41] INFO: Precomputing vertex data
-[7:17:41] INFO: * Initializing torchlight
-[7:17:41] INFO: * Initializing precompiler
-[7:17:41] INFO: * Initializing particles
-[7:17:41] INFO: * Initializing sound system
-[7:17:42] INFO: * Sound system initialized
-[7:17:42] INFO: * Preparing renderer
-[7:17:42] INFO: * Initializing compilers
-[7:17:42] INFO: * Initializing columns
-[7:17:42] INFO: * Initializing frustum
-[7:17:42] INFO: * Initializing tiles
-[7:17:42] INFO: * Loading & processing textures
-[7:17:42] INFO: * Loading & processing shaders
-[7:17:42] INFO: * Initializing rendering queue
-[7:17:42] INFO: * Initializing minimap
-[7:17:42] INFO: * Starting renderer...
-[7:18:19] INFO: Ending...
-[7:18:26] INFO: Starting up...
-[7:18:26] INFO: *** Loaded 76 variables from config.
-[7:18:27] INFO: * Initializing flatlands
-[7:18:27] INFO: * Initializing compressor
-[7:18:27] INFO: * Initializing block meshes
-[7:18:27] INFO: Precomputing vertex data
-[7:18:27] INFO: * Initializing torchlight
-[7:18:27] INFO: * Initializing precompiler
-[7:18:27] INFO: * Initializing particles
-[7:18:27] INFO: * Initializing sound system
-[7:18:27] INFO: * Sound system initialized
-[7:18:27] INFO: * Preparing renderer
-[7:18:27] INFO: * Initializing compilers
-[7:18:27] INFO: * Initializing columns
-[7:18:27] INFO: * Initializing frustum
-[7:18:27] INFO: * Initializing tiles
-[7:18:27] INFO: * Loading & processing textures
-[7:18:27] INFO: * Loading & processing shaders
-[7:18:27] INFO: * Initializing rendering queue
-[7:18:27] INFO: * Initializing minimap
-[7:18:27] INFO: * Starting renderer...
-[7:18:49] INFO: Ending...
-[7:18:55] INFO: Starting up...
-[7:18:55] INFO: *** Loaded 76 variables from config.
-[7:18:55] INFO: * Initializing flatlands
-[7:18:55] INFO: * Initializing compressor
-[7:18:55] INFO: * Initializing block meshes
-[7:18:55] INFO: Precomputing vertex data
-[7:18:55] INFO: * Initializing torchlight
-[7:18:55] INFO: * Initializing precompiler
-[7:18:55] INFO: * Initializing particles
-[7:18:55] INFO: * Initializing sound system
-[7:18:56] INFO: * Sound system initialized
-[7:18:56] INFO: * Preparing renderer
-[7:18:56] INFO: * Initializing compilers
-[7:18:56] INFO: * Initializing columns
-[7:18:56] INFO: * Initializing frustum
-[7:18:56] INFO: * Initializing tiles
-[7:18:56] INFO: * Loading & processing textures
-[7:18:57] INFO: * Loading & processing shaders
-[7:18:57] INFO: * Initializing rendering queue
-[7:18:57] INFO: * Initializing minimap
-[7:18:57] INFO: * Starting renderer...
-[7:18:57] INFO: Ending...
-[7:19:22] INFO: Starting up...
-[7:19:22] INFO: *** Loaded 76 variables from config.
-[7:19:22] INFO: * Initializing flatlands
-[7:19:22] INFO: * Initializing compressor
-[7:19:22] INFO: * Initializing block meshes
-[7:19:22] INFO: Precomputing vertex data
-[7:19:22] INFO: * Initializing torchlight
-[7:19:22] INFO: * Initializing precompiler
-[7:19:22] INFO: * Initializing particles
-[7:19:22] INFO: * Initializing sound system
-[7:19:23] INFO: * Sound system initialized
-[7:19:23] INFO: * Preparing renderer
-[7:19:23] INFO: * Initializing compilers
-[7:19:23] INFO: * Initializing columns
-[7:19:23] INFO: * Initializing frustum
-[7:19:23] INFO: * Initializing tiles
-[7:19:23] INFO: * Loading & processing textures
-[7:19:24] INFO: * Loading & processing shaders
-[7:19:24] INFO: * Initializing rendering queue
-[7:19:24] INFO: * Initializing minimap
-[7:19:24] INFO: * Starting renderer...
-[7:20:22] INFO: Ending...
-[7:21:28] INFO: Starting up...
-[7:21:28] INFO: *** Loaded 76 variables from config.
-[7:21:29] INFO: * Initializing flatlands
-[7:21:29] INFO: * Initializing compressor
-[7:21:29] INFO: * Initializing block meshes
-[7:21:29] INFO: Precomputing vertex data
-[7:21:29] INFO: * Initializing torchlight
-[7:21:29] INFO: * Initializing precompiler
-[7:21:29] INFO: * Initializing particles
-[7:21:29] INFO: * Initializing sound system
-[7:21:30] INFO: * Sound system initialized
-[7:21:30] INFO: * Preparing renderer
-[7:21:30] INFO: * Initializing compilers
-[7:21:30] INFO: * Initializing columns
-[7:21:30] INFO: * Initializing frustum
-[7:21:30] INFO: * Initializing tiles
-[7:21:30] INFO: * Loading & processing textures
-[7:21:30] INFO: * Loading & processing shaders
-[7:21:30] INFO: * Initializing rendering queue
-[7:21:30] INFO: * Initializing minimap
-[7:21:30] INFO: * Starting renderer...
-[7:27:10] INFO: Ending...
-[7:35:7] INFO: Starting up...
-[7:35:7] INFO: *** Loaded 76 variables from config.
-[7:35:7] INFO: * Initializing flatlands
-[7:35:7] INFO: * Initializing compressor
-[7:35:7] INFO: * Initializing block meshes
-[7:35:7] INFO: Precomputing vertex data
-[7:35:7] INFO: * Initializing torchlight
-[7:35:7] INFO: * Initializing precompiler
-[7:35:7] INFO: * Initializing particles
-[7:35:7] INFO: * Initializing sound system
-[7:35:8] INFO: * Sound system initialized
-[7:35:8] INFO: * Preparing renderer
-[7:35:8] INFO: * Initializing compilers
-[7:35:8] INFO: * Initializing columns
-[7:35:8] INFO: * Initializing frustum
-[7:35:8] INFO: * Initializing tiles
-[7:35:8] INFO: * Loading & processing textures
-[7:35:9] INFO: * Loading & processing shaders
-[7:35:9] INFO: * Initializing rendering queue
-[7:35:9] INFO: * Initializing minimap
-[7:35:9] INFO: * Starting renderer...
-[7:36:43] INFO: Ending...
-[7:38:33] INFO: Starting up...
-[7:38:33] INFO: *** Loaded 76 variables from config.
-[7:38:33] INFO: * Initializing flatlands
-[7:38:33] INFO: * Initializing compressor
-[7:38:33] INFO: * Initializing block meshes
-[7:38:33] INFO: Precomputing vertex data
-[7:38:33] INFO: * Initializing torchlight
-[7:38:33] INFO: * Initializing precompiler
-[7:38:33] INFO: * Initializing particles
-[7:38:33] INFO: * Initializing sound system
-[7:38:33] INFO: * Sound system initialized
-[7:38:33] INFO: * Preparing renderer
-[7:38:33] INFO: * Initializing compilers
-[7:38:33] INFO: * Initializing columns
-[7:38:33] INFO: * Initializing frustum
-[7:38:33] INFO: * Initializing tiles
-[7:38:33] INFO: * Loading & processing textures
-[7:38:34] INFO: * Loading & processing shaders
-[7:38:34] INFO: * Initializing rendering queue
-[7:38:34] INFO: * Initializing minimap
-[7:38:34] INFO: * Starting renderer...
-[7:39:52] INFO: Ending...
-[7:40:24] INFO: Starting up...
-[7:40:24] INFO: *** Loaded 76 variables from config.
-[7:40:25] INFO: * Initializing flatlands
-[7:40:25] INFO: * Initializing compressor
-[7:40:25] INFO: * Initializing block meshes
-[7:40:25] INFO: Precomputing vertex data
-[7:40:25] INFO: * Initializing torchlight
-[7:40:25] INFO: * Initializing precompiler
-[7:40:25] INFO: * Initializing particles
-[7:40:25] INFO: * Initializing sound system
-[7:40:26] INFO: * Sound system initialized
-[7:40:26] INFO: * Preparing renderer
-[7:40:26] INFO: * Initializing compilers
-[7:40:26] INFO: * Initializing columns
-[7:40:26] INFO: * Initializing frustum
-[7:40:26] INFO: * Initializing tiles
-[7:40:26] INFO: * Loading & processing textures
-[7:40:26] INFO: * Loading & processing shaders
-[7:40:26] INFO: * Initializing rendering queue
-[7:40:26] INFO: * Initializing minimap
-[7:40:26] INFO: * Starting renderer...
-[7:41:4] INFO: Ending...
-[7:43:17] INFO: Starting up...
-[7:43:17] INFO: *** Loaded 76 variables from config.
-[7:43:17] INFO: * Initializing flatlands
-[7:43:18] INFO: * Initializing compressor
-[7:43:18] INFO: * Initializing block meshes
-[7:43:18] INFO: Precomputing vertex data
-[7:43:18] INFO: * Initializing torchlight
-[7:43:18] INFO: * Initializing precompiler
-[7:43:18] INFO: * Initializing particles
-[7:43:18] INFO: * Initializing sound system
-[7:43:19] INFO: * Sound system initialized
-[7:43:19] INFO: * Preparing renderer
-[7:43:19] INFO: * Initializing compilers
-[7:43:19] INFO: * Initializing columns
-[7:43:19] INFO: * Initializing frustum
-[7:43:19] INFO: * Initializing tiles
-[7:43:19] INFO: * Loading & processing textures
-[7:43:19] INFO: * Loading & processing shaders
-[7:43:19] INFO: * Initializing rendering queue
-[7:43:19] INFO: * Initializing minimap
-[7:43:19] INFO: * Starting renderer...
-[7:43:50] INFO: Ending...
-[7:44:9] INFO: Starting up...
-[7:44:9] INFO: *** Loaded 76 variables from config.
-[7:44:10] INFO: * Initializing flatlands
-[7:44:10] INFO: * Initializing compressor
-[7:44:10] INFO: * Initializing block meshes
-[7:44:10] INFO: Precomputing vertex data
-[7:44:10] INFO: * Initializing torchlight
-[7:44:10] INFO: * Initializing precompiler
-[7:44:10] INFO: * Initializing particles
-[7:44:10] INFO: * Initializing sound system
-[7:44:10] INFO: * Sound system initialized
-[7:44:10] INFO: * Preparing renderer
-[7:44:10] INFO: * Initializing compilers
-[7:44:10] INFO: * Initializing columns
-[7:44:10] INFO: * Initializing frustum
-[7:44:10] INFO: * Initializing tiles
-[7:44:10] INFO: * Loading & processing textures
-[7:44:11] INFO: * Loading & processing shaders
-[7:44:11] INFO: * Initializing rendering queue
-[7:44:11] INFO: * Initializing minimap
-[7:44:11] INFO: * Starting renderer...
-[7:44:39] INFO: Ending...
-[7:45:14] INFO: Starting up...
-[7:45:14] INFO: *** Loaded 76 variables from config.
-[7:45:14] INFO: * Initializing flatlands
-[7:45:14] INFO: * Initializing compressor
-[7:45:14] INFO: * Initializing block meshes
-[7:45:14] INFO: Precomputing vertex data
-[7:45:14] INFO: * Initializing torchlight
-[7:45:14] INFO: * Initializing precompiler
-[7:45:14] INFO: * Initializing particles
-[7:45:14] INFO: * Initializing sound system
-[7:45:15] INFO: * Sound system initialized
-[7:45:15] INFO: * Preparing renderer
-[7:45:15] INFO: * Initializing compilers
-[7:45:15] INFO: * Initializing columns
-[7:45:15] INFO: * Initializing frustum
-[7:45:15] INFO: * Initializing tiles
-[7:45:15] INFO: * Loading & processing textures
-[7:45:16] INFO: * Loading & processing shaders
-[7:45:16] INFO: * Initializing rendering queue
-[7:45:16] INFO: * Initializing minimap
-[7:45:16] INFO: * Starting renderer...
-[7:46:7] INFO: Ending...
-[7:46:19] INFO: Starting up...
-[7:46:19] INFO: *** Loaded 76 variables from config.
-[7:46:19] INFO: * Initializing flatlands
-[7:46:19] INFO: * Initializing compressor
-[7:46:19] INFO: * Initializing block meshes
-[7:46:19] INFO: Precomputing vertex data
-[7:46:19] INFO: * Initializing torchlight
-[7:46:19] INFO: * Initializing precompiler
-[7:46:19] INFO: * Initializing particles
-[7:46:19] INFO: * Initializing sound system
-[7:46:20] INFO: * Sound system initialized
-[7:46:20] INFO: * Preparing renderer
-[7:46:20] INFO: * Initializing compilers
-[7:46:20] INFO: * Initializing columns
-[7:46:20] INFO: * Initializing frustum
-[7:46:20] INFO: * Initializing tiles
-[7:46:20] INFO: * Loading & processing textures
-[7:46:21] INFO: * Loading & processing shaders
-[7:46:21] INFO: * Initializing rendering queue
-[7:46:21] INFO: * Initializing minimap
-[7:46:21] INFO: * Starting renderer...
-[7:47:6] INFO: Ending...
+[1:6:9] INFO: Starting up...
+[1:6:9] INFO: *** Loaded 76 variables from config.
+[1:6:9] INFO: * Initializing flatlands
+[1:6:9] INFO: * Initializing compressor
+[1:6:9] INFO: * Initializing block meshes
+[1:6:9] INFO: Precomputing vertex data
+[1:6:9] INFO: * Initializing torchlight
+[1:6:9] INFO: * Initializing precompiler
+[1:6:9] INFO: * Initializing particles
+[1:6:9] INFO: * Initializing sound system
+[1:6:10] INFO: * Sound system initialized
+[1:6:10] INFO: * Preparing renderer
+[1:6:10] INFO: * Initializing compilers
+[1:6:10] INFO: * Initializing columns
+[1:6:10] INFO: * Initializing frustum
+[1:6:10] INFO: * Initializing tiles
+[1:6:10] INFO: * Loading & processing textures
+[1:6:11] INFO: * Loading & processing shaders
+[1:6:11] INFO: * Initializing rendering queue
+[1:6:11] INFO: * Initializing minimap
+[1:6:11] INFO: * Starting renderer...
+Placing block... plstest
+Placed block: 26
+[1:6:23] ERROR: Could not open file: Worlds/world/eaaad-eaaad.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:29] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:30] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:32] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:34] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:35] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:41] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:42] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:42] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:43] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:43] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:44] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:44] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:44] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:44] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:44] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:45] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:45] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:45] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:45] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:45] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:45] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:46] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:46] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:46] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:46] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:46] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+Placing block... plstest
+Placed block: 26
+[1:6:46] ERROR: Could not open file: Worlds/world/eaaad-eaaae.chunk
+[1:13:2] INFO: Ending...

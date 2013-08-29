@@ -91,6 +91,9 @@ namespace cppcraft
 			this->data |= (data & 63) << 10;
 		}
 		
+		// human readable name of a block
+		std::string getName() const;
+		
 		// run visibility tests, revealing visible sides of this cube by comparing neighbors
 		unsigned short visibleFaces(visiblefaces_t& pcg, int bx, int by, int bz) const;
 		
@@ -137,7 +140,7 @@ namespace cppcraft
 		bool hasActivation() const;
 		
 		// human readable name of a block
-		std::string getBlockName() const;
+		static std::string getBlockName(block_t id);
 		
 	};
 	#pragma pack(pop)

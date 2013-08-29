@@ -8,6 +8,7 @@
 #include "library/math/vector.hpp"
 #include "frustum.hpp"
 #include "player.hpp"
+#include "player_actions.hpp"
 #include "player_logic.hpp"
 #include "sun.hpp"
 #include "shaderman.hpp"
@@ -94,7 +95,7 @@ namespace cppcraft
 		vec3 hand(0.85, -0.75, -1.50);
 		int mode = 0;
 		
-		if (plogic.action == PA_Mineblock)
+		if (paction.getAction() == PlayerActions::PA_Mineblock)
 		{
 			// mining animation
 			hand.x -= fabs(sin(period * 1.5) * 0.5);
@@ -106,7 +107,7 @@ namespace cppcraft
 			
 			mode = 1;
 		}
-		else if (plogic.action == PA_Swingtool)
+		else if (paction.getAction() == PlayerActions::PA_Swingtool)
 		{
 			// swinging animation
 			hand.x -= fabs(sin(period * 1.0)) * 0.75;
@@ -115,7 +116,7 @@ namespace cppcraft
 			hand.z = -1.25 - fabs(sin(period * 1.0)) * 1.2;
 			mode = 2;
 		}
-		else if (plogic.action == PA_Cooldown)
+		else if (paction.getAction() == PlayerActions::PA_Cooldown)
 		{
 			// cooldown animation
 			hand.y += sin(period / PI * 2) * 0.1;
