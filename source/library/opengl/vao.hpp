@@ -7,6 +7,8 @@ typedef int  GLint;
 typedef int  GLsizei;
 typedef void GLvoid;
 
+#include <string>
+
 namespace library
 {
 	class VAO
@@ -18,8 +20,13 @@ namespace library
 		static GLuint lastVAO;
 		bool   isCreating;
 		
+		std::string desc;
+		
 	public:
 		VAO();
+		// description is used to inform the programmer about what the purpose
+		// of this VAO is (or simply its name), which is used in error reports
+		VAO(std::string description);
 		
 		bool isGood() const;
 		
@@ -28,9 +35,12 @@ namespace library
 		void attrib(GLuint index, GLsizei size, GLenum type, bool normalize, int offset);
 		void end();
 		
+		// pre-made VAOs
+		void createScreenspaceVAO();
+		
 		// bind / unbind mesh
 		void bind();
-		void unbind();
+		static void unbind();
 		
 		// bind and render all vertices
 		void render(GLenum mode);

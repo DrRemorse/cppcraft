@@ -206,19 +206,23 @@ namespace cppcraft
 	
 	int Soundman::blockToMaterial(int id) const
 	{
-		if (id >= STONE_START && id <= STONE_END)
+		if (isStone(id))
 		{
 			return MS_STONE;
 		}
-		else if (id >= _SNOWSOIL && id <= _SNOWGRASS)
+		else if (isSnow(id))
 		{
 			return MS_SNOW;
 		}
-		else if (id >= SOIL_START && id <= SOIL_END)
+		else if (isDirt(id))
 		{
 			return MS_GRASS;
 		}
-		else if (id >= SAND_START && id <= SAND_END)
+		else if (isGravel(id))
+		{
+			return MS_GRAVEL;
+		}
+		else if (isSand(id))
 		{
 			return MS_SAND;
 		}
@@ -226,13 +230,9 @@ namespace cppcraft
 		{
 			return MS_GLASS;
 		}
-		else if (id >= _WOODBROWN && id <= _PUMPKIN)
+		else if (isWood(id))
 		{
 			return MS_WOOD;
-		}
-		else if (id >= _GRAVEL1 && id <= _CLAYRED)
-		{
-			return MS_GRAVEL;
 		}
 		
 		// specific ids

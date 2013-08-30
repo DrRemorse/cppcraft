@@ -1,6 +1,7 @@
 #include "render_fs.hpp"
 
 #include "library/opengl/opengl.hpp"
+#include "library/opengl/vao.hpp"
 #include "library/opengl/window.hpp"
 #include "shaderman.hpp"
 #include "textureman.hpp"
@@ -10,6 +11,8 @@ using namespace library;
 
 namespace cppcraft
 {
+	extern VAO screenVAO;
+	
 	void FSRenderer::renderBlur()
 	{
 		const double PI = 4 * atan(1);
@@ -34,7 +37,7 @@ namespace cppcraft
 		blur.sendVec2("dir", vec2(1.0 / blurTxW, 0.0));
 		
 		// render
-		glDrawArrays(GL_QUADS, 0, 4);
+		screenVAO.render(GL_QUADS);
 		
 		// blur vertically
 		glBindFramebuffer(GL_FRAMEBUFFER, blurFBO);
@@ -46,7 +49,7 @@ namespace cppcraft
 		blur.sendVec2("dir", vec2(0.0, 1.0 / blurTxH));
 		
 		// render
-		glDrawArrays(GL_QUADS, 0, 4);
+		screenVAO.render(GL_QUADS);
 		
 		// change back to normal
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

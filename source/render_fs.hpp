@@ -11,7 +11,6 @@ namespace cppcraft
 	class FSRenderer
 	{
 	private:
-		unsigned int screenVAO;
 		// flare texture
 		int flareTxW, flareTxH;
 		unsigned int flareFBO;

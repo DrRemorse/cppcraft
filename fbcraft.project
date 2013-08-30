@@ -127,7 +127,6 @@
         <File Name="source/library/sound/stream_channel.hpp"/>
         <File Name="source/library/sound/stream.cpp"/>
         <File Name="source/library/sound/stream.hpp"/>
-        <File Name="source/render_fsblur.cpp"/>
       </VirtualDirectory>
       <VirtualDirectory Name="threading">
         <File Name="source/library/threading/thread_controller.cpp"/>
@@ -303,6 +302,7 @@
     <File Name="source/player_actions_inputs.cpp"/>
     <File Name="source/player_actions_handlers.cpp"/>
     <File Name="source/player_actions.hpp"/>
+    <File Name="source/render_fsblur.cpp"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>

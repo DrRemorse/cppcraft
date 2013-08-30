@@ -3,13 +3,13 @@
 #define FRAGMENT_PROGRAM
 
 #ifdef VERTEX_PROGRAM
-in vec3 in_vertex;
+in  vec2 in_vertex;
 out vec2 texCoord;
 
 void main(void)
 {
-	texCoord = in_vertex.xy;
-	gl_Position = vec4(in_vertex.xy * 2.0 - 1.0, 0.0, 1.0);
+	texCoord = in_vertex;
+	gl_Position = vec4(in_vertex * 2.0 - 1.0, 0.0, 1.0);
 }
 #endif
 

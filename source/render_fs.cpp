@@ -1,6 +1,7 @@
 #include "render_fs.hpp"
 
 #include "library/opengl/opengl.hpp"
+#include "library/opengl/vao.hpp"
 #include "library/opengl/window.hpp"
 #include "player_logic.hpp"
 #include "shaderman.hpp"
@@ -11,38 +12,12 @@ using namespace library;
 namespace cppcraft
 {
 	FSRenderer screenspace;
+	VAO screenVAO;
 	
 	void FSRenderer::init(WindowClass& gamescr)
 	{
 		// create screenspace VAO
-		glGenVertexArrays(1, &screenVAO);
-		glBindVertexArray(screenVAO);
-		
-		struct screenvertex_t
-		{
-			float x, y, z;
-		};
-		
-		screenvertex_t sv_t[4];
-		sv_t[0] = (screenvertex_t) {0, 0, 0};
-		sv_t[1] = (screenvertex_t) {1, 0, 0};
-		sv_t[2] = (screenvertex_t) {1, 1, 0};
-		sv_t[3] = (screenvertex_t) {0, 1, 0};
-		
-		GLuint vbo = 0;
-		glGenBuffers(1, &vbo);
-		
-		// vertices
-		glBindBuffer(GL_ARRAY_BUFFER_ARB, vbo);
-		glBufferData(GL_ARRAY_BUFFER_ARB, 4 * sizeof(screenvertex_t), sv_t, GL_STATIC_DRAW_ARB);
-		
-		// vertex data format
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(screenvertex_t), 0);
-		
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
-		glDisableVertexAttribArray(0);
+		screenVAO.createScreenspaceVAO();
 		
 		// set texture sizes
 		this->blurTxW = gamescr.SW / 2;
@@ -54,25 +29,16 @@ namespace cppcraft
 		// create screenspace FBOs
 		glGenFramebuffers(1, &blurFBO);
 		glGenFramebuffers(1, &flareFBO);
-		
 	}
 	
 	void FSRenderer::blur(WindowClass& gamescr)
 	{
-		// bind screenspace VAO
-		glBindVertexArray(screenVAO);
-		
-		; //if (renderconf.highq_blur)
-		{
-			// downsize to blur-texture size
-			glViewport(0, 0, blurTxW, blurTxH);
-			// create blurred image from scene (current backbuffer image)
-			renderBlur();
-			// upsize to regular screen size
-			glViewport(0, 0, gamescr.SW, gamescr.SH);
-		}
-		
-		glBindVertexArray(0);
+		// downsize to blur-texture size
+		glViewport(0, 0, blurTxW, blurTxH);
+		// create blurred image from scene (current backbuffer image)
+		renderBlur();
+		// upsize to regular screen size
+		glViewport(0, 0, gamescr.SW, gamescr.SH);
 	}
 	
 	void FSRenderer::terrain(WindowClass& gamescr)
@@ -87,17 +53,11 @@ namespace cppcraft
 		shd.bind();
 		
 		// render fullscreen quad
-		glBindVertexArray(screenVAO);
-		glDrawArrays(GL_QUADS, 0, 4);
-		
-		// unbind screenspace VAO
-		glBindVertexArray(0);
+		screenVAO.render(GL_QUADS);
 	}
 	
 	void FSRenderer::render(WindowClass& gamescr)
 	{
-		glBindVertexArray(0);
-		
 		// copy the current screen buffer
 		textureman.bind(0, Textureman::T_RENDERBUFFER);
 		textureman.copyScreen(gamescr, Textureman::T_RENDERBUFFER);
@@ -106,8 +66,11 @@ namespace cppcraft
 		
 		if (true) //renderconf.lensflare)
 		{
+			//glViewport(0, 0, blurTxW, blurTxH);
 			// render sun flare
 			renderLensflare(gamescr);
+			// upsize to regular screen size
+			//glViewport(0, 0, gamescr.SW, gamescr.SH);
 		}
 		
 		glDisable(GL_DEPTH_TEST); // mui importante!
@@ -125,11 +88,7 @@ namespace cppcraft
 		shd.sendInteger("submerged", plogic.FullySubmerged);
 		
 		// render fullscreen quad
-		glBindVertexArray(screenVAO);
-		glDrawArrays(GL_QUADS, 0, 4);
-		
-		// unbind screenspace VAO
-		glBindVertexArray(0);
+		screenVAO.render(GL_QUADS);
 		
 		if (ogl.checkError()) throw std::string("Error after post process");
 	}

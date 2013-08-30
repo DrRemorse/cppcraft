@@ -14,6 +14,10 @@ namespace library
 		vbo = 0;
 		isCreating = false;
 	}
+	VAO::VAO(std::string description) : VAO()
+	{
+		this->desc = description;
+	}
 	
 	bool VAO::isGood() const
 	{
@@ -41,7 +45,7 @@ namespace library
 		if (ogl.checkError())
 		{
 			logger << Log::ERR << "VAO::beginCreate(): OpenGL error for vao = " << vao << ", vbo = " << vbo << Log::ENDL;
-			throw std::string("VAO::beginCreate(): OpenGL error");
+			throw std::string("VAO::beginCreate(): OpenGL error (desc = " + desc + ")");
 		}
 	}
 	
@@ -55,27 +59,55 @@ namespace library
 		{
 			logger << Log::ERR << "VAO::attrib(): OpenGL error for vao = " << vao << ", vbo = " << vbo << Log::ENDL;
 			logger << Log::ERR << "VAO::attrib(): Attrib = { index = " << index << ", size = " << size << ", type = " << type << ", normalize = " << normalize << ", offset = " << offset << " }" << Log::ENDL;
-			throw std::string("VAO::attrib(): OpenGL error");
+			throw std::string("VAO::attrib(): OpenGL error (desc = " + desc + ")");
 		}
 	}
 	
 	void VAO::end()
 	{
 		this->isCreating = false;
+	}
+	
+	void VAO::createScreenspaceVAO()
+	{
+		struct screenvertex_t
+		{
+			float x, y;
+		};
 		
-		// disable vao & vbo
-		unbind();
+		screenvertex_t sv_t[4] = 
+		{
+			{ 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, 1 }
+		};
+		
+		begin(sizeof(screenvertex_t), 4, sv_t);
+		attrib(0, 2, GL_FLOAT, GL_FALSE, 0);
+		end();
+		
+		if (isGood() == false)
+			throw std::string("Failed to create screenspace VAO");
+		
+		if (ogl.checkError())
+		{
+			logger << Log::ERR << "VAO::createScreenspaceVAO(): OpenGL error for vao = " << vao << Log::ENDL;
+			throw std::string("VAO::createScreenspaceVAO(): OpenGL error (desc = " + desc + ")");
+		}
+		
 	}
 	
 	void VAO::bind()
 	{
-		glBindVertexArray(vao);
-		lastVAO = vao;
+		if (lastVAO != vao)
+		{
+			glBindVertexArray(vao);
+			lastVAO = vao;
+		}
 	}
 	
 	void VAO::unbind()
 	{
 		glBindVertexArray(0);
+		lastVAO = 0;
 	}
 	
 	void VAO::render(GLenum mode, GLint first, GLsizei count)
@@ -87,7 +119,7 @@ namespace library
 		{
 			logger << Log::ERR << "VAO::render(): OpenGL error for vao = " << vao << Log::ENDL;
 			logger << Log::ERR << "VAO::render(): render = { mode = " << mode << ", first = " << first << ", count = " << count << " }" << Log::ENDL;
-			throw std::string("VAO::render(): OpenGL error");
+			throw std::string("VAO::render(): OpenGL error (desc = " + desc + ")");
 		}
 	}
 	void VAO::render(GLenum mode)

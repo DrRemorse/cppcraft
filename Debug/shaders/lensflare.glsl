@@ -6,15 +6,16 @@ precision mediump float;
 #ifdef VERTEX_PROGRAM
 uniform vec4 sunproj;
 
-in  vec3 in_vertex;
+in  vec2 in_vertex;
 out vec2 in_texture;
 out vec2 sunpos;
 
 void main(void)
 {
 	sunpos = sunproj.xy / sunproj.w;
-	in_texture  = in_vertex.xy;
-	gl_Position = vec4(in_vertex.xy * 2.0 - 1.0, 0.0, 1.0);
+	
+	in_texture  = in_vertex;
+	gl_Position = vec4(in_vertex * 2.0 - 1.0, 0.0, 1.0);
 }
 #endif
 

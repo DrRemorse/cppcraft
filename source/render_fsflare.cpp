@@ -2,6 +2,7 @@
 
 #include "library/log.hpp"
 #include "library/opengl/opengl.hpp"
+#include "library/opengl/vao.hpp"
 #include "library/opengl/window.hpp"
 #include "frustum.hpp"
 #include "render_sky.hpp"
@@ -13,6 +14,7 @@ using namespace library;
 
 namespace cppcraft
 {
+	extern VAO screenVAO;
 	
 	void FSRenderer::renderLensflare(WindowClass& gamescr)
 	{
@@ -36,7 +38,7 @@ namespace cppcraft
 		glDisable(GL_DEPTH_TEST);
 		
 		//  screenspace VAO
-		glBindVertexArray(screenVAO);
+		screenVAO.render(GL_QUADS);
 		
 		//  LOW blur sun sphere horizontally (low)
 		glBindFramebuffer(GL_FRAMEBUFFER, flareFBO);
@@ -51,7 +53,7 @@ namespace cppcraft
 		blur.sendVec2("dir", vec2(1.0 / flareTxW, 0.0));
 		
 		//  render
-		glDrawArrays(GL_QUADS, 0, 4);
+		screenVAO.render(GL_QUADS);
 		
 		//  LOW blur sun sphere vertically (low) (final result = texture 1)
 		
@@ -64,7 +66,7 @@ namespace cppcraft
 		blur.sendVec2("dir", vec2(0.0, 1.0 / flareTxH));
 		
 		//  render
-		glDrawArrays(GL_QUADS, 0, 4);
+		screenVAO.render(GL_QUADS);
 		
 		textureman.unbind(0);
 		
@@ -80,7 +82,7 @@ namespace cppcraft
 		blur.sendVec2("dir", vec2(1.0 / flareTxW, 0.0));
 		
 		//  render
-		glDrawArrays(GL_QUADS, 0, 4);
+		screenVAO.render(GL_QUADS);
 		
 		// free texture unit
 		textureman.unbind(0);
@@ -96,7 +98,7 @@ namespace cppcraft
 		blur.sendVec2("dir", vec2(0.0, 1.0 / flareTxH));
 		
 		//  render
-		glDrawArrays(GL_QUADS, 0, 4);
+		screenVAO.render(GL_QUADS);
 		
 		// free texture unit
 		textureman.unbind(0);
@@ -121,7 +123,7 @@ namespace cppcraft
 		lens.sendVec4("sunproj", sunproj);
 		
 		//  render final lens image
-		glDrawArrays(GL_QUADS, 0, 4);
+		screenVAO.render(GL_QUADS);
 		
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		

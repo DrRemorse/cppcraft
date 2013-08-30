@@ -374,7 +374,10 @@ namespace cppcraft
 #define isDirt(id) (id >= SOIL_START && id <= SOIL_END)
 #define isDirtSoil(id) (isDirt(id) && (id % 3 == 1))   // sub-element 1/3
 #define isDirtGrass(id) (isDirt(id) && (id % 3 == 2))  // sub-element 2/3
+#define isSnow(id) (id >= _SNOWSOIL && id <= _SNOWGRASS)
 #define isSand(id) (id >= SAND_START && id <= SAND_END)
+#define isGravel(id) (id >= _GRAVEL1 && id <= _CLAYRED)
+#define isWood(id) (id >= _WOODBROWN && id <= _PUMPKIN)
 #define isLeaf(id) (id >= TREES_START && id <= TREES_END)
 #define isCross(id) (id >= CROSS_START && id <= CROSS_END)
 #define isFluid(id) (id == _WATER || id == _LAVABLOCK)
