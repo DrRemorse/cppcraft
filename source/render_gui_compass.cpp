@@ -5,7 +5,7 @@
 #include "library/math/vector.hpp"
 #include "library/opengl/opengl.hpp"
 #include "library/opengl/vao.hpp"
-#include "frustum.hpp"
+#include "camera.hpp"
 #include "minimap.hpp"
 #include "player.hpp"
 #include "shaderman.hpp"
@@ -31,7 +31,7 @@ namespace cppcraft
 		
 		/// create location MVP matrix for minimap & compass ///
 		
-		if (frustum.rotated)
+		if (camera.rotated)
 		{
 			// move to position
 			Matrix matview(1.0);
@@ -63,11 +63,11 @@ namespace cppcraft
 		Shader& shd = shaderman[Shaderman::COMPASS];
 		shd.bind();
 		
-		if (frustum.rotated)
+		if (camera.rotated)
 		{
 			shd.sendMatrix("mvp", compassMVP);
 		}
-		if (true) //frustum.ref)
+		if (true) //camera.ref)
 		{
 			// absolute spawn position
 			vec3 spawn = Spiders::distanceToWorldXZ(World::WORLD_STARTING_X, World::WORLD_STARTING_Z);

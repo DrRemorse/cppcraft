@@ -1,7 +1,6 @@
 #include "player_physics.hpp"
 
 #include "library/math/toolbox.hpp"
-#include "frustum.hpp"
 #include "input.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
@@ -94,7 +93,7 @@ namespace cppcraft
 					// we can crouch only if we are moving normally to begin with
 					if (movestate == PMS_Normal)
 					{
-						//plogic.cooldownTime = frustum.uptimed;
+						//cooldownTime = actionTime;
 						movestate = PMS_Crouch;
 					}
 				}

@@ -4,7 +4,7 @@
 #include "library/opengl/opengl.hpp"
 #include "columns.hpp"
 #include "drawq.hpp"
-#include "frustum.hpp"
+#include "camera.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
 #include "rendergrid.hpp"
@@ -31,10 +31,10 @@ namespace cppcraft
 	{
 		// recalculate view & mvp matrix
 		// view matrix (rotation + translation)
-		frustum.setTranslation(-playerX, -playerY, -playerZ);
+		camera.setTranslation(-playerX, -playerY, -playerZ);
 		
 		// recalculate camera frustum
-		frustum.calculateFrustum();
+		camera.calculateFrustum();
 		
 		vec3 look = player.getLookVector();
 		
@@ -51,9 +51,9 @@ namespace cppcraft
 			if (look.x > half_fov)
 				x0 = playerSectorX - safety_border;
 			else
-				x0 = playerSectorX - frustum.cameraViewSectors;
+				x0 = playerSectorX - camera.cameraViewSectors;
 			
-			x1 = x0 + frustum.cameraViewSectors * 2;
+			x1 = x0 + camera.cameraViewSectors * 2;
 			
 			if (x0 < visibility_border)
 				x0 = visibility_border;
@@ -62,12 +62,12 @@ namespace cppcraft
 		}
 		else
 		{
-			x1 = playerSectorX - frustum.cameraViewSectors;
+			x1 = playerSectorX - camera.cameraViewSectors;
 			
 			if (look.x < -half_fov)
 				x0 = playerSectorX + safety_border;
 			else
-				x0 = x1 + frustum.cameraViewSectors * 2;
+				x0 = x1 + camera.cameraViewSectors * 2;
 			
 			if (x1 < visibility_border)
 				x1 = visibility_border;
@@ -84,9 +84,9 @@ namespace cppcraft
 			if (look.z > half_fov)
 				z0 = playerSectorZ - safety_border;
 			else
-				z0 = playerSectorZ - frustum.cameraViewSectors;
+				z0 = playerSectorZ - camera.cameraViewSectors;
 			
-			z1 = z0 + frustum.cameraViewSectors * 2;
+			z1 = z0 + camera.cameraViewSectors * 2;
 			
 			if (z0 < visibility_border)
 				z0 = visibility_border;
@@ -95,12 +95,12 @@ namespace cppcraft
 		}
 		else
 		{
-			z1 = playerSectorZ - frustum.cameraViewSectors;
+			z1 = playerSectorZ - camera.cameraViewSectors;
 			
 			if (look.z < -half_fov)
 				z0 = playerSectorZ + safety_border;
 			else
-				z0 = z1 + frustum.cameraViewSectors * 2;
+				z0 = z1 + camera.cameraViewSectors * 2;
 			
 			if (z1 < visibility_border)
 				z1 = visibility_border;
@@ -143,7 +143,7 @@ namespace cppcraft
 	void SceneRenderer::compressRenderingQueue()
 	{
 		// reset after 2nd run
-		if (frustum.needsupd == 2) frustum.needsupd = 0;
+		if (camera.needsupd == 2) camera.needsupd = 0;
 		
 		// update and compress the draw queue
 		// by counting visible entries for each shader line, and re-adding as we go
@@ -176,7 +176,7 @@ namespace cppcraft
 						}
 						else cv->occluded[i] = 2;
 					}
-					else frustum.needsupd = 2; // we need to update again :(
+					else camera.needsupd = 2; // we need to update again :(
 				}
 				else if (cv->occluded[i] == 3)
 				{
@@ -231,11 +231,11 @@ namespace cppcraft
 		// bind appropriate shader
 		shd.bind();
 		
-		// frustum updates
-		if (frustum.ref)
+		// camera updates
+		if (camera.ref)
 		{
 			// modelview matrix
-			shd.sendMatrix("matview", frustum.getViewMatrix());
+			shd.sendMatrix("matview", camera.getViewMatrix());
 		}
 		
 		// translation
@@ -353,11 +353,11 @@ namespace cppcraft
 									loc_vtrans, 
 									position);
 				// update world offset
-				shaderman[Shaderman::BLOCKS_WATER].sendVec3("worldOffset", frustum.getWorldOffset());
+				shaderman[Shaderman::BLOCKS_WATER].sendVec3("worldOffset", camera.getWorldOffset());
 				break;
 			}
 			
-			if (frustum.ref)
+			if (camera.ref)
 			{
 				// render and count visible samples
 				for (int j = 0; j < drawq[i].count(); j++)

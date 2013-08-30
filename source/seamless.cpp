@@ -12,7 +12,7 @@
 #include "compilers.hpp"
 #include "columns.hpp"
 #include "flatlands.hpp"
-#include "frustum.hpp"
+#include "camera.hpp"
 #include "minimap.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
@@ -181,7 +181,7 @@ namespace cppcraft
 			minimap.roll(-1, 0);
 			
 			// flag frustum as needing recalculation
-			frustum.recalc = true;
+			camera.recalc = true;
 			
 			mtx.sectorseam.unlock();
 			returnvalue = true;
@@ -272,8 +272,8 @@ namespace cppcraft
 			// minimap rollover -x
 			minimap.roll(1, 0);
 			
-			// flag frustum for needing recalculation
-			frustum.recalc = true;
+			// flag camera for needing recalculation
+			camera.recalc = true;
 			
 			mtx.sectorseam.unlock();
 			returnvalue = true;
@@ -360,8 +360,8 @@ namespace cppcraft
 			// minimap rollover +z
 			minimap.roll(0, -1);
 			
-			// flag frustum for needing recalculation
-			frustum.recalc = true;
+			// flag camera for needing recalculation
+			camera.recalc = true;
 			
 			mtx.sectorseam.unlock();
 			return true;
@@ -444,8 +444,8 @@ namespace cppcraft
 			// minimap rollover -z
 			minimap.roll(0, 1);
 			
-			// flag frustum for needing recalculation
-			frustum.recalc = true;
+			// flag camera for needing recalculation
+			camera.recalc = true;
 			
 			mtx.sectorseam.unlock();
 			return true;

@@ -5,7 +5,7 @@
 #include "library/opengl/opengl.hpp"
 #include "library/opengl/window.hpp"
 
-#include "frustum.hpp"
+#include "camera.hpp"
 #include "minimap.hpp"
 #include "particles.hpp"
 #include "player.hpp"
@@ -59,15 +59,15 @@ namespace cppcraft
 				
 				underwater = plogic.FullySubmerged != PlayerLogic::PS_None;
 				
-				frustumRecalc = frustum.recalc;
-				frustum.recalc = false;
+				frustumRecalc = camera.recalc;
+				camera.recalc = false;
 			}
 			mtx.playermove.unlock();
 			
 			if (frustumRecalc)
 			{
 				/// update matview matrix using player snapshot ///
-				frustum.setWorldOffset(playerX, playerZ);
+				camera.setWorldOffset(playerX, playerZ);
 			}
 			
 			/// world coordinate snapshots ///
@@ -87,9 +87,9 @@ namespace cppcraft
 			}
 			
 			// update frustum rotation matrix
-			if (frustum.rotated)
+			if (camera.rotated)
 			{
-				frustum.setRotation(player.xrotrad, player.yrotrad, 0.0);
+				camera.setRotation(player.xrotrad, player.yrotrad, 0.0);
 			}
 			
 			//---------------------------------//
@@ -106,10 +106,10 @@ namespace cppcraft
 				// -= recalculate frustum =-
 				
 				// do as little as possible this frame
-				frustum.needsupd = 1;
+				camera.needsupd = 1;
 				// frustum was updated
-				//frustum.updated = true;
-				frustum.ref = true;
+				//camera.updated = true;
+				camera.ref = true;
 				// process columns & modify occlusion
 				recalculateFrustum();
 			}
@@ -118,26 +118,26 @@ namespace cppcraft
 				// not recalculating frustum
 				
 				// if last frame was an occlusion test
-				if (frustum.ref)
+				if (camera.ref)
 				{
 					// gather occlusion data
-					frustum.needsupd = 2;
+					camera.needsupd = 2;
 					// disable full refresh
-					frustum.ref = false;
+					camera.ref = false;
 				}
 				// if signal for refresh
-				else if (frustum.needsupd == 1)
+				else if (camera.needsupd == 1)
 				{
 					// run occlusion test
-					frustum.ref = true;
-					frustum.needsupd = 0;
+					camera.ref = true;
+					camera.needsupd = 0;
 				}
 			}
 			mtx.sectorseam.unlock();
 		}
 		
 		// render queue needed update
-		if (frustum.needsupd)
+		if (camera.needsupd)
 		{
 			// compress rendering queue to minimal size by occlusion culling
 			compressRenderingQueue();

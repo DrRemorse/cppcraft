@@ -2,7 +2,6 @@
 
 #include "library/config.hpp"
 #include "library/log.hpp"
-#include "frustum.hpp"
 #include "input.hpp"
 #include "player_inputs.hpp"
 #include "sectors.hpp"

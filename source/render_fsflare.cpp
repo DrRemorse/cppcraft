@@ -4,7 +4,7 @@
 #include "library/opengl/opengl.hpp"
 #include "library/opengl/vao.hpp"
 #include "library/opengl/window.hpp"
-#include "frustum.hpp"
+#include "camera.hpp"
 #include "render_sky.hpp"
 #include "sun.hpp"
 #include "shaderman.hpp"
@@ -116,7 +116,7 @@ namespace cppcraft
 		Matrix matbias;
 		matbias.bias();
 		
-		vec4 sunproj = (matbias * frustum.getProjection() * matsun) * vec4(0.0, 0.0, 0.0, 1.0);
+		vec4 sunproj = (matbias * camera.getProjection() * matsun) * vec4(0.0, 0.0, 0.0, 1.0);
 		
 		Shader& lens = shaderman[Shaderman::LENSFLARE];
 		lens.bind();

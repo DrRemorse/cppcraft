@@ -1,7 +1,8 @@
 #include "render_sky.hpp"
 
 #include "library/opengl/opengl.hpp"
-#include "frustum.hpp"
+#include "library/opengl/vao.hpp"
+#include "camera.hpp"
 #include "render_scene.hpp"
 #include "renderconst.hpp"
 #include "sectors.hpp"
@@ -24,14 +25,14 @@ namespace cppcraft
 		static const int SkyPattern = 32;
 		static const int CloudVertices = SkyPattern * SkyPattern * 4;
 		
-		GLuint vao = 0;
+		VAO vao;
 	};
 	Clouds clouds;
 	
 	void SkyRenderer::createClouds()
 	{
 		// create cloud VAO
-		float skySize    = frustum.cameraViewSectors * Sector::BLOCKS_XZ * 1.6;
+		float skySize    = camera.cameraViewSectors * Sector::BLOCKS_XZ * 1.6;
 		float skyDelta   = skySize / clouds.SkyPattern * 2.0;
 		const float skyLevel = RenderConst::SKY_LEVEL - 0.5;
 		
@@ -73,22 +74,9 @@ namespace cppcraft
 		}
 		
 		// make vertex array object
-		glGenVertexArrays(1, &clouds.vao);
-		// bind it
-		glBindVertexArray(clouds.vao);
-		
-		GLuint vbo;
-		// make vbo
-		glGenBuffers(1, &vbo);
-		glBindBuffer(GL_ARRAY_BUFFER_ARB, vbo);
-		// upload cloud data to GPU
-		glBufferData(GL_ARRAY_BUFFER_ARB, clouds.CloudVertices * sizeof(Clouds::cloudvertex_t), cdata, GL_STATIC_DRAW_ARB);
-		
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Clouds::cloudvertex_t), 0);
-		
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+		clouds.vao.begin(sizeof(Clouds::cloudvertex_t), clouds.CloudVertices, cdata);
+		clouds.vao.attrib(0, 3, GL_FLOAT, GL_FALSE, 0);
+		clouds.vao.end();
 	}
 	
 	void SkyRenderer::renderClouds(SceneRenderer& scene, double frameCounter)
@@ -98,28 +86,30 @@ namespace cppcraft
 		shd.bind();
 		
 		shd.sendFloat("frameCounter", frameCounter);
-		shd.sendVec3 ("worldOffset",  frustum.getWorldOffset());
+		shd.sendVec3 ("worldOffset",  camera.getWorldOffset());
 		shd.sendVec3 ("lightVector",  thesun.getRealtimeAngle());
 		shd.sendFloat("daylight",     thesun.getRealtimeDaylight());
 		
-		if (frustum.ref)
+		if (camera.ref)
 		{
-			Matrix matclouds = frustum.getRotationMatrix();
+			Matrix matclouds = camera.getRotationMatrix();
 			matclouds.translated(0.0, -scene.playerY, 0.0);
 			
 			// view matrix
 			shd.sendMatrix("matview", matclouds);
 			
-			if (frustum.rotated)
+			if (camera.rotated)
 			{
 				// rotation matrix
-				shd.sendMatrix("matrot", frustum.getRotationMatrix());
+				shd.sendMatrix("matrot", camera.getRotationMatrix());
 			}
 		}
 		
+		// clouds texture
 		textureman.bind(0, Textureman::T_CLOUDS);
 		
-		glBindVertexArray(clouds.vao);
-		glDrawArrays(GL_QUADS, 0, clouds.CloudVertices);
+		// render
+		clouds.vao.render(GL_QUADS);
+		
 	} // render
 }

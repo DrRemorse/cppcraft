@@ -2,8 +2,9 @@
 
 #include "library/log.hpp"
 #include "library/opengl/opengl.hpp"
-#include "vertex_block.hpp"
+#include "camera.hpp"
 #include "renderconst.hpp"
+#include "vertex_block.hpp"
 
 using namespace library;
 
@@ -238,19 +239,19 @@ namespace cppcraft
 			throw std::string("Column::compile(): OpenGL error after ending compiler");
 		}
 		
-		if (frustum.camera().column(x * Sector::BLOCKS_XZ + Sector::BLOCKS_XZ / 2,
+		if (camera.camera().column(x * Sector::BLOCKS_XZ + Sector::BLOCKS_XZ / 2,
 								z * Sector::BLOCKS_XZ + Sector::BLOCKS_XZ / 2,
 								y * Columns.COLUMNS_SIZE * Sector::BLOCKS_Y,
 								Columns.COLUMNS_SIZE * Sector::BLOCKS_Y, 
 								Sector::BLOCKS_XZ / 2))
 		{
 			// update render list
-			frustum.needsupd = true;
+			camera.needsupd = true;
 			
 			if (this->renderable == false)
 			{
 				// make sure it is added to renderq
-				frustum.recalc = true;
+				camera.recalc = true;
 				this->pos.y = -COLUMN_DEPRESSION;
 			}
 		}

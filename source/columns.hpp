@@ -2,7 +2,6 @@
 #define COLUMNS_HPP
 
 #include "library/math/vector.hpp"
-#include "frustum.hpp"
 #include "renderconst.hpp"
 #include "sectors.hpp"
 

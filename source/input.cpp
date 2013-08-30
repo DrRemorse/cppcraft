@@ -3,7 +3,7 @@
 #include "library/log.hpp"
 #include "library/math/toolbox.hpp"
 #include "library/opengl/window.hpp"
-#include "frustum.hpp"
+#include "camera.hpp"
 #include "player.hpp"
 #include <GL/glfw3.h>
 #include <cmath>
@@ -127,9 +127,9 @@ namespace cppcraft
 		player.yrotrad = player.yrot * degToRad;
 		player.xrotrad = player.xrot * degToRad;
 		
-		frustum.recalc  = true; // rebuild visibility set
-		frustum.rotated = true; // resend all rotation matrices
-		player.rotated();       // for updating networking
+		camera.recalc  = true; // rebuild visibility set
+		camera.rotated = true; // resend all rotation matrices
+		player.rotated();      // for updating networking
 		
 		// move mouse to center
 		input.lastmx = input.gamescr->SW / 2;
@@ -147,12 +147,12 @@ namespace cppcraft
 		else if (button == GLFW_MOUSE_BUTTON_2)
 		{
 			input.mouse[1].action = (action == GLFW_PRESS) ? Input::KEY_PRESSED : Input::KEY_RELEASED;
-			input.mouse[0].mods = mods;
+			input.mouse[1].mods = mods;
 		}
 		else if (button == GLFW_MOUSE_BUTTON_3)
 		{
 			input.mouse[2].action = (action == GLFW_PRESS) ? Input::KEY_PRESSED : Input::KEY_RELEASED;
-			input.mouse[0].mods = mods;
+			input.mouse[2].mods = mods;
 		}
 	}
 	

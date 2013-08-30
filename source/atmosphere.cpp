@@ -2,7 +2,8 @@
 
 #include "library/config.hpp"
 #include "library/opengl/opengl.hpp"
-#include "frustum.hpp"
+#include "library/opengl/vao.hpp"
+#include "camera.hpp"
 #include "lighting.hpp"
 #include "player.hpp"
 #include "sun.hpp"
@@ -18,8 +19,7 @@ namespace cppcraft
 	class Scatterer
 	{
 	public:
-		unsigned int vao;
-		int vertices;
+		VAO vao;
 		
 		float m_nSamples;
 		float m_Kr, m_Kr4PI;
@@ -139,16 +139,15 @@ namespace cppcraft
 		textureman.bind(0, Textureman::T_SKYBOX);
 		
 		// create view matrix
-		Matrix matview = frustum.getRotationMatrix();
+		Matrix matview = camera.getRotationMatrix();
 		matview.translated(0.0, -th, 0.0);
 		shd.sendMatrix("matview", matview);
 		shd.sendFloat("above", 1.0);
 		
 		// render
-		glBindVertexArray(scatter.vao);
-		glDrawArrays(GL_TRIANGLES, 0, scatter.vertices);
+		scatter.vao.render(GL_TRIANGLES);
 		
-		matview = frustum.getRotationMatrix();
+		matview = camera.getRotationMatrix();
 		// multiply with negative-Y scaling matrix
 		matview *= Matrix(1.0, -0.8, 1.0);
 		matview.translated(0.0, -th, 0.0);
@@ -157,7 +156,7 @@ namespace cppcraft
 		shd.sendFloat("above", 0.0);
 		
 		// render mirrored on y-axis
-		glDrawArrays(GL_TRIANGLES, 0, scatter.vertices);
+		scatter.vao.render(GL_TRIANGLES);
 	}
 
 	void createSkyDome(float r_inner, float r_outer)
@@ -223,29 +222,9 @@ namespace cppcraft
 			p += 3;
 		}
 		
-		scatter.vertices = num_vertices;
-		
-		// create vao, vbo, ibo etc.
-		GLuint vbo;
-		
-		glGenVertexArrays(1, &scatter.vao);
-		glGenBuffers(1, &vbo);
-		
-		glBindVertexArray(scatter.vao);
-		
-		// upload vertices
-		glBindBuffer(GL_ARRAY_BUFFER_ARB, vbo);
-		glBufferData(GL_ARRAY_BUFFER_ARB, scatter.vertices * sizeof(domevertex_t), vertices, GL_STATIC_DRAW_ARB);
-		
-		glEnableVertexAttribArray(0);
-		
-		// vertex data format
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(domevertex_t), nullptr);
-		
-		// unbind
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
-		glDisableVertexAttribArray(0);
+		scatter.vao.begin(sizeof(domevertex_t), num_vertices, vertices);
+		scatter.vao.attrib(0, 3, GL_FLOAT, GL_FALSE, 0);
+		scatter.vao.end();
 		
 		// cleanup
 		delete vertices;

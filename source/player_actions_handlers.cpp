@@ -2,7 +2,6 @@
 
 #include "library/log.hpp"
 #include "library/math/vector.hpp"
-#include "frustum.hpp"
 #include "items.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
@@ -224,9 +223,6 @@ namespace cppcraft
 						soundman.playMaterial(id, Soundman::sound_place);
 						
 						//networkAdd(s, ddx, ddy, ddz, curitem->id, bfield)
-						
-						// update frustum
-						frustum.recalc = true;
 					}
 					
 				}

@@ -4,7 +4,7 @@
 #include "library/opengl/opengl.hpp"
 #include "columns.hpp"
 #include "drawq.hpp"
-#include "frustum.hpp"
+#include "camera.hpp"
 #include "sectors.hpp"
 
 using namespace library;
@@ -19,7 +19,7 @@ namespace cppcraft
 	
 	void RenderGrid::uniformGrid(RenderGrid::rendergrid_t& rg, int x0, int x1, int z0, int z1, int quant)
 	{
-		int  stepsize = frustum.getGridsize() >> quant;
+		int  stepsize = camera.getGridsize() >> quant;
 		bool gridtest = (stepsize <= 2);
 		
 		int bigstpx = rg.xstp * stepsize;
@@ -43,7 +43,7 @@ namespace cppcraft
 				
 				for (z = z0; cz-- != 0; z += bigstpz)
 				{
-					if (frustum.camera().column(x2, z * Sector::BLOCKS_XZ + sizez, 0, MAX_Y, size))
+					if (camera.camera().column(x2, z * Sector::BLOCKS_XZ + sizez, 0, MAX_Y, size))
 					{
 						if (gridtest)
 							gridTesting(rg, x, z, stepsize);
@@ -62,7 +62,7 @@ namespace cppcraft
 				
 				for (x = x0; cx-- != 0; x += bigstpx)
 				{
-					if (frustum.camera().column(x * Sector::BLOCKS_XZ + sizex, z2, 0, MAX_Y, size))
+					if (camera.camera().column(x * Sector::BLOCKS_XZ + sizex, z2, 0, MAX_Y, size))
 					{
 						if (gridtest)
 							gridTesting(rg, x, z, stepsize);
@@ -155,7 +155,7 @@ namespace cppcraft
 			{
 				if (fx*fx + fz*fz < max_gridrad)
 				{
-					if (frustum.camera().column(
+					if (camera.camera().column(
 							x * Sector::BLOCKS_XZ + gs_half,
 							z * Sector::BLOCKS_XZ + gs_half,
 							y * Columns.COLUMNS_SIZE * Sector::BLOCKS_Y,

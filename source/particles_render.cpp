@@ -2,7 +2,7 @@
 
 #include "library/log.hpp"
 #include "library/opengl/opengl.hpp"
-#include "frustum.hpp"
+#include "camera.hpp"
 #include "shaderman.hpp"
 #include "textureman.hpp"
 #include "threading.hpp"
@@ -78,12 +78,12 @@ namespace cppcraft
 		shd.bind();
 		shd.sendFloat("daylight", thesun.getRealtimeDaylight());
 		
-		if (frustum.ref)
+		if (camera.ref)
 		{
 			float tx = (this->snapWX - snapWX) * Sector::BLOCKS_XZ;
 			float tz = (this->snapWZ - snapWZ) * Sector::BLOCKS_XZ;
 			
-			Matrix matview = frustum.getViewMatrix();
+			Matrix matview = camera.getViewMatrix();
 			matview.translate_xz(tx, tz);
 			
 			// send view matrix

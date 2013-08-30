@@ -177,8 +177,6 @@
     <File Name="source/drawq.hpp"/>
     <File Name="source/flatlands.cpp"/>
     <File Name="source/flatlands.hpp"/>
-    <File Name="source/frustum.cpp"/>
-    <File Name="source/frustum.hpp"/>
     <File Name="source/generator.cpp"/>
     <File Name="source/generator.hpp"/>
     <File Name="source/items.cpp"/>
@@ -303,6 +301,8 @@
     <File Name="source/player_actions_handlers.cpp"/>
     <File Name="source/player_actions.hpp"/>
     <File Name="source/render_fsblur.cpp"/>
+    <File Name="source/camera.cpp"/>
+    <File Name="source/camera.hpp"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>

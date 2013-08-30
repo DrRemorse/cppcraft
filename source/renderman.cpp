@@ -5,7 +5,7 @@
 #include "library/opengl/opengl.hpp"
 
 #include "compilers.hpp"
-#include "frustum.hpp"
+#include "camera.hpp"
 #include "render_fs.hpp"
 #include "render_gui.hpp"
 #include "render_scene.hpp"
@@ -96,8 +96,8 @@ namespace cppcraft
 		// initialize compilers
 		compilers.initCompilers();
 		
-		// initialize frustum
-		frustum.init(gamescr);
+		// initialize camera
+		camera.init(gamescr);
 		// init tile sizes
 		tiles.init();
 		// initialize sun, and lens textures at half-size
@@ -109,7 +109,7 @@ namespace cppcraft
 		// initialize texture manager
 		textureman.init(gamescr);
 		// initialize shader manager
-		shaderman.init(gamescr, frustum.getProjection(), frustum.getProjectionLong());
+		shaderman.init(gamescr, camera.getProjection(), camera.getProjectionLong());
 		
 		// initialize scene renderer
 		sceneRenderer = new SceneRenderer();
@@ -159,7 +159,7 @@ namespace cppcraft
 		glfwSwapBuffers(gamescr.window());
 		
 		// disable stuff
-		frustum.rotated = false;
+		camera.rotated = false;
 		
 		if (OpenGL::checkError())
 		{

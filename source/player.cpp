@@ -2,7 +2,7 @@
 
 #include "library/log.hpp"
 #include "library/math/vector.hpp"
-#include "frustum.hpp"
+#include "camera.hpp"
 #include "player_actions.hpp"
 #include "player_logic.hpp"
 #include "player_physics.hpp"
@@ -120,7 +120,7 @@ namespace cppcraft
 			// so we need to explicitly test all scalars
 			if (snapX != X || snapY != Y || snapZ != Z)
 			{
-				frustum.recalc = true;
+				camera.recalc = true;
 				// get player shadows & torchlight
 				vertex_color_t vcolor = Spiders::getLightNow(X, Y, Z);
 				plogic.shadowColor = vcolor & 0xFFFFFFFF;

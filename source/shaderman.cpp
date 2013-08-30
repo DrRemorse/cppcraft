@@ -4,7 +4,7 @@
 #include "library/log.hpp"
 #include "library/math/matrix.hpp"
 #include "library/opengl/window.hpp"
-#include "frustum.hpp"
+#include "camera.hpp"
 #include "renderconst.hpp"
 #include <sstream>
 #include <string>
@@ -50,11 +50,11 @@ namespace cppcraft
 		}
 		else if (text == "const float ZNEAR")
 		{
-			text += " = " + toString(frustum.getZNear()) + ";";
+			text += " = " + toString(camera.getZNear()) + ";";
 		}
 		else if (text == "const float ZFAR")
 		{
-			text += " = " + toString(frustum.getZFar()) + ";";
+			text += " = " + toString(camera.getZFar()) + ";";
 		}
 		// settings
 		else if (text == "#define POSTPROCESS")

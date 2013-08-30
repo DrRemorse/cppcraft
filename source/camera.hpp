@@ -11,7 +11,7 @@ namespace library
 
 namespace cppcraft
 {
-	class ViewingFrustum
+	class Camera
 	{
 	private:
 		float FOV;         // field of view (angle in degrees)
@@ -59,7 +59,7 @@ namespace cppcraft
 		const library::vec3&   getWorldOffset() const;
 		
 	};
-	extern ViewingFrustum frustum;
+	extern Camera camera;
 }
 
 #endif

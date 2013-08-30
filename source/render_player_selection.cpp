@@ -6,7 +6,7 @@
 #include "blocks.hpp"
 #include "blockmodels.hpp"
 #include "vertex_block.hpp"
-#include "frustum.hpp"
+#include "camera.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
 #include "renderconst.hpp"
@@ -174,7 +174,7 @@ namespace cppcraft
 		// selection shader
 		Shader& shd = shaderman[Shaderman::SELECTION];
 		shd.bind();
-		shd.sendMatrix("matmvp", frustum.getMVP_Matrix());
+		shd.sendMatrix("matmvp", camera.getMVP_Matrix());
 		
 		// position in space
 		shd.sendVec3("vtrans", vec3(vx, vy, vz));

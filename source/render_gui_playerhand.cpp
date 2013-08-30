@@ -6,7 +6,7 @@
 #include "library/opengl/vao.hpp"
 #include "library/math/toolbox.hpp"
 #include "library/math/vector.hpp"
-#include "frustum.hpp"
+#include "camera.hpp"
 #include "player.hpp"
 #include "player_actions.hpp"
 #include "player_logic.hpp"
@@ -216,9 +216,9 @@ namespace cppcraft
 		shd.sendFloat("daylight", thesun.getRealtimeDaylight());
 		
 		// send rotation matrix when camera has been rotated
-		if (frustum.rotated)
+		if (camera.rotated)
 		{
-			shd.sendMatrix("matrot", frustum.getRotationMatrix());
+			shd.sendMatrix("matrot", camera.getRotationMatrix());
 		}
 		
 		// view matrix

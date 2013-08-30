@@ -1,4 +1,4 @@
-#include "frustum.hpp"
+#include "camera.hpp"
 
 #include "library/config.hpp"
 #include "library/log.hpp"
@@ -10,10 +10,10 @@ using namespace library;
 
 namespace cppcraft
 {
-	// Viewing frustum object
-	ViewingFrustum frustum;
+	// Viewing camera
+	Camera camera;
 	
-	void ViewingFrustum::init(WindowClass& wnd)
+	void Camera::init(WindowClass& wnd)
 	{
 		logger << Log::INFO << "* Initializing frustum" << Log::ENDL;
 		
@@ -42,17 +42,17 @@ namespace cppcraft
 		
 	}
 	
-	void ViewingFrustum::calculateFrustum()
+	void Camera::calculateFrustum()
 	{
-		this->frustum.calculate(matproj, matview);
+		frustum.calculate(matproj, matview);
 	}
 	
-	void ViewingFrustum::setRotation(float rx, float ry, float rz)
+	void Camera::setRotation(float rx, float ry, float rz)
 	{
 		matrot.rotateZYX(rx, ry, rz);
 	}
 	
-	void ViewingFrustum::setTranslation(float tx, float ty, float tz)
+	void Camera::setTranslation(float tx, float ty, float tz)
 	{
 		// view matrix = rotation & translation
 		matview = matrot;
@@ -62,38 +62,38 @@ namespace cppcraft
 		matviewproj = matproj * matview;
 	}
 	
-	const Matrix& ViewingFrustum::getProjection() const
+	const Matrix& Camera::getProjection() const
 	{
 		return matproj;
 	}
-	const Matrix& ViewingFrustum::getProjectionLong() const
+	const Matrix& Camera::getProjectionLong() const
 	{
 		return matproj_long;
 	}
-	const Matrix& ViewingFrustum::getViewMatrix() const
+	const Matrix& Camera::getViewMatrix() const
 	{
 		return matview;
 	}
-	const Matrix& ViewingFrustum::getRotationMatrix() const
+	const Matrix& Camera::getRotationMatrix() const
 	{
 		return matrot;
 	}
-	const Matrix& ViewingFrustum::getMVP_Matrix() const
+	const Matrix& Camera::getMVP_Matrix() const
 	{
 		return matviewproj;
 	}
 	
-	const Frustum& ViewingFrustum::camera() const
+	const Frustum& Camera::camera() const
 	{
 		return this->frustum;
 	}
 	
-	const vec3& ViewingFrustum::getWorldOffset() const
+	const vec3& Camera::getWorldOffset() const
 	{
 		return this->worldOffset;
 	}
 	
-	void ViewingFrustum::setWorldOffset(double posX, double posZ)
+	void Camera::setWorldOffset(double posX, double posZ)
 	{
 		// calculate sectoral offsets
 		int halfWorld = Sectors.getXZ() * Sector::BLOCKS_XZ / 2;

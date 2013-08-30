@@ -4,7 +4,7 @@
 #include "library/opengl/opengl.hpp"
 #include "library/opengl/vao.hpp"
 #include "atmosphere.hpp"
-#include "frustum.hpp"
+#include "camera.hpp"
 #include "renderconst.hpp"
 #include "render_scene.hpp"
 #include "renderman.hpp"
@@ -55,10 +55,6 @@ namespace cppcraft
 		// render sky dome
 		Atmosphere::render(scene.playerY);
 		
-		// unbind shits
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
-		
 		glEnable(GL_BLEND);
 		glColorMask(1, 1, 1, 0);
 		
@@ -89,13 +85,13 @@ namespace cppcraft
 		mattemp *= matsun;
 		mattemp.translated(0.0, 0.0, -thesun.renderDist);
 		
-		matsun = frustum.getRotationMatrix() * mattemp;
+		matsun = camera.getRotationMatrix() * mattemp;
 		
 		// view matrix
 		sunshader.sendMatrix("matview", matsun);
 		
 		// rotation matrix
-		sunshader.sendMatrix("matrot", frustum.getRotationMatrix());
+		sunshader.sendMatrix("matrot", camera.getRotationMatrix());
 		
 		textureman.bind(0, Textureman::T_SUN);
 		
@@ -114,12 +110,12 @@ namespace cppcraft
 		mattemp *= matsun;
 		mattemp.translated(0.0, 0.0, -thesun.renderDist);
 		
-		matsun = frustum.getRotationMatrix() * mattemp;
+		matsun = camera.getRotationMatrix() * mattemp;
 		
 		// view matrix
 		sunshader.sendMatrix("matview", matsun);
 		// rotation matrix
-		sunshader.sendMatrix("matrot", frustum.getRotationMatrix());
+		sunshader.sendMatrix("matrot", camera.getRotationMatrix());
 		
 		// depth used as stencil buffer
 		textureman.bind(1, Textureman::T_RENDERBUFFER);
@@ -145,12 +141,12 @@ namespace cppcraft
 		mattemp *= matmoon;
 		mattemp.translated(0.0, 0.0, -2.0);
 		
-		matmoon = frustum.getRotationMatrix() * mattemp;
+		matmoon = camera.getRotationMatrix() * mattemp;
 		
 		// view matrix
 		moon.sendMatrix("matview", matmoon);
 		// rotation matrix
-		moon.sendMatrix("matrot", frustum.getRotationMatrix());
+		moon.sendMatrix("matrot", camera.getRotationMatrix());
 		// daylight level
 		moon.sendFloat("daylight", thesun.getRealtimeDaylight());
 		
