@@ -122,7 +122,7 @@ namespace cppcraft
 		sunshader.sendMatrix("matrot", frustum.getRotationMatrix());
 		
 		// depth used as stencil buffer
-		textureman.bind(1, Textureman::T_DEPTHBUFFER);
+		textureman.bind(1, Textureman::T_RENDERBUFFER);
 		textureman.bind(0, Textureman::T_SUN);
 		
 		// rendering call

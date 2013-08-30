@@ -43,7 +43,7 @@ void main()
 	vec3 skyColor = texture2D(skytexture, texCoord).rgb;
 	color.rgb = mix(color.rgb, skyColor, fade);
 	
-	gl_FragData[0] = vec4(color.rgb, 1.0);
+	gl_FragData[0] = vec4(color.rgb, fade);
 }
 
 float linearizeDepth(float Z)

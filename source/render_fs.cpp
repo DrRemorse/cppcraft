@@ -45,8 +45,8 @@ namespace cppcraft
 		glDisableVertexAttribArray(0);
 		
 		// set texture sizes
-		this->blurTxW = gamescr.SW;
-		this->blurTxH = gamescr.SH;
+		this->blurTxW = gamescr.SW / 2;
+		this->blurTxH = gamescr.SH / 2;
 		
 		this->flareTxW = gamescr.SW / 2;
 		this->flareTxH = gamescr.SH / 2;

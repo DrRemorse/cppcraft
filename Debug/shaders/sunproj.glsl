@@ -45,10 +45,12 @@ const float ZNEAR
 void main(void)
 {
 	// discard if something is blocking
-	if (texture2D(depth, screenPos).r < 1.0) discard;
+	//if (texture2D(depth, screenPos).r < 1.0) discard;
 	
 	vec3 color = texture2D(texture, texCoord).rgb;
 	color *= vec3(0.9, 0.7, 0.5) * 0.6;
+	
+	color.rgb *= texture2D(depth, screenPos).a;
 	
 	// limit flare to horizon
 	color *= pow( 1.0 - clamp(-norm.y / 0.001,  0.0, 1.0),  3.0 );

@@ -13,10 +13,10 @@ namespace cppcraft
 	void FSRenderer::renderBlur()
 	{
 		const double PI = 4 * atan(1);
-		const int BLUR_LEVEL = 2;
+		//const int BLUR_LEVEL = 2;
 		const float sigma = 1.0;
 		
-		Shader& blur = shaderman[Shaderman::BLUR];
+		Shader& blur = shaderman[Shaderman::GAUSS];
 		blur.bind();
 		
 		// gaussian blur:
