@@ -111,21 +111,19 @@ void main(void)
 	vec4 color = texture2DArray(tonemap, coord.stp);
 	color.rgb *= biomeColor.rgb;
 	
-	if (color.a < 0.99)
-	{
-		// mix diffuse map
-		color.rgb = mix(texture2DArray(texture, coord.stp).rgb, color.rgb, color.a);
-	}
+	// mix diffuse map
+	vec4 diffuse = texture2DArray(texture, coord.stp);
+	color = mix(diffuse, color, color.a);
 	
 	// reflection //
-	if (reflection > 0.15)
+	/*if (reflection > 0.15)
 	{
 		float fresnel = 1.0 - v_reflect.y * v_reflect.y;
 		
 		// mix in reflection
 		vec3 reflection = mix(textureCube(skymap, v_reflect).rgb, vec3(0.75), 0.75);
 		color.rgb = mix(color.rgb, reflection, fresnel * 0.5);
-	}
+	}*/
 	
 	#include "degamma.glsl"
 	

@@ -38,14 +38,15 @@ namespace cppcraft
 		void handleInputs();
 		
 		/// all action related ///
-		void handleActions();
+		void handleActions(double frametime);
+		void handleMining(double frametime, const InventoryItem& helditem);
 		// activate a block in the world
 		void activate(InventoryItem& item);
 		// perform an action with an item
 		void itemAction(InventoryItem& item);
 		// place a block
 		void build(InventoryItem& item);
-		void swingTool(InventoryItem& item);
+		void swingTool(const InventoryItem& item);
 		// placing blocks shite
 		bool playerBlockPlaceTest();
 		

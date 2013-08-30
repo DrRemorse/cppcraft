@@ -136,13 +136,10 @@ void main(void)
 	Normal.y += 1.00001; // make sure its positively pointing upwards
 	Normal = normalize(Normal);
 	
-	//if (!gl_FrontFacing) Normal = -Normal;
-	
 	vec3 vNormal = mat3(matview) * Normal;
 	vec3 viewNormal = normalize(v_normal + vNormal * 0.1);
 	
 	vec3 Reflect   = l_reflect + Normal * 0.125;
-	
 	
 #else
 	// normal-mapped (tangent space) noise
@@ -181,7 +178,7 @@ void main(void)
 	
 	// start with underwater color
 	vec4 color = texture2D(underwatermap, refcoord.xy);
-	// gamme
+	// gamma
 	color.rgb = pow(color.rgb, vec3(2.2));
 	
 	// mix in seacolor based on 'depth'

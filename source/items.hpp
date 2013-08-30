@@ -11,6 +11,7 @@
 
 namespace cppcraft
 {
+	class Block;
 	const int MAX_UNIQUE_ITEMS = 256;
 	
 	#define IT_NONE         0
@@ -143,6 +144,8 @@ namespace cppcraft
 	public:
 		int itemW, itemH;
 		int itemsX, itemsY;
+		
+		int getMiningTime(const Block& block, const InventoryItem& item) const;
 		
 		std::string getName(item_t id);
 		int tileByID(item_t id);

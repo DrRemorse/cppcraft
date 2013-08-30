@@ -7,6 +7,7 @@
 #include "precompiler.hpp"
 #include "precomp_thread.hpp"
 #include "sectors.hpp"
+#include "worldbuilder.hpp"
 
 using namespace library;
 
@@ -15,7 +16,7 @@ namespace cppcraft
 	PrecompQ precompq;
 	ThreadPool* threadpool;
 	
-	const double PRECOMPQ_MAX_THREADWAIT = 0.025;
+	const double PRECOMPQ_MAX_THREADWAIT = 0.01;
 	
 	void PrecompQ::init()
 	{
@@ -48,7 +49,11 @@ namespace cppcraft
 			{
 				addPrecomp(s2);
 			}
+			
 		} // y
+		
+		// tell worldbuilder to immediately start over, UNLESS its generating
+		worldbuilder.reset();
 		
 	} // addTruckload
 	
@@ -57,12 +62,13 @@ namespace cppcraft
 		// check if this sector is in some pipeline stage
 		if (s.precomp)
 		{
-			// if the sector is currently running, just flag it for recompilation
+			// if the sector is currently running, just flag it for (later) recompilation
 			if (s.precomp == 2) s.progress = Sector::PROG_NEEDRECOMP;
 			
 			// since something is going on, exit
 			return true;
 		}
+		
 		// check if sector needs to be generated
 		if (s.progress == Sector::PROG_NEEDGEN)
 		{
@@ -72,7 +78,7 @@ namespace cppcraft
 		}
 		
 		// because of addTruckload() dependency, some precomps could be alive still
-		while(1)
+		while (true)
 		{
 			if (queueCount >= Precompiler::MAX_PRECOMPQ)
 			{

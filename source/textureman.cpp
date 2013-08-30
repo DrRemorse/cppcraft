@@ -98,6 +98,12 @@ namespace cppcraft
 		
 		/// Sky renderer ///
 		
+		// sun texture
+		if (bmp.load(config.get("textures.sun", "bitmap/default/sun.bmp")))
+		{
+			textures[T_SUN] = Texture(GL_TEXTURE_2D, GL_COMPRESSED_RGBA);
+			textures[T_SUN].create(bmp, true, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+		}
 		// moon texture
 		if (bmp.load(config.get("textures.moon", "bitmap/default/moon.bmp")))
 		{

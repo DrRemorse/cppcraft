@@ -90,10 +90,10 @@ namespace cppcraft
 			//----------------------------------//
 			//        SEAMLESS TRANSITION       //
 			//----------------------------------//
-			Seamless::run();
+			if (Seamless::run()) goto theend;
 			
 			// check for timeout
-			if (timer.getDeltaTime() > _localtime + MAX_TIMING_WAIT) goto theend;
+			//if (timer.getDeltaTime() > _localtime + MAX_TIMING_WAIT) goto theend;
 			
 			// ---------- PRECOMPILER ----------- //
 			

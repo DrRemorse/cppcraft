@@ -29,21 +29,24 @@ namespace cppcraft
 	
 	// runs seamless() until no more transitions happen
 	// essentially moving the player until he is on a local grid, near center
-	void Seamless::run()
+	bool Seamless::run()
 	{
 		// only run seamless if the player actually moved, one way or another
-		if (plogic.Moved)
+		// -=- COULD DO STRANGE STUFF -=-
+		bool running = true;
+		bool seam = false;
+		while(running)
 		{
-			// -=- COULD DO STRANGE STUFF -=-
-			bool seam = true;
-			while(seam)
+			// transition world
+			running = Seamless::seamlessness();
+			// decrease worldbuilder radius
+			if (running)
 			{
-				// transition world
-				seam = Seamless::seamlessness();
-				// decrease worldbuilder radius
-				if (seam) worldbuilder.seamResponse();
+				worldbuilder.seamResponse();
+				seam = true;
 			}
 		}
+		return seam;
 	}
 	
 	class Seamstress

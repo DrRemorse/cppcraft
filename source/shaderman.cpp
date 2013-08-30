@@ -159,11 +159,13 @@ namespace cppcraft
 		// sun shader
 		shaders[SUN] = Shader("shaders/sun.glsl", tokenizer, linkstage);
 		shaders[SUN].sendMatrix("matproj", matproj);
+		shaders[SUN].sendInteger("texture", 0);
 		
 		// projected sun shader
 		shaders[SUNPROJ] = Shader("shaders/sunproj.glsl", tokenizer, linkstage);
 		shaders[SUNPROJ].sendMatrix("matproj", matproj);
-		shaders[SUNPROJ].sendInteger("texture", 1);
+		shaders[SUNPROJ].sendInteger("texture", 0);
+		shaders[SUNPROJ].sendInteger("depth",   1);
 		
 		// moon shader
 		shaders[MOON] = Shader("shaders/moon.glsl", tokenizer, linkstage);

@@ -239,7 +239,7 @@ namespace cppcraft
 	
 	// checks which action the player is performing (if any) and execute on it
 	// if no action is being performed, try to select a block (in the world) instead
-	void PlayerActions::handleActions()
+	void PlayerActions::handleActions(double frametime)
 	{
 		block_t facing  = player.getBlockFacing();
 		vec3 lookVector = player.getLookVector();
@@ -268,7 +268,7 @@ namespace cppcraft
 		/// item currently held by player ///
 		/////////////////////////////////////
 		int FIXME_held_item;
-		InventoryItem item(_STONE, 64); // = items.Inventory(menu.invcycle, menu.quickbar)
+		InventoryItem helditem(IT_DIAMPICK, ITT_ITEM, 1); // = items.Inventory(menu.invcycle, menu.quickbar)
 		
 		if (action == playeraction_t::PA_Addblock)
 		{
@@ -277,18 +277,18 @@ namespace cppcraft
 			// we also have the ability to activate blocks in the world, if so that block hasActivation()
 			if (false) //item.isActionItem())
 			{
-				itemAction(item);
+				itemAction(helditem);
 			}
 			else if (plogic.hasSelection())
 			{
 				if (selection.block->hasActivation())
 				{
-					activate(item);
+					activate(helditem);
 					return;
 				}
 				else // otherwise just 'build'
 				{	// aka place block
-					build(item);
+					build(helditem);
 				}
 			}
 			
@@ -409,6 +409,7 @@ namespace cppcraft
 						if (sector == nullptr) break;
 						
 						Block& selectionBlock = Spiders::getBlock(ray.x, ray.y, ray.z);
+						unsigned short selectionFace = plogic.determineSelectionFacing(selectionBlock, ray, fracs, action_step);
 						
 						// set selection results
 						mtx.playerselection.lock();
@@ -416,12 +417,18 @@ namespace cppcraft
 							selection.block = &selectionBlock;
 							selection.sector = sector;
 							selection.pos = ray;
-							selection.facing = plogic.determineSelectionFacing(selectionBlock, ray, fracs, action_step);
-							foundSelection = true;
+							selection.facing = selectionFace;
 						}
 						mtx.playerselection.unlock();
 						
+						
+						if (action == PA_Mineblock)
+						{
+							handleMining(frametime, helditem);
+						}
+						
 						// break out of loop
+						foundSelection = true;
 						break;
 						
 					} // selection hitboxing
@@ -453,6 +460,74 @@ namespace cppcraft
 			}
 			
 		} // selection hitboxing
+	}
+	
+	void PlayerActions::handleMining(double frametime, const InventoryItem& helditem)
+	{
+		if (frametime > actionTimer + MINE_SPEED)
+		{
+			actionTimer = frametime;
+			
+			playerselect_t& selection = plogic.selection;
+			
+			// make crc of internal position
+			int mineCRC = (selection.pos.x * Sector::BLOCKS_XZ + selection.pos.z) * Sector::BLOCKS_XZ + selection.pos.y;
+			
+			if (minimizer != mineCRC)
+			{
+				// if we got here we have selected a new block to mine from
+				mineTimer = items.getMiningTime(*selection.block, helditem);
+				
+				if (minimizer == -2)
+				{
+					// we have mined before
+					mineTimer += 6; // extra wait time
+				}
+				
+				// set the rest, and prepare for battle =)
+				mineMax = mineTimer;
+				minimizer = mineCRC;
+			}
+			
+			if (mineTimer > 0)
+			{
+				// propagate start of mining
+				/*
+				if (network.mymine = false)
+				{
+					networkSend("PMINE 1");
+					network.mymine = true;
+				}*/
+				
+				// create mining debris, and propagate over inet
+				/*
+				#Ifdef USE_OBJECTS
+					dim itm as inventoryitem = TransformParticle(selectionid)
+					itm.count = 2 * (plogic.MineMax - plogic.MineTimer) / plogic.MineMax
+					if itm.count <> 0 And itm.id <> 0 then
+						CreateObjectMining(s, ddx, ddy, ddz, selface, itm)
+						networkSendObject(s, ddx, ddy, ddz, selface, @itm)
+					endif
+				#EndIf
+				*/
+				
+				// create particles using fractionals
+				// newParticleB(s, bx, by, bz, PARTICLE_M_GENER, 3)
+				
+				// play mining sound based on material
+				if (mineTimer % MINE_SOUNDMOD == 0)
+				{
+					soundman.playMaterial(selection.block->getID(), Soundman::sound_mine);
+				}
+				
+				mineTimer -= 1;
+			}
+			else
+			{
+				action = PA_Remblock;
+			}
+		}
+		
 	}
 	
 }

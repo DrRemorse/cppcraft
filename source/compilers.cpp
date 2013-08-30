@@ -108,17 +108,6 @@ namespace cppcraft
 		v->pcdata = pc.datadump;  // set vbodata to become precomp data
 		pc.datadump = nullptr;    // unassign precomp data pointer
 		
-		Column& cv = Columns(s.x, s.y / Columns.COLUMNS_SIZE, s.z);
-		
-		// if the column wasn't previously updated
-		if (cv.updated == false)
-		{
-			// add to queue
-			colq.emplace_back( columnqueue_t {s.x, s.y / Columns.COLUMNS_SIZE, s.z} );
-			// set as recently "updated"
-			cv.updated = true;
-		}
-		
 		// set renderable flag to sector
 		s.render = true;
 		// set progress to finished state
@@ -131,6 +120,43 @@ namespace cppcraft
 		pc.alive  = false;
 		// reset sector state to unqueued
 		s.precomp = 0;
+		
+		// check if this column may be complete (ready to be compiled)
+		int cy = s.y / Columns.COLUMNS_SIZE;
+		
+		// check all sectors that belong to column
+		/*
+		int start_y = cy * Columns.COLUMNS_SIZE;
+		int end_y = start_y + Columns.COLUMNS_SIZE;
+		bool ready = true;
+		
+		for (int y = end_y - 1; y >= start_y; y--)
+		{
+			Sector& sector = Sectors(s.x, y, s.z);
+			
+			if (sector.render)
+			{
+				// a renderable without VBO data, is not a renderable!
+				if (sector.vbodata == nullptr)
+				{
+					sector.progress = Sector::PROG_NEEDRECOMP;
+					ready = false;
+				}
+			}
+			
+		}
+		if (ready == false) return;
+		*/
+		Column& cv = Columns(s.x, cy, s.z);
+		// if the column wasn't previously updated
+		// and we (think we) are ready to compile
+		if (cv.updated == false)
+		{
+			// add to queue
+			colq.emplace_back( columnqueue_t {s.x, cy, s.z} );
+			// set as recently "updated"
+			cv.updated = true;
+		}
 		
 	} // sectorCompiler
 	

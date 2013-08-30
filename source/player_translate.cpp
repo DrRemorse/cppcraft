@@ -26,8 +26,6 @@ namespace cppcraft
 		const double fw_crouchtest = 1.58; // downwards test for crouch
 		const double fw_autojump   = 2.20; // downwards test for auto-jump
 		
-		#define PLAYER_GROUND_BLOCK_COORDS (int)(player.X), (int)(player.Y-PLAYER_GROUND_LEVEL), (int)(player.Z)
-		
 		block_t s[4];
 		
 		//----------------------//
@@ -492,21 +490,6 @@ namespace cppcraft
 					EscapeAttempt = false;
 				}
 				
-				/*
-				plogic.block = TestBlock(player.X, player.Y-PLAYER_GROUND_LEVEL, player.Z)
-				If plogic.lastblock <> plogic.block Then
-					plogic.lastblock = plogic.block
-					
-					If plogic.block <> NULL Then
-						'advanced testing
-						If IsFallingBlock(plogic.block->id) Then
-							'if we are standing on a falling block, calculate depth
-							FallingBlockTesting( viewdata(0,0,0) , PLAYER_GROUND_BLOCK_COORDS, 32, 15)
-						endif
-					endif
-				endif
-				*/
-				
 				// player was not stuck, exit
 				break;
 			}
@@ -559,7 +542,7 @@ namespace cppcraft
 			
 		} // freefalling
 		
-	}
+	} // translatePlayer()
 	
 	void PlayerLogic::handlePlayerJumping()
 	{
@@ -601,24 +584,20 @@ namespace cppcraft
 							player.pay += PlayerPhysics::JETPACK_POWER;
 							
 							// smoke particles
-							dim as integer p
-							for i as integer = 1 to 4
-								p = newParticle(player.X, player.Y, player.Z, PARTICLE_SMOKE)
-								if p < 0 then exit for
-								particleSpeed(p, -player.pax, 0.0, -player.paz)
-							next
+							for (int i = 0; i < 4; i++)
+							{
+								int p = newParticle(player.X, player.Y, player.Z, PARTICLE_SMOKE);
+								if (p < 0) break;
+								particleSpeed(p, -player.pax, 0.0, -player.paz);
+							}
 							
 							// play sound if its time
-							If plogic.lastjet = 0 Then
-								
-								#ifdef USE_SOUND
-									sndPlayCustom(S_FX_JETPACK)
-								#endif
-								plogic.lastjet = plogic.JETPACK_SOUNDWAIT
-								
-							Else
-								plogic.lastjet -= 1;
-							EndIf
+							if (lastjet == 0)
+							{
+								soundman.playSound(Soundman::SND_JETPACK);
+								lastjet = JETPACK_SOUNDWAIT;
+							}
+							else lastjet -= 1;
 							
 							// decrease fuel level
 							jetpackFuel -= 1;
@@ -643,11 +622,12 @@ namespace cppcraft
 			
 			#ifdef USE_JETPACK
 				// jetpack replenish
-				if (jetpackFuel < plogic.MAX_JETPACK) plogic.jetpack += 1;
-				if (plogic.lastjet <> 0) plogic.lastjet -= 1
-				Jetpacking = false;
+				if (jetpackFuel < MAX_JETPACK) jetpack += 1;
+				if (lastjet) lastjet -= 1;
+				jetpacking = false;
 			#endif
 		}
-	}
+		
+	} // handlePlayerJumping()
 	
 }

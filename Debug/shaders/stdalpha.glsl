@@ -119,7 +119,6 @@ void main(void)
 	#define coord texCoord
 	
 	vec4 color = texture2DArray(texture, coord.stp);
-	
 	if (color.a < 0.1 || vertdist >= ZFAR) discard;
 	
 	// read tonecolor from tonemap

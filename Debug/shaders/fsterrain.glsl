@@ -38,9 +38,9 @@ void main()
 	color = mix(color, texture2D(blurtexture, texCoord), mixAmount);
 	
 	// fade out world based on depth
-	vec3 skyColor = texture2D(skytexture, texCoord).rgb;
-	
 	float fade = 1.0 - color.a;
+	
+	vec3 skyColor = texture2D(skytexture, texCoord).rgb;
 	color.rgb = mix(color.rgb, skyColor, fade);
 	
 	gl_FragData[0] = vec4(color.rgb, 1.0);

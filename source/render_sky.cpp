@@ -2,6 +2,7 @@
 
 #include "library/math/matrix.hpp"
 #include "library/opengl/opengl.hpp"
+#include "library/opengl/vao.hpp"
 #include "atmosphere.hpp"
 #include "frustum.hpp"
 #include "renderconst.hpp"
@@ -19,14 +20,31 @@ using namespace library;
 namespace cppcraft
 {
 	SkyRenderer skyrenderer;
+	VAO satteliteVAO;
 	const double PI = 4.0 * atan(1);
 	
 	void SkyRenderer::init()
 	{
-		// initialize atmosphere
+		/// initialize atmosphere ///
 		Atmosphere::init();
-		// initialize clouds
+		/// initialize clouds ///
 		createClouds();
+		
+		/// create VAO for all satellites ///
+		struct satellite_t
+		{
+			float vx, vy, vz;
+		};
+		satellite_t mv[4];
+		
+		mv[0] = (satellite_t) { -0.5, -0.5, 0.0 };
+		mv[1] = (satellite_t) {  0.5, -0.5, 0.0 };
+		mv[2] = (satellite_t) {  0.5,  0.5, 0.0 };
+		mv[3] = (satellite_t) { -0.5,  0.5, 0.0 };
+		
+		satteliteVAO.begin(sizeof(satellite_t), 4, mv);
+		satteliteVAO.attrib(0, 3, GL_FLOAT, GL_FALSE, 0);
+		satteliteVAO.end();
 	}
 	
 	void SkyRenderer::render(SceneRenderer& scene, bool underwater)
@@ -79,23 +97,10 @@ namespace cppcraft
 		// rotation matrix
 		sunshader.sendMatrix("matrot", frustum.getRotationMatrix());
 		
-		struct moon_t
-		{
-			float vx, vy, vz;
-		};
-		moon_t mv[4];
+		textureman.bind(0, Textureman::T_SUN);
 		
-		mv[0] = (moon_t) { -0.5, -0.5, 0.0 };
-		mv[1] = (moon_t) {  0.5, -0.5, 0.0 };
-		mv[2] = (moon_t) {  0.5,  0.5, 0.0 };
-		mv[3] = (moon_t) { -0.5,  0.5, 0.0 };
-		
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3,  GL_FLOAT,  GL_FALSE,  sizeof(moon_t), mv);
-		
-		glDrawArrays(GL_QUADS, 0, 4);
-		
-		glDisableVertexAttribArray(0);
+		// rendering call
+		satteliteVAO.render(GL_QUADS);
 	}
 	
 	Matrix SkyRenderer::renderSunProj(GLuint samples)
@@ -116,26 +121,12 @@ namespace cppcraft
 		// rotation matrix
 		sunshader.sendMatrix("matrot", frustum.getRotationMatrix());
 		
-		struct moon_t
-		{
-			float vx, vy, vz;
-		};
-		moon_t mv[4];
-		
-		mv[0] = (moon_t) { -0.5, -0.5, 0.0 };
-		mv[1] = (moon_t) {  0.5, -0.5, 0.0 };
-		mv[2] = (moon_t) {  0.5,  0.5, 0.0 };
-		mv[3] = (moon_t) { -0.5,  0.5, 0.0 };
-		
 		// depth used as stencil buffer
 		textureman.bind(1, Textureman::T_DEPTHBUFFER);
+		textureman.bind(0, Textureman::T_SUN);
 		
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3,  GL_FLOAT,  GL_FALSE,  sizeof(moon_t), mv);
-		
-		glDrawArrays(GL_QUADS, 0, 4);
-		
-		glDisableVertexAttribArray(0);
+		// rendering call
+		satteliteVAO.render(GL_QUADS);
 		
 		return matsun;
 	}
@@ -165,24 +156,8 @@ namespace cppcraft
 		
 		textureman.bind(0, Textureman::T_MOON);
 		
-		struct moon_t
-		{
-			float vx, vy, vz;
-		};
-		moon_t mv[4];
-		
-		mv[0] = (moon_t) { -0.5, -0.5, 0.0 };
-		mv[1] = (moon_t) {  0.5, -0.5, 0.0 };
-		mv[2] = (moon_t) {  0.5,  0.5, 0.0 };
-		mv[3] = (moon_t) { -0.5,  0.5, 0.0 };
-		
-		glEnableVertexAttribArray(0);
-		
-		glVertexAttribPointer(0, 3,  GL_FLOAT,  GL_FALSE,  sizeof(moon_t), mv );
-		
-		glDrawArrays(GL_QUADS, 0, 4);
-		
-		glDisableVertexAttribArray(0);
+		// rendering call
+		satteliteVAO.render(GL_QUADS);
 	}
 	
 }

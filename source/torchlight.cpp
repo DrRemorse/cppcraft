@@ -54,11 +54,11 @@ namespace cppcraft
 		p = &torchlights[L_REDSTONE];
 		// redstone (_REDSTONE)
 		p->reach = 6;
-		p->curve = 1.0; // exponential
-		p->cap   = 1.0; // multiplicative
+		p->curve = 1.4; // exponential
+		p->cap   = 0.9; // multiplicative
 		
 		p->colors     = 0.5;
-		p->brightness = 0.5;
+		p->brightness = 0.3;
 		
 		p->r = 0.9;
 		p->g = 0.0;
@@ -67,11 +67,11 @@ namespace cppcraft
 		p = &torchlights[L_GREENSTN];
 		// magical green stone (_GREENSTONE)
 		p->reach = 6;
-		p->curve = 2.1;
-		p->cap   = 0.75;
+		p->curve = 1.6;
+		p->cap   = 0.8;
 		
 		p->colors     = 0.5;
-		p->brightness = 0.4;
+		p->brightness = 0.3;
 		
 		p->r = 0.0;
 		p->g = 0.9;

@@ -10,7 +10,7 @@ namespace cppcraft
 		static bool seamlessness();
 		
 	public:
-		static void run();
+		static bool run();
 		
 		static const int OFFSET;
 	};

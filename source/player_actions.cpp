@@ -20,7 +20,7 @@ namespace cppcraft
 		_actiontime = frametime;
 		
 		this->handleInputs();
-		this->handleActions();
+		this->handleActions(frametime);
 		
 		if (action == playeraction_t::PA_Cooldown)
 		{
@@ -81,11 +81,10 @@ namespace cppcraft
 		cooldownTime = _actiontime;
 	}
 	
-	void PlayerActions::swingTool(InventoryItem& item)
+	void PlayerActions::swingTool(const InventoryItem& item)
 	{
 		action = playeraction_t::PA_Swingtool;
 		actionTimer = 8;
-		
 	}
 	
 	

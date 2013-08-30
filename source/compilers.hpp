@@ -32,6 +32,11 @@ namespace cppcraft
 		columnqueue_t& get(int i);
 		void remove(int i);
 		
+		inline void clear()
+		{
+			colq.clear();
+		}
+		
 	private:
 		void sectorCompiler(Sector& s, Precomp& pc);
 		

@@ -39,6 +39,7 @@ namespace cppcraft
 			
 			T_SKYBOX,
 			T_CLOUDS,
+			T_SUN,
 			T_MOON,
 			T_STARS,
 			

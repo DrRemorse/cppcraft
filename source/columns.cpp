@@ -83,6 +83,7 @@ namespace cppcraft
 		int end_y = start_y + Columns.COLUMNS_SIZE;
 		
 		int vboCount = 0;
+		bool ready = true;
 		vbodata_t* vboList[Columns.COLUMNS_SIZE] = {nullptr};
 		
 		for (int sy = end_y - 1; sy >= start_y; sy--)
@@ -93,9 +94,9 @@ namespace cppcraft
 			
 			if (Sectors(x, sy, z).progress != Sector::PROG_COMPILED)
 			{
-				return;
+				ready = false;
 			}
-			else if (Sectors(x, sy, z).render == true)
+			if (Sectors(x, sy, z).render)
 			{
 				// get VBO data section
 				vboList[vboCount] = Sectors(x, sy, z).vbodata;
@@ -103,14 +104,15 @@ namespace cppcraft
 				// a renderable without VBO data, is not a renderable!
 				if (vboList[vboCount] == nullptr)
 				{
-					Sectors(x, sy, z).progress = Sector::PROG_RECOMP;
-					return;
+					Sectors(x, sy, z).progress = Sector::PROG_NEEDRECOMP;
+					ready = false;
 				}
 				// renderable and consistent, add to queue
 				vboCount += 1;
 			}
 			
 		}
+		if (ready == false) return;
 		
 		// exit if this column isn't renderable
 		if (vboCount == 0)

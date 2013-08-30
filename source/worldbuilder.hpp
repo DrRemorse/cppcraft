@@ -43,8 +43,6 @@ namespace cppcraft
 		int lastPosition;  // last side of spiral
 		int mode;          // worldbuilder mode
 		
-		bool wrunPrecomp(int xx, int zz);
-		
 	};
 	extern WorldBuilder worldbuilder;
 }

@@ -10,7 +10,7 @@ using namespace library;
 
 namespace cppcraft
 {
-	const double WORLDBUILDER_MAX_TIME_SPENT = 0.015;
+	const double WORLDBUILDER_MAX_TIME_SPENT = 0.01;
 	WorldBuilder worldbuilder;
 	
 	void WorldBuilder::init()
@@ -73,7 +73,7 @@ namespace cppcraft
 		}
 	}
 	
-	bool WorldBuilder::wrunPrecomp(int xx, int zz)
+	bool wrunPrecomp(int xx, int zz)
 	{
 		for (int yy = Sectors.getY()-1; yy >= 0; yy--)
 		{

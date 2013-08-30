@@ -110,8 +110,6 @@ namespace cppcraft
 			renderLensflare(gamescr);
 		}
 		
-		// clear buffers
-		// glClear(GL_DEPTH_BUFFER_BIT)
 		glDisable(GL_DEPTH_TEST); // mui importante!
 		glDepthMask(GL_FALSE);
 		

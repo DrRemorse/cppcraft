@@ -83,6 +83,7 @@ namespace library
 		{
 			// width of image on file in bytes
 			int pad = (width * 3) & 3; // 4-byte padding
+			if (pad) pad = 4 - pad;
 			// width of image in memory in bytes
 			int scanline = width * 3 + pad; // pitch
 			

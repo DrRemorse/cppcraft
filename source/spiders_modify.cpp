@@ -204,11 +204,66 @@ namespace cppcraft
 	
 	void Spiders::skylightReachDown(Sector& sector)
 	{
-		
+		// do natn (yet)
 	}
 	
-	void Spiders::updateSurroundings(Sector&, int bx, int by, int bz, bool immediate)
+	void Spiders::updateSurroundings(Sector& sector, int bx, int by, int bz, bool immediate)
 	{
+		#define updateSector(sector) \
+			if (sector.contents != Sector::CONT_NULLSECTOR) \
+			{												\
+				sector.progress = Sector::PROG_NEEDRECOMP;	\
+				sector.culled   = false;					\
+				if (immediate) precompq.addTruckload(sector); \
+			}
 		
+		if (bx == 0)
+		{
+			if (sector.x)
+			{
+				Sector& testsector = Sectors(sector.x-1, sector.y, sector.z);
+				updateSector(testsector);
+			}
+		}
+		else if (bx == Sector::BLOCKS_XZ-1)
+		{
+			if (sector.x+1 != Sectors.getXZ())
+			{
+				Sector& testsector = Sectors(sector.x+1, sector.y, sector.z);
+				updateSector(testsector);
+			}
+		}
+		if (by == 0)
+		{
+			if (sector.y)
+			{
+				Sector& testsector = Sectors(sector.x, sector.y-1, sector.z);
+				updateSector(testsector);
+			}
+		}
+		else if (by == Sector::BLOCKS_Y-1)
+		{
+			if (sector.y+1 != Sectors.getY())
+			{
+				Sector& testsector = Sectors(sector.x, sector.y+1, sector.z);
+				updateSector(testsector);
+			}
+		}
+		if (bz == 0)
+		{
+			if (sector.z)
+			{
+				Sector& testsector = Sectors(sector.x, sector.y, sector.z-1);
+				updateSector(testsector);
+			}
+		}
+		else if (bz == Sector::BLOCKS_XZ-1)
+		{
+			if (sector.z+1 != Sectors.getXZ())
+			{
+				Sector& testsector = Sectors(sector.x, sector.y, sector.z+1);
+				updateSector(testsector);
+			}
+		}
 	}
 }
