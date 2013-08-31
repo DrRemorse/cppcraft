@@ -48,7 +48,7 @@ namespace cppcraft
 	class Particles
 	{
 	public:
-		const int MAX_PARTICLES = 2048;
+		const int MAX_PARTICLES = 1024;
 		
 		struct particle_vertex_t
 		{

@@ -56,6 +56,10 @@ namespace cppcraft
 		int rCount = 0;
 		particle_vertex_t* pv = vertices;
 		
+		// player look vector & position
+		vec3 look = player.getLookVector();
+		vec3 playerPos = vec3(player.X, player.Y, player.Z);
+		
 		for (int i = 0; i < this->count; i++)
 		{
 			Particle& p = particles[i];
@@ -83,93 +87,101 @@ namespace cppcraft
 			int dz = (p.wz - world.getWZ()) * Sector::BLOCKS_XZ;
 			
 			// particle rendering position
-			vec3 fpos = p.position + vec3(dx, 0, dz);
-			// rendering position
-			pv->x = fpos.x;
-			pv->y = fpos.y;
-			pv->z = fpos.z;
-			// rendering texture tile-id
-			pv->w = p.tileID;
+			vec3 fpos(p.position.x + dx, p.position.y, p.position.z + dz);
 			
-			float fade = 1.0;
+			// direction to particle
+			vec3 direction = normalize(fpos - playerPos);
 			
-			if (p.TTL < p.fadeTTL)
+			// check that the particle is somewhat in camera
+			if (direction.dot(look) > 0.5)
 			{
-				fade = (float)p.TTL / p.fadeTTL;
-			}
-			// set visibility
-			pv->v1 = fade * 32767;
-			pv->v2 = 0;
-			
-			switch (p.id)
-			{
-			case PARTICLE_M_GENER:
-				// small particle
-				pv->u = 32;
-				// warning: using magic number!
-				pv->c = int(p.TTL / 64.0 * 200) << 24;
-				break;
-			case PARTICLE_SMOKE:
-				pv->u = 64;
-				pv->c = int(fade * 200) << 24;
-				break;
+				// rendering position
+				pv->x = fpos.x;
+				pv->y = fpos.y;
+				pv->z = fpos.z;
+				// rendering texture tile-id
+				pv->w = p.tileID;
 				
-			case PARTICLE_LAVA:
-				pv->u = 7;
-				// lava drops (almost invisible)
-				pv->c = BGRA8(255, 200, 127, 96);
-				break;
-			case PARTICLE_WATER:
-				pv->u = 7;
-				// water drops (almost invisible)
-				pv->c = BGRA8(127, 255, 255, 96);
-				break;
+				float fade = 1.0;
 				
-			case PARTICLE_MARSH:
-				pv->u = 8; // water drops
-				pv->c = BGRA8(127, 255, 255, 128);
-				break;
-				
-			case PARTICLE_LEAF:
-				pv->u = 16;
-				// jungle green (110, 178, 78)
-				pv->c = BGRA8(110, 178, 78, 255);
-				break;
-				
-			case PARTICLE_LEAF_B:
-				pv->u = 16;
-				// autumn brown (142, 130, 46)
-				pv->c = BGRA8(142, 130, 46, 255);
-				break;
-				
-			case PARTICLE_FOREST:
-				if (toolbox::rndNorm(16) > 11)
+				if (p.TTL < p.fadeTTL)
 				{
-					const double speed = 0.005;
-					p.acc = vec3(toolbox::rndNorm(speed), toolbox::rndNorm(speed), toolbox::rndNorm(speed));
+					fade = (float)p.TTL / p.fadeTTL;
 				}
+				// set visibility
+				pv->v1 = fade * 32767;
+				pv->v2 = 0;
 				
-				pv->u = 32;
-				// slightly yellow (alpha = 0x50)
-				pv->c = 0x5088FFFF;
-				// full brightness multiplier (capped at 32767 => 1.0)
-				pv->v2 = 32767;
-				break;
-				
-			case PARTICLE_SNOW:
-				pv->u = 16;
-				// snow (white + 100% alpha)
-				pv->c = 0xFFFFFFFF;
-				break;
-				
-			case PARTICLE_SAND:
-				pv->u = 4;
-				// brownochre #B87333
-				pv->c = 0xFF3373B8; // sand
-				break;
+				switch (p.id)
+				{
+				case PARTICLE_M_GENER:
+					// small particle
+					pv->u = 32;
+					// warning: using magic number!
+					pv->c = int(p.TTL / 64.0 * 200) << 24;
+					break;
+				case PARTICLE_SMOKE:
+					pv->u = 64;
+					pv->c = int(fade * 200) << 24;
+					break;
+					
+				case PARTICLE_LAVA:
+					pv->u = 7;
+					// lava drops (almost invisible)
+					pv->c = BGRA8(255, 200, 127, 96);
+					break;
+				case PARTICLE_WATER:
+					pv->u = 7;
+					// water drops (almost invisible)
+					pv->c = BGRA8(127, 255, 255, 96);
+					break;
+					
+				case PARTICLE_MARSH:
+					pv->u = 8; // water drops
+					pv->c = BGRA8(127, 255, 255, 128);
+					break;
+					
+				case PARTICLE_LEAF:
+					pv->u = 16;
+					// jungle green (110, 178, 78)
+					pv->c = BGRA8(110, 178, 78, 255);
+					break;
+					
+				case PARTICLE_LEAF_B:
+					pv->u = 16;
+					// autumn brown (142, 130, 46)
+					pv->c = BGRA8(142, 130, 46, 255);
+					break;
+					
+				case PARTICLE_FOREST:
+					if (toolbox::rndNorm(16) > 11)
+					{
+						const double speed = 0.005;
+						p.acc = vec3(toolbox::rndNorm(speed), toolbox::rndNorm(speed), toolbox::rndNorm(speed));
+					}
+					
+					pv->u = 32;
+					// slightly yellow (alpha = 0x50)
+					pv->c = 0x5088FFFF;
+					// full brightness multiplier (capped at 32767 => 1.0)
+					pv->v2 = 32767;
+					break;
+					
+				case PARTICLE_SNOW:
+					pv->u = 16;
+					// snow (white + 100% alpha)
+					pv->c = 0xFFFFFFFF;
+					break;
+					
+				case PARTICLE_SAND:
+					pv->u = 4;
+					// brownochre #B87333
+					pv->c = 0xFF3373B8; // sand
+					break;
+				}
+				// next render-particle (and keep track of renderCount)
+				pv++;  rCount++;
 			}
-			// next render-particle (and keep track of renderCount)
-			pv++;  rCount++;
 			// helper for particle count
 			lastAlive = i;
 		}
@@ -403,7 +415,7 @@ namespace cppcraft
 				newParticle(pos, PARTICLE_SAND);
 			}
 		}
-		else logger << "Unknown terrain: " << terrain << " in Particles::autoCreateFromTerrain()" << Log::ENDL;
+		//else logger << "Unknown terrain: " << terrain << " in Particles::autoCreateFromTerrain()" << Log::ENDL;
 		
 	} // auto-create from terrain
 	

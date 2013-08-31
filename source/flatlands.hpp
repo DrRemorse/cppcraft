@@ -10,16 +10,15 @@ namespace cppcraft
 	class FlatlandSector
 	{
 	public:
-		typedef struct
+		struct flatland_t
 		{
 			typedef unsigned int flat_color_t;
 			
-			float terrain;
 			flat_color_t fcolor[8];
+			unsigned char terrain;
 			unsigned char skyLevel;
 			unsigned char groundLevel;
-			
-		} flatland_t;
+		};
 		
 		// returns a reference to flatland_t for the 2D location (x, z)
 		flatland_t& operator() (int x, int z);

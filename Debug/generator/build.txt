@@ -1,3 +1,4 @@
+c:\mingw64\bin\gcc
 -std=gnu99 -pipe -m32 -Ofast -mfpmath=both
 -c -Iinc
 -shared -Llib

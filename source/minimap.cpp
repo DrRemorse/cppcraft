@@ -206,12 +206,16 @@ namespace cppcraft
 				c = mixColor(c, RGBA8(80, 200, 0, 255), 0.25);
 			}
 		}
-		else if (b.getID() >= CROSS_START && b.getID() <= CROSS_END)
+		else if (isCross(b.getID()))
 		{
 			c = fgetColor(s, x, z, Biomes::CL_GRASS);
 			c = mixColor(c, RGBA8(80, 200, 0, 255), 0.25);
 		}
-		else if (b.getID() >= TREES_START && b.getID() <= TREES_END)
+		else if (b.getID() == _LEAF_NEEDLE)
+		{
+			c = RGBA8(20, 80, 20, 255);
+		}
+		else if (isLeaf(b.getID()))
 		{
 			c = fgetColor(s, x, z, Biomes::CL_TREES);
 			c = mixColor(c, RGBA8(80, 200, 0, 255), 0.25);

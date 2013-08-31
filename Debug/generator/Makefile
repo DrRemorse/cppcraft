@@ -1,5 +1,5 @@
 OUTPUT = ../generator.dll
-CC = gcc
+CC = c:\mingw64\bin\gcc
 CFLAGS = -c -Iinc -std=gnu99 -pipe -m32 -Ofast -mfpmath=both
 LFLAGS = -shared -Llib -std=gnu99 -pipe -m32 -Ofast -mfpmath=both
 

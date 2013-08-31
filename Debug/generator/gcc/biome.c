@@ -46,7 +46,7 @@ int toTerrain(int biome)
 	case 12:
 	case 13:
 	case 14:
-		return T_DESERT;
+		return T_SNOW; //T_DESERT;
 		
 	default:
 		return 0;
@@ -55,8 +55,6 @@ int toTerrain(int biome)
 
 cl_rgb mixColor(cl_rgb* a, cl_rgb* b, f32_t mixlevel)
 {
-	if (mixlevel == 0) return *a;
-	
 	cl_rgb c;
 	c.r = (int)( (f32_t)a->r * (1.0 - mixlevel) + (f32_t)b->r * mixlevel );
 	if (c.r > 255) c.r = 255;
@@ -69,15 +67,12 @@ cl_rgb mixColor(cl_rgb* a, cl_rgb* b, f32_t mixlevel)
 
 void addColorv(cl_rgb* a, cl_rgb* b, f32_t level)
 {
-	if (level == 0.0) return;
-	
 	a->r += (int)( (f32_t)b->r * level );
 	if (a->r > 255) a->r = 255;
 	a->g += (int)( (f32_t)b->g * level );
 	if (a->g > 255) a->g = 255;
 	a->b += (int)( (f32_t)b->b * level );
 	if (a->b > 255) a->b = 255;
-	
 }
 
 cl_rgb getGradientColor(f32_t v, cl_rgb* array, int size)
@@ -202,8 +197,6 @@ void biomeGenerator(genthread* l_thread)
 			
 			terrain = toTerrain(biome.b[i]);
 			
-			if (terrain < 0 || terrain > 20) terrain = 0;
-			
 			// determine strongest weight, and use that for terrain-id
 			// in all later generator stages
 			if (weight > bigw)
@@ -212,8 +205,18 @@ void biomeGenerator(genthread* l_thread)
 				bigt = terrain;
 			}
 			
-			tempcl = getGrassColor(terrain);
-			addColorv(&biomecl[CL_GRASS], &tempcl, weight);
+			if (terrain == T_SNOW || terrain == T_ICECAP)
+			{
+				determinator += weight;
+			}
+			else
+			{
+				tempcl = getGrassColor(terrain);
+				addColorv(&biomecl[CL_GRASS], &tempcl, weight);
+				
+				tempcl = getCrossColor(terrain);
+				addColorv(&biomecl[CL_CROSS], &tempcl, weight);
+			}
 			
 			tempcl = getStoneColor(terrain);
 			addColorv(&biomecl[CL_STONE], &tempcl, weight);
@@ -221,23 +224,28 @@ void biomeGenerator(genthread* l_thread)
 			tempcl = getLeafColor(terrain);
 			addColorv(&biomecl[CL_TREES], &tempcl, weight);
 			
-			tempcl = getCrossColor(terrain);
-			addColorv(&biomecl[CL_CROSS], &tempcl, weight);
 		}
 		
 		// set terrain-id based on the strongest weight
 		setTerrain(flatland, x, z, bigt);
+		
+		// if we encountered snow weights, we ignore them and add the biggest terrain instead
+		if (determinator != 0.0)
+		{
+			tempcl = getGrassColor(bigt);
+			addColorv(&biomecl[CL_GRASS], &tempcl, determinator);
+			
+			tempcl = getCrossColor(bigt);
+			addColorv(&biomecl[CL_CROSS], &tempcl, determinator);
+		}
 		
 		determinator = 1.0;
 		
 		// special case for snow terrain
 		if (bigt == T_ICECAP || bigt == T_SNOW)
 		{
-			//biomecl[CL_GRASS] = getGrassColor(bigt);
-			//biomecl[CL_CROSS] = getCrossColor(bigt);
-			//biomecl[CL_TREES] = getLeafColor(bigt);
-			// no extra grass color in snow terrains
-			determinator = 0.0;
+			// remove extra grass color by the terrains weight
+			determinator -= bigw;
 		}
 		
 		const f32_t GRASS_GRAD_WEIGHT = 0.5;
