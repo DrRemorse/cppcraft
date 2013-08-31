@@ -145,6 +145,8 @@ namespace cppcraft
 		int itemW, itemH;
 		int itemsX, itemsY;
 		
+		void init();
+		
 		int getMiningTime(const Block& block, const InventoryItem& item) const;
 		
 		std::string getName(item_t id);

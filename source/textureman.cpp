@@ -5,6 +5,7 @@
 #include "library/bitmap/bitmap.hpp"
 #include "library/opengl/window.hpp"
 #include "library/opengl/opengl.hpp"
+#include "items.hpp"
 #include "render_fs.hpp"
 #include "sun.hpp"
 #include "tiles.hpp"
@@ -74,6 +75,20 @@ namespace cppcraft
 		}
 		else throw std::string("Materials(4) missing source file: Bigtone");
 		if (ogl.checkError()) throw std::string("Materials(4) texture2d array error");
+		
+		/// ITEMS tileset ///
+		if (bmp.load(config.get("textures.items", "bitmap/default/items.bmp")))
+		{
+			bmp.parse2D(items.itemW, items.itemH);
+			
+			items.itemsX = bmp.getTilesX();
+			items.itemsY = bmp.getTilesY();
+			
+			textures[T_ITEMS] = Texture(GL_TEXTURE_2D_ARRAY);
+			textures[T_ITEMS].create(bmp, true, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
+		}
+		else throw std::string("Missing source file: Items tileset");
+		if (ogl.checkError()) throw std::string("Items texture2d array error");
 		
 		/// PLAYER MODELS tileset ///
 		if (bmp.load(config.get("textures.playerskins", "bitmap/default/playerskins.bmp")))

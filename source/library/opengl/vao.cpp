@@ -83,16 +83,6 @@ namespace library
 		begin(sizeof(screenvertex_t), 4, sv_t);
 		attrib(0, 2, GL_FLOAT, GL_FALSE, 0);
 		end();
-		
-		if (isGood() == false)
-			throw std::string("Failed to create screenspace VAO");
-		
-		if (ogl.checkError())
-		{
-			logger << Log::ERR << "VAO::createScreenspaceVAO(): OpenGL error for vao = " << vao << Log::ENDL;
-			throw std::string("VAO::createScreenspaceVAO(): OpenGL error (desc = " + desc + ")");
-		}
-		
 	}
 	
 	void VAO::bind()

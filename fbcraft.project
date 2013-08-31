@@ -303,6 +303,9 @@
     <File Name="source/render_fsblur.cpp"/>
     <File Name="source/camera.cpp"/>
     <File Name="source/camera.hpp"/>
+    <File Name="source/render_gui_inventory.hpp"/>
+    <File Name="source/render_gui_inventory.cpp"/>
+    <File Name="source/worldmanager_init.cpp"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>

@@ -31,6 +31,7 @@ namespace cppcraft
 		void renderMinimap(library::Matrix& ortho);
 		void renderCrosshair(library::Matrix& ortho);
 		void renderQuickbar(library::Matrix& ortho, double frameCounter);
+		void renderQuickbarItems(library::Matrix& ortho, double frameCounter);
 	};
 	extern GUIRenderer rendergui;
 }

@@ -139,7 +139,7 @@ void main(void)
 	vec3 vNormal = mat3(matview) * Normal;
 	vec3 viewNormal = normalize(v_normal + vNormal * 0.1);
 	
-	vec3 Reflect   = l_reflect + Normal * 0.125;
+	vec3 vReflect   = l_reflect + Normal * 0.125;
 	
 #else
 	// normal-mapped (tangent space) noise
@@ -154,7 +154,7 @@ void main(void)
 	vec3 vNormal = mat3(matview) * Normal;
 	
 	vec3 viewNormal = normalize(v_normal + vNormal * 0.5);
-	vec3 Reflect   = l_reflect + Normal * 0.15;
+	vec3 vReflect   = l_reflect + Normal * 0.15;
 	
 #endif
 	
@@ -169,16 +169,14 @@ void main(void)
 	
 	//----- REFRACTION -----
 	
-	// create underwatermap coordinate
-	//#define distortCoord  Normal.xz * 4.0
-	
+	// underwatermap coordinates
 	vec2 refcoord = gl_FragCoord.xy / screendata.xy;
 	refcoord.y -= viewNormal.z * fdepth * 0.25 * (1.0 - refcoord.y * refcoord.y);
 	refcoord.xy += Normal.xz * 0.0025;
 	
-	// start with underwater color
+	// start with underwater texture
 	vec4 color = texture2D(underwatermap, refcoord.xy);
-	// gamma
+	// apply gamma ramp
 	color.rgb = pow(color.rgb, vec3(2.2));
 	
 	// mix in seacolor based on 'depth'
@@ -197,11 +195,11 @@ void main(void)
 	//----- REFLECTIONS -----
 	
 	// mix in sky reflection
-	vec3 reflection = textureCube(skymap, Reflect).rgb * daylight;
+	vec3 reflection = textureCube(skymap, vReflect).rgb * daylight;
 	color.rgb = mix(color.rgb, reflection, 0.1 + 0.6 * fresnel);
 	
 	// fake waves
-	color.rgb *= 1.0 + (dot(Normal, l_normal) + 0.75) * 0.2;
+	color.rgb *= 1.0 + (dot(Normal, l_normal) + 0.75) * 0.1;
 	
 	// degamma
 	color.rgb = pow(color.rgb, vec3(1.0 / 2.2));

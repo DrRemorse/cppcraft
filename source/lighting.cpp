@@ -19,7 +19,7 @@ namespace cppcraft
 	
 	const float LightingClass::MAX_ADDITIONAL_LIGHT = 0.95f;
 	
-	const float LightingClass::DARKNESS = 256 * 0.90;
+	const float LightingClass::DARKNESS = 256 * 0.96;
 	const float LightingClass::SHADOWS  = 256 * 0.68;
 	const float LightingClass::CORNERS  = 256 * 0.45;
 	

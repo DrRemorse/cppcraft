@@ -92,7 +92,6 @@ namespace cppcraft
 		linkstage.emplace_back("in_biome");
 		
 		// block shaders
-		int sbase = (int)STD_BLOCKS;
 		for (int i = 0; i < 4; i++)
 		{
 			switch (i)
@@ -110,6 +109,8 @@ namespace cppcraft
 				shaders[BLOCKS_WATER] = Shader("shaders/blocks_water.glsl", tokenizer, linkstage);
 				break;
 			}
+			
+			int sbase = (int)STD_BLOCKS;
 			
 			// projection matrix
 			shaders[sbase + i].sendMatrix("matproj", matproj);
@@ -233,10 +234,13 @@ namespace cppcraft
 		shaders[GUI] = Shader("shaders/gui.glsl", tokenizer, linkstage);
 		shaders[GUI].sendInteger("texture", 0);
 		
+		// GUI menuitem shader
+		shaders[MENUITEM] = Shader("shaders/gui_item.glsl", tokenizer, linkstage);
+		shaders[MENUITEM].sendInteger("texture", 0);
+		
 		// compass shader
 		shaders[COMPASS] = Shader("shaders/compass.glsl", tokenizer, linkstage);
 		shaders[COMPASS].sendInteger("texture", 0);
-		
 		
 	}
 	

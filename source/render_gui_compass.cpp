@@ -34,7 +34,7 @@ namespace cppcraft
 		if (camera.rotated)
 		{
 			// move to position
-			Matrix matview(1.0);
+			Matrix matview(ortho);
 			matview.translate_xy(compx, compy);
 			
 			// rotate properly
@@ -45,12 +45,12 @@ namespace cppcraft
 			// scale down to proper size
 			mattemp.scale(compassScale, compassScale, 1.0);
 			// orthograhic projection * view
-			compassMVP = ortho * matview * mattemp;
+			compassMVP = matview * mattemp;
 			
 			// scale down to proper size
 			mattemp.scale(minimapScale, minimapScale, 1.0);
 			// orthograhic projection * view
-			minimapMVP = ortho * matview * mattemp;
+			minimapMVP = matview * mattemp;
 		}
 		
 		/// minimap ///

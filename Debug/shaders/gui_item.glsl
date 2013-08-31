@@ -7,24 +7,26 @@ precision mediump float;
 uniform mat4 mvp;
 
 in vec3 in_vertex;
-in vec2 in_texture;
+in vec3 in_texture;
 in vec4 in_color;
 
-out vec2 texCoord;
+out vec3 texCoord;
 out vec4 colordata;
 
 void main()
 {
 	gl_Position = mvp * vec4(in_vertex, 1.0);
-	texCoord = in_texture;
+	texCoord  = in_texture;
 	colordata = in_color;
 }
 #endif
 
 #ifdef FRAGMENT_PROGRAM
-uniform sampler2D texture;
+#extension GL_EXT_gpu_shader4 : enable
 
-in vec2 texCoord;
+uniform sampler2DArray texture;
+
+in vec3 texCoord;
 in vec4 colordata;
 
 const vec3 degamma = vec3(1.0 / 2.2);
@@ -32,7 +34,7 @@ const vec3 gamma   = vec3(2.2);
 
 void main(void)
 {
-	vec4 color = texture2D(texture, texCoord);
+	vec4 color = texture2DArray(texture, texCoord);
 	if (color.a == 0.0) discard; // le discard
 	
 	// degamma

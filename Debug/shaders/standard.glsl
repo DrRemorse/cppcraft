@@ -106,13 +106,12 @@ const int TX_CROSS
 void main(void)
 {
 	// independent texture reads using inbound variable directly
-	#define coord texCoord
 	// read tonecolor from tonemap
-	vec4 color = texture2DArray(tonemap, coord.stp);
+	vec4 color = texture2DArray(tonemap, texCoord);
 	color.rgb *= biomeColor.rgb;
 	
 	// mix diffuse map
-	vec4 diffuse = texture2DArray(texture, coord.stp);
+	vec4 diffuse = texture2DArray(texture, texCoord);
 	color = mix(diffuse, color, color.a);
 	
 	// reflection //

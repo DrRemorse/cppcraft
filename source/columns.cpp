@@ -189,6 +189,8 @@ namespace cppcraft
 		// generate resources for column //
 		///////////////////////////////////
 		
+		bool updateAttribs = false;
+		
 		if (this->vao == 0)
 		{
 			// occlusion culling
@@ -197,6 +199,8 @@ namespace cppcraft
 			glGenVertexArrays(1, &this->vao);
 			// vertex and index buffer object
 			glGenBuffers(1, &this->vbo);
+			
+			updateAttribs = true;
 		}
 		
 		// bind vao
@@ -204,12 +208,11 @@ namespace cppcraft
 		
 		// bind vbo and set to total bytes
 		glBindBuffer(GL_ARRAY_BUFFER_ARB, this->vbo);
-		
-		// reset data
-		//glBufferData(GL_ARRAY_BUFFER_ARB, totalbytes, NULL, GL_STATIC_DRAW_ARB);
 		// upload data
 		glBufferData(GL_ARRAY_BUFFER_ARB, totalbytes, column_dump, GL_STATIC_DRAW_ARB);
 		
+		if (updateAttribs)
+		{
 		// attribute pointers
 		glVertexAttribPointer(0, 3, GL_SHORT,			GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, x )); // vertex
 		glEnableVertexAttribArray(0);
@@ -225,14 +228,18 @@ namespace cppcraft
 		glEnableVertexAttribArray(5);
 		glVertexAttribPointer(6, 4, GL_UNSIGNED_BYTE,	GL_TRUE,  sizeof(vertex_t), (void*) offsetof(vertex_t, biome)); // biome color
 		glEnableVertexAttribArray(6);
+		}
 		
 		// disable vao & vbo
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
 		
 		// disable vertex attributes
-		for (int i = 0; i < 7; i++)
-			glDisableVertexAttribArray(i);
+		if (updateAttribs)
+		{
+			for (int i = 0; i < 7; i++)
+				glDisableVertexAttribArray(i);
+		}
 		
 		if (ogl.checkError())
 		{

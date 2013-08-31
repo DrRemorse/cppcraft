@@ -26,9 +26,13 @@ namespace cppcraft
 		
 		// initializer
 		void init(gamestate_t, std::string& folder);
-		gamestate_t getState();
 		// running thread function
 		void main();
+		
+		gamestate_t getState() const noexcept
+		{
+			return this->gamestate;
+		}
 		
 	private:
 		gamestate_t gamestate;

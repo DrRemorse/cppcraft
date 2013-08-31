@@ -1,6 +1,10 @@
 #include "items.hpp"
 
+#include "library/config.hpp"
+#include "library/log.hpp"
 #include "blocks.hpp"
+
+using namespace library;
 
 namespace cppcraft
 {
@@ -62,6 +66,15 @@ namespace cppcraft
 		
 		return items.tileByID(this->getID());
 		
+	}
+	
+	void ItemsClass::init()
+	{
+		// initialing items
+		logger << Log::INFO << "* Initializing items" << Log::ENDL;
+		
+		this->itemW = config.get("items.size", 32);
+		this->itemH = this->itemW;
 	}
 	
 	int ItemsClass::tileByID(item_t id)

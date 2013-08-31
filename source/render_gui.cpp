@@ -22,21 +22,25 @@ namespace cppcraft
 		Matrix ortho;
 		ortho.ortho(width, height, 0, 2);
 		
-		// player hand
+		/// player hand ///
 		renderPlayerhand(renderer.frametick);
 		
 		glEnable(GL_BLEND);
 		
-		// compass & minimap
+		/// compass & minimap ///
 		renderMinimap(ortho);
 		
-		// crosshair
+		/// crosshair ///
 		renderCrosshair(ortho);
 		
-		// quickbar
+		/// quickbar ///
 		renderQuickbar(ortho, renderer.frametick);
 		
 		glDisable(GL_BLEND);
+		
+		/// quickbar items ///
+		renderQuickbarItems(ortho, renderer.frametick);
+		
 	}
 	
 	

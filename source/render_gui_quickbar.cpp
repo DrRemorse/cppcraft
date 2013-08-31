@@ -12,20 +12,15 @@ using namespace library;
 
 namespace cppcraft
 {
-	class Quickbar
-	{
-	public:
-		VAO vao;
-	};
-	Quickbar quickbar;
+	VAO quickbarVAO;
 	
 	void GUIRenderer::renderQuickbar(Matrix& ortho, double frameCounter)
 	{
-		if (quickbar.vao.isGood() == false)
+		if (quickbarVAO.isGood() == false)
 		{
 			// create quickbar quad
 			float sizex = this->width * 0.4;
-			float sizey = this->height * 0.1;
+			float sizey = sizex / 8;
 			float x = (this->width - sizex) * 0.5;
 			float y = this->height - sizey;
 			
@@ -37,18 +32,19 @@ namespace cppcraft
 				{ x,         y + sizey, 0,   0, 1,   BGRA8(255, 255, 255, 128) }
 			};
 			
-			quickbar.vao.begin(sizeof (gui_vertex_t), 4, vertices);
-			quickbar.vao.attrib(0, 3, GL_FLOAT, GL_FALSE, offsetof(gui_vertex_t, x));
-			quickbar.vao.attrib(1, 2, GL_FLOAT, GL_FALSE, offsetof(gui_vertex_t, u));
-			quickbar.vao.attrib(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, offsetof(gui_vertex_t, color));
-			quickbar.vao.end();
+			quickbarVAO.begin(sizeof (gui_vertex_t), 4, vertices);
+			quickbarVAO.attrib(0, 3, GL_FLOAT, GL_FALSE, offsetof(gui_vertex_t, x));
+			quickbarVAO.attrib(1, 2, GL_FLOAT, GL_FALSE, offsetof(gui_vertex_t, u));
+			quickbarVAO.attrib(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, offsetof(gui_vertex_t, color));
+			quickbarVAO.end();
 		}
 		
 		textureman.bind(0, Textureman::T_QUICKBAR);
 		
 		shaderman[Shaderman::GUI].bind();
+		shaderman[Shaderman::GUI].sendMatrix("mvp", ortho);
 		
-		quickbar.vao.render(GL_QUADS);
+		quickbarVAO.render(GL_QUADS);
 		
 	}
 	
