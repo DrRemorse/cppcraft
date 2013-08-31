@@ -315,9 +315,9 @@ namespace cppcraft
 			#endif
 			
 			// vertex position in 16bits
-			short vx = bx * RenderConst::VERTEX_SCALE;
-			short vy = by * RenderConst::VERTEX_SCALE + worldY + worldY_extra;
-			short vz = bz * RenderConst::VERTEX_SCALE;
+			short vx = (bx << RenderConst::VERTEX_SHL);
+			short vy = (by << RenderConst::VERTEX_SHL) + worldY + worldY_extra;
+			short vz = (bz << RenderConst::VERTEX_SHL);
 			
 			///////////////////////////////
 			//  now, emit some vertices  //

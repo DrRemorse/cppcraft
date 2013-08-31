@@ -8,6 +8,7 @@
 #include "soundman.hpp"
 #include "threading.hpp"
 #include "worldbuilder.hpp"
+#include "world.hpp"
 
 #include "library/log.hpp"
 #include "library/timing/timer.hpp"
@@ -103,5 +104,8 @@ namespace cppcraft
 		#ifdef USE_INET
 			networkDisconnect();
 		#endif
+		
+		// save our stuff!
+		world.save();
 	}
 }

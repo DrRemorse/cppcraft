@@ -5,6 +5,7 @@
 
 namespace library
 {
+	float Sound::masterVolume = 1.0;
 	const float Sound::MAX_PAN_DIST = 100.0f;
 	const float Sound::MAX_VOL_DIST = 25.0f;
 	
@@ -50,6 +51,7 @@ namespace library
 		HCHANNEL ch = BASS_SampleGetChannel(this->handle, FALSE);
 		if (ch == 0) throw std::string("Sound::play(): Invalid handle from BASS_SampleGetChannel");
 		
+		BASS_ChannelSetAttribute(ch, BASS_ATTRIB_VOL, masterVolume);
 		BASS_ChannelPlay(ch, FALSE);
 	}
 	
@@ -62,10 +64,15 @@ namespace library
 		float vol = toolbox::clamp(0.0, 1.0, L / MAX_VOL_DIST);
 		
 		HCHANNEL ch = BASS_SampleGetChannel(handle, FALSE);
-		BASS_ChannelSetAttribute(ch, BASS_ATTRIB_VOL, vol);
+		BASS_ChannelSetAttribute(ch, BASS_ATTRIB_VOL, vol * masterVolume);
 		BASS_ChannelSetAttribute(ch, BASS_ATTRIB_PAN, pan);
 
 		if (!BASS_ChannelPlay(ch, FALSE))
 			throw std::string("Sound::play(vec3): Error playing (stereoized) sound");
+	}
+	
+	void Sound::setMasterVolume(float vol)
+	{
+		Sound::masterVolume = vol;
 	}
 }

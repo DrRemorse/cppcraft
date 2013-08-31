@@ -20,6 +20,8 @@ namespace cppcraft
 		world.init(worldFolder);
 		// initialize player
 		player.initPlayer();
+		// load world data (if any)
+		world.load();
 		// initialize chunk systems
 		chunks.initChunks();
 		// initialize precompiler systems

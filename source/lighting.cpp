@@ -21,7 +21,7 @@ namespace cppcraft
 	
 	const float LightingClass::DARKNESS = 256 * 0.96;
 	const float LightingClass::SHADOWS  = 256 * 0.68;
-	const float LightingClass::CORNERS  = 256 * 0.45;
+	const float LightingClass::CORNERS  = 256 * 0.46;
 	
 	const float LightingClass::RAY_CRASH_CONSTANT = 16.0f;
 	const float LightingClass::LIGHT_FULL_DAMAGE  = 12.0f;

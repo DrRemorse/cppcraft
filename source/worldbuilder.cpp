@@ -106,12 +106,11 @@ namespace cppcraft
 		// diagonal max value
 		int corner_rad = Sectors.getXZ() / 2;
 		
-		// iterator start/stop values for X, Y, Z
+		// iterator start/stop values for X, Z
 		int x0 = center_x - this->diagonal - 1;
 		int x1 = center_x + this->diagonal + 1;
-		
-		int z0 = center_z - this->diagonal;
-		int z1 = center_z + this->diagonal;
+		int z0 = x0 + 1;
+		int z1 = x1 - 1;
 		
 		// iterators
 		int xx, zz;
@@ -143,10 +142,13 @@ namespace cppcraft
 			xx = x0;
 			for (zz = z0; zz <= z1; zz++)
 			{
-				// load compressed sectors, flatlands, sector dumps
-				Sector& s = Sectors(xx, 0, zz);
-				wrunGen(s);
-				if (mode == MODE_PRECOMPILE)
+				if (mode == MODE_GENERATING)
+				{
+					// load compressed sectors, flatlands, sector dumps
+					Sector& s = Sectors(xx, 0, zz);
+					wrunGen(s);
+				}
+				else
 				{	// alternatively, adding to precompiler queue
 					if (wrunPrecomp(xx, zz)) return true;
 				}
@@ -161,10 +163,13 @@ namespace cppcraft
 			xx = x1;
 			for (zz = z0; zz <= z1; zz++)
 			{
-				// load compressed sectors, flatlands, sector dumps
-				Sector& s = Sectors(xx, 0, zz);
-				wrunGen(s);
-				if (mode == MODE_PRECOMPILE)
+				if (mode == MODE_GENERATING)
+				{
+					// load compressed sectors, flatlands, sector dumps
+					Sector& s = Sectors(xx, 0, zz);
+					wrunGen(s);
+				}
+				else
 				{	// alternatively, adding to precompiler queue
 					if (wrunPrecomp(xx, zz)) return true;
 				}
@@ -179,10 +184,13 @@ namespace cppcraft
 			zz = z0;
 			for (xx = x0; xx <= x1; xx++)
 			{
-				// load compressed sectors, flatlands, sector dumps
-				Sector& s = Sectors(xx, 0, zz);
-				wrunGen(s);
-				if (mode == MODE_PRECOMPILE)
+				if (mode == MODE_GENERATING)
+				{
+					// load compressed sectors, flatlands, sector dumps
+					Sector& s = Sectors(xx, 0, zz);
+					wrunGen(s);
+				}
+				else
 				{	// alternatively, adding to precompiler queue
 					if (wrunPrecomp(xx, zz)) return true;
 				}
@@ -197,10 +205,13 @@ namespace cppcraft
 			zz = z1;
 			for (xx = x0; xx <= x1; xx++)
 			{
-				// load compressed sectors, flatlands, sector dumps
-				Sector& s = Sectors(xx, 0, zz);
-				wrunGen(s);
-				if (mode == MODE_PRECOMPILE)
+				if (mode == MODE_GENERATING)
+				{
+					// load compressed sectors, flatlands, sector dumps
+					Sector& s = Sectors(xx, 0, zz);
+					wrunGen(s);
+				}
+				else
 				{	// alternatively, adding to precompiler queue
 					if (wrunPrecomp(xx, zz)) return true;
 				}

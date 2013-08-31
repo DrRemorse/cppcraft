@@ -48,6 +48,9 @@ namespace cppcraft
 		int getWY() { return this->worldY; }
 		int getWZ() { return this->worldZ; }
 		
+		void load();
+		void save();
+		
 		// seamless transitions the word, and is the only one
 		// allowed to directly modify worldX, worldZ
 		friend Seamless; // special customer

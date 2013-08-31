@@ -69,7 +69,7 @@ namespace cppcraft
 		// open this chunks .compressed file
 		std::string sectorString = world.worldFolder() + "/" + chunks.getSectorString(sector);
 		
-		std::ifstream cf(sectorString + ".compressed", std::ios::binary);
+		std::ifstream cf(sectorString + ".compressed", std::ios::in | std::ios::binary);
 		bool cf_open = false;
 		
 		if (cf.good())
@@ -80,7 +80,7 @@ namespace cppcraft
 		}
 		
 		// open this chunks (raw) .chunk file
-		std::ifstream ff(sectorString + ".chunk", std::ios::binary);
+		std::ifstream ff(sectorString + ".chunk", std::ios::in | std::ios::binary);
 		bool ff_open = false;
 		
 		if (ff.good())

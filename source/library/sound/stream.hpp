@@ -11,8 +11,10 @@ namespace library
 	private:
 		HSTREAM handle;
 		// crossfade related
-		float volume;
+		float  volume;
 		double startTime;
+		// master volume for streams [0..1]
+		static float masterVolume;
 		
 	public:
 		Stream();
@@ -29,6 +31,10 @@ namespace library
 		
 		// set volume to level (0..1) in time_ms (milliseconds)
 		void setVolume(float vol);
+		
+		static void setMasterVolume(float vol);
+		
+		friend class StreamChannel;
 	};
 }
 

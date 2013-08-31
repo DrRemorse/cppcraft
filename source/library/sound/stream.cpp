@@ -5,6 +5,7 @@
 
 namespace library
 {
+	float Stream::masterVolume = 1.0;
 	Stream::Stream() {}
 	
 	Stream::Stream(std::string s): handle(0)
@@ -50,7 +51,7 @@ namespace library
 	void Stream::setVolume(float vol)
 	{
 		vol = toolbox::clamp(0.0, 1.0, vol);
-		BASS_ChannelSetAttribute(handle, BASS_ATTRIB_VOL, vol);
+		BASS_ChannelSetAttribute(handle, BASS_ATTRIB_VOL, vol * masterVolume);
 		
 		if (BASS_ErrorGetCode())
 		{
@@ -58,5 +59,9 @@ namespace library
 			throw std::string("Stream::setVolume(): BASS failed to set new volume");
 		}
 	}
-
+	
+	void Stream::setMasterVolume(float vol)
+	{
+		Stream::masterVolume = vol;
+	}
 }

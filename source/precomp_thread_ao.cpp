@@ -14,76 +14,82 @@ namespace cppcraft
 {
 	struct ao_struct
 	{
-		static const int CRASH_MAX_POINTS = 3200;
+		static const int CRASH_MAX_POINTS = 2400;
 		
 		int count = 0;
 		
-		// counters for how many vertices are added to each face
-		bool t_count[CRASH_MAX_POINTS][8][6] = {{{false}}};
-		// counter for corners per vertex
-		unsigned char t_corner[CRASH_MAX_POINTS] = {0};
-		// final lookup table
+		// lookup table
 		short t_lookup[Sector::BLOCKS_XZ+1]
 					  [Sector::BLOCKS_Y +1]
 					  [Sector::BLOCKS_XZ+1] = {{{0}}};
+		// counters for how many vertices are added to each face
+		bool t_count[CRASH_MAX_POINTS][8][6] = {{{false}}};
+		// corner shadow value
+		unsigned char t_corner[CRASH_MAX_POINTS];
 		// test data
 		visiblefaces_t testdata;
 	};
 	
-	void addCornerShadowVertex(ao_struct& ao, vertex_t* vt, short x, short y, short z)
+	short addCornerShadowVertex(ao_struct& ao, vertex_t* vt, short x, short y, short z)
 	{
-		if ((x | y | z) >= 0 && x <= Sector::BLOCKS_XZ && y <= Sector::BLOCKS_Y && z <= Sector::BLOCKS_XZ)
+		short corner = vt->face >> 3;
+		corner =(corner & 1) + // 0 if left,  1 if right
+				(corner & 2) + // 0 if lower, 2 if upper
+				(corner & 4);  // 0 if back,  4 if front
+		
+		short face = (vt->face & 7) - 1;
+		short index;
+		
+		if (ao.t_lookup[x][y][z] == 0)
 		{
-			short corner;
-			corner  = (vt->face &  8) >> 3; // 0 if left,  1 if right
-			corner += (vt->face & 16) >> 3; // 0 if lower, 2 if upper
-			corner += (vt->face & 32) >> 3; // 0 if back,  4 if front
-			
-			short face = (vt->face & 7) - 1;
-			short index;
-			
-			if (ao.t_lookup[x][y][z] == 0)
-			{
-				// if the lookup wasn't set before, set it now
-				index = ++ao.count;
-				ao.t_lookup[x][y][z] = index;
-			}
-			else
-			{
-				// otherwise, use previous index
-				index = ao.t_lookup[x][y][z];
-			}
-			
-			// add this vertex information
-			ao.t_count[index][corner][face] = true;
+			// if the lookup wasn't set before, set it now
+			index = ++ao.count;
+			ao.t_lookup[x][y][z] = index;
 		}
+		else
+		{
+			// otherwise, use previous index
+			index = ao.t_lookup[x][y][z];
+		}
+		
+		// add this vertex information
+		ao.t_count[index][corner][face] = true;
+		return index;
 	}
 	
 	void runCornerShadowTest(ao_struct& ao, int facing, short baseX, short baseY, short baseZ)
 	{
-		if (facing == 0) return;
-		
 		// this block was visible
 		for (int i = 0; i < 6; i++) // iterate faces
 		{
 			// check which faces are visible
 			if (facing & (1 << i))
 			{
+				vertex_t* vt = &blockmodels.cubes[0].get(i, 0);
+				
 				// this face was visible
 				for (int f = 0; f < 4; f++) // iterate vertices
 				{
-					vertex_t* vt = &blockmodels.cubes[0].get(i, f);
+					short x = baseX + (vt->x >> RenderConst::VERTEX_SHL);
+					short y = baseY + (vt->y >> RenderConst::VERTEX_SHL);
+					short z = baseZ + (vt->z >> RenderConst::VERTEX_SHL);
 					
-					short x = baseX + vt->x / RenderConst::VERTEX_SCALE;
-					short y = baseY + vt->y / RenderConst::VERTEX_SCALE;
-					short z = baseZ + vt->z / RenderConst::VERTEX_SCALE;
-					
-					addCornerShadowVertex(ao, vt, x, y, z);
+					if ((x | y | z) >= 0 && x <= Sector::BLOCKS_XZ && y <= Sector::BLOCKS_Y && z <= Sector::BLOCKS_XZ)
+					{
+						addCornerShadowVertex(ao, vt, x, y, z);
+					}
+					vt += 1;
 				}
 				
 			} // facing & side
 			
 		} // next face
+	}
+	
+	inline bool cornerShadowBlocktest(const Block& block)
+	{
+		block_t id = block.getID();
+		return (id > AIR_END && id < CROSS_START && id != _LANTERN && id != _VINES);
 	}
 	
 	void PrecompThread::ambientOcclusionGradients(vertex_t* datadump, int vertexCount)
@@ -100,18 +106,28 @@ namespace cppcraft
 		// calculate face counts for each integral vertex position
 		vertex_t* vt = datadump; // first vertex
 		
+		int firstCorner = 50000;
+		int lastCorner  = 0;
+		
 		for (int i = 0; i < vertexCount; i++)
 		{
 			if (vt->face) // only supported faces!
 			{
-				short x = vt->x / RenderConst::VERTEX_SCALE;
-				short y = vt->y / RenderConst::VERTEX_SCALE - worldY;
-				short z = vt->z / RenderConst::VERTEX_SCALE;
+				short x = (vt->x >> RenderConst::VERTEX_SHL);
+				short y = (vt->y >> RenderConst::VERTEX_SHL) - worldY;
+				short z = (vt->z >> RenderConst::VERTEX_SHL);
 				
-				addCornerShadowVertex(ao, vt, x, y, z);
+				// set new face value to ao index
+				vt->face = addCornerShadowVertex(ao, vt, x, y, z);
+				
+				if (i < firstCorner) firstCorner = i;
+				if (i > lastCorner) lastCorner = i;
 			}
 			vt += 1; // next vertex
 		}
+		// we can exit here, since theres no need to collect more vertices
+		// if there are no original vertices to test on
+		if (ao.count == 0) return;
 		
 		// we need to add remaining outside-of-sector points using Solidity()
 		// first create transversal data with true for all reads
@@ -119,9 +135,6 @@ namespace cppcraft
 		ao.testdata.sb_x_m = &sector; ao.testdata.sb_x_p = &sector;
 		ao.testdata.sb_y_m = &sector; ao.testdata.sb_y_p = &sector;
 		ao.testdata.sb_z_m = &sector; ao.testdata.sb_z_p = &sector;
-		
-		#define cornerShadowBlocktest(block) \
-			(block.getID() > AIR_END && block.getID() < CROSS_START && block.getID() != _LANTERN && block.getID() != _VINES)
 		
 		// - Y
 		if (pcg.testdata.test_y_m == 2)
@@ -144,7 +157,7 @@ namespace cppcraft
 						// finally run transversal
 						unsigned short facing = block.visibleFaces(ao.testdata, bx, Sector::BLOCKS_Y-1, bz);
 						
-						runCornerShadowTest(ao, facing, bx, -1, bz);
+						if (facing) runCornerShadowTest(ao, facing, bx, -1, bz);
 						
 					} // correct id
 					
@@ -155,7 +168,6 @@ namespace cppcraft
 			// disable test y-positive
 			ao.testdata.test_y_p = false;
 		}
-		
 		// + Y
 		if (pcg.testdata.test_y_p == 2)
 		{
@@ -177,7 +189,7 @@ namespace cppcraft
 						// finally run transversal
 						unsigned short facing = block.visibleFaces(ao.testdata, bx, 0, bz);
 						
-						runCornerShadowTest(ao, facing, bx, Sector::BLOCKS_Y, bz);
+						if (facing) runCornerShadowTest(ao, facing, bx, Sector::BLOCKS_Y, bz);
 						
 					} // correct id
 					
@@ -209,7 +221,7 @@ namespace cppcraft
 						// finally run transversal
 						unsigned short facing = block.visibleFaces(ao.testdata, 0, by, bz);
 						
-						runCornerShadowTest(ao, facing, Sector::BLOCKS_XZ, by, bz);
+						if (facing) runCornerShadowTest(ao, facing, Sector::BLOCKS_XZ, by, bz);
 					}
 				}
 			}
@@ -217,7 +229,6 @@ namespace cppcraft
 			// disable test x-
 			ao.testdata.test_x_m = false;
 		}
-		
 		// - X
 		if (pcg.testdata.test_x_m == 2)
 		{
@@ -239,7 +250,7 @@ namespace cppcraft
 						// finally run transversal
 						unsigned short facing = block.visibleFaces(ao.testdata, Sector::BLOCKS_XZ-1, by, bz);
 						
-						runCornerShadowTest(ao, facing, -1, by, bz);
+						if (facing) runCornerShadowTest(ao, facing, -1, by, bz);
 					}
 				}
 			}
@@ -269,7 +280,7 @@ namespace cppcraft
 						// finally run transversal
 						unsigned short facing = block.visibleFaces(ao.testdata, bx, by, 0);
 						
-						runCornerShadowTest(ao, facing, bx, by, Sector::BLOCKS_XZ);
+						if (facing) runCornerShadowTest(ao, facing, bx, by, Sector::BLOCKS_XZ);
 						
 					} // correct id
 					
@@ -300,7 +311,7 @@ namespace cppcraft
 						// finally run transversal
 						unsigned short facing = block.visibleFaces(ao.testdata, bx, by, Sector::BLOCKS_XZ-1);
 						
-						runCornerShadowTest(ao, facing, bx, by, -1);
+						if (facing) runCornerShadowTest(ao, facing, bx, by, -1);
 						
 					} // correct id
 					
@@ -310,15 +321,21 @@ namespace cppcraft
 		
 		if (ao.count >= ao.CRASH_MAX_POINTS)
 		{
-			logger << Log::ERR << "Too many corner shadow points" << Log::ENDL;
+			logger << Log::ERR << "Too many corner shadow points: " << ao.count << Log::ENDL;
+		}
+		else if (ao.count > 2200)
+		{
+			logger << Log::WARN << "Many corner shadow points: " << ao.count << Log::ENDL;
 		}
 		
-		const int CRASH_CORNER = Lighting.CORNERS + 8;
-		const int CRASH_WALL   = Lighting.CORNERS;
-		const int CRASH_PILLAR = Lighting.CORNERS;
-		const int OUTER_CORNER = Lighting.CORNERS;
+		static const int CRASH_CORNER = 255 - (Lighting.CORNERS + 8);
+		static const int CRASH_WALL   = 255 - Lighting.CORNERS;
+		static const int CRASH_PILLAR = 255 - Lighting.CORNERS;
+		static const int OUTER_CORNER = 255 - Lighting.CORNERS;
 		
-		for (int n = 1; n < ao.count; n++)
+		bool weSetSomething = false;
+		
+		for (int n = 1; n <= ao.count; n++)
 		{
 			// calculate final look of vertex x,y,z
 			#define gets(vertex, face) ao.t_count[n][vertex][face]
@@ -326,6 +343,7 @@ namespace cppcraft
 			// 1 0 0 = { 1 + 0 + 0 } = 1
 			// 0 1 0 = { 0 + 2 + 0 } = 2
 			// 0 0 1 = { 0 + 0 + 4 } = 4
+			ao.t_corner[n] = 255;
 			
 				// corner 0 1 0, bottom top-face
 			if (gets(0 + 2 + 0, 2))
@@ -597,30 +615,26 @@ namespace cppcraft
 				}
 			}
 			
+			if (ao.t_corner[n] != 255) weSetSomething = true;
+			
 		} // finally...
+		
+		// if no shadows were set, return immediately
+		if (weSetSomething == false) return;
+		
+		// set iterators
+		lastCorner = (lastCorner + 1) - firstCorner;
+		// first vertex
+		vt = datadump + firstCorner;
 		
 		// set corner shadow for each corner found
 		// by looking up the corner id from lookup table
-		vt = datadump; // first vertex
-		for (int i = 0; i < vertexCount; i++)
+		for (int i = 0; i < lastCorner; i++)
 		{
 			if (vt->face)
 			{
-				int x = vt->x / RenderConst::VERTEX_SCALE;
-				int y = vt->y / RenderConst::VERTEX_SCALE - worldY;
-				int z = vt->z / RenderConst::VERTEX_SCALE;
-				
-				if ((x | y | z) >= 0 && x <= Sector::BLOCKS_XZ && y <= Sector::BLOCKS_Y && z <= Sector::BLOCKS_XZ)
-				{
-					// find index in lookup table
-					short index = ao.t_lookup[x][y][z];
-					if (index)
-					{
-						// set corner shadow channel
-						((unsigned char*)&vt->c)[2] = 255 - ao.t_corner[index];
-					}
-				}
-				
+				// set corner shadow channel
+				((unsigned char*)&vt->c)[2] = ao.t_corner[vt->face];
 			}
 			vt += 1; // next vertex
 		}

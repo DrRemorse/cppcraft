@@ -18,6 +18,10 @@ using namespace library;
 namespace cppcraft
 {
 	Soundman soundman;
+	// our always-on never-ending, amazing and intolerable background music
+	StreamChannel musicPlayer;
+	StreamChannel ambiencePlayer;
+	StreamChannel underwaterPlayer;
 	
 	void Soundman::init()
 	{
@@ -30,6 +34,11 @@ namespace cppcraft
 		soundPlaylist();
 		// load music & ambience
 		musicPlaylist();
+		
+		Sound::setMasterVolume(0.3);
+		musicPlayer    = StreamChannel(0.0005, 0.2);
+		ambiencePlayer = StreamChannel(0.001,  0.7);
+		underwaterPlayer = StreamChannel(0.01, 0.6);
 		
 		logger << Log::INFO << "* Sound system initialized" << Log::ENDL;
 	}
@@ -113,10 +122,6 @@ namespace cppcraft
 		ambience[MA_CAVES].load("music/ambience/cave.mp3");
 	}
 	
-	// our always-on never-ending, amazing and intolerable background music
-	StreamChannel musicPlayer(0.0005, 0.3);
-	StreamChannel ambiencePlayer(0.001, 0.4);
-	
 	// returns the id of a random song in the playlist
 	void Soundman::handleSounds(int terrain)
 	{
@@ -165,47 +170,54 @@ namespace cppcraft
 		// ambience stream
 		if (plogic.FullySubmerged) // submerged priority over caves
 		{
-			ambiencePlayer.play(ambience[MA_UNDERWATER]);
-		}
-		else if (inCaves)
-		{
-			ambiencePlayer.play(ambience[MA_CAVES]);
+			ambiencePlayer.fullStop();
+			underwaterPlayer.play(ambience[MA_UNDERWATER]);
 		}
 		else
 		{
-			// by terrain
-			switch (terrain)
-			{
-			case Biomes::T_AUTUMN:
-				ambiencePlayer.play(ambience[MA_AUTUMN]);
-				break;
-			case Biomes::T_DESERT:
-				ambiencePlayer.play(ambience[MA_DESERT]);
-				break;
-			case Biomes::T_MUSHROOMS:
-			case Biomes::T_GRASS:
-				ambiencePlayer.play(ambience[MA_FOREST]);
-				break;
-			case Biomes::T_ISLANDS:
-				ambiencePlayer.play(ambience[MA_ISLANDS]);
-				break;
-			case Biomes::T_MARSH:
-			case Biomes::T_JUNGLE:
-				ambiencePlayer.play(ambience[MA_JUNGLE]);
-				break;
-			case Biomes::T_ICECAP:
-			case Biomes::T_SNOW:
-				ambiencePlayer.play(ambience[MA_WINTER]);
-				break;
-			default:
-				ambiencePlayer.stop();
-			}
+			underwaterPlayer.stop();
 			
-		} // ambience
+			if (inCaves)
+			{
+				ambiencePlayer.play(ambience[MA_CAVES]);
+			}
+			else
+			{
+				// by terrain
+				switch (terrain)
+				{
+				case Biomes::T_AUTUMN:
+					ambiencePlayer.play(ambience[MA_AUTUMN]);
+					break;
+				case Biomes::T_DESERT:
+					ambiencePlayer.play(ambience[MA_DESERT]);
+					break;
+				case Biomes::T_MUSHROOMS:
+				case Biomes::T_GRASS:
+					ambiencePlayer.play(ambience[MA_FOREST]);
+					break;
+				case Biomes::T_ISLANDS:
+					ambiencePlayer.play(ambience[MA_ISLANDS]);
+					break;
+				case Biomes::T_MARSH:
+				case Biomes::T_JUNGLE:
+					ambiencePlayer.play(ambience[MA_JUNGLE]);
+					break;
+				case Biomes::T_ICECAP:
+				case Biomes::T_SNOW:
+					ambiencePlayer.play(ambience[MA_WINTER]);
+					break;
+				default:
+					ambiencePlayer.stop();
+				}
+				
+			} // ambience
+		}
 		
 		// slowly crossfade in/out streams as needed
 		musicPlayer.integrate();
 		ambiencePlayer.integrate();
+		underwaterPlayer.integrate();
 	}
 	
 	int Soundman::blockToMaterial(int id) const

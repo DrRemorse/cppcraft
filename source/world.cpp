@@ -3,6 +3,8 @@
 #include "library/config.hpp"
 #include "sectors.hpp"
 #include "flatlands.hpp"
+#include "player.hpp"
+#include <fstream>
 
 using namespace library;
 
@@ -46,6 +48,41 @@ namespace cppcraft
 	const std::string& World::worldFolder() const
 	{
 		return this->folder;
+	}
+	
+	struct savetheworld_t
+	{
+		int worldX, worldY, worldZ;
+	};
+	
+	void World::load()
+	{
+		std::ifstream ff (world.worldFolder() + "/world.data", std::ios::in | std::ios::binary);
+		if (!ff) return;
+		
+		savetheworld_t w;
+		
+		ff.seekg(0);
+		ff.read( (char*) &w, sizeof(savetheworld_t) );
+		ff.read( (char*) &player, sizeof(player) );
+		
+		this->worldX = w.worldX;
+		this->worldY = w.worldY;
+		this->worldZ = w.worldZ;
+	}
+	void World::save()
+	{
+		std::ofstream ff (world.worldFolder() + "/world.data", std::ios::trunc | std::ios::binary);
+		if (!ff) return;
+		
+		savetheworld_t w = 
+		{
+			this->worldX, this->worldY, this->worldZ
+		};
+		
+		ff.seekp(0);
+		ff.write( (char*) &w, sizeof(savetheworld_t) );
+		ff.write( (char*) &player, sizeof(player) );
 	}
 	
 }
