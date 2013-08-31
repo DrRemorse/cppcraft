@@ -230,12 +230,12 @@ void biomeGenerator(genthread* l_thread)
 		
 		determinator = 1.0;
 		
-		// replace colors with snow colors only
+		// special case for snow terrain
 		if (bigt == T_ICECAP || bigt == T_SNOW)
 		{
-			biomecl[CL_GRASS] = getGrassColor(bigt);
-			biomecl[CL_CROSS] = getCrossColor(bigt);
-			biomecl[CL_TREES] = getLeafColor(bigt);
+			//biomecl[CL_GRASS] = getGrassColor(bigt);
+			//biomecl[CL_CROSS] = getCrossColor(bigt);
+			//biomecl[CL_TREES] = getLeafColor(bigt);
 			// no extra grass color in snow terrains
 			determinator = 0.0;
 		}

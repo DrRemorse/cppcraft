@@ -1,24 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Session Name="C:\Dropbox\cppcraft\fbcraft.workspace">
-  <int Value="2" Name="m_selectedTab"/>
-  <wxString Value="C:\Dropbox\cppcraft\fbcraft.workspace" Name="m_workspaceName"/>
+<Session Name="C:\Projects\cppcraft\fbcraft.workspace">
+  <int Value="10" Name="m_selectedTab"/>
+  <wxString Value="C:\Projects\cppcraft\fbcraft.workspace" Name="m_workspaceName"/>
   <TabInfoArray Name="TabInfoArray">
     <TabInfo>
-      <wxString Value="C:\Dropbox\cppcraft\source\library\log.hpp" Name="FileName"/>
+      <wxString Value="C:\Projects\cppcraft\source\render_gui.hpp" Name="FileName"/>
       <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="19" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="C:\Projects\cppcraft\source\render_gui_inventory.hpp" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="37" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="C:\Projects\cppcraft\source\render_gui_inventory.cpp" Name="FileName"/>
+      <int Value="94" Name="FirstVisibleLine"/>
+      <int Value="123" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="C:\Projects\cppcraft\source\menu.hpp" Name="FileName"/>
+      <int Value="3" Name="FirstVisibleLine"/>
       <int Value="0" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
-      <wxString Value="C:\Dropbox\cppcraft\source\library\log.cpp" Name="FileName"/>
+      <wxString Value="C:\Projects\cppcraft\source\render_gui_quickbar.cpp" Name="FileName"/>
       <int Value="0" Name="FirstVisibleLine"/>
-      <int Value="4" Name="CurrentLine"/>
+      <int Value="22" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
-      <wxString Value="C:\Dropbox\cppcraft\makefile" Name="FileName"/>
+      <wxString Value="C:\Projects\cppcraft\source\menu.cpp" Name="FileName"/>
       <int Value="0" Name="FirstVisibleLine"/>
-      <int Value="23" Name="CurrentLine"/>
+      <int Value="17" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="C:\Projects\cppcraft\source\items.hpp" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="18" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="C:\Projects\cppcraft\source\items.cpp" Name="FileName"/>
+      <int Value="69" Name="FirstVisibleLine"/>
+      <int Value="0" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="C:\Projects\cppcraft\source\textureman.cpp" Name="FileName"/>
+      <int Value="63" Name="FirstVisibleLine"/>
+      <int Value="84" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="C:\Projects\cppcraft\source\compilers.cpp" Name="FileName"/>
+      <int Value="95" Name="FirstVisibleLine"/>
+      <int Value="126" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="C:\Projects\cppcraft\source\columns.cpp" Name="FileName"/>
+      <int Value="220" Name="FirstVisibleLine"/>
+      <int Value="237" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
   </TabInfoArray>
