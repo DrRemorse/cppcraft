@@ -5,13 +5,13 @@
 #include "sectors.hpp"
 #include "flatlands.hpp"
 
-#include <string>
+#include <cstring>
 
 using namespace library;
 
 namespace cppcraft
 {
-	const int compressed_column_size = sizeof(FlatlandSector) + Sectors.getY() * sizeof(Sector::sectorblock_t);
+	const int compressed_column_size = sizeof(FlatlandSector) + Sectors.getY() * sizeof(Sector::sectorblock_t) + 64;
 	
 	library::LZO compressor;
 	lzo_bytep compressor_databuffer;
@@ -46,8 +46,10 @@ namespace cppcraft
 		File.seekg(PL-1);
 		File.read( (char*) &datalength, sizeof(compressed_datalength_t) );
 		
-		if (datalength.sectors == 0 || datalength.lzoSize == 0)
+		if (datalength.lzoSize == 0)
 		{
+			// reset flatlands
+			memset( Flatlands(x, z).fdata, 0,  sizeof(FlatlandSector::flatland_t) );
 			// not generated world
 			for (int y = 0; y < Sectors.getY(); y++)
 			{

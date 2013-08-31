@@ -3,6 +3,7 @@
 #include "library/config.hpp"
 #include "library/log.hpp"
 #include "chunks.hpp"
+#include "flatlands.hpp"
 #include "minimap.hpp"
 #include "player.hpp"
 #include "sectors.hpp"
@@ -11,6 +12,7 @@
 
 // load compressor last
 #include "compressor.hpp"
+#include <cstring>
 
 using namespace library;
 
@@ -65,28 +67,28 @@ namespace cppcraft
 		}
 		
 		// open this chunks .compressed file
-		const std::string& worldFolder = world.worldFolder();
-		std::string sectorString = chunks.getSectorString(sector);
+		std::string sectorString = world.worldFolder() + "/" + chunks.getSectorString(sector);
 		
-		std::ifstream cf;
-		cf.open(worldFolder + "/" + sectorString + ".compressed", std::ios::in | std::ios::binary);
+		std::ifstream cf(sectorString + ".compressed", std::ios::binary);
+		bool cf_open = false;
 		
-		if (cf.is_open())
+		if (cf.good())
 		{
 			cf.seekg(sizeof(int));
 			cf.read( (char*) g_compres, sizeof(g_compres) );
+			cf_open = true;
 		}
 		
 		// open this chunks (raw) .chunk file
-		std::ifstream ff;
-		ff.open(worldFolder + "/" + sectorString + ".chunk", std::ios::in | std::ios::binary);
+		std::ifstream ff(sectorString + ".chunk", std::ios::binary);
+		bool ff_open = false;
 		
-		if (ff.is_open())
+		if (ff.good())
 		{
 			ff.seekg(sizeof(int));
 			ff.read( (char*) g_fres, sizeof(g_fres) );
+			ff_open = true;
 		}
-		
 		
 		// NOTE NOTE NOTE NOTE NOTE //
 		//   NO EARLY EXITS HERE    //
@@ -124,7 +126,7 @@ namespace cppcraft
 					dz = (z + world.getWZ()) & (Chunks::chunk_size-1);
 					
 					// if compressed file is open, and there was an entry
-					if (cf.is_open() && (g_compres[dx][dz] != 0))
+					if (cf_open && (g_compres[dx][dz] != 0))
 					{
 						// read entire compressed column
 						// compressed column also contains the flatland(x, z) for this area
@@ -135,6 +137,9 @@ namespace cppcraft
 					}
 					else
 					{
+						// reset flatlands
+						memset( Flatlands(x, z).fdata, 0,  sizeof(FlatlandSector::flatland_t) );
+						
 						for (int y = 0; y < Sectors.getY(); y++)
 						{
 							// for each sector on y-axis,
@@ -144,7 +149,7 @@ namespace cppcraft
 						}
 					}
 					
-					if (ff.is_open())
+					if (ff_open)
 					{
 						// load single-file
 						
@@ -167,8 +172,8 @@ namespace cppcraft
 			} // z
 		} // x
 		
-		if (ff.is_open()) ff.close();
-		if (cf.is_open()) cf.close();
+		//if (ff.is_open()) ff.close();
+		//if (cf.is_open()) cf.close();
 		
 	} // generate()
 	

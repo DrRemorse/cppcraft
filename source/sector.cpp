@@ -78,15 +78,6 @@ namespace cppcraft
 		return lights;
 	}
 	
-	bool Sector::operator == (const Sector& sector) const
-	{
-		return (this == &sector);
-	}
-	bool Sector::operator != (const Sector& sector) const
-	{
-		return (this != &sector);
-	}
-	
 	float Sector::distanceTo(const Sector& sector, int bx, int by, int bz) const
 	{
 		// centroidal

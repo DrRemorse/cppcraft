@@ -91,8 +91,14 @@ namespace cppcraft
 		}
 		
 		// sector boolean equality test
-		bool operator == (const Sector& sector) const;
-		bool operator != (const Sector& sector) const;
+		inline bool operator == (const Sector& sector) const
+		{
+			return (this == &sector);
+		}
+		inline bool operator != (const Sector& sector) const
+		{
+			return (this != &sector);
+		}
 		
 		// distance to another sector (in block units)
 		float distanceTo(const Sector& sector, int bx, int by, int bz) const;

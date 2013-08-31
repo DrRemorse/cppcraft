@@ -6,24 +6,39 @@
 namespace cppcraft
 {
 	MenuClass menu;
+	Inventory inventory;
 	
 	void MenuClass::init()
 	{
 		// initialize items
 		items.init();
 		
+		// quickbar: lowest row on inventory
+		this->quickbarX = 0;
+		this->quickbarY = 4;
+		
+		inventory = Inventory(9, 5);
+		
 		// create default inventory
-		for (int x = 0; x < INV_WIDTH; x++)
+		for (int x = 0; x < inventory.getWidth(); x++)
 		{
 			inventory(x, quickbarY) = InventoryItem(IT_WOODPICK + x, ITT_ITEM, 64);
 			//inventory(x, quickbarY) = InventoryItem(IT_WOODPICK + x, ITT_ITEM, 64);
 		}
+		inventory.setChanged(true);
 		
 	}
 	
-	InventoryItem& MenuClass::inventory(int x, int y)
+	Inventory::Inventory(int w, int h)
 	{
-		return this->inventoryItems[INV_WIDTH * y + x];
+		this->width = w;
+		this->height = h;
+		this->items = new InventoryItem[w * h]();
+	}
+	
+	InventoryItem& Inventory::operator() (int x, int y)
+	{
+		return items[width * y + x];
 	}
 	
 }

@@ -8,10 +8,7 @@ namespace cppcraft
 	class MenuClass
 	{
 	public:
-		static const int INV_WIDTH  = 9;
-		static const int INV_HEIGHT = 5;
-		
-		enum menumode_t
+		enum menu_t
 		{
 			NO_MENU,
 			MENU_INVENTORY,
@@ -26,21 +23,49 @@ namespace cppcraft
 			
 		};
 		
-		menumode_t menuMode;
+		// menu mode (which menu is active)
+		menu_t menuMode;
 		
-		int inventoryAction;
-		int quickbarX = 0;            // (x) quickbar current column
-		int quickbarY = INV_HEIGHT-1; // (y) quickbar current row
+		// mouse selection
+		menu_t selectionMenu;
+		int    selectionX, selectionY;
 		
-		InventoryItem inventoryItems[INV_WIDTH * INV_HEIGHT];
-		
-		int selectionX, selectionY;
+		int quickbarX; // (x) quickbar current column
+		int quickbarY; // (y) quickbar current row
 		
 		void init();
-		InventoryItem& inventory(int x, int y);
-		
 	};
 	extern MenuClass menu;
+	
+	class Inventory
+	{
+	public:
+		Inventory() : changed(false), items(nullptr) {}
+		Inventory(int w, int h);
+		InventoryItem& operator() (int x, int y);
+		
+		// getters
+		inline int getWidth() const noexcept
+		{
+			return this->width;
+		}
+		inline int getHeight() const noexcept
+		{
+			return this->height;
+		}
+		// changed flag, used for re-uploading inventory meshes to gpu
+		inline bool isChanged() const noexcept
+		{
+			return this->changed;
+		}
+		void setChanged(bool v) { this->changed = v; }
+		
+	private:
+		bool changed;
+		int width, height;
+		InventoryItem* items;
+	};
+	extern Inventory inventory;
 	
 }
 

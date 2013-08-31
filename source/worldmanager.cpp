@@ -80,13 +80,12 @@ namespace cppcraft
 			// ----------- WORLD BUILDER ------------ //
 			if (timeout == false)
 			{
-				double t0 = timer.getDeltaTime();
+				//double t0 = timer.getDeltaTime();
 				
 				worldbuilder.run(timer, _localtime);
 				
-				double t1 = timer.getDeltaTime();
-				
-				logger << "WB time: " << t1 - t0 << Log::ENDL;
+				//double t1 = timer.getDeltaTime();
+				//logger << "WB time: " << t1 - t0 << Log::ENDL;
 			}
 			
 			// flush chunk write queue

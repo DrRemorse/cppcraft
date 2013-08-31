@@ -5,8 +5,6 @@
 
 namespace cppcraft
 {
-	class Compressor;
-	
 	class FlatlandSector
 	{
 	public:
@@ -27,7 +25,8 @@ namespace cppcraft
 		flatland_t fdata[Sector::BLOCKS_XZ][Sector::BLOCKS_XZ];
 		
 		// allow chunk compressor direct access for loading
-		friend Compressor;
+		friend class Compressor;
+		friend class Generator;
 	};
 	
 	class FlatlandsContainer

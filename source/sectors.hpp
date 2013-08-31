@@ -14,12 +14,13 @@ namespace cppcraft
 		
 	public:
 		static const int SECTORS_Y = 32;
+		static const int SECTORS_Y_SHL = 5;
 		static const int MAX_SECTORS_XZ_GRIDSIZE = 128;
 		
 		void createSectors(int xz);
 		
-		const int getXZ() const { return this->sectors_XZ; }
-		const int getY()  const { return SECTORS_Y; }
+		inline const int getXZ() const noexcept { return this->sectors_XZ; }
+		inline const int getY()  const noexcept { return SECTORS_Y; }
 		
 		// returns a reference to a Sector located at (x, y, z)
 		inline Sector& operator() (int x, int y, int z)
@@ -39,7 +40,7 @@ namespace cppcraft
 		{
 			// custom order: (x, z, y)
 			// internal only, outside sources don't care
-			return this->sectors[x * sectors_XZ * SECTORS_Y + z * SECTORS_Y + y];
+			return this->sectors[((x * sectors_XZ + z) << SECTORS_Y_SHL) + y];
 		}
 		
 		// sets a Sector located at (x, y, z) to sector_ptr

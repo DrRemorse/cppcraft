@@ -25,6 +25,7 @@ namespace cppcraft
 	
 		void clear();
 		int  emit(InventoryItem& itm, float x, float y, float size);
+		void upload();
 		void render(library::Matrix& ortho);
 		
 	private:

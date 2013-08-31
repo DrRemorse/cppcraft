@@ -70,16 +70,12 @@ namespace cppcraft
 		// sectors are on the heap, nonetheless returning as reference
 		Sector& s = Sectors(x, y, z);
 		// if this sector is modified / dirty
-		if (s.contents == Sector::CONT_SAVEDATA)
+		if (s.render)
 		{
-			// if the sector is not culled, as in NOT completely surrounded by other sectors
-			if (s.culled == false)
-			{
-				// newly introduced sectors can have additional torchlight
-				s.haslight = 0;
-				// recompile sector mesh
-				s.progress = Sector::PROG_NEEDRECOMP;
-			}
+			// newly introduced sectors can have additional torchlight
+			s.haslight = 0;
+			// recompile sector mesh
+			s.progress = Sector::PROG_NEEDRECOMP;
 		}
 	}
 	

@@ -46,7 +46,7 @@ int toTerrain(int biome)
 	case 12:
 	case 13:
 	case 14:
-		return T_SNOW; //T_DESERT;
+		return T_DESERT;
 		
 	default:
 		return 0;

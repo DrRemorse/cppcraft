@@ -158,6 +158,8 @@ namespace cppcraft
 			case Biomes::T_SNOW:
 				musicPlayer.play(music[MUSIC_WINTER]);
 				break;
+			default:
+				musicPlayer.stop();
 			}
 		}
 		// ambience stream
@@ -195,13 +197,15 @@ namespace cppcraft
 			case Biomes::T_SNOW:
 				ambiencePlayer.play(ambience[MA_WINTER]);
 				break;
+			default:
+				ambiencePlayer.stop();
 			}
 			
 		} // ambience
 		
 		// slowly crossfade in/out streams as needed
-		//musicPlayer.integrate();
-		//ambiencePlayer.integrate();
+		musicPlayer.integrate();
+		ambiencePlayer.integrate();
 	}
 	
 	int Soundman::blockToMaterial(int id) const

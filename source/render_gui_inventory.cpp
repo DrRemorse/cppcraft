@@ -27,14 +27,23 @@ namespace cppcraft
 		float size   = width * 0.075;
 		float stride = width * 0.1095;
 		
-		quickbarItems.clear();
-		
-		for (int x = 0; x < menu.INV_WIDTH; x++)
+		if (inventory.isChanged())
 		{
-			InventoryItem& itm = menu.inventory(x, menu.quickbarY);
-			quickbarItems.emit(itm, posx + x * stride, posy, size);
+			// inventory has no longer changed
+			inventory.setChanged(false);
+			
+			// recreate meshes
+			quickbarItems.clear();
+			
+			for (int x = 0; x < inventory.getWidth(); x++)
+			{
+				InventoryItem& itm = inventory(x, menu.quickbarY);
+				quickbarItems.emit(itm, posx + x * stride, posy, size);
+			}
+			quickbarItems.upload();
 		}
 		
+		// render inventory
 		quickbarItems.render(ortho);
 	}
 	
@@ -60,6 +69,7 @@ namespace cppcraft
 		return 0;
 	}
 	
+	// FIXME: SLOW AS FUCK
 	int GUIInventory::emitQuad(InventoryItem& itm, float x, float y, float size, float tile)
 	{
 		// no item, no texture!
@@ -88,31 +98,23 @@ namespace cppcraft
 		return 0;
 	}
 	
-	void GUIInventory::render(Matrix& ortho)
+	void GUIInventory::upload()
 	{
 		int items  = itemTiles.size();
 		int blocks = blockTiles.size();
 		
-		// nothing to do here with no items or blocks
 		if (items + blocks == 0) return;
 		
-		std::vector<inventory_t> total;
-		
-		// add items
-		if (items)
-		{
-			total.insert(total.end(), itemTiles.begin(), itemTiles.end());
-		}
-		// add blocks
+		// add blocks to the end of items
 		if (blocks)
 		{
-			total.insert(total.end(), blockTiles.begin(), blockTiles.end());
+			itemTiles.insert(itemTiles.end(), blockTiles.begin(), blockTiles.end());
 		}
 		
 		/// upload blocks & items ///
 		if (itemsVAO.isGood() == false)
 		{
-			itemsVAO.begin(sizeof(inventory_t), total.size(), total.data());
+			itemsVAO.begin(sizeof(inventory_t), itemTiles.size(), itemTiles.data());
 			itemsVAO.attrib(0, 3, GL_FLOAT, GL_FALSE, offsetof(inventory_t, x));
 			itemsVAO.attrib(1, 3, GL_FLOAT, GL_FALSE, offsetof(inventory_t, u));
 			itemsVAO.attrib(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, offsetof(inventory_t, color));
@@ -120,9 +122,21 @@ namespace cppcraft
 		}
 		else
 		{
-			itemsVAO.begin(sizeof(inventory_t), total.size(), total.data());
+			itemsVAO.begin(sizeof(inventory_t), itemTiles.size(), itemTiles.data());
 			itemsVAO.end();
 		}
+	}
+	
+	void GUIInventory::render(Matrix& ortho)
+	{
+		int total  = itemTiles.size();
+		
+		// nothing to do here with no items or blocks
+		if (total == 0) return;
+		
+		int blocks = blockTiles.size();
+		int items  = total - blocks;
+		
 		/// render all menu items ///
 		shaderman[Shaderman::MENUITEM].bind();
 		shaderman[Shaderman::MENUITEM].sendMatrix("mvp", ortho);
