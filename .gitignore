@@ -21,3 +21,7 @@
 
 # Music
 *.mp3
+
+# Executable & logs
+*.exe
+*.log
