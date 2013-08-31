@@ -56,30 +56,39 @@ namespace cppcraft
 			// if the player moved, or is doing stuff we will be doing it here
 			player.handleActions(_localtime);
 			
+			bool timeout = false;
+			
 			//----------------------------------//
 			//        SEAMLESS TRANSITION       //
 			//----------------------------------//
-			if (Seamless::run()) goto theend;
+			if (Seamless::run()) timeout = true;
 			
 			// check for timeout
 			//if (timer.getDeltaTime() > _localtime + MAX_TIMING_WAIT) goto theend;
 			
 			// ---------- PRECOMPILER ----------- //
 			
+			if (timeout == false)
 			if (worldbuilder.getMode() != worldbuilder.MODE_GENERATING)
 			{
 				// as long as not currently 'generating' world:
 				// start precompiling sectors
 				
-				if (precompq.run(timer, _localtime)) goto theend;
+				if (precompq.run(timer, _localtime)) timeout = true;
 			}
 			
 			// ----------- WORLD BUILDER ------------ //
+			if (timeout == false)
+			{
+				double t0 = timer.getDeltaTime();
+				
+				worldbuilder.run(timer, _localtime);
+				
+				double t1 = timer.getDeltaTime();
+				
+				logger << "WB time: " << t1 - t0 << Log::ENDL;
+			}
 			
-			if (worldbuilder.run(timer, _localtime)) goto theend;
-			
-		// jump-post for early exit when time(TM) runs out
-		theend:
 			// flush chunk write queue
 			chunks.flushChunks();
 			

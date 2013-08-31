@@ -37,7 +37,8 @@ namespace cppcraft
 		int queueCount   = 0;
 		// the current (or last) precomp being precompiled
 		int currentPrecomp = 0;
-		
+		// number of parallell threads
+		int threads;
 		// thread jobs
 		std::vector<std::future<void>> futures;
 		

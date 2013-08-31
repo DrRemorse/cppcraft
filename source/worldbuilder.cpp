@@ -135,7 +135,7 @@ namespace cppcraft
 		// iterate through everything in a spiral motion //
 		///////////////////////////////////////////////////
 		
-		while(1)
+		while (true)
 		{
 			rad_clamp() // clamp values due to new cycle
 			
@@ -143,17 +143,17 @@ namespace cppcraft
 			xx = x0;
 			for (zz = z0; zz <= z1; zz++)
 			{
-				if (mode == MODE_GENERATING)
-				{	// load compressed sectors, flatlands, sector dumps
-					wrunGen(Sectors(xx, 0, zz));
-				} else
+				// load compressed sectors, flatlands, sector dumps
+				Sector& s = Sectors(xx, 0, zz);
+				wrunGen(s);
+				if (mode == MODE_PRECOMPILE)
 				{	// alternatively, adding to precompiler queue
 					if (wrunPrecomp(xx, zz)) return true;
 				}
+				if (timer.getDeltaTime() > localTime + WORLDBUILDER_MAX_TIME_SPENT) return true;
 			}
 			
 			this->lastPosition = 1;
-			if (timer.getDeltaTime() > localTime + WORLDBUILDER_MAX_TIME_SPENT) return true;
 			
 	wb_position1:
 			
@@ -161,17 +161,17 @@ namespace cppcraft
 			xx = x1;
 			for (zz = z0; zz <= z1; zz++)
 			{
-				if (mode == MODE_GENERATING)
-				{	// load compressed sectors, flatlands, sector dumps
-					wrunGen(Sectors(xx, 0, zz));
-				} else
+				// load compressed sectors, flatlands, sector dumps
+				Sector& s = Sectors(xx, 0, zz);
+				wrunGen(s);
+				if (mode == MODE_PRECOMPILE)
 				{	// alternatively, adding to precompiler queue
 					if (wrunPrecomp(xx, zz)) return true;
 				}
+				if (timer.getDeltaTime() > localTime + WORLDBUILDER_MAX_TIME_SPENT) return true;
 			}
 			
 			this->lastPosition = 2;
-			if (timer.getDeltaTime() > localTime + WORLDBUILDER_MAX_TIME_SPENT) return true;
 			
 	wb_position2:
 			
@@ -179,17 +179,17 @@ namespace cppcraft
 			zz = z0;
 			for (xx = x0; xx <= x1; xx++)
 			{
-				if (mode == MODE_GENERATING)
-				{	// load compressed sectors, flatlands, sector dumps
-					wrunGen(Sectors(xx, 0, zz));
-				} else
+				// load compressed sectors, flatlands, sector dumps
+				Sector& s = Sectors(xx, 0, zz);
+				wrunGen(s);
+				if (mode == MODE_PRECOMPILE)
 				{	// alternatively, adding to precompiler queue
 					if (wrunPrecomp(xx, zz)) return true;
 				}
+				if (timer.getDeltaTime() > localTime + WORLDBUILDER_MAX_TIME_SPENT) return true;
 			}
 			
 			this->lastPosition = 3;
-			if (timer.getDeltaTime() > localTime + WORLDBUILDER_MAX_TIME_SPENT) return true;
 			
 	wb_position3:
 			
@@ -197,13 +197,14 @@ namespace cppcraft
 			zz = z1;
 			for (xx = x0; xx <= x1; xx++)
 			{
-				if (mode == MODE_GENERATING)
-				{	// load compressed sectors, flatlands, sector dumps
-					wrunGen(Sectors(xx, 0, zz));
-				} else
+				// load compressed sectors, flatlands, sector dumps
+				Sector& s = Sectors(xx, 0, zz);
+				wrunGen(s);
+				if (mode == MODE_PRECOMPILE)
 				{	// alternatively, adding to precompiler queue
 					if (wrunPrecomp(xx, zz)) return true;
 				}
+				if (timer.getDeltaTime() > localTime + WORLDBUILDER_MAX_TIME_SPENT) return true;
 			}
 			
 			// back to start
@@ -224,9 +225,6 @@ namespace cppcraft
 				// exit
 				break;
 			}
-			
-			if (timer.getDeltaTime() > localTime + WORLDBUILDER_MAX_TIME_SPENT) return true;
-			
 		}
 		return false;
 		

@@ -76,7 +76,7 @@ namespace library
 			datalen, 
 			compression_buffer, 
 			&compression_length, 
-			0
+			lzo_workmem
 		) == LZO_E_OK;
 	}
 	

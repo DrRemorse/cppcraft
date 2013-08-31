@@ -92,8 +92,8 @@ namespace cppcraft
 		//   NO EARLY EXITS HERE    //
 		// NOTE NOTE NOTE NOTE NOTE //
 		
-		int dx = (sector.x + world.getWX()) & (chunks.chunk_size-1);
-		int dz = (sector.z + world.getWZ()) & (chunks.chunk_size-1);
+		int dx = (sector.x + world.getWX()) & (Chunks::chunk_size-1);
+		int dz = (sector.z + world.getWZ()) & (Chunks::chunk_size-1);
 		
 		int x1 = sector.x - dx;
 		int x2 = x1 + Chunks::chunk_size;
@@ -120,8 +120,8 @@ namespace cppcraft
 				if (firstsector.contents == Sector::CONT_UNKNOWN)
 				{
 					// find sectors internal chunk position
-					dx = (x + world.getWX()) & (chunks.chunk_size-1);
-					dz = (z + world.getWZ()) & (chunks.chunk_size-1);
+					dx = (x + world.getWX()) & (Chunks::chunk_size-1);
+					dz = (z + world.getWZ()) & (Chunks::chunk_size-1);
 					
 					// if compressed file is open, and there was an entry
 					if (cf.is_open() && (g_compres[dx][dz] != 0))

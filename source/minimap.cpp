@@ -5,6 +5,7 @@
 #include "library/bitmap/bitmap.hpp"
 #include "library/bitmap/colortools.hpp"
 #include "library/opengl/opengl.hpp"
+#include "library/opengl/vao.hpp"
 #include "library/opengl/texture.hpp"
 #include "biome.hpp"
 #include "flatlands.hpp"
@@ -21,16 +22,15 @@ namespace cppcraft
 {
 	// the one and only Minimap(TM)
 	Minimap minimap;
+	VAO minimapVAO;
 	
 	// constants
 	const float HEIGHTMAP_FACTOR = 2.5;
 	
 	Minimap::Minimap()
 	{
-		this->bitmap = nullptr;
+		this->bitmap  = nullptr;
 		this->texture = nullptr;
-		this->vao = 0;
-		this->vbo = 0;
 	}
 	
 	void Minimap::init()
@@ -57,26 +57,10 @@ namespace cppcraft
 			{ -0.5,  0.5, 0.0 }
 		};
 		
-		// vertex array
-		if (this->vao == 0)
-		{
-			glGenVertexArrays(1, &this->vao);
-			glGenBuffers(1, &this->vbo);
-		}
-		
-		glBindVertexArray(this->vao);
-		
-		// upload data
-		glBindBuffer(GL_ARRAY_BUFFER_ARB, this->vbo);
-		glBufferData(GL_ARRAY_BUFFER_ARB, 4 * sizeof(minimap_vertex_t), vertices, GL_STATIC_DRAW_ARB);
-		
-		glEnableVertexAttribArray(0);
-		
-		// vertex
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(minimap_vertex_t), nullptr);
-		
-		glBindVertexArray(0);
-		glDisableVertexAttribArray(0);
+		// vertex array object
+		minimapVAO.begin(sizeof(minimap_vertex_t), 4, vertices);
+		minimapVAO.attrib(0, 3, GL_FLOAT, GL_FALSE, 0);
+		minimapVAO.end();
 	}
 	
 	void Minimap::update()
@@ -109,10 +93,8 @@ namespace cppcraft
 		
 		// bind minimap texture
 		texture->bind(0);
-		// bind vertex array object
-		glBindVertexArray(this->vao);
 		// render minimap
-		glDrawArrays(GL_QUADS, 0, 4);
+		minimapVAO.render(GL_QUADS);
 	}
 	
 	int fgetSkylevel(Sector& s, int x, int z)
@@ -398,7 +380,7 @@ namespace cppcraft
 			// clear first 2 scanlines
 			memset(pixels, 0, page * 2 * sizeof(Bitmap::color_rgba8_t));
 		}
-		
-		this->needs_update = true;
+		// minimap has been updated
+		needs_update = true;
 	}
 }

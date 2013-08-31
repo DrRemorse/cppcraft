@@ -100,7 +100,7 @@ namespace cppcraft
 	void Sector::clear()
 	{
 		hardsolid = 0;    // we don't really know!
-		precomp = 0;      // reset compilation stage
+		precomp   = 0;    // reset compilation stage
 		torchlight = 0;   // no more light
 		// clear many flags, just because... bite me
 		culled = false;
@@ -114,11 +114,8 @@ namespace cppcraft
 		//	special = nullptr;
 		}*/
 		
-		if (blockpt)
-		{
-			delete blockpt;
-			blockpt = nullptr;
-		}
+		delete blockpt;
+		blockpt = nullptr;
 		
 		// clearing a sector, means invalidating it
 		contents = CONT_NULLSECTOR;

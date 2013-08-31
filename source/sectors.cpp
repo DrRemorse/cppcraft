@@ -44,7 +44,8 @@ namespace cppcraft
 			// get reference to Sector pointer
 			Sector &s = Sectors(x, y, z);
 			// recompile sector, if its already renderable
-			if (s.render) s.progress = Sector::PROG_NEEDRECOMP;
+			if (s.render && s.progress != Sector::PROG_RECOMP)
+				s.progress = Sector::PROG_NEEDRECOMP;
 		} // y, z, x
 	}
 }

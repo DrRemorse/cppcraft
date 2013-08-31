@@ -35,7 +35,7 @@ namespace cppcraft
 		// allocate towering buffer
 		compressor_databuffer = (lzo_bytep) malloc(compressed_column_size * sizeof(lzo_byte));
 		if (compressor_databuffer == nullptr)
-			throw "Chunks:compressorInit(): Compressor databuffer was null";
+			throw std::string("Chunks:compressorInit(): Compressor databuffer was null");
 	}
 	
 	void Compressor::load(std::ifstream& File, int PL, int x, int z)
@@ -67,7 +67,8 @@ namespace cppcraft
 		// decompress data
 		if (compressor.decompress(compressor_databuffer, datalength.lzoSize) == false)
 		{
-			throw std::string("Compressor::decompress() Failed to decompress data");
+			logger << Log::ERR << "Compressor::decompress(): Failed to decompress data" << Log::ENDL;
+			throw std::string("Compressor::decompress(): Failed to decompress data");
 		}
 		
 		lzo_bytep cpos = compressor.getData();
@@ -76,7 +77,7 @@ namespace cppcraft
 		memcpy (Flatlands(x, z).fdata, cpos, sizeof(FlatlandSector::fdata));
 		
 		// move to first sectorblock
-		cpos += sizeof(FlatlandSector);
+		cpos += sizeof(FlatlandSector::fdata);
 		
 		for (int y = 0; y < Sectors.getY(); y++)
 		{
@@ -92,7 +93,7 @@ namespace cppcraft
 				if (b->blocks)
 				{
 					// copy data to engine side
-					if (sector.blockpt == nullptr)
+					if (sector.hasBlocks() == false)
 						sector.createBlocks();
 					
 					memcpy (sector.blockpt, cpos, sizeof(Sector::sectorblock_t));
@@ -104,7 +105,7 @@ namespace cppcraft
 					
 					// set sector-has-data flag
 					sector.contents = Sector::CONT_SAVEDATA;
-					// flag sector for mesh assembly pipeline
+					// flag sector for mesh assembly (next stage in pipeline)
 					sector.progress = Sector::PROG_NEEDRECOMP;
 				}
 				else

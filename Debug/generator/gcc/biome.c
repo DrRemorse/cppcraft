@@ -232,10 +232,10 @@ void biomeGenerator(genthread* l_thread)
 		// if we encountered snow weights, we ignore them and add the biggest terrain instead
 		if (determinator != 0.0)
 		{
-			tempcl = getGrassColor(bigt);
+			tempcl = getGrassColor(T_GRASS);
 			addColorv(&biomecl[CL_GRASS], &tempcl, determinator);
 			
-			tempcl = getCrossColor(bigt);
+			tempcl = getCrossColor(T_GRASS);
 			addColorv(&biomecl[CL_CROSS], &tempcl, determinator);
 		}
 		

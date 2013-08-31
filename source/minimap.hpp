@@ -28,9 +28,8 @@ namespace cppcraft
 		library::Texture* texture;
 		
 		bool needs_update;
-		
 		float ofsX, ofsY;
-		unsigned int vao, vbo;
+		
 	};
 	extern Minimap minimap;
 }
