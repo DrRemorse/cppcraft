@@ -29,7 +29,7 @@ namespace cppcraft
 		/// TERRAIN regular tileset ///
 		if (bmp.load(config.get("textures.diffuse", "bitmap/default/diffuse.bmp")))
 		{
-			bmp.parse2D(tiles.txW, tiles.txH);
+			bmp.parse2D(tiles.tileSize, tiles.tileSize);
 			
 			// set engine (smaller) tileset tiles in (x, y) directions
 			tiles.tilesX = bmp.getTilesX();
@@ -43,7 +43,7 @@ namespace cppcraft
 		
 		if (bmp.load(config.get("textures.tonemap", "bitmap/default/tonemap.bmp")))
 		{
-			bmp.parse2D(tiles.txW, tiles.txH);
+			bmp.parse2D(tiles.tileSize, tiles.tileSize);
 			
 			textures[T_TONEMAP] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_TONEMAP].create(bmp, true, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
@@ -54,7 +54,7 @@ namespace cppcraft
 		/// TERRAIN bigger tileset ///
 		if (bmp.load(config.get("textures.bigdiff", "bitmap/default/bigdiff.bmp")))
 		{
-			bmp.parse2D(tiles.bigW, tiles.bigH);
+			bmp.parse2D(tiles.bigSize, tiles.bigSize);
 			
 			// set engine (bigger) tileset tiles in (x, y) directions
 			tiles.bigTilesX = bmp.getTilesX();
@@ -68,7 +68,7 @@ namespace cppcraft
 		
 		if (bmp.load(config.get("textures.bigtone", "bitmap/default/bigtone.bmp")))
 		{
-			bmp.parse2D(tiles.bigW, tiles.bigH);
+			bmp.parse2D(tiles.bigSize, tiles.bigSize);
 			
 			textures[T_BIG_TONE] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_BIG_TONE].create(bmp, true, GL_REPEAT, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
@@ -79,7 +79,7 @@ namespace cppcraft
 		/// ITEMS tileset ///
 		if (bmp.load(config.get("textures.items", "bitmap/default/items.bmp")))
 		{
-			bmp.parse2D(items.itemW, items.itemH);
+			bmp.parse2D(items.itemSize, items.itemSize);
 			
 			items.itemsX = bmp.getTilesX();
 			items.itemsY = bmp.getTilesY();
@@ -91,7 +91,7 @@ namespace cppcraft
 		if (ogl.checkError()) throw std::string("Items texture2d array error");
 		
 		/// PLAYER MODELS tileset ///
-		if (bmp.load(config.get("textures.playerskins", "bitmap/default/playerskins.bmp")))
+		if (bmp.load(config.get("textures.players", "bitmap/default/playerskins.bmp")))
 		{
 			bmp.parse2D(tiles.skinSize, tiles.skinSize);
 			

@@ -73,8 +73,9 @@ namespace cppcraft
 		// initialing items
 		logger << Log::INFO << "* Initializing items" << Log::ENDL;
 		
-		this->itemW = config.get("items.size", 32);
-		this->itemH = this->itemW;
+		// items texture size
+		this->itemSize = config.get("items.size", 32);
+		
 	}
 	
 	int ItemsClass::tileByID(item_t id)

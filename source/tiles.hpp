@@ -11,16 +11,20 @@ namespace cppcraft
 	class Tiles
 	{
 	public:
-		int txW, txH;
-		int tilesX, tilesY;
-		int skinSize;
-		
 		// size of a big tile is exactly N regular tiles
 		static const int tilesPerBigtile = 4;
-		// dimensions of big tiles
-		int bigW, bigH;
+		
+		// regular tiles
+		int tileSize;
+		int tilesX, tilesY;
+		
+		// big tiles
+		int bigSize;
 		// number of big tiles on each axis
 		int bigTilesX, bigTilesY;
+		
+		// player model texture size
+		int skinSize;
 		
 		Tiles();
 		void init();

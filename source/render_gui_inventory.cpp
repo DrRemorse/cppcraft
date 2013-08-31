@@ -41,6 +41,7 @@ namespace cppcraft
 				quickbarItems.emit(itm, posx + x * stride, posy, size);
 			}
 			quickbarItems.upload();
+			logger << "inventory changed" << Log::ENDL;
 		}
 		
 		// render inventory

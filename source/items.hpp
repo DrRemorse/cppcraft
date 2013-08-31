@@ -142,7 +142,7 @@ namespace cppcraft
 	class ItemsClass
 	{
 	public:
-		int itemW, itemH;
+		int itemSize;
 		int itemsX, itemsY;
 		
 		void init();

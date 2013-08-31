@@ -72,8 +72,8 @@ namespace cppcraft
 		// voxelized items
 		library::VoxelModel* voxelItems[VOXELITEMS_MAX] = {nullptr};
 		
-		void createModel    (library::VoxelModel*& model, library::Bitmap& bmp, int tileID, int tw, int th);
-		void createModelTall(library::VoxelModel*& model, library::Bitmap& bmp, int tileBot, int tileTop, int tw, int th);
+		void createModel    (library::VoxelModel*& model, library::Bitmap& bmp, int tileID, int tileSize);
+		void createModelTall(library::VoxelModel*& model, library::Bitmap& bmp, int tileBot, int tileTop, int tileSize);
 		
 		void renderModel(library::VoxelModel* model);
 		

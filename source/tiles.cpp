@@ -21,13 +21,13 @@ namespace cppcraft
 	{
 		logger << Log::INFO << "* Initializing tiles" << Log::ENDL;
 		
-		this->txW = config.get("textures.tilesize", 32);
-		this->txH = this->txW;
+		// normal
+		this->tileSize = config.get("tiles.size", 32);
+		// big
+		this->bigSize = this->tileSize * this->tilesPerBigtile;
+		// players
+		this->skinSize = config.get("players.size", 32);
 		
-		this->bigW = this->txW * this->tilesPerBigtile;
-		this->bigH = this->txH * this->tilesPerBigtile;
-		
-		this->skinSize = config.get("textures.skinsize", 32);
 	}
 	
 }
