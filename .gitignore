@@ -25,3 +25,6 @@
 # Executable & logs
 *.exe
 *.log
+
+# Archives
+*.rar

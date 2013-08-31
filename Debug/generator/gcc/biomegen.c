@@ -64,8 +64,8 @@ biome_t biomeGen(double gx, double gy)
 	*/
 	
 	// biome scale
-	gx /= 18.0; gy /= 18.0;
-	//gx /= 2.0; gy /= 2.0;
+	gx /= BIOME_SCALE;
+	gy /= BIOME_SCALE;
 	
 	const float climateBias = 0.9; // <1.0 more warm, >1.0 more cold
 	const float edge = 0.75;

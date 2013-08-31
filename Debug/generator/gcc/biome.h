@@ -15,6 +15,9 @@
 	biome_t biomeGen(double gx, double gy);
 	int toTerrain(int biome);
 	
+	// scale
+	#define BIOME_SCALE 24.0
+	
 	// terrains
 	#define T_ICECAP    0
 	#define T_SNOW	    1
