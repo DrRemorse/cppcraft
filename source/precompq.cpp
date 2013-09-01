@@ -2,7 +2,7 @@
 
 #include "library/log.hpp"
 #include "library/timing/timer.hpp"
-#include "library/threading/thread_pool.hpp"
+#include "library/threading/TThreadPool.hpp"
 #include "columns.hpp"
 #include "precompiler.hpp"
 #include "precomp_thread.hpp"
@@ -14,7 +14,20 @@ using namespace library;
 namespace cppcraft
 {
 	PrecompQ precompq;
-	ThreadPool* threadpool;
+	ThreadPool::TPool* threadpool;
+	
+	class PrecompJob : public ThreadPool::TPool::TJob
+	{
+	public:
+		PrecompJob (int p) : ThreadPool::TPool::TJob(p) {}
+		
+		void run (void* pthread)
+		{
+			PrecompThread& pt = *(PrecompThread*)pthread;
+			pt.precompile();
+		}
+	};
+	std::vector<PrecompJob*> jobs;
 	
 	const double PRECOMPQ_MAX_THREADWAIT = 0.01;
 	
@@ -23,9 +36,12 @@ namespace cppcraft
 		// initialize precompiler backend
 		precompiler.init();
 		// create X amount of threads
-		this->threads = 4;
+		this->threads = 8;
 		// create dormant thread pool
-		threadpool = new ThreadPool(threads);
+		threadpool = new ThreadPool::TPool(this->threads);
+		// create fixed amount of jobs
+		for (int i = 0; i < threads; i++)
+			jobs.push_back(new PrecompJob(-1));
 	}
 	
 	// stop precompq
@@ -106,20 +122,9 @@ namespace cppcraft
 		return (queueCount < Precompiler::MAX_PRECOMPQ);
 	}
 	
-	void precompilerJob(void* pthread)
-	{
-		PrecompThread& pt = *(PrecompThread*)pthread;
-		pt.precompile();
-	}
-	
 	void PrecompQ::finish()
 	{
-		// clean out older jobs
-		if (futures.size())
-		{
-			threadpool->finishQueue(futures);
-			futures.clear();
-		}
+		threadpool->sync_all();
 	}
 	
 	bool PrecompQ::run(Timer& timer, double localTime)
@@ -150,10 +155,7 @@ namespace cppcraft
 					pt.precomp = &precompiler[currentPrecomp];
 					
 					// queue thread job
-					futures.emplace_back
-					(
-						threadpool->startJob(precompilerJob, &pt)
-					);
+					threadpool->run(jobs[t_mod], &pt, false);
 					
 					t_mod = (t_mod + 1) % precompiler.getThreads();
 					if (t_mod == 0)

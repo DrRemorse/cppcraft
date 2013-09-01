@@ -21,14 +21,11 @@ namespace cppcraft
 	void GUIRenderer::initInventoryRenderer()
 	{
 		// pre-transform cube
-		vec4 GUI_cube[6][4] = 
+		vec4 GUI_cube[12] = 
 		{
-			{ vec4(-0.5, -0.5,  0.5, 1.0), vec4( 0.5, -0.5,  0.5, 1.0), vec4( 0.5,  0.5,  0.5, 1.0), vec4(-0.5,  0.5,  0.5, 1.0) },
-			{ vec4(-0.5, -0.5, -0.5, 1.0), vec4(-0.5,  0.5, -0.5, 1.0), vec4( 0.5,  0.5, -0.5, 1.0), vec4( 0.5, -0.5, -0.5, 1.0) },
-			{ vec4(-0.5,  0.5, -0.5, 1.0), vec4(-0.5,  0.5,  0.5, 1.0), vec4( 0.5,  0.5,  0.5, 1.0), vec4( 0.5,  0.5, -0.5, 1.0) },
-			{ vec4(-0.5, -0.5, -0.5, 1.0), vec4( 0.5, -0.5, -0.5, 1.0), vec4( 0.5, -0.5,  0.5, 1.0), vec4(-0.5, -0.5,  0.5, 1.0) },
-			{ vec4( 0.5, -0.5, -0.5, 1.0), vec4( 0.5,  0.5, -0.5, 1.0), vec4( 0.5,  0.5,  0.5, 1.0), vec4( 0.5, -0.5,  0.5, 1.0) },
-			{ vec4(-0.5, -0.5, -0.5, 1.0), vec4(-0.5, -0.5,  0.5, 1.0), vec4(-0.5,  0.5,  0.5, 1.0), vec4(-0.5,  0.5, -0.5, 1.0) }
+			vec4(-0.5, -0.5,  0.5, 1.0), vec4( 0.5, -0.5,  0.5, 1.0), vec4( 0.5,  0.5,  0.5, 1.0), vec4(-0.5,  0.5,  0.5, 1.0),
+			vec4(-0.5,  0.5, -0.5, 1.0), vec4(-0.5,  0.5,  0.5, 1.0), vec4( 0.5,  0.5,  0.5, 1.0), vec4( 0.5,  0.5, -0.5, 1.0),
+			vec4( 0.5, -0.5, -0.5, 1.0), vec4( 0.5,  0.5, -0.5, 1.0), vec4( 0.5,  0.5,  0.5, 1.0), vec4( 0.5, -0.5,  0.5, 1.0),
 		};
 		
 		// rotate cube and invert the Y-axis
@@ -38,43 +35,37 @@ namespace cppcraft
 		// has the positive Y-axis pointing downwards
 		matrot = scale * matrot;
 		
-		for (int face = 0; face < 6; face++)
-		for (int vert = 0; vert < 4; vert++)
+		for (int vert = 0; vert < 12; vert++)
 		{
-			vec4& vertex = GUI_cube[face][vert];
+			vec4& vertex = GUI_cube[vert];
 			vertex = matrot * vertex;
 		}
 		
-		float cube_texcoords[6][8] =
+		float GUIcube_tex[24] =
 		{
-			{0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0},
-			{1.0, 0.0,  1.0, 1.0,  0.0, 1.0,  0.0, 0.0},
-			{0.0, 1.0,  0.0, 0.0,  1.0, 0.0,  1.0, 1.0},
-			{1.0, 1.0,  0.0, 1.0,  0.0, 0.0,  1.0, 0.0},
-			{1.0, 0.0,  1.0, 1.0,  0.0, 1.0,  0.0, 0.0},
-			{0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0}
+			0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0,
+			0.0, 1.0,  0.0, 0.0,  1.0, 0.0,  1.0, 1.0,
+			1.0, 0.0,  1.0, 1.0,  0.0, 1.0,  0.0, 0.0,
 		};
 		
 		// create pre-transformed cube mesh
 		
-		for (int face = 0; face < 5; face++)
-		if ((face & 1) == 0)
+		for (int i = 0; i < 12; i++)
 		{
-			for (int vert = 0; vert < 4; vert++)
-			{
-				vec3 v = GUI_cube[face][vert].xyz();
-				
-				float tu = cube_texcoords[face][vert * 2 + 0];
-				float tv = cube_texcoords[face][vert * 2 + 1];
-				
-				unsigned int color;
-				if (face == 0) color = BGRA8(0, 0, 0,    0);
-				if (face == 2) color = BGRA8(0, 0, 0,   20);
-				if (face == 4) color = BGRA8(0, 0, 0,   64);
-				
-				transformedCube.emplace_back( (GUIInventory::inventory_t)
-					{ v.x, v.y, v.z,  tu, tv, (float)face,  color });
-			}
+			int face = (i / 4) * 2;
+			
+			vec3 v = GUI_cube[i].xyz();
+			
+			float tu = GUIcube_tex[i * 2 + 0];
+			float tv = GUIcube_tex[i * 2 + 1];
+			
+			unsigned int color;
+			if (face == 0) color = BGRA8(0, 0, 0,    0);
+			if (face == 2) color = BGRA8(0, 0, 0,   20);
+			if (face == 4) color = BGRA8(0, 0, 0,   64);
+			
+			transformedCube.emplace_back( (GUIInventory::inventory_t)
+				{ v.x, v.y, v.z,  tu, tv, (float)face,  color });
 		}
 		
 	}

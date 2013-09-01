@@ -144,6 +144,10 @@
         <File Name="source/library/threading/thread_worker.hpp"/>
         <File Name="source/library/threading/thread_pool.cpp"/>
         <File Name="source/library/threading/thread_pool.hpp"/>
+        <File Name="source/library/threading/TThread.cpp"/>
+        <File Name="source/library/threading/TThread.hh"/>
+        <File Name="source/library/threading/TThreadPool.cpp"/>
+        <File Name="source/library/threading/TThreadPool.hpp"/>
       </VirtualDirectory>
       <VirtualDirectory Name="timing">
         <File Name="source/library/timing/highperf.cpp"/>

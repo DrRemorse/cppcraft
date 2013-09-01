@@ -74,7 +74,6 @@ namespace cppcraft
 			{
 				// as long as not currently 'generating' world:
 				// start precompiling sectors
-				
 				if (precompq.run(timer, _localtime)) timeout = true;
 			}
 			

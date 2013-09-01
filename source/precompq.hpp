@@ -39,9 +39,6 @@ namespace cppcraft
 		int currentPrecomp = 0;
 		// number of parallell threads
 		int threads;
-		// thread jobs
-		std::vector<std::future<void>> futures;
-		
 	};
 	extern PrecompQ precompq;
 }
