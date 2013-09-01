@@ -106,7 +106,7 @@ namespace cppcraft
 								 1.0 / m_fWavelength4[1], 
 								 1.0 / m_fWavelength4[2]);
 		setu1("fInnerRadius",  m_fInnerRadius);
-		// setu1("fOuterRadius",  m_fOuterRadius);
+		setu1("fOuterRadius",  m_fOuterRadius);
 		setu1("fKrESun", m_Kr * m_ESun);
 		setu1("fKmESun", m_Km * m_ESun);
 		setu1("fKr4PI",  m_Kr4PI);
@@ -119,6 +119,9 @@ namespace cppcraft
 		
 		shd.sendInteger("texture", 0);
 		shd.sendInteger("stars",   1);
+		
+		shd.sendVec3("v3CameraPos", vec3(0.0, m_fInnerRadius, 0.0));
+		shd.sendFloat("fCameraHeight", m_fInnerRadius);
 	}
 
 	void Scatterer::render(float playerY)
@@ -126,11 +129,6 @@ namespace cppcraft
 		Shader& shd = shaderman[Shaderman::ATMOSPHERE];
 		shd.bind();
 		
-		float xh = m_fInnerRadius;
-		float th = m_fInnerRadius;
-		
-		shd.sendVec3("v3CameraPos", vec3(0.0, xh, 0.0));
-		shd.sendFloat("fCameraHeight", xh);
 		shd.sendVec3("v3LightPos", thesun.getRealtimeAngle());
 		shd.sendFloat("sunAngle", thesun.getRealtimeRadianAngle());
 		
@@ -140,7 +138,7 @@ namespace cppcraft
 		
 		// create view matrix
 		Matrix matview = camera.getRotationMatrix();
-		matview.translated(0.0, -th, 0.0);
+		matview.translated(0.0, -m_fInnerRadius, 0.0);
 		shd.sendMatrix("matview", matview);
 		shd.sendFloat("above", 1.0);
 		
@@ -150,7 +148,7 @@ namespace cppcraft
 		matview = camera.getRotationMatrix();
 		// multiply with negative-Y scaling matrix
 		matview *= Matrix(1.0, -0.8, 1.0);
-		matview.translated(0.0, -th, 0.0);
+		matview.translated(0.0, -m_fInnerRadius, 0.0);
 		
 		shd.sendMatrix("matview", matview);
 		shd.sendFloat("above", 0.0);
@@ -225,7 +223,7 @@ namespace cppcraft
 		scatter.vao.begin(sizeof(domevertex_t), num_vertices, vertices);
 		scatter.vao.attrib(0, 3, GL_FLOAT, GL_FALSE, 0);
 		scatter.vao.end();
-		
+		scatter.vao.unbind();
 		// cleanup
 		delete vertices;
 	}

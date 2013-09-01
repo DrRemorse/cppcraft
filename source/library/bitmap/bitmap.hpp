@@ -27,10 +27,26 @@ namespace library
 		void parse2D(int, int);
 		
 		// getters
-		rgba8_t* data() const;
-		int getwidth()  const;
-		int getheight() const;
-		int getbits()   const;
+		inline rgba8_t* data() const
+		{
+			return this->buffer;
+		}
+		inline int getwidth() const
+		{
+			return this->width;
+		}
+		inline int getheight() const
+		{
+			return this->height;
+		}
+		inline int getbits() const
+		{
+			return this->bits;
+		}
+		inline int getFormat() const
+		{
+			return this->format;
+		}
 		
 		int getTilesX() const;
 		int getTilesY() const;
@@ -46,10 +62,11 @@ namespace library
 		
 	private:
 		bool loadBMP(const std::string& file);
+		bool loadPNG(const std::string& file);
 		
 		rgba8_t* buffer;
 		int width, height, bits;
-		int tilesX, tilesY;
+		int format, tilesX, tilesY;
 	};
 	
 }

@@ -13,6 +13,11 @@ namespace cppcraft
 	GUIRenderer rendergui;
 	const double PI = 4 * atan(1);
 	
+	void GUIRenderer::init()
+	{
+		initInventoryRenderer();
+	}
+	
 	void GUIRenderer::render(Renderer& renderer)
 	{
 		width  = 1.0;

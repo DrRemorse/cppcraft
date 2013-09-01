@@ -36,7 +36,7 @@ namespace library
 		this->format = newFormat;
 	}
 	
-	void Texture::create(const Bitmap& b, bool mipmap = true, GLint wrapmode = GL_CLAMP_TO_EDGE, GLint magfilter = GL_NEAREST, GLint minfilter = GL_LINEAR_MIPMAP_LINEAR)
+	void Texture::create(const Bitmap& bmp, bool mipmap = true, GLint wrapmode = GL_CLAMP_TO_EDGE, GLint magfilter = GL_NEAREST, GLint minfilter = GL_LINEAR_MIPMAP_LINEAR)
 	{
 		bind(0);
 		glTexParameteri(this->type, GL_TEXTURE_MAX_ANISOTROPY_EXT, ogl.anisotrophy);
@@ -47,10 +47,9 @@ namespace library
 		glTexParameteri(this->type, GL_TEXTURE_MIN_FILTER, minfilter);
 		
 		// openGL is a C library, so const& is never going to work :)
-		int width  = b.getwidth();
-		int height = b.getheight();
-		GLuint* pixel = b.data();
-		int numTiles = b.getTilesX() * b.getTilesY();
+		this->width  = bmp.getwidth();
+		this->height = bmp.getheight();
+		GLuint* pixel = bmp.data();
 		
 		this->isMipmapped = mipmap;
 		if (this->isMipmapped)
@@ -59,55 +58,57 @@ namespace library
 			glTexParameteri(this->type, GL_TEXTURE_MAX_LEVEL, (int)(log(width) / log(2.0)));
 		}
 		
-		switch (this->type)
+		if (this->type == GL_TEXTURE_2D)
 		{
-		case GL_TEXTURE_2D:
-			glTexImage2D(this->type, 0, format, width, height, 0, GL_BGRA, ogl.storageformat, pixel);
-			break;
-		case GL_TEXTURE_CUBE_MAP:
+			glTexImage2D(this->type, 0, format, width, height, 0, bmp.getFormat(), ogl.storageformat, pixel);
+		}
+		else if (this->type == GL_TEXTURE_CUBE_MAP)
+		{
 			/* ====================================== */
-			/* scope */;
+			
+			// create temporary bitmap consisting of 1 side of a cubemap
+			int cmsize = width / 4;
+			Bitmap blitdump(cmsize, cmsize, 32);
+			
+			// iterate the 6 sides of a cubemap
+			for (int i = 0; i < 6; i++)
 			{
-				// create temporary bitmap consisting of 1 side of a cubemap
-				int cmsize = b.getwidth() / 4;
-				Bitmap blitdump(cmsize, cmsize, 32);
-				
-				// iterate the 6 sides of a cubemap
-				for (int i = 0; i < 6; i++)
+				switch (i)
 				{
-					switch (i)
-					{
-					// blit each side of the cube to our temporary bitmap at (0, 0)
-					case 0: // +x
-						b.blit(blitdump, cmsize * 2, cmsize * 1, cmsize, cmsize, 0, 0);
-						break;
-					case 1: // -x
-						b.blit(blitdump, cmsize * 0, cmsize * 1, cmsize, cmsize, 0, 0);
-						break;
-					case 2: // +y
-						b.blit(blitdump, cmsize * 1, cmsize * 0, cmsize, cmsize, 0, 0);
-						break;
-					case 3: // -y
-						b.blit(blitdump, cmsize * 1, cmsize * 2, cmsize, cmsize, 0, 0);
-						break;
-					case 4: // +z
-						b.blit(blitdump, cmsize * 1, cmsize * 1, cmsize, cmsize, 0, 0);
-						break;
-					case 5: // -z
-						b.blit(blitdump, cmsize * 3, cmsize * 1, cmsize, cmsize, 0, 0);
-						break;
-					}
-					// upload each side, from temporary bitmap
-					glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, cmsize, cmsize, 0, GL_BGRA, ogl.storageformat, blitdump.data());
+				// blit each side of the cube to our temporary bitmap at (0, 0)
+				case 0: // +x
+					bmp.blit(blitdump, cmsize * 2, cmsize * 1, cmsize, cmsize, 0, 0);
+					break;
+				case 1: // -x
+					bmp.blit(blitdump, cmsize * 0, cmsize * 1, cmsize, cmsize, 0, 0);
+					break;
+				case 2: // +y
+					bmp.blit(blitdump, cmsize * 1, cmsize * 0, cmsize, cmsize, 0, 0);
+					break;
+				case 3: // -y
+					bmp.blit(blitdump, cmsize * 1, cmsize * 2, cmsize, cmsize, 0, 0);
+					break;
+				case 4: // +z
+					bmp.blit(blitdump, cmsize * 1, cmsize * 1, cmsize, cmsize, 0, 0);
+					break;
+				case 5: // -z
+					bmp.blit(blitdump, cmsize * 3, cmsize * 1, cmsize, cmsize, 0, 0);
+					break;
 				}
+				// upload each side, from temporary bitmap
+				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, cmsize, cmsize, 0, bmp.getFormat(), ogl.storageformat, blitdump.data());
 			}
 			/* ====================================== */
-			break;
-		case GL_TEXTURE_2D_ARRAY:
-			glTexImage3D(this->type, 0, format, width, height, numTiles, 0, GL_BGRA, ogl.storageformat, pixel);
-			break;
-		default:
-			logger << Log::ERR << "@Texture::create(): Unknown texture target (" << this->type << ")" << Log::ENDL;
+		}
+		else if (this->type == GL_TEXTURE_2D_ARRAY)
+		{
+			int numTiles = bmp.getTilesX() * bmp.getTilesY();
+			
+			glTexImage3D(this->type, 0, format, width, height, numTiles, 0, bmp.getFormat(), ogl.storageformat, pixel);
+		}
+		else
+		{
+			logger << Log::ERR << "@Texture::create(): Unknown texture target (" << (int)this->type << ")" << Log::ENDL;
 		}
 		
 		if (this->isMipmapped)
@@ -133,6 +134,9 @@ namespace library
 		glTexParameteri(this->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(this->type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(this->type, GL_TEXTURE_MIN_FILTER, minfilter);
+		
+		this->width  = width;
+		this->height = height;
 		
 		this->isMipmapped = mipmap;
 		if (this->isMipmapped)

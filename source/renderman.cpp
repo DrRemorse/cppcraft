@@ -124,6 +124,8 @@ namespace cppcraft
 		sceneRenderer = new SceneRenderer();
 		sceneRenderer->init(*this);
 		
+		// initialize gui renderer
+		rendergui.init();
 	}
 	
 	void Renderer::render(double time_d_factor, WorldManager& worldman)

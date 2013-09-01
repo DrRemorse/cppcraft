@@ -25,6 +25,9 @@ gui inventory items & rabble
 voxel items
 
 
-
 groundlevel doesnt work under trees
 goddamn gridtesting
+
+
+raise sharp columns in islands
+vary the landscape height slightly in autumn

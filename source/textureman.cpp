@@ -183,7 +183,7 @@ namespace cppcraft
 		/// GUI Renderer ///
 		
 		// compass
-		if (bmp.load(config.get("textures.compass", "bitmap/default/compass.data"), Bitmap::PNG))
+		if (bmp.load(config.get("textures.compass", "bitmap/default/gui/compass.png"), Bitmap::PNG))
 		{
 			textures[T_COMPASS] = Texture(GL_TEXTURE_2D);
 			textures[T_COMPASS].create(bmp, true, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
@@ -192,7 +192,7 @@ namespace cppcraft
 		if (ogl.checkError()) throw std::string("Compass texture error");
 		
 		// quickbar
-		if (bmp.load(config.get("textures.quickbar", "bitmap/default/quickbar.data"), Bitmap::PNG))
+		if (bmp.load(config.get("textures.quickbar", "bitmap/default/gui/quickbar.png"), Bitmap::PNG))
 		{
 			textures[T_QUICKBAR] = Texture(GL_TEXTURE_2D);
 			textures[T_QUICKBAR].create(bmp, true, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);

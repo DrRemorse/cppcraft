@@ -3,11 +3,16 @@
 #include "../log.hpp"
 #include "lodepng.h"
 #include <fstream>
+#include <string>
+
+#define GL_RGB  0x1907
+#define GL_RGBA 0x1908
+#define GL_BGRA 0x80E1
 
 namespace library
 {
 	Bitmap::Bitmap():
-		buffer(nullptr), width(0), height(0), bits(0)
+		buffer(nullptr), width(0), height(0), bits(0), format(0)
 	{ }
 	
 	Bitmap::Bitmap(const std::string file, Bitmap::bitmap_type btype)
@@ -16,11 +21,13 @@ namespace library
 		load(file, btype);
 	}
 	Bitmap::Bitmap(int w, int h, int b): 
-		width(w), height(h), bits(b)
+		width(w), height(h), bits(b), format(GL_BGRA)
 	{
 		buffer = new rgba8_t[width * height];
 		if (buffer == nullptr)
+		{
 			throw std::string("Bitmap::Bitmap(int, int, int): Failed to allocate pixel buffer");
+		}
 	}
 	Bitmap::~Bitmap()
 	{
@@ -35,26 +42,9 @@ namespace library
 		}
 		else if (btype == PNG)
 		{
-			std::vector<unsigned char> image, png;
-			// load file from disk
-			if (lodepng::load_file(png, file.c_str()) == false) return false;
-			// decode it
-			unsigned w, h;
-			unsigned error = lodepng::decode(image, w, h, png);
-			// throw if there are any errors
-			if (error)
-			{
-				logger << Log::ERR << "PNG decoder error " << error << ": " << lodepng_error_text(error) << Log::ENDL;
-				throw std::string("PNG decoder failed to decode " + file);
-			}
-			this->width  = w;
-			this->height = h;
-			delete this->buffer;
-			this->buffer = (rgba8_t*) image.data();
-			
-			return true;
+			return loadPNG(file);
 		}
-		return false;
+		throw std::string("Bitmap::load(): Unsupported format");
 	}
 	
 	bool Bitmap::loadBMP(const std::string& file)
@@ -89,6 +79,7 @@ namespace library
 		{	// Log: could not open file
 			logger << Log::ERR << "Could not open file: " << file << Log::ENDL;
 			return false;
+			//throw std::string("Bitmap::loadBMP(): Could not open file " + file);
 		}
 		
 		File.read ( (char*) &bhead, sizeof(bmpheader_t) );
@@ -97,6 +88,7 @@ namespace library
 		this->width  = bdata.w;
 		this->height = bdata.h;
 		this->bits   = bdata.bits;
+		this->format = GL_BGRA;
 		this->tilesX = 1;
 		this->tilesY = 1;
 		
@@ -159,9 +151,47 @@ namespace library
 		}
 		else
 		{
-			throw std::string("Bitmap::load(): Invalid bits value (" + file + ")");
+			logger << Log::ERR << "Bitmap::loadBMP(): Invalid bits value: " << bdata.bits << Log::ENDL;
+			//throw std::string("Bitmap::loadBMP(): Invalid bits value (" + file + ")");
 		}
 		File.close();
+		return true;
+	}
+	
+	bool Bitmap::loadPNG(const std::string& file)
+	{
+		std::vector<unsigned char> image, png;
+		// load file from disk
+		if (lodepng::load_file(png, file.c_str()) == false)
+		{
+			logger << Log::ERR << "Bitmap::loadPNG(): File not found: " << file << Log::ENDL;
+			throw std::string("Bitmap::loadPNG(): File not found: " + file);
+		}
+		// decode it
+		unsigned w, h;
+		unsigned error = lodepng::decode(image, w, h, png);
+		// throw if there are any errors
+		if (error)
+		{
+			logger << Log::ERR << "Bitmap::loadPNG(): Error " << error << ": " << lodepng_error_text(error) << Log::ENDL;
+			return false;
+			//throw std::string("Bitmap::loadPNG(): Failed to decode " + file);
+		}
+		this->format = GL_RGBA;
+		this->bits   = 32;
+		this->tilesX = 1;
+		this->tilesY = 1;
+		
+		this->width  = w;
+		this->height = h;
+		
+		delete this->buffer;
+		this->buffer = new rgba8_t[w * h];
+		if (this->buffer == nullptr)
+		{
+			throw std::string("Bitmap::loadPNG(): Failed to allocate pixel buffer");
+		}
+		memcpy (this->buffer, image.data(), sizeof(rgba8_t) * w * h);
 		
 		return true;
 	}
@@ -233,22 +263,6 @@ namespace library
 		}
 	}
 	
-	Bitmap::rgba8_t* Bitmap::data() const
-	{
-		return this->buffer;
-	}
-	int Bitmap::getwidth() const
-	{
-		return this->width;
-	}
-	int Bitmap::getheight() const
-	{
-		return this->height;
-	}
-	int Bitmap::getbits() const
-	{
-		return this->bits;
-	}
 	int Bitmap::getTilesX() const
 	{
 		return this->tilesX;

@@ -37,8 +37,8 @@ namespace cppcraft
 		
 		Sound::setMasterVolume(0.3);
 		musicPlayer    = StreamChannel(0.0005, 0.2);
-		ambiencePlayer = StreamChannel(0.001,  0.7);
-		underwaterPlayer = StreamChannel(0.01, 0.6);
+		ambiencePlayer = StreamChannel(0.001,  0.6);
+		underwaterPlayer = StreamChannel(0.01, 0.5);
 		
 		logger << Log::INFO << "* Sound system initialized" << Log::ENDL;
 	}

@@ -7,12 +7,38 @@
 #include "blocks.hpp"
 #include "shaderman.hpp"
 #include "textureman.hpp"
+#include <cmath>
 
 using namespace library;
 
 namespace cppcraft
 {
 	GUIInventory quickbarItems;
+	static const double PI = 4 * atan(1);
+	
+	// pre-transform cube
+	vec4 GUIcube[6][4] = 
+	{
+		{ vec4(0, 0, 1, 0), vec4(1, 0, 1, 0), vec4(1, 1, 1, 0), vec4(0, 1, 1, 0) },
+		{ vec4(0, 0, 0, 0), vec4(0, 1, 0, 0), vec4(1, 1, 0, 0), vec4(1, 0, 0, 0) },
+		{ vec4(0, 1, 1, 0), vec4(0, 1, 1, 0), vec4(1, 1, 1, 0), vec4(1, 1, 0, 0) },
+		{ vec4(0, 0, 0, 0), vec4(1, 0, 0, 0), vec4(1, 0, 1, 0), vec4(0, 0, 1, 0) },
+		{ vec4(1, 0, 0, 0), vec4(1, 1, 0, 0), vec4(1, 1, 1, 0), vec4(1, 0, 1, 0) },
+		{ vec4(0, 0, 0, 0), vec4(0, 0, 1, 0), vec4(0, 1, 1, 0), vec4(0, 1, 0, 0) }
+	};
+	
+	void GUIRenderer::initInventoryRenderer()
+	{
+		Matrix matrot(1.0);
+		matrot.rotateZYX(PI / 4, PI / 4, 0);
+		
+		for (int face = 0; face < 6; face++)
+		for (int vert = 0; vert < 4; vert++)
+		{
+			GUIcube[face][vert] = matrot * GUIcube[face][vert];
+		}
+		
+	}
 	
 	void GUIRenderer::renderQuickbarItems(library::Matrix& ortho, double frameCounter)
 	{
@@ -41,7 +67,6 @@ namespace cppcraft
 				quickbarItems.emit(itm, posx + x * stride, posy, size);
 			}
 			quickbarItems.upload();
-			logger << "inventory changed" << Log::ENDL;
 		}
 		
 		// render inventory
@@ -95,6 +120,8 @@ namespace cppcraft
 	{
 		// texture tile id
 		float tile = Block::cubeFaceById(itm.getID(), 0, 0);
+		
+		
 		
 		return 0;
 	}

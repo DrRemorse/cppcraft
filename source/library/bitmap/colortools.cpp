@@ -2,33 +2,39 @@
 
 namespace library
 {
-	cl_rgb cl_rgb::mixColor(cl_rgb& a, cl_rgb& b, float mixlevel)
+	Color::Color(int red, int grn, int blu)
 	{
-		if (mixlevel == 0) return a;
-		
-		cl_rgb c;
-		c.r = (int)( (float)a.r * (1.0 - mixlevel) + (float)b.r * mixlevel );
-		if (c.r > 255) c.r = 255;
-		c.g = (int)( (float)a.g * (1.0 - mixlevel) + (float)b.g * mixlevel );
-		if (c.g > 255) c.g = 255;
-		c.b = (int)( (float)a.b * (1.0 - mixlevel) + (float)b.b * mixlevel );
-		if (c.b > 255) c.b = 255;
-		return c;
+		this->r = red & 255; this->g = grn & 255; this->b = blu & 255;
+	}
+	Color::Color(int r, int g, int b, int a)
+	{
+		this->r = r & 255; this->g = g & 255;
+		this->b = b & 255; this->a = a & 255;
 	}
 	
-	void cl_rgb::addColorv(cl_rgb& a, cl_rgb& b, float level)
+	uint32_t Color::toBGRA()
 	{
-		if (level == 0.0) return;
-		
-		a.r += (int)( (float)b.r * level );
-		if (a.r > 255) a.r = 255;
-		a.g += (int)( (float)b.g * level );
-		if (a.g > 255) a.g = 255;
-		a.b += (int)( (float)b.b * level );
-		if (a.b > 255) a.b = 255;
+		return r + (g << 8) + (b << 16) + (a << 24);
 	}
 	
-	cl_rgb cl_rgb::getGradientColor(float v, cl_rgb* array, int size)
+	Color Color::mixColor(Color& a, Color& b, float mixlevel)
+	{
+		return Color(
+			(int)( (float)a.r * (1.0 - mixlevel) + (float)b.r * mixlevel ),
+			(int)( (float)a.g * (1.0 - mixlevel) + (float)b.g * mixlevel ),
+			(int)( (float)a.b * (1.0 - mixlevel) + (float)b.b * mixlevel ),
+			(int)( (float)a.a * (1.0 - mixlevel) + (float)b.a * mixlevel )
+		);
+	}
+	
+	void Color::addColorv(Color& a, Color& b, float level)
+	{
+		a.r += (int)( (float)b.r * level ) & 255;
+		a.g += (int)( (float)b.g * level ) & 255;
+		a.b += (int)( (float)b.b * level ) & 255;
+	}
+	
+	Color Color::getGradientColor(float v, Color* array, int size)
 	{
 		int    vint = (int)v, vnxt;
 		float  vfrac = v - vint;
@@ -44,8 +50,8 @@ namespace library
 		if (vnxt >= size) vnxt = size-1;
 		
 		// get gradient array colors
-		cl_rgb& cl1 = array[vint];
-		cl_rgb& cl2 = array[vnxt];
+		Color& cl1 = array[vint];
+		Color& cl2 = array[vnxt];
 		
 		// convert fractional to interpolator
 		if (vfrac < 0.5) vfrac = (0.5 - vfrac) / 0.5;
@@ -56,7 +62,7 @@ namespace library
 		return mixColor( cl1, cl2, vfrac * 0.5 );
 	}
 	
-	vec4 colorToVector(color_rgba8_t color)
+	vec4 colorToVector(rgba8_t color)
 	{
 		return vec4
 		(
@@ -67,7 +73,7 @@ namespace library
 		);
 	}
 	
-	color_rgba8_t vectorToColor(const vec4& vector)
+	rgba8_t vectorToColor(const vec4& vector)
 	{
 		int r = int(vector.x * 255);
 		int g = int(vector.y * 255) << 8;

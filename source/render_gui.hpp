@@ -27,6 +27,8 @@ namespace cppcraft
 		float width;
 		float height;
 		
+		void initInventoryRenderer();
+		
 		void renderPlayerhand(double frameCounter);
 		void renderMinimap(library::Matrix& ortho);
 		void renderCrosshair(library::Matrix& ortho);

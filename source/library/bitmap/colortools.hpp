@@ -8,38 +8,44 @@
 namespace library
 {
 	class vec4;
-	typedef uint32_t color_rgba8_t;
+	typedef uint32_t rgba8_t;
 	
 	template <class C8, class C_8>
-	color_rgba8_t BGRA8(C8 r, C8 g, C8 b, C_8 a)
+	rgba8_t BGRA8(C8 r, C8 g, C8 b, C_8 a)
 	{
-		return  ((color_rgba8_t)r      ) + 
-				((color_rgba8_t)g <<  8) + 
-				((color_rgba8_t)b << 16) + 
-				((color_rgba8_t)a << 24);
+		return  ((rgba8_t)r      ) + 
+				((rgba8_t)g <<  8) + 
+				((rgba8_t)b << 16) + 
+				((rgba8_t)a << 24);
 	}
 	
 	template <class C8, class C_8>
-	color_rgba8_t RGBA8(C8 r, C8 g, C8 b, C_8 a)
+	rgba8_t RGBA8(C8 r, C8 g, C8 b, C_8 a)
 	{
-		return  ((color_rgba8_t)b      ) + 
-				((color_rgba8_t)g <<  8) + 
-				((color_rgba8_t)r << 16) + 
-				((color_rgba8_t)a << 24);
+		return  ((rgba8_t)b      ) + 
+				((rgba8_t)g <<  8) + 
+				((rgba8_t)r << 16) + 
+				((rgba8_t)a << 24);
 	}
 	
-	class cl_rgb
+	class Color
 	{
-		int r, g, b;
+		uint8_t r, g, b, a;
 		
-		static cl_rgb mixColor (cl_rgb& a, cl_rgb& b, float mixlevel);
-		static void   addColorv(cl_rgb& a, cl_rgb& b, float level);
-		static cl_rgb getGradientColor(float v, cl_rgb* array, int size);
+	public:
+		Color(int r, int g, int b);
+		Color(int r, int g, int b, int a);
 		
+		rgba8_t toBGRA();
+		rgba8_t toRGBA();
+		
+		static Color mixColor (Color& a, Color& b, float mixlevel);
+		static void   addColorv(Color& a, Color& b, float level);
+		static Color getGradientColor(float v, Color* array, int size);
 	};
 	
-	vec4 colorToVector(color_rgba8_t color);
-	color_rgba8_t vectorToColor(const vec4& vector);
+	vec4 colorToVector(rgba8_t color);
+	rgba8_t vectorToColor(const vec4& vector);
 }
 
 #endif

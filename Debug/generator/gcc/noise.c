@@ -22,17 +22,18 @@ f32_t getnoise_caves(vec3 p)
 	
 	f64_t n1 = snoise3(npos.x, npos.y, npos.z);
 	
-	if (fabs(n1) < 0.35)
+	if (fabs(n1) < 0.3)
 	{
-		npos.y *= 1.5;
+		npos.y *= 2.5;
 		
 		// cross noise
 		f64_t n2 = snoise3(npos.x, npos.y, npos.z);
 		f64_t n3 = snoise3(npos.x, npos.y + 3.5, npos.z);
+		f64_t n4 = snoise3(npos.x * 0.2, npos.y + 8.5, npos.z * 0.2);
 		
-		f64_t depth_density_increase = (1.0 - p.y * p.y) * 0.15;
+		f64_t depth_density_increase = (1.0 - p.y * p.y) * 0.2;
 		
-		if (fabs(n2 + n3) < 0.2 + depth_density_increase)
+		if (fabs(n2 + n3 + n4) < 0.1 + depth_density_increase)
 		{
 			if (n1 >= 0.0 && n1 < 0.15)
 				return -(0.15 - n1) / (0.15);
@@ -240,27 +241,30 @@ double nmix2(double x)
 
 f32_t lower_grass(vec3 p)
 {
-	double gx = p.x * 0.15;
-	double gy = p.z * 0.15;
+	double gx = p.x * 0.25;
+	double gy = p.z * 0.25;
 	double sel = nmix2(snoise2(gx, gy)) + nmix2(snoise2(gx*2.1, gy*2.1))* 0.5
 			+    nmix2(snoise2(gx*4.2, gy*4.2))* 0.25 + nmix2(snoise2(gx*8, gy*8))* 0.125
 			+	 nmix2(snoise2(gx*16, gy*16))* 0.125*0.5;
 
-	double s = tanh(sel*1.5-0.4)*0.5 + 0.5;
-
+	double s = tanh(sel*1.5-0.4) * 0.5 + 0.5;
+	
 	double ghei = (snoise2(gx*0.4, gy*0.4)+1)*0.5;
 	s = p.y - (0.1 + s*ghei*ghei * 2.5);
-
+	
+	/*
 	f64_t px = p.x * 0.5;
-	f64_t py = p.y * 0.5;
+	f64_t py = p.y * 0.25;
 	f64_t pz = p.z * 0.5;
 	double dsn4 = (snoise3(px*1.54, py*1.53, pz*1.55)) + 
 				fabs(snoise3(px*3.14, py*3.14, pz*3.35)) * 0.7 + 
 				fabs(snoise3(px*6.74, py*6.94, pz*6.35))* 0.35 + s * s * 3.0;
 	
 	double t = (dsn4 - 0.10);
-	if (t < s) s = t;
-
+	s += t * (1.0 - p.y);
+	//if (t < s) s = t;
+	*/
+	
 	// ultra-scale down density above clouds
 	const f64_t scaledown = 0.9;
 	if (p.y > scaledown) {
@@ -323,7 +327,7 @@ f32_t getnoise_grass(vec3 p)
 	noi = p.y - (land + 0.5*depth);
 	
 	// vary cliff terrain with lower_grass terrain (that also has mountains)
-	const f32_t GMIX = 0.25;
+	const f32_t GMIX = 0.5;
 	f32_t gmix = snoise2(p.x*0.66, p.z*0.66);
 	
 	if (gmix > GMIX)

@@ -5,6 +5,15 @@
       <![CDATA[00010001N0005Debug000000000000]]>
     </Plugin>
   </Plugins>
+  <Reconciliation>
+    <Regexes/>
+    <Excludepaths/>
+    <Ignorefiles/>
+    <Extensions>
+      <![CDATA[cpp;c;h;hpp;xrc;wxcp;fbp]]>
+    </Extensions>
+    <Topleveldir>../cppcraft</Topleveldir>
+  </Reconciliation>
   <VirtualDirectory Name="Debug">
     <VirtualDirectory Name="shaders">
       <File Name="Debug/shaders/atmosphere.glsl"/>
@@ -22,8 +31,6 @@
       <File Name="Debug/shaders/gui.glsl"/>
       <File Name="Debug/shaders/horizonfade.glsl"/>
       <File Name="Debug/shaders/lensflare.glsl"/>
-      <File Name="Debug/shaders/lighting.glsl"/>
-      <File Name="Debug/shaders/lighting2.glsl"/>
       <File Name="Debug/shaders/lightw.glsl"/>
       <File Name="Debug/shaders/minimap.glsl"/>
       <File Name="Debug/shaders/moon.glsl"/>
@@ -328,7 +335,6 @@
     </GlobalSettings>
     <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-std=gnu++11;-g;-pthread;-Wall;-Wno-write-strings" C_Options="-g;-O0;-Wall" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
-        <IncludePath Value="."/>
         <IncludePath Value="inc"/>
       </Compiler>
       <Linker Options="" Required="yes">
@@ -346,6 +352,7 @@
         <![CDATA[]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <DebuggerSearchPaths/>
         <PostConnectCommands/>
         <StartupCommands/>
       </Debugger>
@@ -383,6 +390,7 @@
         <![CDATA[]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <DebuggerSearchPaths/>
         <PostConnectCommands/>
         <StartupCommands/>
       </Debugger>
