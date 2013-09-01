@@ -20,10 +20,13 @@ namespace cppcraft
 		inventory = Inventory(9, 5);
 		
 		// create default inventory
-		for (int x = 0; x < inventory.getWidth(); x++)
+		for (int x = 0; x < inventory.getWidth() / 2; x++)
 		{
-			//inventory(x, quickbarY) = InventoryItem(IT_WOODPICK + x, ITT_ITEM, 64);
-			inventory(x, quickbarY) = InventoryItem(_WOODBROWN + x, ITT_BLOCK, 64);
+			inventory(x, quickbarY) = InventoryItem(IT_WOODPICK + x, ITT_ITEM, 64);
+		}
+		for (int x = inventory.getWidth() / 2; x < inventory.getWidth(); x++)
+		{
+			inventory(x, quickbarY) = InventoryItem(_WOODBROWN + x - inventory.getWidth() / 2, ITT_BLOCK, 64);
 		}
 		inventory.setChanged(true);
 		

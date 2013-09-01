@@ -16,6 +16,7 @@
 #include "minimap.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
+#include "precompq.hpp"
 #include "sector.hpp"
 #include "sun.hpp"
 #include "threading.hpp"
@@ -79,6 +80,13 @@ namespace cppcraft
 		}
 	}
 	
+	// things that must be done prior to moving the world
+	void Seamless::seamless_preconditions()
+	{
+		// finish all running precompiler threads
+		precompq.finish();
+	}
+	
 	// big huge monster function
 	// writeme
 	bool Seamless::seamlessness()
@@ -90,6 +98,8 @@ namespace cppcraft
 		// if player is beyond negative seam offset point on x axis
 		if (player.X <= halfworld - Seamless::OFFSET)
 		{
+			seamless_preconditions();
+			
 			mtx.sectorseam.lock();
 			
 			// move player forward one sector (in blocks)
@@ -184,6 +194,8 @@ namespace cppcraft
 		}
 		else if (player.X >= halfworld + Seamless::OFFSET)
 		{
+			seamless_preconditions();
+			
 			mtx.sectorseam.lock();
 			
 			// move player back one sector (in blocks)
@@ -280,6 +292,8 @@ namespace cppcraft
 		
 		if (player.Z <= halfworld - Seamless::OFFSET)
 		{
+			seamless_preconditions();
+			
 			mtx.sectorseam.lock();
 			
 			// offset player +z
@@ -364,6 +378,8 @@ namespace cppcraft
 		}
 		else if (player.Z >= halfworld + Seamless::OFFSET)
 		{
+			seamless_preconditions();
+			
 			mtx.sectorseam.lock();
 			
 			// move player backward on the Z axis

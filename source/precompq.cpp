@@ -133,7 +133,7 @@ namespace cppcraft
 		if (queueCount == 0) return false;
 		// current thread id
 		int t_mod = 0;
-		
+		finish();
 		// ------------ PRECOMPILER -------------- //
 		
 		// reset if out of bounds
@@ -160,10 +160,10 @@ namespace cppcraft
 					t_mod = (t_mod + 1) % precompiler.getThreads();
 					if (t_mod == 0)
 					{
-						finish();
+						//finish();
 						
 						// check if we need to bail out
-						if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT)
+						if (true) // timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT)
 						{
 							// increase count so we can get out now
 							currentPrecomp += 1;
@@ -196,7 +196,7 @@ namespace cppcraft
 		currentPrecomp = 0;
 		
 		// finish jobs & clear queue
-		finish();
+		//finish();
 		
 		// always check if time is out
 		if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT) return true;

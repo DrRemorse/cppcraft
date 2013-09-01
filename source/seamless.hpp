@@ -8,6 +8,7 @@ namespace cppcraft
 	{
 	private:
 		static bool seamlessness();
+		static void seamless_preconditions();
 		
 	public:
 		static bool run();
