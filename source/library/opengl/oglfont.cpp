@@ -13,7 +13,7 @@ namespace library
 	
 	bool OglFont::load(std::string filename)
 	{
-		Bitmap fontImage(filename);
+		Bitmap fontImage(filename, Bitmap::PNG);
 		if (fontImage.data() == nullptr) return false;
 		
 		fontImage.parse2D(size, size);

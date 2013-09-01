@@ -103,19 +103,19 @@ namespace cppcraft
 		return Flatlands(s.x, s.z)(x, z).skyLevel;
 	}
 	
-	Bitmap::color_rgba8_t fgetColor(Sector& s, int x, int z, int clid)
+	Bitmap::rgba8_t fgetColor(Sector& s, int x, int z, int clid)
 	{
 		return Flatlands(s.x, s.z)(x, z).fcolor[clid];
 	}
 	
-	Bitmap::color_rgba8_t mixColor(Bitmap::color_rgba8_t a, Bitmap::color_rgba8_t b, float mixlevel)
+	Bitmap::rgba8_t mixColor(Bitmap::rgba8_t a, Bitmap::rgba8_t b, float mixlevel)
 	{
 		if (a == b) return a;
 		
 		unsigned char* p = (unsigned char*)&a;
 		unsigned char* q = (unsigned char*)&b;
 		
-		Bitmap::color_rgba8_t ret;
+		Bitmap::rgba8_t ret;
 		unsigned char* retp = (unsigned char*)&ret;
 		
 		for (unsigned int i = 0; i < sizeof(ret); i++)
@@ -125,7 +125,7 @@ namespace cppcraft
 		return ret;
 	}
 	
-	Bitmap::color_rgba8_t lowColor(Bitmap::color_rgba8_t c)
+	Bitmap::rgba8_t lowColor(Bitmap::rgba8_t c)
 	{
 		unsigned char* p = (unsigned char*)&c;
 		p[0] /= HEIGHTMAP_FACTOR;
@@ -135,7 +135,7 @@ namespace cppcraft
 		return p[0] + (p[1] << 8) + (p[2] << 16) + (p[3] << 24);
 	}
 	
-	Bitmap::color_rgba8_t highColor(Bitmap::color_rgba8_t c)
+	Bitmap::rgba8_t highColor(Bitmap::rgba8_t c)
 	{
 		unsigned char* p = (unsigned char*)&c;
 		// overflow checks
@@ -146,12 +146,12 @@ namespace cppcraft
 		return p[0] + (p[1] << 8) + (p[2] << 16) + (p[3] << 24);
 	}
 	
-	Bitmap::color_rgba8_t getBlockColor(Sector& s, int x, int y, int z)
+	Bitmap::rgba8_t getBlockColor(Sector& s, int x, int y, int z)
 	{
 		if (y == 0) return RGBA8(48, 48, 48, 255);
 		
 		Block b = Spiders::getBlock(s, x, y, z);
-		Bitmap::color_rgba8_t c;
+		Bitmap::rgba8_t c;
 		
 		if (isStone(b.getID()))
 		{
@@ -281,7 +281,7 @@ namespace cppcraft
 		
 		// fetch blocks at skylevels
 		// determine colors for skylevel blocks
-		Bitmap::color_rgba8_t colors[4];
+		Bitmap::rgba8_t colors[4];
 		
 		colors[0] = getBlockColor(s0,  3, skylevel[0],  3);
 		colors[0] = mixColor(colors[0],
@@ -303,7 +303,7 @@ namespace cppcraft
 		int px = bitmap->getwidth()  / 2 - Sectors.getXZ() + 2 * sector.x;
 		int pz = bitmap->getheight() / 2 - Sectors.getXZ() + 2 * sector.z;
 		
-		Bitmap::color_rgba8_t* pixels = bitmap->data();
+		Bitmap::rgba8_t* pixels = bitmap->data();
 		if (pixels == nullptr) throw std::string("Minimap::addSector(): Bitmap had no buffer");
 		
 		int scan = bitmap->getwidth();
@@ -323,7 +323,7 @@ namespace cppcraft
 		if (bitmap->isValid() == false) return;
 		
 		int page = bitmap->getwidth(); // size of scanline, aka. pitch
-		Bitmap::color_rgba8_t* pixels = bitmap->data();
+		Bitmap::rgba8_t* pixels = bitmap->data();
 		
 		if (x > 0)
 		{
@@ -364,10 +364,10 @@ namespace cppcraft
 			{
 				int p = py * page;
 				// to pixels + offset, from pixels + offset + 2 pages, copy 2 pages
-				memcpy(pixels + p, pixels + p + page * 2, page * 2 * sizeof(Bitmap::color_rgba8_t));
+				memcpy(pixels + p, pixels + p + page * 2, page * 2 * sizeof(Bitmap::rgba8_t));
 			}
 			// clear last 2 scanlines
-			memset(pixels + (bitmap->getheight()-2) * page, 0, page * 2 * sizeof(Bitmap::color_rgba8_t));
+			memset(pixels + (bitmap->getheight()-2) * page, 0, page * 2 * sizeof(Bitmap::rgba8_t));
 		}
 		else if (z < 0)
 		{
@@ -375,10 +375,10 @@ namespace cppcraft
 			{
 				int p = py * page;
 				// to pixels + offset, from pixels + offset - 2 pages, copy 2 pages
-				memcpy(pixels + p, pixels + p - page * 2, page * 2 * sizeof(Bitmap::color_rgba8_t));
+				memcpy(pixels + p, pixels + p - page * 2, page * 2 * sizeof(Bitmap::rgba8_t));
 			}
 			// clear first 2 scanlines
-			memset(pixels, 0, page * 2 * sizeof(Bitmap::color_rgba8_t));
+			memset(pixels, 0, page * 2 * sizeof(Bitmap::rgba8_t));
 		}
 		// minimap has been updated
 		needs_update = true;

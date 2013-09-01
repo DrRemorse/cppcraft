@@ -27,7 +27,7 @@ namespace cppcraft
 		Bitmap bmp;
 		
 		/// TERRAIN regular tileset ///
-		if (bmp.load(config.get("textures.diffuse", "bitmap/default/diffuse.bmp")))
+		if (bmp.load(config.get("textures.diffuse", "bitmap/default/diffuse.png"), Bitmap::PNG))
 		{
 			bmp.parse2D(tiles.tileSize, tiles.tileSize);
 			
@@ -41,7 +41,7 @@ namespace cppcraft
 		else throw std::string("Materials(1) missing source file: Diffuse");
 		if (ogl.checkError()) throw std::string("Materials(1) texture2d array error");
 		
-		if (bmp.load(config.get("textures.tonemap", "bitmap/default/tonemap.bmp")))
+		if (bmp.load(config.get("textures.tonemap", "bitmap/default/tonemap.png"), Bitmap::PNG))
 		{
 			bmp.parse2D(tiles.tileSize, tiles.tileSize);
 			
@@ -52,7 +52,7 @@ namespace cppcraft
 		if (ogl.checkError()) throw std::string("Materials(2) texture2d array error");
 		
 		/// TERRAIN bigger tileset ///
-		if (bmp.load(config.get("textures.bigdiff", "bitmap/default/bigdiff.bmp")))
+		if (bmp.load(config.get("textures.bigdiff", "bitmap/default/bigdiff.png"), Bitmap::PNG))
 		{
 			bmp.parse2D(tiles.bigSize, tiles.bigSize);
 			
@@ -66,7 +66,7 @@ namespace cppcraft
 		else throw std::string("Materials(3) missing source file: Bigdiff");
 		if (ogl.checkError()) throw std::string("Materials(3) texture2d array error");
 		
-		if (bmp.load(config.get("textures.bigtone", "bitmap/default/bigtone.bmp")))
+		if (bmp.load(config.get("textures.bigtone", "bitmap/default/bigtone.png"), Bitmap::PNG))
 		{
 			bmp.parse2D(tiles.bigSize, tiles.bigSize);
 			
@@ -77,7 +77,7 @@ namespace cppcraft
 		if (ogl.checkError()) throw std::string("Materials(4) texture2d array error");
 		
 		/// ITEMS tileset ///
-		if (bmp.load(config.get("textures.items", "bitmap/default/items.bmp")))
+		if (bmp.load(config.get("textures.items", "bitmap/default/items.png"), Bitmap::PNG))
 		{
 			bmp.parse2D(items.itemSize, items.itemSize);
 			
@@ -91,7 +91,7 @@ namespace cppcraft
 		if (ogl.checkError()) throw std::string("Items texture2d array error");
 		
 		/// PLAYER MODELS tileset ///
-		if (bmp.load(config.get("textures.players", "bitmap/default/playerskins.bmp")))
+		if (bmp.load(config.get("textures.players", "bitmap/default/playerskins.png"), Bitmap::PNG))
 		{
 			bmp.parse2D(tiles.skinSize, tiles.skinSize);
 			
@@ -102,7 +102,7 @@ namespace cppcraft
 		if (ogl.checkError()) throw std::string("Player skins texture2d array error");
 		
 		// selection texture
-		if (bmp.load(config.get("textures.selection", "bitmap/default/selection.bmp")))
+		if (bmp.load(config.get("textures.selection", "bitmap/default/selection.png"), Bitmap::PNG))
 		{
 			textures[T_SELECTION] = Texture(GL_TEXTURE_2D);
 			textures[T_SELECTION].create(bmp, true, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
@@ -114,13 +114,13 @@ namespace cppcraft
 		/// Sky renderer ///
 		
 		// sun texture
-		if (bmp.load(config.get("textures.sun", "bitmap/default/sun.bmp")))
+		if (bmp.load(config.get("textures.sun", "bitmap/default/sun.png"), Bitmap::PNG))
 		{
 			textures[T_SUN] = Texture(GL_TEXTURE_2D);
 			textures[T_SUN].create(bmp, true, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
 		}
 		// moon texture
-		if (bmp.load(config.get("textures.moon", "bitmap/default/moon.bmp")))
+		if (bmp.load(config.get("textures.moon", "bitmap/default/moon.png"), Bitmap::PNG))
 		{
 			textures[T_MOON] = Texture(GL_TEXTURE_2D, GL_COMPRESSED_RGBA);
 			textures[T_MOON].create(bmp, true, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
@@ -129,7 +129,7 @@ namespace cppcraft
 		if (ogl.checkError()) throw std::string("Materials(5) texture2d error");
 		
 		// stars texture
-		if (bmp.load(config.get("textures.stars", "bitmap/default/stars.bmp")))
+		if (bmp.load(config.get("textures.stars", "bitmap/default/stars.png"), Bitmap::PNG))
 		{
 			textures[T_STARS] = Texture(GL_TEXTURE_2D, GL_COMPRESSED_RGBA);
 			textures[T_STARS].create(bmp, true, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
@@ -138,7 +138,7 @@ namespace cppcraft
 		if (ogl.checkError()) throw std::string("Materials(6) texture2d error");
 		
 		// sky cubemap
-		if (bmp.load(config.get("textures.skybox", "bitmap/default/skybox.bmp")))
+		if (bmp.load(config.get("textures.skybox", "bitmap/default/skybox.png"), Bitmap::PNG))
 		{
 			textures[T_SKYBOX] = Texture(GL_TEXTURE_CUBE_MAP, GL_COMPRESSED_RGBA);
 			textures[T_SKYBOX].create(bmp, false, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR);
@@ -147,7 +147,7 @@ namespace cppcraft
 		if (ogl.checkError()) throw std::string("Skybox cubemap error");
 		
 		// clouds texture
-		if (bmp.load(config.get("textures.clouds", "bitmap/default/clouds.bmp")))
+		if (bmp.load(config.get("textures.clouds", "bitmap/default/clouds.png"), Bitmap::PNG))
 		{
 			textures[T_CLOUDS] = Texture(GL_TEXTURE_2D);
 			textures[T_CLOUDS].create(bmp, true, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
@@ -158,7 +158,7 @@ namespace cppcraft
 		/// FS Renderer ///
 		
 		// dirty lens texture
-		if (bmp.load(config.get("textures.lens", "bitmap/default/lensdirt_lowc.bmp")))
+		if (bmp.load(config.get("textures.lens", "bitmap/default/lensdirt_lowc.png"), Bitmap::PNG))
 		{
 			textures[T_LENSDIRT] = Texture(GL_TEXTURE_2D, GL_COMPRESSED_RGBA);
 			textures[T_LENSDIRT].create(bmp, false, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR);
@@ -183,7 +183,7 @@ namespace cppcraft
 		/// GUI Renderer ///
 		
 		// compass
-		if (bmp.load(config.get("textures.compass", "bitmap/default/compass.data")))
+		if (bmp.load(config.get("textures.compass", "bitmap/default/compass.data"), Bitmap::PNG))
 		{
 			textures[T_COMPASS] = Texture(GL_TEXTURE_2D);
 			textures[T_COMPASS].create(bmp, true, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
@@ -192,7 +192,7 @@ namespace cppcraft
 		if (ogl.checkError()) throw std::string("Compass texture error");
 		
 		// quickbar
-		if (bmp.load(config.get("textures.quickbar", "bitmap/default/quickbar.data")))
+		if (bmp.load(config.get("textures.quickbar", "bitmap/default/quickbar.data"), Bitmap::PNG))
 		{
 			textures[T_QUICKBAR] = Texture(GL_TEXTURE_2D);
 			textures[T_QUICKBAR].create(bmp, true, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);

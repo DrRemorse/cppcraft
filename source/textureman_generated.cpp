@@ -18,7 +18,7 @@ namespace cppcraft
 		const int chalfsize = chsize / 2;
 		
 		Bitmap crossHair(chsize, chsize, 32);
-		Bitmap::color_rgba8_t* color = crossHair.data();
+		Bitmap::rgba8_t* color = crossHair.data();
 		
 		for (int y = 0; y < chsize; y++)
 		for (int x = 0; x < chsize; x++)

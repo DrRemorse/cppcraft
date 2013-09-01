@@ -35,10 +35,19 @@ namespace cppcraft
 		WindowConfig wndconf;
 		
 		wndconf.title = windowTitle;
-		wndconf.SW    = config.get("screen.width", 1280);
-		wndconf.SH    = config.get("screen.height", 720);
-		wndconf.vsync = config.get("opengl.vsync", true);
 		wndconf.fullscreen  = config.get("opengl.fullscreen", false);
+		if (wndconf.fullscreen)
+		{
+			wndconf.SW = config.get("screen.width", 1280);
+			wndconf.SH = config.get("screen.height", 720);
+			wndconf.refreshrate = config.get("opengl.refresh", 0);
+		}
+		else
+		{
+			wndconf.SW = config.get("window.width", 1280);
+			wndconf.SH = config.get("window.height", 720);
+		}
+		wndconf.vsync       = config.get("opengl.vsync", true);
 		wndconf.multisample = config.get("multisampling", 0);
 		
 		// initialize GLFW window

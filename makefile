@@ -12,7 +12,7 @@ RESOURCES = res/cppcraft.rc
 
 # build options
 # -Ofast -msse4.1 -ffast-math
-BUILDOPT = -Ofast -msse4.1 -ffast-math
+BUILDOPT = -g
 # output file
 OUTPUT   = ./Debug/cppcraft
 

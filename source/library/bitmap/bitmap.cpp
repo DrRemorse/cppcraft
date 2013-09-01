@@ -1,6 +1,7 @@
 #include "bitmap.hpp"
 
 #include "../log.hpp"
+#include "lodepng.h"
 #include <fstream>
 
 namespace library
@@ -9,15 +10,15 @@ namespace library
 		buffer(nullptr), width(0), height(0), bits(0)
 	{ }
 	
-	Bitmap::Bitmap(const std::string file)
+	Bitmap::Bitmap(const std::string file, Bitmap::bitmap_type btype)
 	{
 		this->buffer = nullptr;
-		load(file);
+		load(file, btype);
 	}
 	Bitmap::Bitmap(int w, int h, int b): 
 		width(w), height(h), bits(b)
 	{
-		buffer = new color_rgba8_t[width * height];
+		buffer = new rgba8_t[width * height];
 		if (buffer == nullptr)
 			throw std::string("Bitmap::Bitmap(int, int, int): Failed to allocate pixel buffer");
 	}
@@ -26,7 +27,37 @@ namespace library
 		delete buffer;
 	}
 	
-	bool Bitmap::load(const std::string file)
+	bool Bitmap::load(const std::string file, Bitmap::bitmap_type btype)
+	{
+		if (btype == BMP)
+		{
+			return loadBMP(file);
+		}
+		else if (btype == PNG)
+		{
+			std::vector<unsigned char> image, png;
+			// load file from disk
+			if (lodepng::load_file(png, file.c_str()) == false) return false;
+			// decode it
+			unsigned w, h;
+			unsigned error = lodepng::decode(image, w, h, png);
+			// throw if there are any errors
+			if (error)
+			{
+				logger << Log::ERR << "PNG decoder error " << error << ": " << lodepng_error_text(error) << Log::ENDL;
+				throw std::string("PNG decoder failed to decode " + file);
+			}
+			this->width  = w;
+			this->height = h;
+			delete this->buffer;
+			this->buffer = (rgba8_t*) image.data();
+			
+			return true;
+		}
+		return false;
+	}
+	
+	bool Bitmap::loadBMP(const std::string& file)
 	{
 		#pragma pack(push, 1)
 		// packed: make sure bytes are packed tight, 1-byte memory alignment
@@ -74,7 +105,7 @@ namespace library
 		// delete any previous buffer
 		delete buffer;
 		// allocate 32-bits * w * h pixels
-		buffer = new color_rgba8_t[pixels];
+		buffer = new rgba8_t[pixels];
 		
 		// seek to pixeldata relative to beginning of file
 		File.seekg(bhead.pixeldata);
@@ -93,7 +124,7 @@ namespace library
 			
 			for (int y = 0; y < height; y++)
 			{
-				buf = (char*) buffer + (height-1 - y) * width * sizeof(color_rgba8_t);
+				buf = (char*) buffer + (height-1 - y) * width * sizeof(rgba8_t);
 				tmp = scanbuffer;
 				// read entire scanline
 				File.read(tmp, scanline);
@@ -116,7 +147,7 @@ namespace library
 			// 32-bits (8 per channel)
 			
 			// width of image in bytes
-			int scanline = width * sizeof(color_rgba8_t);
+			int scanline = width * sizeof(rgba8_t);
 			char* scanpos = (char*) this->buffer + height * scanline;
 			
 			while (scanpos > (char*) this->buffer)
@@ -140,10 +171,10 @@ namespace library
 		// copy from this at (x, y) with size (w, h) to destination at (dstX, dstY)
 		for (int y = 0; y < height; y++)
 		{
-			color_rgba8_t* src = this->buffer + (y + srcY) * this->width + srcX;
-			color_rgba8_t* dst = dest.buffer  + (y + dstY) * dest.getwidth() + dstX;
+			rgba8_t* src = this->buffer + (y + srcY) * this->width + srcX;
+			rgba8_t* dst = dest.buffer  + (y + dstY) * dest.getwidth() + dstX;
 			
-			memcpy (dst, src, width * sizeof(color_rgba8_t));
+			memcpy (dst, src, width * sizeof(rgba8_t));
 		}
 	}
 	
@@ -159,8 +190,8 @@ namespace library
 		int maxy = int(this->height / th) * th;
 		
 		// buffers
-		color_rgba8_t* newBuffer = new color_rgba8_t[maxx * maxy];
-		color_rgba8_t *p, *n = newBuffer;
+		rgba8_t* newBuffer = new rgba8_t[maxx * maxy];
+		rgba8_t *p, *n = newBuffer;
 		
 		// for each tile
 		int tx, ty;
@@ -202,7 +233,7 @@ namespace library
 		}
 	}
 	
-	Bitmap::color_rgba8_t* Bitmap::data() const
+	Bitmap::rgba8_t* Bitmap::data() const
 	{
 		return this->buffer;
 	}
@@ -236,9 +267,9 @@ namespace library
 		);
 	}
 	
-	Bitmap::color_rgba8_t Bitmap::makeColor(int r, int g, int b, int a)
+	Bitmap::rgba8_t Bitmap::makeColor(int r, int g, int b, int a)
 	{
-		color_rgba8_t tall;
+		rgba8_t tall;
 		unsigned char *c = (unsigned char*) &tall;
 		c[0] = b;
 		c[1] = g;

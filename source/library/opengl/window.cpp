@@ -25,6 +25,7 @@ namespace library
 		// set primary monitor if we are to run in fullscreen
 		if (fullscr) monitor = glfwGetPrimaryMonitor();
 		
+		glfwWindowHint(GLFW_REFRESH_RATE, wndconf.refreshrate);
 		glfwWindowHint(GLFW_RESIZABLE, 0);
 		glfwWindowHint(GLFW_SAMPLES, wndconf.multisample);
 		

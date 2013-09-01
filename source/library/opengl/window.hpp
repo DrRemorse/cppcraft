@@ -17,6 +17,7 @@ namespace library
 		std::string title;
 		bool fullscreen;
 		bool vsync;
+		int refreshrate;
 		int SW, SH;
 		int multisample;
 	};

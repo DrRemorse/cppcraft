@@ -1,5 +1,6 @@
 #include "player_physics.hpp"
 
+#include "library/log.hpp"
 #include "library/math/toolbox.hpp"
 #include "input.hpp"
 #include "player.hpp"
@@ -208,10 +209,10 @@ namespace cppcraft
 		
 		double length = sqrt(dx*dx + dz*dz);
 		
-		if (length != 0.0)
+		if (length > 0.0000001)
 		{
-			dx = dx * this->curspeed / length;
-			dz = dz * this->curspeed / length;
+			dx *= this->curspeed / length;
+			dz *= this->curspeed / length;
 		}
 		
 		// preserve momentum, build player acceleration

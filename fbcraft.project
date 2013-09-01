@@ -51,6 +51,8 @@
         <File Name="source/library/bitmap/bitmap.hpp"/>
         <File Name="source/library/bitmap/colortools.cpp"/>
         <File Name="source/library/bitmap/colortools.hpp"/>
+        <File Name="source/library/bitmap/lodepng.cpp"/>
+        <File Name="source/library/bitmap/lodepng.h"/>
       </VirtualDirectory>
       <VirtualDirectory Name="compression">
         <File Name="source/library/compression/lzo.cpp"/>
