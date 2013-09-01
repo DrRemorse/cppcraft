@@ -16,26 +16,65 @@ namespace cppcraft
 	GUIInventory quickbarItems;
 	static const double PI = 4 * atan(1);
 	
-	// pre-transform cube
-	vec4 GUIcube[6][4] = 
-	{
-		{ vec4(0, 0, 1, 0), vec4(1, 0, 1, 0), vec4(1, 1, 1, 0), vec4(0, 1, 1, 0) },
-		{ vec4(0, 0, 0, 0), vec4(0, 1, 0, 0), vec4(1, 1, 0, 0), vec4(1, 0, 0, 0) },
-		{ vec4(0, 1, 1, 0), vec4(0, 1, 1, 0), vec4(1, 1, 1, 0), vec4(1, 1, 0, 0) },
-		{ vec4(0, 0, 0, 0), vec4(1, 0, 0, 0), vec4(1, 0, 1, 0), vec4(0, 0, 1, 0) },
-		{ vec4(1, 0, 0, 0), vec4(1, 1, 0, 0), vec4(1, 1, 1, 0), vec4(1, 0, 1, 0) },
-		{ vec4(0, 0, 0, 0), vec4(0, 0, 1, 0), vec4(0, 1, 1, 0), vec4(0, 1, 0, 0) }
-	};
+	std::vector<GUIInventory::inventory_t> transformedCube;
 	
 	void GUIRenderer::initInventoryRenderer()
 	{
-		Matrix matrot(1.0);
-		matrot.rotateZYX(PI / 4, PI / 4, 0);
+		// pre-transform cube
+		vec4 GUI_cube[6][4] = 
+		{
+			{ vec4(-0.5, -0.5,  0.5, 1.0), vec4( 0.5, -0.5,  0.5, 1.0), vec4( 0.5,  0.5,  0.5, 1.0), vec4(-0.5,  0.5,  0.5, 1.0) },
+			{ vec4(-0.5, -0.5, -0.5, 1.0), vec4(-0.5,  0.5, -0.5, 1.0), vec4( 0.5,  0.5, -0.5, 1.0), vec4( 0.5, -0.5, -0.5, 1.0) },
+			{ vec4(-0.5,  0.5, -0.5, 1.0), vec4(-0.5,  0.5,  0.5, 1.0), vec4( 0.5,  0.5,  0.5, 1.0), vec4( 0.5,  0.5, -0.5, 1.0) },
+			{ vec4(-0.5, -0.5, -0.5, 1.0), vec4( 0.5, -0.5, -0.5, 1.0), vec4( 0.5, -0.5,  0.5, 1.0), vec4(-0.5, -0.5,  0.5, 1.0) },
+			{ vec4( 0.5, -0.5, -0.5, 1.0), vec4( 0.5,  0.5, -0.5, 1.0), vec4( 0.5,  0.5,  0.5, 1.0), vec4( 0.5, -0.5,  0.5, 1.0) },
+			{ vec4(-0.5, -0.5, -0.5, 1.0), vec4(-0.5, -0.5,  0.5, 1.0), vec4(-0.5,  0.5,  0.5, 1.0), vec4(-0.5,  0.5, -0.5, 1.0) }
+		};
+		
+		// rotate cube and invert the Y-axis
+		Matrix matrot, scale(1, -1, 1);
+		matrot.rotateZYX(PI / 4, -PI / 4, 0);
+		// turn the cube upside down because this coordinate system
+		// has the positive Y-axis pointing downwards
+		matrot = scale * matrot;
 		
 		for (int face = 0; face < 6; face++)
 		for (int vert = 0; vert < 4; vert++)
 		{
-			GUIcube[face][vert] = matrot * GUIcube[face][vert];
+			vec4& vertex = GUI_cube[face][vert];
+			vertex = matrot * vertex;
+		}
+		
+		float cube_texcoords[6][8] =
+		{
+			{0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0},
+			{1.0, 0.0,  1.0, 1.0,  0.0, 1.0,  0.0, 0.0},
+			{0.0, 1.0,  0.0, 0.0,  1.0, 0.0,  1.0, 1.0},
+			{1.0, 1.0,  0.0, 1.0,  0.0, 0.0,  1.0, 0.0},
+			{1.0, 0.0,  1.0, 1.0,  0.0, 1.0,  0.0, 0.0},
+			{0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0}
+		};
+		
+		// create pre-transformed cube mesh
+		
+		for (int face = 0; face < 5; face++)
+		if ((face & 1) == 0)
+		{
+			for (int vert = 0; vert < 4; vert++)
+			{
+				vec3 v = GUI_cube[face][vert].xyz();
+				
+				float tu = cube_texcoords[face][vert * 2 + 0];
+				float tv = cube_texcoords[face][vert * 2 + 1];
+				
+				unsigned int color;
+				if (face == 0) color = BGRA8(0, 0, 0,    0);
+				if (face == 2) color = BGRA8(0, 0, 0,   20);
+				if (face == 4) color = BGRA8(0, 0, 0,   64);
+				
+				transformedCube.emplace_back( (GUIInventory::inventory_t)
+					{ v.x, v.y, v.z,  tu, tv, (float)face,  color });
+			}
 		}
 		
 	}
@@ -90,7 +129,7 @@ namespace cppcraft
 		}
 		else if (itm.getType() == ITT_BLOCK)
 		{
-			return quickbarItems.emitBlock(itm, x, y, size);
+			return quickbarItems.emitBlock(itm, x, y, size * 0.8);
 		}
 		return 0;
 	}
@@ -119,9 +158,22 @@ namespace cppcraft
 	int GUIInventory::emitBlock(InventoryItem& itm, float x, float y, float size)
 	{
 		// texture tile id
-		float tile = Block::cubeFaceById(itm.getID(), 0, 0);
+		vec3 offset = vec3(x, y, -1) + vec3(size, size, 0) * 0.6;
 		
-		
+		for (size_t i = 0; i < transformedCube.size(); i++)
+		{
+			inventory_t& vertex = transformedCube[i];
+			
+			// move cube to the right position, and scale it down to size
+			vec3 v(vertex.x, vertex.y, vertex.z);
+			v = offset + v * size;
+			
+			// face value is located in vertex.w
+			float tw = Block::cubeFaceById(itm.getID(), vertex.w, 3);
+			
+			blockTiles.emplace_back( (inventory_t)
+				{ v.x, v.y, v.z,  vertex.u, vertex.v, tw,  vertex.color });
+		}
 		
 		return 0;
 	}

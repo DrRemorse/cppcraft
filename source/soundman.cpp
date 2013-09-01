@@ -125,6 +125,7 @@ namespace cppcraft
 	// returns the id of a random song in the playlist
 	void Soundman::handleSounds(int terrain)
 	{
+		return;
 		// if player is under the terrain, somehow change
 		// ambience & music to cave themes
 		int skyLevel    = Flatlands.getSkyLevel(player.X, player.Z);
