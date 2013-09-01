@@ -1,8 +1,7 @@
 #include "sleep.hpp"
-#include "../library/threading/thread_pool.hpp"
 #include <iostream>
 
-using namespace library;
+//using namespace library;
 
 void threadTestFunc(void* data)
 {
@@ -12,6 +11,7 @@ void threadTestFunc(void* data)
 
 void test_threads()
 {
+	/*
 	const int THREADS = 16;
 	
 	// thread testing
@@ -37,5 +37,6 @@ void test_threads()
 		
 		std::cout << "Finished waiting for threads!" << std::endl;
 	}
+	*/
 	std::getchar();
 }

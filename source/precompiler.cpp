@@ -31,7 +31,7 @@ namespace cppcraft
 		torchlight.init();
 		
 		logger << Log::INFO << "* Initializing precompiler" << Log::ENDL;
-		const int NUM_PCTHREADS = 8;
+		const int NUM_PCTHREADS = 4;
 		
 		for (int t = 0; t < NUM_PCTHREADS; t++)
 		{

@@ -121,10 +121,15 @@ namespace cppcraft
 			if (snapX != X || snapY != Y || snapZ != Z)
 			{
 				camera.recalc = true;
-				// get player shadows & torchlight
-				vertex_color_t vcolor = Spiders::getLightNow(X, Y, Z);
-				plogic.shadowColor = vcolor & 0xFFFFFFFF;
-				plogic.torchColor  = vcolor >> 32;
+				
+				if ((int)snapX != (int)X || (int)snapY != (int)Y || (int)snapZ != (int)Z)
+				{
+					// get player shadows & torchlight
+					// a VERY costly operation, needs to be avoided at all costs
+					vertex_color_t vcolor = Spiders::getLightNow(X, Y, Z);
+					plogic.shadowColor = vcolor & 0xFFFFFFFF;
+					plogic.torchColor  = vcolor >> 32;
+				}
 			}
 			
 			snapX = X;

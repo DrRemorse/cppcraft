@@ -37,31 +37,9 @@ namespace cppcraft
 	
 	void SunClass::integrate(float step)
 	{
-		float theta0 = realRadian + PI2;
-		float theta1 = radianAngle + PI2;
+		library::vec3 newAngle = getRealtimeAngle().mix(getAngle(), step);
 		
-		float direction = theta1 - theta0;
-		// no change, leave!
-		if (direction == 0) return;
-		
-		if (direction > 0)
-		{
-			if (theta0 + step > theta1)
-				realRadian = radianAngle;
-			else
-				realRadian += step;
-		}
-		else
-		{
-			if (theta0 - step < theta1)
-				realRadian = radianAngle;
-			else
-				realRadian -= step;
-		}
-		
-		// angle fmod= PI2
-		while (realRadian >= PI2) realRadian -= PI2;
-		while (realRadian <  0.0) realRadian += PI2;
+		realRadian = atan2(newAngle.y, newAngle.x);
 		
 		realAngle = library::vec3(cos(realRadian), sin(realRadian), 0.0);
 		realAmbience = 1.0 - daylight(realAngle.y);

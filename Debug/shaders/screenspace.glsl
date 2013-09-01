@@ -56,7 +56,7 @@ void main()
 	
 	if (submerged == 1)
 	{	// submerged in water
-		color.rgb = mix(color.rgb, SUB_WATER, 0.4 + 0.6 * smoothstep(0.0, 0.15, depth));
+		color.rgb = mix(color.rgb, SUB_WATER, 0.4 + 0.6 * smoothstep(0.0, 0.125, depth));
 	}
 	else if (submerged == 2)
 	{	// submerged in lava

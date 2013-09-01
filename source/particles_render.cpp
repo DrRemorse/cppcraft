@@ -66,14 +66,11 @@ namespace cppcraft
 	
 	void Particles::render(int snapWX, int snapWZ)
 	{
-		if (vao == 0 || snapRenderCount == 0) return;
-		
-		glEnable(GL_POINT_SPRITE);
-		
-		// bind 2d array of textures/tiles
-		textureman.bind(0, Textureman::T_DIFFUSE);
-		
 		// start particles shader
+		// BEFORE we potentially exit because there are no particles to render
+		// this is done to get the first-frame update.. considering there's
+		// always particles to render, we'll just go ahead and always bind the shader
+		
 		Shader& shd = shaderman[Shaderman::PARTICLE];
 		shd.bind();
 		shd.sendFloat("daylight", thesun.getRealtimeDaylight());
@@ -89,6 +86,13 @@ namespace cppcraft
 			// send view matrix
 			shd.sendMatrix("matview", matview);
 		}
+		
+		if (vao == 0 || snapRenderCount == 0) return;
+		
+		glEnable(GL_POINT_SPRITE);
+		
+		// bind 2d array of textures/tiles
+		textureman.bind(0, Textureman::T_DIFFUSE);
 		
 		// bind and render particles
 		glBindVertexArray(vao);

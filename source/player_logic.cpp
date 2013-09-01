@@ -18,40 +18,43 @@ namespace cppcraft
 		return (selection.block != nullptr);
 	}
 	
-	const int TIME_BETWEEN_CROUCH  = 50;
-	const int TIME_BETWEEN_STEPS   = 32;
-	const int TIME_BETWEEN_SPRINTS = 20;
-	int timesteps = 0;
+	static const int TIME_FIRST_STEP      = 4;
+	static const int TIME_BETWEEN_CROUCH  = 50;
+	static const int TIME_BETWEEN_STEPS   = 32;
+	static const int TIME_BETWEEN_SPRINTS = 20;
+	int timesteps = TIME_FIRST_STEP;
+	int stepsound = 0;
 	
 	void PlayerLogic::playerSounds()
 	{
-		if (Moved) // the player moved
+		if (Moved && Submerged == PS_None) // the player moved
 		{
-			timesteps++;
-			if (movestate == PMS_Crouch)
-			{
-				if (timesteps > TIME_BETWEEN_CROUCH) timesteps = 0;
-			}
-			else if (movestate == PMS_Normal)
-			{
-				if (timesteps > TIME_BETWEEN_STEPS) timesteps = 0;
-			}
-			else if (movestate == PMS_Sprint)
-			{
-				if (timesteps > TIME_BETWEEN_SPRINTS) timesteps = 0;
-			}
-			
 			if (timesteps == 0)
 			{
 				// play material sound
 				if (Block::fluidAndCrossToAir(block->getID()) != _AIR)
 				{
-					int stepmod = toolbox::rnd(4);
-					soundman.playMaterial(block->getID(), stepmod);
+					stepsound = (stepsound + 1) % 3;
+					soundman.playMaterial(block->getID(), 1 + stepsound);
 				}
+				
+				if (movestate == PMS_Crouch)
+				{
+					timesteps = TIME_BETWEEN_CROUCH;
+				}
+				else if (movestate == PMS_Normal)
+				{
+					timesteps = TIME_BETWEEN_STEPS;
+				}
+				else if (movestate == PMS_Sprint)
+				{
+					timesteps = TIME_BETWEEN_SPRINTS;
+				}
+				
 			}
+			else timesteps--;
 		}
-		else timesteps = TIME_BETWEEN_STEPS / 2;
+		else timesteps = TIME_FIRST_STEP;
 	}
 	
 }

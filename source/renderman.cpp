@@ -138,7 +138,7 @@ namespace cppcraft
 		
 		this->frametick += dtime;
 		
-		thesun.integrate(0.01 * dtime);
+		thesun.integrate(0.02 * dtime);
 		
 		// clear buffers
 		glDepthMask(GL_TRUE);
