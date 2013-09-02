@@ -11,7 +11,7 @@ LIBRARY_DIRS = library library/bitmap library/compression library/math     \
 RESOURCES = res/cppcraft.rc
 
 # build options
-# -Ofast -msse4.1 -ffast-math -mpfmath=both
+# -Ofast -msse4.1 -ffast-math -mfpmath=both
 BUILDOPT = -Ofast -msse4.1 -ffast-math -mfpmath=both
 # output file
 OUTPUT   = ./Debug/cppcraft

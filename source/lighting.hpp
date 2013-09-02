@@ -42,6 +42,7 @@ namespace cppcraft
 		bool damageRay(block_t id, float& ray, float maxdmg, float& prediction, float distance_curve);
 		
 		float lightRay3D(library::vec3 position, library::vec3 angle);
+		float lightRay2D(library::vec3 position, float stepx, float stepy);
 		float lightRay1D(library::vec3 position);
 		vertex_color_t lightCheck(LightList& list, Sector& sector, int bx, int by, int bz);
 		

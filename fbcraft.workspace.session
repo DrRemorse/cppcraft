@@ -1,18 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Session Name="C:\Projects\cppcraft\fbcraft.workspace">
-  <int Value="1" Name="m_selectedTab"/>
+  <int Value="3" Name="m_selectedTab"/>
   <wxString Value="C:\Projects\cppcraft\fbcraft.workspace" Name="m_workspaceName"/>
   <TabInfoArray Name="TabInfoArray">
     <TabInfo>
       <wxString Value="C:\Projects\cppcraft\Debug\config.ini" Name="FileName"/>
-      <int Value="23" Name="FirstVisibleLine"/>
-      <int Value="24" Name="CurrentLine"/>
+      <int Value="92" Name="FirstVisibleLine"/>
+      <int Value="128" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
       <wxString Value="C:\Projects\cppcraft\makefile" Name="FileName"/>
-      <int Value="16" Name="FirstVisibleLine"/>
-      <int Value="31" Name="CurrentLine"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="30" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="C:\Projects\cppcraft\source\soundman.cpp" Name="FileName"/>
+      <int Value="21" Name="FirstVisibleLine"/>
+      <int Value="39" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="C:\Projects\cppcraft\source\precompiler.cpp" Name="FileName"/>
+      <int Value="18" Name="FirstVisibleLine"/>
+      <int Value="33" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="C:\Projects\cppcraft\source\precompq.cpp" Name="FileName"/>
+      <int Value="24" Name="FirstVisibleLine"/>
+      <int Value="38" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
   </TabInfoArray>

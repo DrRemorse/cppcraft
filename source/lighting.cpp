@@ -3,6 +3,7 @@
 #include "library/log.hpp"
 #include "library/config.hpp"
 #include "blocks.hpp"
+#include "flatlands.hpp"
 #include "lighttable.hpp"
 #include "sectors.hpp"
 #include "spiders.hpp"
@@ -178,8 +179,8 @@ namespace cppcraft
 					// ray damage function
 					if (damageRay(id, tmplight, maxlight, prediction, distance_curve))
 					{
-						// the ray has died, exit while
-						break;
+						// the ray has died, exit
+						return tmplight;
 					}
 				}	
 				
@@ -216,10 +217,111 @@ namespace cppcraft
 				
 				// move stepx steps
 				distance_curve -= inv_reach * bxx;
-				if (distance_curve <= inv_reach) return tmplight;
-				
 				// big ray step
 				position += angle * bxx;
+			}
+			
+		} // while loop
+		
+		return tmplight;
+	}
+	
+	float LightingClass::lightRay2D(vec3 position, float stepx, float stepy)
+	{
+		int max_x = Sectors.getXZ() * Sector::BLOCKS_XZ;
+		const int max_y = Sectors.getY() * Sector::BLOCKS_Y;
+		
+		// exit if we start out of bounds
+		if (position.x < 0 || position.x >= max_x-0.5 || 
+			position.y < 0 || 
+			position.z < 0 || position.z >= max_x-0.5
+		) return 0.0;
+		
+		float maxlight = Lighting.SHADOWS;
+		float tmplight = 0;
+		
+		// avoid invalid angle
+		if (stepy < 0) return maxlight;
+		
+		// underground additional ray damage
+		if (position.y < 64)
+		{
+			tmplight = 1.0 - position.y / 64;
+			maxlight += tmplight * (Lighting.DARKNESS - Lighting.SHADOWS);
+			tmplight *= maxlight;
+		}
+		
+		block_t id;
+		float inv_reach = 1.0 / Lighting.ray_length;
+		float distance_curve = 1.0;
+		float prediction = Lighting.ray_crash_factor * Lighting.ray_length;
+		
+		int bxx, byy;
+		int bzz = (int)position.z;
+		
+		int sectorz = bzz >> 4;
+		bzz &= (Sector::BLOCKS_XZ-1);
+		
+		while (distance_curve >= inv_reach)
+		{
+			bxx = (int)position.x; // conversion from float to int
+			byy = (int)position.y;
+			
+			// world bounds check
+			if (bxx < 0 || bxx >= max_x || byy >= max_y)
+				return tmplight;
+			
+			// set current sector
+			Sector& s = Sectors(bxx >> 4, byy >> 3, sectorz);
+			
+			// calculate lighting cost
+			if (s.contents > Sector::CONT_UNKNOWN)
+			{
+				bxx &= (Sector::BLOCKS_XZ-1);
+				byy &= (Sector::BLOCKS_Y-1);
+				
+				// get block-id from location
+				id = s(bxx, byy, bzz).getID();
+				// avoid running costly function on _AIR
+				if (id) // _AIR is always 0
+				{
+					// ray damage function
+					if (damageRay(id, tmplight, maxlight, prediction, distance_curve))
+					{
+						// the ray has died, exit
+						return tmplight;
+					}
+				}	
+				
+				// single ray step
+				position.x += stepx;
+				position.y += stepy;
+				distance_curve -= inv_reach;
+			}
+			else
+			{
+				// move ray immediately to the next sector
+				bxx = rayStep(stepx, bxx, (Sector::BLOCKS_XZ-1));
+				byy = rayStep(stepy, byy, (Sector::BLOCKS_Y-1));
+				
+				// choose the shortest distance
+				if (bxx > byy) bxx = byy;
+				
+				if (bxx == 1)
+				{
+					distance_curve -= inv_reach;
+					// big ray step
+					position.x += stepx;
+					position.y += stepy;
+				}
+				else
+				{
+					// move stepx steps
+					distance_curve -= inv_reach * bxx;
+					// big ray step
+					position.x += stepx * bxx;
+					position.y += stepy * bxx;
+				}
 			}
 			
 		} // while loop
@@ -261,13 +363,14 @@ namespace cppcraft
 		int bzz = sectorz & (Sector::BLOCKS_XZ-1);
 		sectorz >>= 4;
 		
+		int skylevel = Flatlands(sectorx, sectorz)(bxx, bzz).skyLevel;
 		int posy = (int) position.y;
 		int byy;
 		
 		while (distance_curve >= inv_reach)
 		{
 			// world bounds check
-			if (posy >= max_y) return tmplight;
+			if (posy >= max_y || posy >= skylevel) return tmplight;
 			
 			// set current sector
 			Sector& s = Sectors(sectorx, posy >> 3, sectorz);
@@ -285,8 +388,8 @@ namespace cppcraft
 					// ray damage function
 					if (damageRay(id, tmplight, maxlight, prediction, distance_curve))
 					{
-						// the ray has died, exit while
-						break;
+						// the ray has died, exit
+						return tmplight;
 					}
 				}	
 				
@@ -301,8 +404,6 @@ namespace cppcraft
 				
 				// move stepx steps
 				distance_curve -= inv_reach * byy;
-				if (distance_curve <= inv_reach) return tmplight;
-				
 				// big ray step
 				posy += byy;
 			}
@@ -337,25 +438,28 @@ namespace cppcraft
 			radangle += PI;
 		}
 		
+		float half_x   = angle_x * 0.5 + 0.5 * angle_y;
+		float half_y   = half_x;
+		
 		vec3 position = vec3(
 			s2->x * Sector::BLOCKS_XZ + bxx, 
 			s2->y * Sector::BLOCKS_Y  + byy,
 			s2->z * Sector::BLOCKS_XZ + bzz
 		);
 		
-		#define sunray   lightRay3D(position, vec3(angle_x,       angle_y, 0.0))
-		#define halfray  lightRay3D(position, vec3(angle_x * 0.5, angle_y, 0.0))
+		#define sunray   lightRay2D(position, angle_x, angle_y)
+		#define halfray  lightRay2D(position, half_x,  half_y)
 		#define skyray   lightRay1D(position)
 		
 		if (Lighting.ray_count <= 1)
 		{
 			// towards sun
-			tmplight = sunray;
+			tmplight = skyray; //sunray;
 		}
 		else if (Lighting.ray_count == 2)
 		{
 			// towards sun & sky
-			tmplight = sunray * 0.6 + skyray * 0.4;
+			tmplight = sunray * 0.6 + halfray * 0.4;
 		}
 		else if (Lighting.ray_count == 3)
 		{
