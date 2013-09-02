@@ -33,40 +33,28 @@ namespace cppcraft
 		{
 			float x, y, z;
 			float nx, ny, nz;
-			float u, v;
+			float u, v, w;
 		};
 		
 		phand_vertex_t vertices[2][4] = 
 		{
 			{ // top face
-				{ //  xyz       norm       uvw
-					1, 1, 1,   0, 1, 0,   0, 1.5
-				},
-				{
-					1, 1, 0,   0, 1, 0,   0, 0.0
-				},
-				{
-					0, 1, 0,   0, 1, 0,   1, 0.0
-				},
-				{
-					0, 1, 1,   0, 1, 0,   1, 1.5
-				}
+				//  xyz        norm        uvw
+				{ 1, 1, 1,   0, 1, 0,   0, 1.5, 9 },
+				{ 1, 1, 0,   0, 1, 0,   0, 0.0, 9 },
+				{ 0, 1, 0,   0, 1, 0,   1, 0.0, 9 },
+				{ 0, 1, 1,   0, 1, 0,   1, 1.5, 9 }
 			},
 			{ // left face
-				{
-					0, 1, 1,  -1, 0, 0,   0, 1.5
-				},
-				{
-					0, 1, 0,  -1, 0, 0,   0, 0.0
-				},
-				{
-					0, 0, 0,  -1, 0, 0,   1, 0.0
-				},
-				{
-					0, 0, 1,  -1, 0, 0,   1, 1.5
-				}
+				{ 0, 1, 1,  -1, 0, 0,   0, 1.5, 9 },
+				{ 0, 1, 0,  -1, 0, 0,   0, 0.0, 9 },
+				{ 0, 0, 0,  -1, 0, 0,   1, 0.0, 9 },
+				{ 0, 0, 1,  -1, 0, 0,   1, 1.5, 9 }
 			}
 		};
+		
+		// hand scale matrix
+		Matrix handScale;
 		
 	public:
 		PlayerHand();
@@ -84,11 +72,12 @@ namespace cppcraft
 	{
 		lastMode = -1;
 		lastTime = 0.0;
+		handScale = Matrix(0.4, 0.3, 2.0);
 	}
 	
 	void PlayerHand::render(double frameCounter)
 	{
-		const double update_speed = 0.005;
+		const double DEFAULT_INTERPOLATION = 0.75;
 		
 		// manipulate hand
 		double period = (frameCounter - lastTime) * 0.25 / PI;
@@ -198,7 +187,7 @@ namespace cppcraft
 		else
 		{
 			// interpolate slowly to move the hand to the new position
-			lastHand = hand.mix(lastHand, 0.75);
+			lastHand = hand.mix(lastHand, DEFAULT_INTERPOLATION);
 			// only set new mode once we get close enough to the new position
 			if (fabsf(hand.y - lastHand.y) < 0.01 &&
 				fabsf(hand.z - lastHand.z) < 0.01)
@@ -224,7 +213,7 @@ namespace cppcraft
 		// view matrix
 		Matrix matview(1.0);
 		matview.translate(lastHand.x, lastHand.y, lastHand.z);
-		matview *= Matrix(0.4, 0.3, 2.0);
+		matview *= handScale;
 		
 		shd.sendMatrix("matview", matview);
 		
@@ -237,9 +226,6 @@ namespace cppcraft
 		// torchlight modulation
 		shd.sendFloat("modulation", torchlight.getModulation(frameCounter));
 		
-		// playerskin * scanline + 9 (which is ARM tile)
-		shd.sendFloat("handTileID", 9);
-		
 		// bind player models texture
 		textureman.bind(0, Textureman::T_PLAYERMODELS);
 		
@@ -249,7 +235,7 @@ namespace cppcraft
 			vao.begin(sizeof(phand_vertex_t), 8, &vertices[0][0]);
 			vao.attrib(0, 3, GL_FLOAT, GL_FALSE, offsetof(phand_vertex_t, x));
 			vao.attrib(1, 3, GL_FLOAT, GL_FALSE, offsetof(phand_vertex_t, nx));
-			vao.attrib(2, 2, GL_FLOAT, GL_FALSE, offsetof(phand_vertex_t, u));
+			vao.attrib(2, 3, GL_FLOAT, GL_FALSE, offsetof(phand_vertex_t, u));
 			vao.end();
 		}
 		

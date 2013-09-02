@@ -10,6 +10,7 @@
 #include "library/log.hpp"
 #include "library/math/matrix.hpp"
 
+#include "generator.hpp"
 #include "input.hpp"
 #include "renderman.hpp"
 #include "threading.hpp"
@@ -80,6 +81,19 @@ int main(int argc, char* argv[])
 	{
 		logger.write(Log::ERR, errorstring);
 		logger.write(Log::ERR, "Failed to prepare renderer... Exiting.");
+		return 1;
+	}
+	
+	try
+	{
+		// initialize generator as late as possible because
+		// there's some rendering dependencies that are just barely finished
+		cppcraft::Generator::init();
+	}
+	catch (std::string errorstring)
+	{
+		logger.write(Log::ERR, errorstring);
+		logger.write(Log::ERR, "Failed to generate inital world... Exiting.");
 		return 1;
 	}
 	

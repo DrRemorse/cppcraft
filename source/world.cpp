@@ -69,6 +69,8 @@ namespace cppcraft
 		this->worldX = w.worldX;
 		this->worldY = w.worldY;
 		this->worldZ = w.worldZ;
+		// invalidate position snapshot
+		player.snapX = player.snapY = player.snapZ = 0;
 	}
 	void World::save()
 	{

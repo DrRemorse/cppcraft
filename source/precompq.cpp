@@ -36,7 +36,7 @@ namespace cppcraft
 		// initialize precompiler backend
 		precompiler.init();
 		// create X amount of threads
-		this->threads = 4;
+		this->threads = precompiler.getThreads();
 		// create dormant thread pool
 		threadpool = new ThreadPool::TPool(this->threads);
 		// create fixed amount of jobs

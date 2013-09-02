@@ -1,5 +1,6 @@
 #include "precompiler.hpp"
 
+#include "library/config.hpp"
 #include "library/log.hpp"
 #include "vertex_block.hpp"
 #include "blockmodels.hpp"
@@ -31,7 +32,7 @@ namespace cppcraft
 		torchlight.init();
 		
 		logger << Log::INFO << "* Initializing precompiler" << Log::ENDL;
-		const int NUM_PCTHREADS = 4;
+		int NUM_PCTHREADS = config.get("threading", 2);
 		
 		for (int t = 0; t < NUM_PCTHREADS; t++)
 		{

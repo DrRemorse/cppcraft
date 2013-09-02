@@ -480,10 +480,10 @@ namespace cppcraft
 				position.y += angle_y;
 			}
 			
-			const float deg15 = PI / 2 / 6;
-			const float deg30 = PI / 2 / 3;
-			const float cos30 = cosf(deg30);
-			const float sin30 = sinf(deg30);
+			static const float deg15 = PI / 2 / 6;
+			static const float deg30 = PI / 2 / 3;
+			static const float cos30 = cosf(deg30);
+			static const float sin30 = sinf(deg30);
 			
 			#define bouncelight tmplight
 			

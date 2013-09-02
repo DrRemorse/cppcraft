@@ -313,6 +313,7 @@
     <File Name="source/render_gui_inventory.hpp"/>
     <File Name="source/render_gui_inventory.cpp"/>
     <File Name="source/worldmanager_init.cpp"/>
+    <File Name="source/render_gui_helditem.cpp"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>

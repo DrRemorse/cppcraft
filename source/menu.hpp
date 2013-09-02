@@ -33,6 +33,8 @@ namespace cppcraft
 		int quickbarX; // (x) quickbar current column
 		int quickbarY; // (y) quickbar current row
 		
+		InventoryItem& getHeldItem();
+		
 		void init();
 	};
 	extern MenuClass menu;

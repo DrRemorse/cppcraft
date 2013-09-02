@@ -19,29 +19,31 @@ namespace cppcraft
 	
 	void RenderGrid::uniformGrid(RenderGrid::rendergrid_t& rg, int x0, int x1, int z0, int z1, int quant)
 	{
-		int  stepsize = camera.getGridsize() >> quant;
-		bool gridtest = (stepsize <= 2);
+		const int  stepsize = camera.getGridsize() >> quant;
+		const bool gridtest = (stepsize <= 2);
 		
-		int bigstpx = rg.xstp * stepsize;
-		int bigstpz = rg.zstp * stepsize;
+		const int bigstpx = rg.xstp * stepsize;
+		const int bigstpz = rg.zstp * stepsize;
 		
-		int sizex = bigstpx * Sector::BLOCKS_XZ / 2; // radius of area in blocks
-		int sizez = bigstpz * Sector::BLOCKS_XZ / 2; // blocksz * stepsize / 2
+		// signed step
+		const int sizex = bigstpx << 3;
+		const int sizez = bigstpz << 3;
+		// half size of this chunk (FIXME)
+		const float size = (stepsize+1) << 3;
 		
-		float size      = stepsize * Sector::BLOCKS_XZ / 2; // half width + 1
-		const int MAX_Y = Sectors.SECTORS_Y * Sector::BLOCKS_Y;
+		static const int MAX_Y = Sectors.SECTORS_Y * Sector::BLOCKS_Y;
 		
-		int x, countX = (x1 - x0) / bigstpx + 1;
-		int z, countZ = (z1 - z0) / bigstpz + 1;
+		int countX = (x1 - x0) / bigstpx + 1;
+		int countZ = (z1 - z0) / bigstpz + 1;
 		
 		if (rg.majority)
 		{
-			for (x = x0; countX-- != 0; x += bigstpx)
+			for (int x = x0; countX-- != 0; x += bigstpx)
 			{
 				int x2 = x * Sector::BLOCKS_XZ + sizex;
 				int cz = countZ;
 				
-				for (z = z0; cz-- != 0; z += bigstpz)
+				for (int z = z0; cz-- != 0; z += bigstpz)
 				{
 					if (camera.camera().column(x2, z * Sector::BLOCKS_XZ + sizez, 0, MAX_Y, size))
 					{
@@ -55,12 +57,12 @@ namespace cppcraft
 		}
 		else
 		{
-			for (z = z0; countZ-- != 0; z += bigstpz)
+			for (int z = z0; countZ-- != 0; z += bigstpz)
 			{
 				int z2 = z * Sector::BLOCKS_XZ + sizez;
 				int cx = countX;
 				
-				for (x = x0; cx-- != 0; x += bigstpx)
+				for (int x = x0; cx-- != 0; x += bigstpx)
 				{
 					if (camera.camera().column(x * Sector::BLOCKS_XZ + sizex, z2, 0, MAX_Y, size))
 					{
@@ -174,7 +176,7 @@ namespace cppcraft
 								if (cv.occluded[i] != 1)
 								{
 									// as long as not contested or was not rendered last frame
-									cv.occluded[i] = 3;
+									//cv.occluded[i] = 3;
 								}
 								
 								// add to draw queue

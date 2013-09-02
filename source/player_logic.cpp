@@ -34,8 +34,8 @@ namespace cppcraft
 				// play material sound
 				if (Block::fluidAndCrossToAir(block->getID()) != _AIR)
 				{
-					stepsound = (stepsound + 1) % 3;
-					soundman.playMaterial(block->getID(), 1 + stepsound);
+					stepsound = (stepsound + 1) % 4;
+					soundman.playMaterial(block->getID(), stepsound);
 				}
 				
 				if (movestate == PMS_Crouch)

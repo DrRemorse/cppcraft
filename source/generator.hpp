@@ -18,6 +18,7 @@ namespace cppcraft
 	class Generator
 	{
 	public:
+		static void init();
 		static void generate(Sector& sector);
 		
 	private:

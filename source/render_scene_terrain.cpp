@@ -36,12 +36,12 @@ namespace cppcraft
 		// recalculate camera frustum
 		camera.calculateFrustum();
 		
-		vec3 look = player.getLookVector();
+		const vec3 look = player.getLookVector();
 		
-		const int safety_border = 1;
-		const int visibility_border = RenderGrid::visibility_border;
+		static const int safety_border = 2;
+		static const int visibility_border = RenderGrid::visibility_border;
 		
-		const float half_fov = 0.65; // sin(30 * degToRad) = +/- 0.5
+		static const float half_fov = 0.65; // sin(30 * degToRad) = +/- 0.5
 		
 		// major direction scheme
 		int xstp = 1;

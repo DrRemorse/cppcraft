@@ -9,6 +9,7 @@
 #include "sectors.hpp"
 #include "torchlight.hpp"
 #include "world.hpp"
+#include "worldbuilder.hpp"
 
 // load compressor last
 #include "compressor.hpp"
@@ -20,6 +21,19 @@ namespace cppcraft
 {
 	unsigned int g_fres[Chunks::chunk_size][Sectors.SECTORS_Y][Chunks::chunk_size];
 	unsigned int g_compres[Chunks::chunk_size][Chunks::chunk_size];
+	
+	void Generator::init()
+	{
+		for (int x = 0; x < Sectors.getXZ(); x++)
+		for (int z = 0; z < Sectors.getXZ(); z++)
+		{
+			if (Sectors(x, 0, z).contents == Sector::CONT_UNKNOWN)
+			{
+				Generator::generate(Sectors(x, 0, z));
+			}
+		}
+		worldbuilder.setMode(WorldBuilder::MODE_PRECOMPILE);
+	}
 	
 	void Generator::loadSector(Sector& sector, std::ifstream& file, unsigned int PL)
 	{

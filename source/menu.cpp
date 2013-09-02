@@ -32,6 +32,11 @@ namespace cppcraft
 		
 	}
 	
+	InventoryItem& MenuClass::getHeldItem()
+	{
+		return inventory(quickbarX, quickbarY);
+	}
+	
 	Inventory::Inventory(int w, int h)
 	{
 		this->width = w;

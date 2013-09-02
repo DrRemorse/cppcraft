@@ -1,5 +1,7 @@
 #include "sectors.hpp"
 
+#include "generator.hpp"
+
 namespace cppcraft
 {
 	SectorContainer Sectors;
@@ -32,6 +34,7 @@ namespace cppcraft
 			// set reference to (Sector*) new Sector(x, y, z)
 			s = new Sector(x, y, z);
 		} // y, z, x
+		
 	}
 	
 	void SectorContainer::invalidateAll()
