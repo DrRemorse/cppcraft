@@ -85,7 +85,6 @@ void main(void)
 #extension GL_EXT_gpu_shader4 : enable
 precision highp float;
 
-uniform sampler2DArray texture;
 uniform sampler2D underwatermap;
 uniform sampler2D wavenormals;
 uniform samplerCube skymap;

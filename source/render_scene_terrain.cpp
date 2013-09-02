@@ -9,6 +9,7 @@
 #include "player_logic.hpp"
 #include "rendergrid.hpp"
 #include "renderman.hpp"
+#include "render_fs.hpp"
 #include "render_player_selection.hpp"
 #include "sectors.hpp"
 #include "shaderman.hpp"

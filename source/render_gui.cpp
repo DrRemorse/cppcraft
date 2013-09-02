@@ -12,21 +12,22 @@ namespace cppcraft
 {
 	GUIRenderer rendergui;
 	const double PI = 4 * atan(1);
+	// the GUIs orthographic projection matrix
+	Matrix ortho;
 	
-	void GUIRenderer::init()
-	{
-		initInventoryRenderer();
-	}
-	
-	void GUIRenderer::render(Renderer& renderer)
+	void GUIRenderer::init(Renderer& renderer)
 	{
 		width  = 1.0;
 		height = 1.0 / renderer.gamescr.SA;
 		
 		// orthographic projection
-		Matrix ortho;
 		ortho.ortho(width, height, 0, 2);
 		
+		initInventoryRenderer();
+	}
+	
+	void GUIRenderer::render(Renderer& renderer)
+	{
 		/// player hand ///
 		renderPlayerhand(renderer.frametick);
 		

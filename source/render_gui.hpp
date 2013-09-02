@@ -20,7 +20,7 @@ namespace cppcraft
 			unsigned int color;
 		};
 		
-		void init();
+		void init(Renderer& renderer);
 		void render(Renderer& renderer);
 		
 	private:

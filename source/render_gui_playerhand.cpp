@@ -56,10 +56,13 @@ namespace cppcraft
 		// hand scale matrix
 		Matrix handScale;
 		
+		// last shadow color
+		unsigned int lastShadow = 65535;
+		
 	public:
 		PlayerHand();
 		void render(double frameCounter);
-		
+		void renderItem();
 	};
 	PlayerHand playerHand;
 	
@@ -219,10 +222,15 @@ namespace cppcraft
 		
 		// player shadow & torchlight color
 		// convert shadow color to a 4-vector
-		vec4 color = library::colorToVector(plogic.shadowColor);
-		shd.sendVec4("lightdata", color);
-		color = library::colorToVector(plogic.torchColor);
-		shd.sendVec4("torchlight", color);
+		if (plogic.shadowColor != lastShadow)
+		{
+			lastShadow = plogic.shadowColor;
+			
+			vec4 color = library::colorToVector(plogic.shadowColor);
+			shd.sendVec4("lightdata", color);
+			color = library::colorToVector(plogic.torchColor);
+			shd.sendVec4("torchlight", color);
+		}
 		// torchlight modulation
 		shd.sendFloat("modulation", torchlight.getModulation(frameCounter));
 		

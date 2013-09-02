@@ -64,17 +64,8 @@ namespace cppcraft
 		
 		glDisable(GL_BLEND);
 		
-		if (true) //renderconf.lensflare)
-		{
-			//glViewport(0, 0, blurTxW, blurTxH);
-			// render sun flare
-			renderLensflare(gamescr);
-			// upsize to regular screen size
-			//glViewport(0, 0, gamescr.SW, gamescr.SH);
-		}
-		
-		glDisable(GL_DEPTH_TEST); // mui importante!
-		glDepthMask(GL_FALSE);
+		// render sun flare
+		renderLensflare(gamescr);
 		
 		/// fullscreen postprocessing ///
 		

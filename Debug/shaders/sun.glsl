@@ -37,14 +37,14 @@ void main(void)
 	float horizon = clamp(-norm.y / 0.025,  0.0, 1.0);
 	
 	vec3 color = texture2D(texture, texCoord).rgb;
-	float alpha = pow(color.r + 0.2, 2.0);
+	float alpha = smoothstep(0.0, 0.9, color.r);
 	
-	color.rgb = 0.5 + vec3(0.9, 0.7, 0.6) * alpha;
+	color.rgb = mix(vec3(1.0, 0.8, 0.6), vec3(1.0), pow(alpha, 8.0));
 	
 	// limit sun to horizon
 	alpha *= pow(1.0 - horizon, 3.0);
 	
-	if (alpha < 0.1) discard;
+	//if (alpha < 0.1) discard;
 	
 	gl_FragColor = vec4(color, alpha);
 }

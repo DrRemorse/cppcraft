@@ -61,7 +61,7 @@ namespace cppcraft
 		// render regular sun
 		if (underwater)
 		{
-			renderSun();
+			//renderSun();
 		}
 		
 		// render moon texture

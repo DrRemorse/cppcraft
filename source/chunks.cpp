@@ -98,10 +98,8 @@ namespace cppcraft
 	
 	void Chunks::writeChunk(Chunk& chunk)
 	{
-		const std::string worldFolder = "Worlds/world";
-		
 		// make chunk filename
-		std::string file = worldFolder + "/" + getSectorString(*chunk.writeq[0]) + ".chunk";
+		std::string file = world.worldFolder() + "/" + getSectorString(*chunk.writeq[0]) + ".chunk";
 		
 		// open chunk file
 		std::fstream File( file.c_str(), std::ios::in | std::ios::out | std::ios::binary);
@@ -109,8 +107,14 @@ namespace cppcraft
 		// check if the file was opened
 		if (!File)
 		{
-			logger << Log::ERR << "Could not open file: " << file << Log::ENDL;
-			return;
+			// try creating the file
+			File.open(file.c_str(), std::ios::in | std::ios::out | std::ios::binary | std::ios::trunc);
+			
+			if (!File)
+			{
+				logger << Log::ERR << "Could not create file: " << file << Log::ENDL;
+				return;
+			}
 		}
 		
 		// write each pending element
@@ -119,12 +123,8 @@ namespace cppcraft
 			writeSector(*chunk.writeq[i], File);
 		}
 		
-		// close file
-		File.close();
-		
-		// clean out sectors in write queue
+		// clean out all sectors in this chunks write queue
 		chunk.writeq.clear();
-		
 	}
 	
 	void Chunks::writeSector(Sector& s, std::fstream& File)
@@ -141,12 +141,18 @@ namespace cppcraft
 		// read position data
 		File.read((char*) &PL, sizeof(PL));
 		
+		// if we failed to read, PL must be set to 0
+		if (!File) PL = 0;
+		
 		if (PL == 0)
 		{   // sector was not written! sound the alarm!
 			int currentCnt;
 			// get current number of sectors already written
 			File.seekg(0);
 			File.read( (char*) &currentCnt, sizeof(currentCnt) );
+			
+			// if we failed to read, currentCnt must be set to 0
+			if (!File) currentCnt = 0;
 			
 			PL = (1 + chunk_offset) * sizeof(int) + currentCnt * sizeof(Sector::sectorblock_t);
 			
@@ -160,18 +166,21 @@ namespace cppcraft
 			File.write( (char*) &currentCnt, sizeof(currentCnt) );
 		}
 		
+		// reset all state flags
+		File.clear();
+		
 		// write sectorblock_t to disk
 		File.seekp(PL);
 		File.write( (char*) s.blockpt, sizeof(Sector::sectorblock_t) );
 		
-		if (!File.good())
+		if (!File)
 		{
 			logger << Log::ERR << "Error writing sectoral data: " << PL << Log::ENDL;
 			logger << Log::ERR << "Chunks in chunkq: " << chunkq.size() << Log::ENDL;
 			for (unsigned int i = 0; i < chunkq.size(); i++)
 				logger << Log::ERR << "Chunk " << i << " has " << chunkq[i].writeq.size() << " sectors." << Log::ENDL;
 			
-			throw "fail";
+			throw std::string("failed to write sector block data");
 		}
 		// set sector as having modified data
 		s.contents = Sector::CONT_SAVEDATA;
@@ -184,7 +193,7 @@ namespace cppcraft
 		if (sector.blockpt == nullptr)
 			sector.createBlocks();
 		
-		File.seekg(PL-1);
+		File.seekg(PL);
 		File.read( (char*) sector.blockpt, sizeof(Sector::sectorblock_t) );
 		
 		if (!File.good())
@@ -199,7 +208,7 @@ namespace cppcraft
 		
 		if (sector.blockpt->blocks == 0)
 		{
-			logger << Log::WARN << "*** Recorrection to nullsector - buggy generator" << Log::ENDL;
+			logger << Log::WARN << "*** Recorrection to nullsector - buggy chunk file" << Log::ENDL;
 			sector.contents = Sector::CONT_NULLSECTOR;
 		}
 		

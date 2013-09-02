@@ -339,12 +339,12 @@ namespace cppcraft
 				
 			} // hasSelection()
 			
-			/*
-			plogic.Action = paction.mineblock //dont more blocks!
-			plogic.MineTimer = 2000
-			plogic.MineMax   = 2000
-			plogic.Minimizer = -2
-			*/
+			// allow the player to continue mining more blocks
+			action = PA_Mineblock; //dont more blocks!
+			// set ridicolous numbers which will get changed immediately when the player gets a new selection
+			mineTimer = 2000;
+			mineMax   = 2000;
+			minimizer = -2;
 		}
 		else if (action == PA_Swingtool)
 		{
@@ -442,17 +442,17 @@ namespace cppcraft
 					selection.sector = nullptr;
 				}
 				mtx.playerselection.unlock();
-			}
-			
-			if (plogic.hasSelection() == false)
-			if (action == playeraction_t::PA_Mineblock)
-			{
-				// reset any mining process, when we lost selection
-				// but not cancel it entirely, because mouse is still "held", 
-				// and we could start mining again soon(TM)
-				mineTimer = 2000;
-				mineMax   = 2000;
-				minimizer = -1;
+				
+				if (action == playeraction_t::PA_Mineblock)
+				{
+					// reset any mining process, when we lost selection
+					// but not cancel it entirely, because mouse is still "held", 
+					// and we could start mining again soon(TM)
+					mineTimer = 2000;
+					mineMax   = 2000;
+					// invalidate CRC value
+					minimizer = -1;
+				}
 			}
 			
 		} // selection hitboxing
@@ -467,7 +467,10 @@ namespace cppcraft
 			playerselect_t& selection = plogic.selection;
 			
 			// make crc of internal position
-			int mineCRC = (selection.pos.x * Sector::BLOCKS_XZ + selection.pos.z) * Sector::BLOCKS_XZ + selection.pos.y;
+			int x = (int)selection.pos.x;
+			int y = (int)selection.pos.y;
+			int z = (int)selection.pos.z;
+			int mineCRC = (x * Sector::BLOCKS_XZ + z) * Sector::BLOCKS_XZ + y;
 			
 			if (minimizer != mineCRC)
 			{
@@ -518,7 +521,7 @@ namespace cppcraft
 				
 				mineTimer -= 1;
 			}
-			else
+			else if (mineTimer == 0)
 			{
 				action = PA_Remblock;
 			}
