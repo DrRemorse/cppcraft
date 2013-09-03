@@ -106,7 +106,7 @@ namespace cppcraft
 		{
 			int partSize = config.get("partic.size", 32);
 			
-			bmp.parse2D(partSize, partSize);
+			bmp.parse2D_invY(partSize, partSize);
 			
 			tiles.partsX = bmp.getTilesX();
 			tiles.partsY = bmp.getTilesY();

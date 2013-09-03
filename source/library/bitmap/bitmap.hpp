@@ -25,6 +25,7 @@ namespace library
 		void replace(const rgba8_t color, const rgba8_t replacecolor);
 		void blit(Bitmap& dest, int srcX, int srcY, int width, int height, int dstX, int dstY) const;
 		void parse2D(int, int);
+		void parse2D_invY(int, int);
 		
 		// getters
 		inline rgba8_t* data() const

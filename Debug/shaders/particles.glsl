@@ -47,7 +47,7 @@ flat in vec4 out_color;
 
 void main(void)
 {
-	vec4 color = texture2DArray(texture, vec3(gl_PointCoord.x, 1.0 - gl_PointCoord.y, tileID));
+	vec4 color = texture2DArray(texture, vec3(gl_PointCoord.xy, tileID));
 	
 	float alpha = out_normdata.x * color.a;
 	if (alpha < 0.01) discard;

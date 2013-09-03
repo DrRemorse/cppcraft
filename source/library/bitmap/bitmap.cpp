@@ -242,9 +242,48 @@ namespace library
 			
 		} // (x, y)
 		
-		// remove old buffer
-		delete this->buffer;
 		// replace with new buffer
+		delete this->buffer;
+		this->buffer = newBuffer;
+		// use members for texture_2d_array data
+		this->tilesX = maxx / tw;
+		this->tilesY = maxy / th;
+		this->width  = tw;
+		this->height = th;
+	}
+	void Bitmap::parse2D_invY(int tw, int th)
+	{
+		if (this->buffer == nullptr)
+			throw std::string("Bitmap::parse2D(): Buffer was null");
+		
+		// nearest tilew/h multiple floor
+		int maxx = int(this->width  / tw) * tw;
+		int maxy = int(this->height / th) * th;
+		
+		// buffers
+		rgba8_t* newBuffer = new rgba8_t[maxx * maxy];
+		rgba8_t *p, *n = newBuffer;
+		
+		// for each tile
+		int tx, ty;
+		for (int y = 0; y < maxy; y += th)
+		for (int x = 0; x < maxx; x += tw)
+		{
+			p = this->buffer + y * this->width + x;
+			
+			// blit internal tile
+			for (ty = 0; ty < th; ty++)
+			{
+				for (tx = 0; tx < tw; tx++)
+					*n++ = *p++;
+				
+				p += this->width - tw;
+			} // ty
+			
+		} // (x, y)
+		
+		// replace with new buffer
+		delete this->buffer;
 		this->buffer = newBuffer;
 		// use members for texture_2d_array data
 		this->tilesX = maxx / tw;
