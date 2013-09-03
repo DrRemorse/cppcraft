@@ -45,7 +45,7 @@ namespace cppcraft
 				
 				for (int z = z0; cz-- != 0; z += bigstpz)
 				{
-					if (camera.camera().column(x2, z * Sector::BLOCKS_XZ + sizez, 0, MAX_Y, size))
+					if (camera.getFrustum().column(x2, z * Sector::BLOCKS_XZ + sizez, 0, MAX_Y, size))
 					{
 						if (gridtest)
 							gridTesting(rg, x, z, stepsize);
@@ -64,7 +64,7 @@ namespace cppcraft
 				
 				for (int x = x0; cx-- != 0; x += bigstpx)
 				{
-					if (camera.camera().column(x * Sector::BLOCKS_XZ + sizex, z2, 0, MAX_Y, size))
+					if (camera.getFrustum().column(x * Sector::BLOCKS_XZ + sizex, z2, 0, MAX_Y, size))
 					{
 						if (gridtest)
 							gridTesting(rg, x, z, stepsize);
@@ -157,7 +157,7 @@ namespace cppcraft
 			{
 				if (fx*fx + fz*fz < max_gridrad)
 				{
-					if (camera.camera().column(
+					if (camera.getFrustum().column(
 							x * Sector::BLOCKS_XZ + gs_half,
 							z * Sector::BLOCKS_XZ + gs_half,
 							y * Columns.COLUMNS_SIZE * Sector::BLOCKS_Y,

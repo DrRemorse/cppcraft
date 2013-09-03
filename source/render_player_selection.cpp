@@ -182,6 +182,8 @@ namespace cppcraft
 		// enable blending
 		glEnable(GL_BLEND);
 		glDepthMask(GL_FALSE);
+		// --> fixes sun visible through selection
+		glColorMask(1, 1, 1, 0);
 		
 		textureman.bind(0, Textureman::T_SELECTION);
 		
@@ -192,8 +194,7 @@ namespace cppcraft
 		glDepthMask(GL_TRUE);
 		
 		delete vertexData;
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+		glColorMask(1, 1, 1, 1);
 	}
 	
 		//handle mining timing & results

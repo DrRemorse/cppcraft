@@ -92,7 +92,7 @@ namespace cppcraft
 		glEnable(GL_POINT_SPRITE);
 		
 		// bind 2d array of textures/tiles
-		textureman.bind(0, Textureman::T_DIFFUSE);
+		textureman.bind(0, Textureman::T_PARTICLES);
 		
 		// bind and render particles
 		glBindVertexArray(vao);

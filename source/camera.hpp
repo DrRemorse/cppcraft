@@ -39,7 +39,7 @@ namespace cppcraft
 		
 		void init(library::WindowClass& wnd);
 		void calculateFrustum();
-		const library::Frustum& camera() const;
+		const library::Frustum& getFrustum() const;
 		
 		float getZNear()  const { return this->znear; }
 		float getZFar()   const { return this->zfar; }

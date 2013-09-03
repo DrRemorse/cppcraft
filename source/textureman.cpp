@@ -101,6 +101,22 @@ namespace cppcraft
 		else throw std::string("Missing source file: Player skins");
 		if (ogl.checkError()) throw std::string("Player skins texture2d array error");
 		
+		/// PARTICLES tileset ///
+		if (bmp.load(config.get("textures.partic", "bitmap/default/particles.png"), Bitmap::PNG))
+		{
+			int partSize = config.get("partic.size", 32);
+			
+			bmp.parse2D(partSize, partSize);
+			
+			tiles.partsX = bmp.getTilesX();
+			tiles.partsY = bmp.getTilesY();
+			
+			textures[T_PARTICLES] = Texture(GL_TEXTURE_2D_ARRAY);
+			textures[T_PARTICLES].create(bmp, true, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+		}
+		else throw std::string("Missing source file: Particles");
+		if (ogl.checkError()) throw std::string("Particles texture2d array error");
+		
 		// selection texture
 		if (bmp.load(config.get("textures.selection", "bitmap/default/selection.png"), Bitmap::PNG))
 		{

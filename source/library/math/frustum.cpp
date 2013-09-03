@@ -33,12 +33,11 @@ namespace library
 		// Here we calculate the magnitude of the normal to the plane (point A B C)
 		// Remember that (A, B][C] is that same thing as the normal's (X, Y, Z).
 		// To calculate magnitude you use the equation:  magnitude = sqrt( x^2 + y^2 + z^2)
-		float inv_mag = 1.0 / sqrt( frustum[side][A] * frustum[side][A] +
+		float inv_mag = 1.0 / sqrtf(frustum[side][A] * frustum[side][A] +
 									frustum[side][B] * frustum[side][B] +
-									frustum[side][C] * frustum[side][C] );
+									frustum[side][C] * frustum[side][C]);
 		
 		// Then we divide the plane's values by it's magnitude.
-		// This makes it easier to work with.
 		frustum[side][A] *= inv_mag;
 		frustum[side][B] *= inv_mag;
 		frustum[side][C] *= inv_mag;
@@ -46,14 +45,17 @@ namespace library
 		
 	}
 	
-	// CALCULATE FRUSTUM 
-	// This extracts our frustum from the projection and modelview matrix.
 	void Frustum::calculate(const Matrix& matproj, const Matrix& matview)
 	{
 		// We have our modelview and projection matrix, if we combine these 2 matrices,
-		// it will give us our clipping planes.  To combine 2 matrices, we multiply them.
-		Matrix clip = matproj * matview;
-		
+		// it will give us our clipping planes.
+		calculate(matproj * matview);
+	}
+	
+	// CALCULATE FRUSTUM 
+	// This extracts our frustum from the projection and modelview matrix.
+	void Frustum::calculate(const Matrix& clip)
+	{
 		// Now we actually want to get the sides of the frustum.  To do this we take
 		// the clipping planes we received above and extract the sides from them.
 		
@@ -154,16 +156,6 @@ namespace library
 	//  This determines if a cube is in or around our frustum by it's center and 1/2 it's length
 	bool Frustum::cube(float x, float y, float z, float size) const
 	{
-		// Basically, what is going on is, that we are given the center of the cube,
-		// and half the length.  Think of it like a radius.  Then we checking each point
-		// in the cube and seeing if it is inside the frustum.  If a point is found in front
-		// of a side, then we skip to the next side.  If we get to a plane that does NOT have
-		// a point in front of it, then it will return false.
-		
-		// *Note* - This will sometimes say that a cube is inside the frustum when it isn't.
-		// This happens when all the corners of the bounding box are not behind any one plane.
-		// This is rare and shouldn't effect the overall rendering speed.
-		
 		float size_y = size * 0.5;
 		
 		for (int i = 0; i < 6; i++)

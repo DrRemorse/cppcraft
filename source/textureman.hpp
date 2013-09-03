@@ -24,6 +24,7 @@ namespace cppcraft
 			T_ITEMS,
 			T_ACTORS,
 			T_PLAYERMODELS,
+			T_PARTICLES,
 			
 			T_SELECTION,
 			T_FONT,

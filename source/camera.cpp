@@ -44,7 +44,7 @@ namespace cppcraft
 	
 	void Camera::calculateFrustum()
 	{
-		frustum.calculate(matproj, matview);
+		frustum.calculate(matviewproj);
 	}
 	
 	void Camera::setRotation(float rx, float ry, float rz)
@@ -83,7 +83,7 @@ namespace cppcraft
 		return matviewproj;
 	}
 	
-	const Frustum& Camera::camera() const
+	const Frustum& Camera::getFrustum() const
 	{
 		return this->frustum;
 	}

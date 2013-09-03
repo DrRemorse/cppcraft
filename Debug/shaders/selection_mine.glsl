@@ -23,7 +23,7 @@ void main()
 #endif
 
 #ifdef FRAGMENT_PROGRAM
-uniform sampler2D texture;
+uniform sampler2DArray texture;
 
 const vec3  selectionColor = vec3(0.0);
 

@@ -246,7 +246,7 @@ namespace cppcraft
 			throw std::string("Column::compile(): OpenGL error after ending compiler");
 		}
 		
-		if (camera.camera().column(x * Sector::BLOCKS_XZ + Sector::BLOCKS_XZ / 2,
+		if (camera.getFrustum().column(x * Sector::BLOCKS_XZ + Sector::BLOCKS_XZ / 2,
 								z * Sector::BLOCKS_XZ + Sector::BLOCKS_XZ / 2,
 								y * Columns.COLUMNS_SIZE * Sector::BLOCKS_Y,
 								Columns.COLUMNS_SIZE * Sector::BLOCKS_Y, 

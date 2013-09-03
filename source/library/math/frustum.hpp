@@ -12,6 +12,7 @@ namespace library
 		
 		// call this every time the camera moves to update the frustum
 		void calculate(const Matrix& matproj, const Matrix& matview);
+		void calculate(const Matrix& matclip);
 		
 		// this takes a 3D point and returns TRUE if it's inside of the frustum
 		bool point(frustum_t x, frustum_t y, frustum_t z) const;

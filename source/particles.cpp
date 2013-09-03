@@ -179,7 +179,7 @@ namespace cppcraft
 					break;
 					
 				case PARTICLE_SAND:
-					pv->u = 4;
+					pv->u = 2;
 					// brownochre #B87333
 					pv->c = 0x703373B8; // sand
 					break;
@@ -240,7 +240,7 @@ namespace cppcraft
 			p.spd = vec3(prandv(var_generic), prandv(var_generic) + 0.01, prandv(var_generic));
 			p.TTL = 64;
 			p.fadeTTL = 32;
-			p.tileID = tiles.tilesX * 14 + 10; // (10, 14) = smoke
+			p.tileID = 2 + 1 * tiles.partsX; // (2, 1) = smoke
 			break;
 			
 		case PARTICLE_M_STONE:
@@ -255,7 +255,7 @@ namespace cppcraft
 			p.spd = vec3(0.0, 0.1 + prandv(0.1), 0.0);
 			p.TTL = 128;
 			p.fadeTTL = 64;
-			p.tileID = tiles.tilesX * 14 + 10; // (10, 14) = smoke
+			p.tileID = 2 + 1 * tiles.partsX; // (2, 1) = smoke
 			break;
 			
 		case PARTICLE_LAVA:
@@ -265,7 +265,7 @@ namespace cppcraft
 			p.spd = vec3(0.0, 0.01, 0.0);
 			p.TTL = 64;
 			p.fadeTTL = 20;
-			p.tileID = 8 + 14 * tiles.tilesX; // (8, 14) = waterdrop
+			p.tileID = 0 + 1 * tiles.partsX; // (0, 1) = waterdrop
 			break;
 			
 		case PARTICLE_MARSH:
@@ -274,7 +274,7 @@ namespace cppcraft
 			p.spd = vec3(0.0, -0.02, 0.0);
 			p.TTL = 64;
 			p.fadeTTL = 20;
-			p.tileID = 8 + 14 * tiles.tilesX; // (8, 14) = waterdrop
+			p.tileID = 0 + 1 * tiles.partsX; // (0, 1) = waterdrop
 			break;
 			
 		case PARTICLE_DANDELION:
@@ -283,7 +283,7 @@ namespace cppcraft
 			p.spd = vec3(0.0, -0.05, 0.0);
 			p.TTL = 128;
 			p.fadeTTL = 32;
-			p.tileID = 10 + 13 * tiles.tilesX; // (10, 13) = dandelion
+			p.tileID = 2 + 0 * tiles.partsX; // (2, 0) = dandelion
 			break;
 			
 		case PARTICLE_LEAF:
@@ -293,7 +293,7 @@ namespace cppcraft
 			p.spd = vec3(0.0, -0.05, 0.0);
 			p.TTL = 128;
 			p.fadeTTL = 32;
-			p.tileID = 8 + 13 * tiles.tilesX; // (8, 13) = leaf
+			p.tileID = 0; // (0, 0) = leaf
 			break;
 			
 		case PARTICLE_FOREST:
@@ -302,7 +302,7 @@ namespace cppcraft
 			p.spd = vec3(prandv(var_forest), prandv(var_forest), prandv(var_forest));
 			p.TTL = 128;
 			p.fadeTTL = 32;
-			p.tileID = tiles.tilesX * 14 + 8; // (8, 14) = light
+			p.tileID = 0 + 1 * tiles.partsX; // (0, 1) = light
 			break;
 			
 		case PARTICLE_SNOW:
@@ -311,16 +311,16 @@ namespace cppcraft
 			p.spd = vec3(0.0, -0.05, 0.0);
 			p.TTL = 128;
 			p.fadeTTL = 32;
-			p.tileID = tiles.tilesX * 14 + 9; // (9, 14) = snow particle
+			p.tileID = 1 + 1 * tiles.partsX; // (1, 1) = snow particle
 			break;
 			
 		case PARTICLE_SAND:
 			// windy sand
 			p.acc = vec3(0.0, 0.0, 0.002);
-			p.spd = vec3(0.0, -0.05, 0.0);
+			p.spd = vec3(0.0, -0.05, 0.2);
 			p.TTL = 128;
 			p.fadeTTL = 32;
-			p.tileID = 9 + 13 * tiles.tilesX; // (9, 13) = sand
+			p.tileID = 1 + 0 * tiles.partsX; // (1, 0) = sand
 			break;
 		}
 		// return particle index
@@ -351,10 +351,10 @@ namespace cppcraft
 		}
 		else // terrain-based particles
 		{
-			for (int i = 0; i < 16; i++)
+			for (int i = 0; i < 4; i++)
 			{
 				vec3 position(player.X, 0, player.Z);
-				position += vec3(toolbox::rndNorm(80), 0, toolbox::rndNorm(80));
+				position += vec3(toolbox::rndNorm(100), 0, toolbox::rndNorm(100));
 				
 				FlatlandSector::flatland_t& fs = Flatlands.getData(position.x, position.z);
 				// use skylevel as particle base height
@@ -367,11 +367,10 @@ namespace cppcraft
 					
 					newParticle(position, PARTICLE_WATER);
 				}
-				else if (i % 4 == 0)
+				else if (i == 0)
 				{
 					// not waterlevel, use terrain-specific
 					autoCreateFromTerrain(fs.terrain, position);
-					break;
 				}
 			}
 		}
