@@ -15,9 +15,9 @@ in vec2 in_data;
 in vec2 in_normdata;
 in vec4 in_color;
 
-out vec2 out_data;
+flat out float tileID;
 out vec2 out_normdata;
-out vec4 out_color;
+flat out vec4 out_color;
 
 void main(void)
 {
@@ -29,7 +29,7 @@ void main(void)
 	vec4 projsize = matproj * vec4(in_data.xx, position.zw);
 	gl_PointSize = max(2.0, in_data.x / 64.0 * sizemult.x / projsize.z);
 	
-	out_data = in_data;
+	tileID = in_data.y;
 	out_normdata = in_normdata;
 	out_color = in_color;
 }
@@ -41,18 +41,15 @@ void main(void)
 uniform sampler2DArray texture;
 uniform float daylight;
 
-in vec2 out_data;
+flat in float tileID;
 in vec2 out_normdata;
-in vec4 out_color;
+flat in vec4 out_color;
 
 void main(void)
 {
-	float alpha = out_normdata.x;
-	if (alpha < 0.02) discard;
+	vec4 color = texture2DArray(texture, vec3(gl_PointCoord.x, 1.0 - gl_PointCoord.y, tileID));
 	
-	vec4 color = texture2DArray(texture, vec3(gl_PointCoord.xy, out_data.y ) );
-	
-	alpha *= color.a;
+	float alpha = out_normdata.x * color.a;
 	if (alpha < 0.01) discard;
 	
 	#include "degamma.glsl"

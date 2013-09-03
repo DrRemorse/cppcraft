@@ -26,6 +26,8 @@ using namespace library;
 #define PARTICLE_AUTUMN   34
 #define PARTICLE_SAND     35
 
+#define PARTICLE_DANDELION  40
+
 namespace cppcraft
 {
 	class Particle

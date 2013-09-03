@@ -1,8 +1,7 @@
 #version 130
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
-
-precision highp float;
+//precision highp float;
 
 #ifdef VERTEX_PROGRAM
 uniform mat4 matmvp;
@@ -27,26 +26,13 @@ void main()
 uniform sampler2D texture;
 
 const vec3  selectionColor = vec3(0.0);
-const float visibility     = 0.25;
 
 in vec2 texCoord;
 
 void main(void)
 {
-	/*
-	const float BORDER = 0.90;
+	float alpha = texture2D(texture, texCoord).r;
 	
-	float dist = max(abs(cheby.x), abs(cheby.y));
-	if (dist < BORDER) discard;
-	dist = (dist - BORDER) / (1.0 - BORDER);
-	dist = pow(dist, 16.0);
-	
-	gl_FragColor = vec4(selectionColor, visibility * dist);
-	*/
-	
-	vec4 color = texture2D(texture, texCoord);
-	
-	gl_FragColor = vec4(selectionColor, color.x * visibility);
-	
+	gl_FragColor = vec4(selectionColor, alpha);
 }
 #endif

@@ -141,6 +141,11 @@ namespace cppcraft
 					pv->c = BGRA8(127, 255, 255, 128);
 					break;
 					
+				case PARTICLE_DANDELION:
+					pv->u = 16;
+					pv->c = BGRA8(255, 255, 255, 0);
+					break;
+					
 				case PARTICLE_LEAF:
 					pv->u = 16;
 					// jungle green (110, 178, 78)
@@ -176,7 +181,7 @@ namespace cppcraft
 				case PARTICLE_SAND:
 					pv->u = 4;
 					// brownochre #B87333
-					pv->c = 0xFF3373B8; // sand
+					pv->c = 0x703373B8; // sand
 					break;
 				}
 				// next render-particle (and keep track of renderCount)
@@ -272,6 +277,15 @@ namespace cppcraft
 			p.tileID = 8 + 14 * tiles.tilesX; // (8, 14) = waterdrop
 			break;
 			
+		case PARTICLE_DANDELION:
+			// dandelions blowing in the wind
+			p.acc = vec3(0.0, 0.0, 0.002);
+			p.spd = vec3(0.0, -0.05, 0.0);
+			p.TTL = 128;
+			p.fadeTTL = 32;
+			p.tileID = 10 + 13 * tiles.tilesX; // (10, 13) = dandelion
+			break;
+			
 		case PARTICLE_LEAF:
 		case PARTICLE_LEAF_B:
 			// leafs blowing in the wind
@@ -306,7 +320,7 @@ namespace cppcraft
 			p.spd = vec3(0.0, -0.05, 0.0);
 			p.TTL = 128;
 			p.fadeTTL = 32;
-			p.tileID = tiles.tilesX * 14 + 9; // (10, 14) = sand particles
+			p.tileID = 9 + 13 * tiles.tilesX; // (9, 13) = sand
 			break;
 		}
 		// return particle index
@@ -388,7 +402,10 @@ namespace cppcraft
 			// grass & islands
 			position.y += 12 + toolbox::rndNorm(8);
 			
-			newParticle(position, PARTICLE_LEAF);
+			if (toolbox::rnd(2) == 0)
+				newParticle(position, PARTICLE_LEAF);
+			else
+				newParticle(position, PARTICLE_DANDELION);
 		}
 		else if (terrain == Biomes::T_MARSH)
 		{
