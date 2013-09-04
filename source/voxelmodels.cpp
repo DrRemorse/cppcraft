@@ -13,6 +13,8 @@ using namespace library;
 
 namespace cppcraft
 {
+	VoxelModels voxels;
+	const float VoxelModels::VOXELMODELS_ZSCALE = 0.05;
 	
 	void VoxelModels::createItemModels(Bitmap& bmp)
 	{

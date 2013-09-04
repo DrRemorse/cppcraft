@@ -7,6 +7,7 @@
 #include "library/math/toolbox.hpp"
 #include "library/math/vector.hpp"
 #include "camera.hpp"
+#include "menu.hpp"
 #include "player.hpp"
 #include "player_actions.hpp"
 #include "player_logic.hpp"
@@ -14,6 +15,7 @@
 #include "shaderman.hpp"
 #include "textureman.hpp"
 #include "torchlight.hpp"
+#include "voxelmodels.hpp"
 #include <cmath>
 
 using namespace library;
@@ -200,12 +202,66 @@ namespace cppcraft
 			}
 		}
 		
+		// convert shadow & torchlight color to 4-vectors
+		vec4 shadow = library::colorToVector(plogic.shadowColor);
+		vec4 torch = library::colorToVector(plogic.torchColor);
+		float modulation = torchlight.getModulation(frameCounter);
+		
+		// render held item
+		InventoryItem& helditem = menu.getHeldItem();
+		
+		if (helditem.isItem())
+		{
+			Shader& shd = shaderman[Shaderman::VOXEL];
+			shd.bind();
+			// player shadow & torchlight color
+			if (plogic.shadowColor != lastShadow)
+			{
+				shd.sendVec4("lightdata", shadow);
+				shd.sendVec4("torchlight", torch);
+			}
+			// torchlight modulation
+			shd.sendFloat("modulation", modulation);
+			// view matrix
+			Matrix matview(1.0);
+			matview.translate(lastHand.x, lastHand.y - 0.1, lastHand.z + 0.1);
+			Matrix matrot;
+			matrot.rotateZYX(0, PI / 2, PI/4);
+			matview *= matrot;
+			
+			shd.sendMatrix("matnrot", matrot);
+			shd.sendMatrix("matmvp", camera.getProjection() * matview);
+			
+			// rotated lighting & ambience
+			shd.sendVec3("lightVector", thesun.getRealtimeAngle());
+			shd.sendFloat("daylight", thesun.getRealtimeDaylight());
+			// send rotation matrix when camera has been rotated
+			if (camera.rotated)
+			{
+				shd.sendMatrix("matrot", camera.getRotationMatrix());
+			}
+			
+			glEnable(GL_DEPTH_TEST);
+			glDepthMask(GL_TRUE);
+			voxels.renderItem(helditem.getID());
+			glDisable(GL_DEPTH_TEST);
+			glDepthMask(GL_FALSE);
+		}
+		
 		// render player hand
 		Shader& shd = shaderman[Shaderman::PLAYERHAND];
 		shd.bind();
-		
+		// lighting & ambience
 		shd.sendVec3("lightVector", thesun.getRealtimeAngle());
 		shd.sendFloat("daylight", thesun.getRealtimeDaylight());
+		// player shadow & torchlight color
+		if (plogic.shadowColor != lastShadow)
+		{
+			shd.sendVec4("lightdata", shadow);
+			shd.sendVec4("torchlight", torch);
+		}
+		// torchlight modulation
+		shd.sendFloat("modulation", modulation);
 		
 		// send rotation matrix when camera has been rotated
 		if (camera.rotated)
@@ -216,23 +272,8 @@ namespace cppcraft
 		// view matrix
 		Matrix matview(1.0);
 		matview.translate(lastHand.x, lastHand.y, lastHand.z);
-		matview *= handScale;
 		
-		shd.sendMatrix("matview", matview);
-		
-		// player shadow & torchlight color
-		// convert shadow color to a 4-vector
-		if (plogic.shadowColor != lastShadow)
-		{
-			lastShadow = plogic.shadowColor;
-			
-			vec4 color = library::colorToVector(plogic.shadowColor);
-			shd.sendVec4("lightdata", color);
-			color = library::colorToVector(plogic.torchColor);
-			shd.sendVec4("torchlight", color);
-		}
-		// torchlight modulation
-		shd.sendFloat("modulation", torchlight.getModulation(frameCounter));
+		shd.sendMatrix("matview", matview * handScale);
 		
 		// bind player models texture
 		textureman.bind(0, Textureman::T_PLAYERMODELS);
@@ -249,5 +290,8 @@ namespace cppcraft
 		
 		// finally, render...
 		vao.render(GL_QUADS);
+		
+		
+		lastShadow = plogic.shadowColor;
 	}
 }

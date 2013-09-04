@@ -54,7 +54,7 @@ namespace cppcraft
 		static const int VOXELBLOCKS_MAX =  64;
 		
 		// z extrude scale 1:Z
-		const float VOXELMODELS_ZSCALE = 0.05;
+		static const float VOXELMODELS_ZSCALE;
 		
 		int  isVoxelBlock(block_t id);
 		int  getVoxelId  (block_t id);

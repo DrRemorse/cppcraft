@@ -3,44 +3,42 @@
 #define FRAGMENT_PROGRAM
 
 #ifdef VERTEX_PROGRAM
-uniform mat4 matproj;
-uniform mat4 matview;
+uniform mat4 matmvp;
 uniform mat4 matrot;
+uniform mat4 matnrot;
 
 uniform vec3 lightVector;
 
 in vec3 in_vertex;
 in vec3 in_normal;
-in vec3 in_texture;
+in vec4 in_color;
 
-out vec3 texCoord;
+flat out vec4  out_color;
 flat out float worldLight;
 
 void main()
 {
-	texCoord = in_texture;
-	vec3 normal = in_normal * mat3(matrot);
+	out_color = in_color;
+	vec3 normal = (mat3(matnrot) * in_normal) * mat3(matrot);
 	
 	float dotl = dot(normal, lightVector);
 	
 	const float ambience = 0.75;
 	worldLight  = ambience + dotl * (1.0 - ambience);
 	
-	gl_Position = matproj * matview * vec4(in_vertex, 1.0);
+	gl_Position = matmvp * vec4(in_vertex, 1.0);
 }
 #endif
 
 #ifdef FRAGMENT_PROGRAM
 #extension GL_EXT_gpu_shader4 : enable
 
-uniform sampler2DArray texture;
-
 uniform float daylight;
 uniform vec4  lightdata;
 uniform vec4  torchlight;
 uniform float modulation;
 
-in vec3 texCoord;
+flat in vec4  out_color;
 flat in float worldLight;
 
 void main(void)
@@ -56,7 +54,7 @@ void main(void)
 	// scaled shadow color
 	vec3 shadowColor = vec3(-0.2, 0.0, 0.2) * shadow;
 	
-	vec3 color = texture2DArray(texture, texCoord).rgb;
+	vec3 color = out_color.rgb;
 	#include "degamma.glsl"
 	
 	color.rgb *= worldLight; // min(1.0, worldLight + 0.35 * brightness)

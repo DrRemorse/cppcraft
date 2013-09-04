@@ -44,19 +44,24 @@ namespace cppcraft
 		return items.getName(this->getID());
 	}
 	
-	bool InventoryItem::isItem() const
+	bool InventoryItem::isAlive() const noexcept
 	{
-		return (this->getID() & this->getCount()) != 0;
+		return (this->getID() != 0 && this->getCount() != 0);
 	}
 	
-	bool InventoryItem::isActionItem() const
+	bool InventoryItem::isItem() const noexcept
 	{
-		return this->getType() == ITT_ITEM;
+		return (this->getType() == ITT_ITEM && isAlive());
 	}
 	
-	bool InventoryItem::isToolItem() const
+	bool InventoryItem::isToolItem() const noexcept
 	{
-		return this->getID() > 0 && this->getID() < 50;
+		return (isItem() && this->getID() < 50);
+	}
+	
+	bool InventoryItem::isBlock() const noexcept
+	{
+		return (isAlive() && getType() == ITT_BLOCK);
 	}
 	
 	int InventoryItem::tileByID() const

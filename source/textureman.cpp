@@ -9,6 +9,7 @@
 #include "render_fs.hpp"
 #include "sun.hpp"
 #include "tiles.hpp"
+#include "voxelmodels.hpp"
 
 using namespace library;
 
@@ -37,6 +38,9 @@ namespace cppcraft
 			
 			textures[T_DIFFUSE] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_DIFFUSE].create(bmp, true, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
+			
+			// voxelize (some) tiles
+			voxels.createBlockModels(bmp);
 		}
 		else throw std::string("Materials(1) missing source file: Diffuse");
 		if (ogl.checkError()) throw std::string("Materials(1) texture2d array error");
@@ -86,6 +90,9 @@ namespace cppcraft
 			
 			textures[T_ITEMS] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_ITEMS].create(bmp, true, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
+			
+			// voxelize the items
+			voxels.createItemModels(bmp);
 		}
 		else throw std::string("Missing source file: Items tileset");
 		if (ogl.checkError()) throw std::string("Items texture2d array error");

@@ -139,6 +139,15 @@ namespace cppcraft
 		shaders[SELECTION_MINING] = Shader("shaders/selection_mine.glsl", tokenizer, linkstage);
 		shaders[SELECTION_MINING].sendInteger("texture", 0);
 		
+		// voxel shaders
+		linkstage.clear();
+		linkstage.emplace_back("in_vertex");
+		linkstage.emplace_back("in_normal");
+		linkstage.emplace_back("in_color");
+		
+		shaders[VOXEL] = Shader("shaders/playerhand_voxel.glsl", tokenizer, linkstage);
+		
+		
 		// particles
 		linkstage.clear();
 		linkstage.emplace_back("in_vertex");

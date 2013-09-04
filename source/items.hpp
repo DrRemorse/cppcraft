@@ -130,9 +130,10 @@ namespace cppcraft
 		
 		std::string getName() const;
 		
-		bool isItem() const;
-		bool isActionItem() const;
-		bool isToolItem() const;
+		bool isAlive() const noexcept;
+		bool isItem() const noexcept;
+		bool isToolItem() const noexcept;
+		bool isBlock() const noexcept;
 		
 		// returns the appropriate tile ID
 		// regardless of item type

@@ -28,6 +28,10 @@ namespace cppcraft
 	
 	void GUIRenderer::render(Renderer& renderer)
 	{
+		// clear depth buffer
+		glDepthMask(GL_TRUE);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		
 		glDisable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
 		
