@@ -47,6 +47,11 @@ namespace cppcraft
 		return this->action;
 	}
 	
+	float PlayerActions::getMiningLevel() const
+	{
+		return 1.0 - ((float) mineTimer / mineMax);
+	}
+	
 	void PlayerActions::cancelDig()
 	{
 		if (action != playeraction_t::PA_Cooldown)

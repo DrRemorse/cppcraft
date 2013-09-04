@@ -117,7 +117,7 @@ namespace cppcraft
 		else throw std::string("Missing source file: Particles");
 		if (ogl.checkError()) throw std::string("Particles texture2d array error");
 		
-		// selection texture
+		/// PlayerSelection textures ///
 		if (bmp.load(config.get("textures.selection", "bitmap/default/selection.png"), Bitmap::PNG))
 		{
 			textures[T_SELECTION] = Texture(GL_TEXTURE_2D);
@@ -128,7 +128,9 @@ namespace cppcraft
 		
 		if (bmp.load(config.get("textures.mining", "bitmap/default/mining.png"), Bitmap::PNG))
 		{
-			textures[T_MINING] = Texture(GL_TEXTURE_2D);
+			bmp.parse2D(tiles.tileSize, tiles.tileSize);
+			
+			textures[T_MINING] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_MINING].create(bmp, true, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
 		}
 		else throw std::string("Missing source file: Selection texture");

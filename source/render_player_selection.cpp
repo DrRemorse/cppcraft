@@ -9,6 +9,7 @@
 #include "vertex_block.hpp"
 #include "camera.hpp"
 #include "player.hpp"
+#include "player_actions.hpp"
 #include "player_logic.hpp"
 #include "renderconst.hpp"
 #include "shaderman.hpp"
@@ -193,16 +194,33 @@ namespace cppcraft
 		glColorMask(1, 1, 1, 0);
 		
 		/// render player selection ///
+		Shader* shd = nullptr;
 		
-		// selection shader
-		Shader& shd = shaderman[Shaderman::SELECTION];
-		shd.bind();
-		shd.sendMatrix("matmvp", camera.getMVP_Matrix());
+		// mining
+		if (paction.getAction() == PlayerActions::PA_Mineblock)
+		{
+			textureman.bind(0, Textureman::T_MINING);
+			
+			// selection shader
+			shd = &shaderman[Shaderman::SELECTION_MINING];
+			shd->bind();
+			
+			// mine tile id
+			int tileID = paction.getMiningLevel() * 9.0;
+			shd->sendFloat("miningTile", tileID);
+		}
+		else
+		{
+			textureman.bind(0, Textureman::T_SELECTION);
+			
+			// normal selection shader
+			shd = &shaderman[Shaderman::SELECTION];
+			shd->bind();
+		}
 		
+		shd->sendMatrix("matmvp", camera.getMVP_Matrix());
 		// position in space
-		shd.sendVec3("vtrans", vec3(vx, vy, vz));
-		
-		textureman.bind(0, Textureman::T_SELECTION);
+		shd->sendVec3("vtrans", vec3(vx, vy, vz));
 		
 		// render quad(s)
 		vao.render(GL_QUADS);

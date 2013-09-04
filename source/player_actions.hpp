@@ -51,6 +51,7 @@ namespace cppcraft
 		bool playerBlockPlaceTest();
 		
 		playeraction_t getAction() const;
+		float getMiningLevel() const;
 		
 	private:
 		// mining related
