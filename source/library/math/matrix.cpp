@@ -82,7 +82,16 @@ namespace library
 		return m[i];
 	}
 	
-	// transform vector
+	// transform 3-vector (w = 1.0)
+	vec3 Matrix::operator* (const vec3& v) const
+	{
+		return vec3(
+			v.x * m[0] + v.y * m[4] + v.z * m[ 8] + m[12],
+			v.x * m[1] + v.y * m[5] + v.z * m[ 9] + m[13],
+			v.x * m[2] + v.y * m[6] + v.z * m[10] + m[14]
+		);
+	}
+	// transform 4-vector
 	vec4 Matrix::operator* (const vec4& v) const
 	{
 		return vec4(
@@ -331,6 +340,18 @@ namespace library
 	{
 		Matrix mat(*this);
 		return mat.transpose();
+	}
+	
+	// batch transform vertices from memory location
+	void Matrix::batch(void* first, int stride, int count)
+	{
+		for (int i = 0; i < count; i++)
+		{
+			float* v = (float*) ((char*)first + i * stride);
+			v[0] = v[0] * m[0] + v[1] * m[4] + v[2] * m[ 8] + m[12];
+			v[1] = v[0] * m[1] + v[1] * m[5] + v[2] * m[ 9] + m[13];
+			v[2] = v[0] * m[2] + v[1] * m[6] + v[2] * m[10] + m[14];
+		}
 	}
 	
 	// screen-coordinate-based orthographic projection matrix

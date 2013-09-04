@@ -52,6 +52,7 @@ namespace library
 		Matrix& bias();
 		
 		const matrix_t& operator[] (int) const;
+		vec3    operator * (const vec3&) const;
 		vec4    operator * (const vec4&) const;
 		Matrix  operator * (const Matrix&) const;
 		Matrix& operator *=(const Matrix&);
@@ -74,6 +75,8 @@ namespace library
 		void ortho(matrix_t width, matrix_t height, matrix_t znear, matrix_t zfar);
 		void orthoScreen(matrix_t width, matrix_t height, matrix_t znear, matrix_t zfar);
 		void perspective(matrix_t fov, matrix_t aspect, matrix_t znear, matrix_t zfar);
+		
+		void batch(void* first, int stride, int count);
 		
 		static const int AXES     = 4;
 		static const int ELEMENTS = AXES * AXES;

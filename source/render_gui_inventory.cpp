@@ -21,11 +21,11 @@ namespace cppcraft
 	void GUIRenderer::initInventoryRenderer()
 	{
 		// pre-transform cube
-		vec4 GUI_cube[12] = 
+		vec3 GUI_cube[12] = 
 		{
-			vec4(-0.5, -0.5,  0.5, 1.0), vec4( 0.5, -0.5,  0.5, 1.0), vec4( 0.5,  0.5,  0.5, 1.0), vec4(-0.5,  0.5,  0.5, 1.0),
-			vec4(-0.5,  0.5, -0.5, 1.0), vec4(-0.5,  0.5,  0.5, 1.0), vec4( 0.5,  0.5,  0.5, 1.0), vec4( 0.5,  0.5, -0.5, 1.0),
-			vec4( 0.5, -0.5, -0.5, 1.0), vec4( 0.5,  0.5, -0.5, 1.0), vec4( 0.5,  0.5,  0.5, 1.0), vec4( 0.5, -0.5,  0.5, 1.0),
+			vec3(-0.5, -0.5,  0.5), vec3( 0.5, -0.5,  0.5), vec3( 0.5,  0.5,  0.5), vec3(-0.5,  0.5,  0.5),
+			vec3(-0.5,  0.5, -0.5), vec3(-0.5,  0.5,  0.5), vec3( 0.5,  0.5,  0.5), vec3( 0.5,  0.5, -0.5),
+			vec3( 0.5, -0.5, -0.5), vec3( 0.5,  0.5, -0.5), vec3( 0.5,  0.5,  0.5), vec3( 0.5, -0.5,  0.5)
 		};
 		
 		// rotate cube and invert the Y-axis
@@ -37,8 +37,7 @@ namespace cppcraft
 		
 		for (int vert = 0; vert < 12; vert++)
 		{
-			vec4& vertex = GUI_cube[vert];
-			vertex = matrot * vertex;
+			GUI_cube[vert] = matrot * GUI_cube[vert];
 		}
 		
 		float GUIcube_tex[24] =
@@ -54,7 +53,7 @@ namespace cppcraft
 		{
 			int face = (i / 4) * 2;
 			
-			vec3 v = GUI_cube[i].xyz();
+			vec3& v = GUI_cube[i];
 			
 			float tu = GUIcube_tex[i * 2 + 0];
 			float tv = GUIcube_tex[i * 2 + 1];
