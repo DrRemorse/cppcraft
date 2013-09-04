@@ -32,7 +32,7 @@ namespace cppcraft
 		// blur horizontally
 		glBindFramebuffer(GL_FRAMEBUFFER, blurFBO);
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_BLURBUFFER1), 0);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 0, 0);
+		//glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 0, 0);
 		
 		blur.sendVec2("dir", vec2(1.0 / blurTxW, 0.0));
 		
@@ -40,9 +40,9 @@ namespace cppcraft
 		screenVAO.render(GL_QUADS);
 		
 		// blur vertically
-		glBindFramebuffer(GL_FRAMEBUFFER, blurFBO);
+		//glBindFramebuffer(GL_FRAMEBUFFER, blurFBO);
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_BLURBUFFER2), 0);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 0, 0);
+		//glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 0, 0);
 		
 		textureman.bind(0, Textureman::T_BLURBUFFER1);
 		

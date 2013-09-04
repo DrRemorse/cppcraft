@@ -29,6 +29,8 @@ namespace cppcraft
 		// create screenspace FBOs
 		glGenFramebuffers(1, &blurFBO);
 		glGenFramebuffers(1, &flareFBO);
+		
+		initFlare();
 	}
 	
 	void FSRenderer::blur(WindowClass& gamescr)
@@ -58,6 +60,10 @@ namespace cppcraft
 	
 	void FSRenderer::render(WindowClass& gamescr)
 	{
+		//  render sun sphere and check samples passed using GL_LEQUAL
+		glDisable(GL_DEPTH_TEST);
+		glDepthMask(GL_FALSE);
+		
 		// copy the current screen buffer
 		textureman.bind(0, Textureman::T_RENDERBUFFER);
 		textureman.copyScreen(gamescr, Textureman::T_RENDERBUFFER);

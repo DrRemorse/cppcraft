@@ -354,7 +354,7 @@ namespace cppcraft
 			for (int i = 0; i < 4; i++)
 			{
 				vec3 position(player.X, 0, player.Z);
-				position += vec3(toolbox::rndNorm(100), 0, toolbox::rndNorm(100));
+				position += vec3(toolbox::rndNorm(180), 0, toolbox::rndNorm(180));
 				
 				FlatlandSector::flatland_t& fs = Flatlands.getData(position.x, position.z);
 				// use skylevel as particle base height
@@ -423,10 +423,10 @@ namespace cppcraft
 		else if (terrain == Biomes::T_DESERT)
 		{
 			// desert sandstorm
-			for (int i = 0; i < 8; i++)
+			for (int i = 0; i < 16; i++)
 			{
 				vec3 pos = position;
-				pos += vec3(toolbox::rndNorm(5), 10 + toolbox::rndNorm(5), toolbox::rndNorm(5));
+				pos += vec3(toolbox::rndNorm(15), 10 + toolbox::rndNorm(5), toolbox::rndNorm(15));
 				
 				newParticle(pos, PARTICLE_SAND);
 			}

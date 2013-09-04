@@ -4,16 +4,12 @@
 precision mediump float;
 
 #ifdef VERTEX_PROGRAM
-uniform vec4 sunproj;
 
 in  vec2 in_vertex;
 out vec2 in_texture;
-out vec2 sunpos;
 
 void main(void)
 {
-	sunpos = sunproj.xy / sunproj.w;
-	
 	in_texture  = in_vertex;
 	gl_Position = vec4(in_vertex * 2.0 - 1.0, 0.0, 1.0);
 }
@@ -26,8 +22,8 @@ uniform sampler2D DirtTexture;
 
 uniform float Dispersal, HaloWidth, Intensity;
 uniform vec3 Distortion;
+uniform vec2 sunproj;
 
-in vec2 sunpos;
 in vec2 in_texture;
 
 vec3 texture2DDistorted(sampler2D Texture, vec2 TexCoord, vec2 Offset)
@@ -44,7 +40,7 @@ void main()
 	vec3 RadialBlur = vec3(0.0);
 	vec2 TexCoord = in_texture;
 	const int RadialBlurSamples = 128;
-	vec2 RadialBlurVector = (sunpos - in_texture) / RadialBlurSamples;
+	vec2 RadialBlurVector = (sunproj - in_texture) / RadialBlurSamples;
 	
 	for(int i = 0; i < RadialBlurSamples; i++)
 	{

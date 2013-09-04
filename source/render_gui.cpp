@@ -28,6 +28,9 @@ namespace cppcraft
 	
 	void GUIRenderer::render(Renderer& renderer)
 	{
+		glDisable(GL_DEPTH_TEST);
+		glDepthMask(GL_FALSE);
+		
 		/// player hand ///
 		renderPlayerhand(renderer.frametick);
 		
