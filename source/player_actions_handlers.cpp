@@ -3,6 +3,8 @@
 #include "library/log.hpp"
 #include "library/math/vector.hpp"
 #include "items.hpp"
+#include "menu.hpp"
+#include "particles.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
 #include "sectors.hpp"
@@ -263,8 +265,7 @@ namespace cppcraft
 		/////////////////////////////////////
 		/// item currently held by player ///
 		/////////////////////////////////////
-		int FIXME_held_item;
-		InventoryItem helditem(IT_DIAMPICK, ITT_ITEM, 1); // = items.Inventory(menu.invcycle, menu.quickbar)
+		InventoryItem& helditem = menu.getHeldItem();
 		
 		if (action == playeraction_t::PA_Addblock)
 		{
@@ -334,6 +335,9 @@ namespace cppcraft
 					// --------------------------------
 					
 					int FIXME_create_some_smoke_n_shits;
+					
+					// create particles using fractionals
+					particleSystem.newParticle(vec3(ddx + 0.5, ddy + 0.25, ddz + 0.5), PARTICLE_M_GENER, 16);
 					
 				} // block was removed
 				

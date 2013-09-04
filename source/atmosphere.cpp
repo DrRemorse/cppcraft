@@ -58,13 +58,13 @@ namespace cppcraft
 	
 	void Scatterer::init()
 	{
-		m_nSamples = 2;		// Number of sample rays to use in integral equation
+		m_nSamples = 3;		// Number of sample rays to use in integral equation
 		m_Kr = 0.0025;		// Rayleigh scattering constant
 		m_Kr4PI = m_Kr * 4.0 * PI;
 		m_Km = 0.0025;		// Mie scattering constant
 		m_Km4PI = m_Km * 4.0 * PI;
-		m_ESun = 15.0;		// Sun brightness constant
-		m_g = -0.55;		// The Mie phase asymmetry factor
+		m_ESun = 13.0;		// Sun brightness constant
+		m_g = -0.50;		// The Mie phase asymmetry factor
 		
 		m_fInnerRadius = 10.0; // 9.99375
 		m_fOuterRadius = 10.25;

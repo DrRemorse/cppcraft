@@ -136,13 +136,14 @@ namespace cppcraft
 			if (s->contents == Sector::CONT_NULLSECTOR) return air_block; // do nada
 		}
 		
-		Block& block = s[0](bx, by, bz);
+		// make a copy of the block, so we can return it
+		Block block = s[0](bx, by, bz);
 		
 		// we can't directly remove fluids or air
 		if (Block::fluidToAir(block.getID()) == _AIR) return air_block;
 		
 		// set the block to _AIR
-		block.setID(_AIR);
+		s[0](bx, by, bz).setID(_AIR);
 		// we removed a valid block, so decrease counter
 		s->blockpt->blocks -= 1;
 		

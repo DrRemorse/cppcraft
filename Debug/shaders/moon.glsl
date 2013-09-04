@@ -42,12 +42,12 @@ void main(void)
 	// limit moon to horizon
 	float horizon = clamp(-norm.y / 0.025,  0.0, 1.0);
 	
-	vec2 tex = pow(texCoord.st, vec2(1.0, 1.0 + horizon));
+	//vec2 tex = pow(texCoord.st, vec2(1.0, 1.0 + horizon));
 	
-	vec4 color = texture2D(texture, tex);
+	vec4 color = texture2D(texture, texCoord.st);
 	
 	// make invisible below horizon
-	color.a *= pow(1.0 - horizon, 3.0);
+	color.a *= pow(1.0 - horizon, 2.0);
 	
 #ifdef POSTPROCESS
 	// degamma

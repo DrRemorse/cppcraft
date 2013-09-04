@@ -211,6 +211,13 @@ namespace cppcraft
 		return -1;
 	}
 	
+	int Particles::newParticle(vec3 position, short id, int num)
+	{
+		int ret = -1;
+		for (int i = 0; i < num; i++)
+			ret = newParticle(position, id);
+		return ret;
+	}
 	int Particles::newParticle(vec3 position, short id)
 	{
 		int index = newParticleID();

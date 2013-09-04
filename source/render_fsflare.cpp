@@ -25,6 +25,8 @@ namespace cppcraft
 	
 	void FSRenderer::renderLensflare(WindowClass& gamescr)
 	{
+		textureman.unbind(0);
+		
 		//  render sun to texture 0
 		glBindFramebuffer(GL_FRAMEBUFFER, flareFBO);
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_LENSFLARE), 0);
@@ -33,15 +35,6 @@ namespace cppcraft
 		glViewport(0, 0, flareTxW, flareTxH);
 		glClear(GL_COLOR_BUFFER_BIT);
 		
-		// check that the sun is in fact in the camera
-		if (thesun.getRealtimeAngle().dot(player.getLookVector()) < 0.5)
-		{
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			// restore viewport
-			glViewport(0, 0, gamescr.SW, gamescr.SH);
-			return;
-		}
-		
 		//  render sun sphere and check samples passed using GL_LEQUAL
 		glEnable(GL_DEPTH_TEST);
 		
@@ -49,6 +42,16 @@ namespace cppcraft
 		Matrix matsun = skyrenderer.renderSunProj(1.0);
 		
 		glDisable(GL_DEPTH_TEST);
+		
+		// check that the sun is in fact in the camera
+		if (thesun.getRealtimeAngle().dot(player.getLookVector()) < 0.5)
+		{
+			// NOTE: We need to exit here, so that the flare buffer is cleared properly
+			// go back to main framebuffer & restore viewport
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glViewport(0, 0, gamescr.SW, gamescr.SH);
+			return;
+		}
 		
 		vec4 sunproj = lensMatrix * matsun * vec4(0.0, 0.0, 0.0, 1.0);
 		sunproj.x /= sunproj.w;
@@ -77,13 +80,8 @@ namespace cppcraft
 		//  render
 		screenVAO.render(GL_QUADS);
 		
-		textureman.unbind(0);
-		
 		//  HIGH blur sun sphere horizontally (high)
-		
-		//glBindFramebuffer(GL_FRAMEBUFFER, flareFBO);
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_LENSFLARE), 0);
-		//glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 0, 0);
 		
 		textureman.bind(0, Textureman::T_LENSFLARE2);
 		
@@ -92,9 +90,6 @@ namespace cppcraft
 		
 		//  render
 		screenVAO.render(GL_QUADS);
-		
-		// free texture unit
-		textureman.unbind(0);
 		
 		//  blur sun sphere vertically (high) (final result = 0)
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_LENSFLARE3), 0);
@@ -105,9 +100,6 @@ namespace cppcraft
 		
 		//  render
 		screenVAO.render(GL_QUADS);
-		
-		// free texture unit
-		textureman.unbind(0);
 		
 		//  blur sun sphere radially, calculate lens flare and halo
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_LENSFLARE), 0);
@@ -129,6 +121,9 @@ namespace cppcraft
 		glViewport(0, 0, gamescr.SW, gamescr.SH);
 		
 		if (ogl.checkError())
+		{
+			logger << Log::ERR << "FSRenderer::renderLensFlare(): Error after rendering lens flare" << Log::ENDL;
 			throw std::string("Error after rendering lens flare");
+		}
 	}
 }

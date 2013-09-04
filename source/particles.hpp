@@ -72,6 +72,9 @@ namespace cppcraft
 		// it's pretty much updated every damn time
 		bool updated;
 		
+		int newParticle(vec3 position, short id, int num);
+		int newParticle(vec3 position, short id);
+		
 	private:
 		int snapRenderCount;
 		int snapWX, snapWZ;
@@ -89,7 +92,6 @@ namespace cppcraft
 		int newParticleID();
 		
 		int particleExplosion(vec3 position, short id, int count);
-		int newParticle(vec3 position, short id);
 		
 		Particle* particles;
 		int count;

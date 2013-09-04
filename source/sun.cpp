@@ -65,7 +65,7 @@ namespace cppcraft
 		if (y >= transitional_light)
 		{
 			transit = 1.0 - (y - transitional_light) / (1.0 - transitional_light);
-			return powf(noonlight, 6.0);
+			return noonlight * powf(transit, 3.0);
 		}
 		else if (y < transitional_dark)
 		{
