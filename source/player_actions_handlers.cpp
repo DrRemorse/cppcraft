@@ -399,24 +399,33 @@ namespace cppcraft
 						int ddy = ray.y;
 						int ddz = ray.z;
 						// find position in local grid
-						Sector* sector = Spiders::spiderwrap(ddx, ddy, ddz);
+						Sector* sector = Sectors.sectorAt(ddx, ddy, ddz);
 						
 						// outside of local grid? nothing to select
 						if (sector == nullptr) break;
 						
-						Block& selectionBlock = Spiders::getBlock(ray.x, ray.y, ray.z);
+						Block& selectionBlock = Spiders::getBlock(ddx, ddy, ddz);
 						unsigned short selectionFace = plogic.determineSelectionFacing(selectionBlock, ray, fracs, action_step);
 						
-						// set selection results
-						mtx.playerselection.lock();
+						// make crc of internal position
+						int CRC = (ddx * Sector::BLOCKS_XZ + ddz) * Sector::BLOCKS_XZ + ddy;
+						// determine if the selection has been updated
+						if (selection.checkSum != CRC || selection.facing != selectionFace || selection.block == nullptr)
 						{
-							selection.block = &selectionBlock;
-							selection.sector = sector;
-							selection.pos = ray;
-							selection.facing = selectionFace;
+							// set selection results
+							mtx.playerselection.lock();
+							{
+								// info
+								selection.block = &selectionBlock;
+								selection.sector = sector;
+								selection.pos = ray;
+								selection.facing = selectionFace;
+								// update info
+								selection.checkSum = CRC;
+								selection.updated  = true;
+							}
+							mtx.playerselection.unlock();
 						}
-						mtx.playerselection.unlock();
-						
 						
 						if (action == PA_Mineblock)
 						{
@@ -435,13 +444,16 @@ namespace cppcraft
 			
 			if (foundSelection == false)
 			{
-				// we have no selection
-				mtx.playerselection.lock();
+				if (selection.block != nullptr)
 				{
-					selection.block = nullptr;
-					selection.sector = nullptr;
+					// we have no selection
+					mtx.playerselection.lock();
+					{
+						selection.block = nullptr;
+						selection.sector = nullptr;
+					}
+					mtx.playerselection.unlock();
 				}
-				mtx.playerselection.unlock();
 				
 				if (action == playeraction_t::PA_Mineblock)
 				{
@@ -466,14 +478,10 @@ namespace cppcraft
 			
 			playerselect_t& selection = plogic.selection;
 			
-			// make crc of internal position
-			int x = (int)selection.pos.x;
-			int y = (int)selection.pos.y;
-			int z = (int)selection.pos.z;
-			int mineCRC = (x * Sector::BLOCKS_XZ + z) * Sector::BLOCKS_XZ + y;
-			
-			if (minimizer != mineCRC)
+			if (minimizer != selection.checkSum)
 			{
+				minimizer = selection.checkSum;
+				
 				// if we got here we have selected a new block to mine from
 				mineTimer = items.getMiningTime(*selection.block, helditem);
 				
@@ -485,7 +493,6 @@ namespace cppcraft
 				
 				// set the rest, and prepare for battle =)
 				mineMax = mineTimer;
-				minimizer = mineCRC;
 			}
 			
 			if (mineTimer > 0)

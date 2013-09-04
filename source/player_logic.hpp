@@ -28,8 +28,9 @@ namespace cppcraft
 		unsigned short facing;
 		// additional info
 		int info[2];
-		// focal position
-		// float focal;
+		// inform rendering thread on updates
+		int checkSum;
+		bool updated;
 	};
 	
 	class PlayerLogic

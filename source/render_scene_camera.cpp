@@ -75,21 +75,20 @@ namespace cppcraft
 				}
 			}
 		}
-		else
+		else if (motionTimed != 0)
 		{
 			NORMAL_CAMERA_DEV();
 			deviating = true;
 		}
 		
-		const double lerp = 0.85;
+		const double lerp = 0.6;
 		
 		// interpolate deviation with old
 		if (deviating)
 			deviation = deviation * lerp + lastCameraDeviation * (1.0 - lerp);
 		else
 		{
-			deviation = lastCameraDeviation;
-			deviation *= 1.0 - 0.1 * dtime;
+			deviation = lastCameraDeviation * 0.7;
 		}
 		
 		// modulate playerY when delta is high enough

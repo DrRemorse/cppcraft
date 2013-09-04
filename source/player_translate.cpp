@@ -1,6 +1,7 @@
 #include "player_logic.hpp"
 
 #include "library/log.hpp"
+#include "library/math/toolbox.hpp"
 #include "flatlands.hpp"
 #include "input.hpp"
 #include "player.hpp"
@@ -537,7 +538,8 @@ namespace cppcraft
 			
 			if (Block::fluidToAir(block->getID()) != _AIR)
 			{
-				soundman.playMaterial(block->getID(), Soundman::sound_land);
+				int sound = toolbox::rnd(4);
+				soundman.playMaterial(block->getID(), sound);
 			}
 			
 		} // freefalling

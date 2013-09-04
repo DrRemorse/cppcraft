@@ -6,33 +6,32 @@ precision mediump float;
 #ifdef VERTEX_PROGRAM
 uniform mat4 matmvp;
 uniform vec3 vtrans;
+uniform float miningTile;
 
 in vec3 in_vertex;
 in vec2 in_texture;
 
-out vec2 texCoord;
+out vec3 texCoord;
 
 void main()
 {
 	vec4 position = vec4(in_vertex.xyz + vtrans, 1.0);
 	
-	texCoord = in_texture;
+	texCoord = vec3(in_texture, miningTile);
 	
 	gl_Position = matmvp * position;
 }
 #endif
 
 #ifdef FRAGMENT_PROGRAM
+#extension GL_EXT_gpu_shader4 : enable
 uniform sampler2DArray texture;
 
-const vec3  selectionColor = vec3(0.0);
-
-in vec2 texCoord;
+in vec3 texCoord;
 
 void main(void)
 {
-	float alpha = texture2D(texture, texCoord).r;
-	
-	gl_FragColor = vec4(selectionColor, alpha);
+	vec4 color = texture2DArray(texture, texCoord);
+	gl_FragData[0] = vec4(color);
 }
 #endif

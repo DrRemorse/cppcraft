@@ -126,6 +126,13 @@ namespace cppcraft
 		else throw std::string("Missing source file: Selection texture");
 		if (ogl.checkError()) throw std::string("Selection texture2d error");
 		
+		if (bmp.load(config.get("textures.mining", "bitmap/default/mining.png"), Bitmap::PNG))
+		{
+			textures[T_MINING] = Texture(GL_TEXTURE_2D);
+			textures[T_MINING].create(bmp, true, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
+		}
+		else throw std::string("Missing source file: Selection texture");
+		if (ogl.checkError()) throw std::string("Selection texture2d error");
 		
 		/// Sky renderer ///
 		

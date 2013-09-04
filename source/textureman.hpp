@@ -27,6 +27,8 @@ namespace cppcraft
 			T_PARTICLES,
 			
 			T_SELECTION,
+			T_MINING,
+			
 			T_FONT,
 			T_MINIMAP,
 			T_CROSSHAIR,

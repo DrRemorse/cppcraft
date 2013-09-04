@@ -1,5 +1,6 @@
 #include "render_player_selection.hpp"
 
+#include "library/log.hpp"
 #include "library/math/vector.hpp"
 #include "library/opengl/opengl.hpp"
 #include "library/opengl/vao.hpp"
@@ -21,6 +22,7 @@ namespace cppcraft
 	class PlayerSelection
 	{
 		VAO vao;
+		bool renderable;
 		
 	public:
 		void render();
@@ -110,9 +112,6 @@ namespace cppcraft
 			mtx.playerselection.unlock();
 			return;
 		}
-		// build vertices
-		int vertices = 0;
-		selection_vertex_t* vertexData = nullptr;
 		
 		int selection = plogic.selection.facing;
 		int vx = (int)plogic.selection.pos.x;
@@ -122,52 +121,76 @@ namespace cppcraft
 		int model  = Block::blockModel(plogic.selection.block->getID());
 		int facing = plogic.selection.block->getFacing();
 		
+		bool updated = plogic.selection.updated;
+		plogic.selection.updated = false;
+		
 		mtx.playerselection.unlock();
 		
-		if (selection < 6)
+		if (updated)
 		{
-			// we are to render some cube model, specifically only 1 quad
+			// build vertices
+			int vertices = 0;
+			selection_vertex_t* vertexData;
 			
-			vertices = 4;
-			vertexData = new selection_vertex_t[vertices];
-			// regular cube
-			if (vertices != blockmodels.selectionCube[model].copyTo(selection, vertexData))
-				throw std::string("PlayerSelection::render(): selection == 6 vertex count mismatch");
-		}
-		else if (selection == 6) // cross selection box
-		{
-			vertices = 24;
-			vertexData = new selection_vertex_t[vertices];
-			// cross selection box
-			if (vertices != blockmodels.selecionCross.copyTo(0, vertexData))
-				throw std::string("PlayerSelection::render(): selection == 6 vertex count mismatch");
-		}
-		else if (selection == 9) // pole selection box
-		{
-			vertices = 24;
-			vertexData = new selection_vertex_t[vertices];
-			// cross selection box
-			if (vertices != blockmodels.selectionPole.copyTo(0, vertexData))
-				throw std::string("PlayerSelection::render(): selection == 9 vertex count mismatch");
-		}
-		else if (selection == 10) // ladders selection box
-		{
-			vertices = 24;
-			vertexData = new selection_vertex_t[vertices];
-			// ladder selection box
-			if (vertices != blockmodels.selectionLadder.copyTo(facing, vertexData))
-				throw std::string("PlayerSelection::render(): selection == 10 vertex count mismatch");
+			// determine selection mesh
+			if (selection < 6)
+			{
+				// we are to render some cube model, specifically only 1 quad
+				vertices = 4;
+				vertexData = new selection_vertex_t[vertices];
+				// regular cube face
+				if (vertices != blockmodels.selectionCube[model].copyTo(selection, vertexData))
+					throw std::string("PlayerSelection::render(): selection == 6 vertex count mismatch");
+			}
+			else if (selection == 6) // cross selection box
+			{
+				vertices = 24;
+				vertexData = new selection_vertex_t[vertices];
+				// cross selection box
+				if (vertices != blockmodels.selecionCross.copyTo(0, vertexData))
+					throw std::string("PlayerSelection::render(): selection == 6 vertex count mismatch");
+			}
+			else if (selection == 9) // pole selection box
+			{
+				vertices = 24;
+				vertexData = new selection_vertex_t[vertices];
+				// cross selection box
+				if (vertices != blockmodels.selectionPole.copyTo(0, vertexData))
+					throw std::string("PlayerSelection::render(): selection == 9 vertex count mismatch");
+			}
+			else if (selection == 10) // ladders selection box
+			{
+				vertices = 24;
+				vertexData = new selection_vertex_t[vertices];
+				// ladder selection box
+				if (vertices != blockmodels.selectionLadder.copyTo(facing, vertexData))
+					throw std::string("PlayerSelection::render(): selection == 10 vertex count mismatch");
+			}
+			
+			
+			// upload only if renderable
+			renderable = (vertices != 0);
+			
+			if (renderable)
+			{
+				// upload selection rendering data
+				vao.begin(sizeof(selection_vertex_t), vertices, vertexData);
+				vao.attrib(0, 3, GL_FLOAT, GL_FALSE, offsetof(selection_vertex_t, x));
+				vao.attrib(1, 2, GL_FLOAT, GL_FALSE, offsetof(selection_vertex_t, u));
+				vao.end();
+				
+				// cleanup
+				delete vertexData;
+			}
 		}
 		
+		if (renderable == false) return;
 		
-		// nothing to render? quit
-		if (vertices == 0) return;
-		
-		// upload selection rendering data
-		vao.begin(sizeof(selection_vertex_t), vertices, vertexData);
-		vao.attrib(0, 3, GL_FLOAT, GL_FALSE, offsetof(selection_vertex_t, x));
-		vao.attrib(1, 2, GL_FLOAT, GL_FALSE, offsetof(selection_vertex_t, u));
-		vao.end();
+		// enable blending
+		glEnable(GL_BLEND);
+		glDepthMask(GL_FALSE);
+		// --> fixes sun visible through selection
+		glColorMask(1, 1, 1, 0);
 		
 		/// render player selection ///
 		
@@ -179,12 +202,6 @@ namespace cppcraft
 		// position in space
 		shd.sendVec3("vtrans", vec3(vx, vy, vz));
 		
-		// enable blending
-		glEnable(GL_BLEND);
-		glDepthMask(GL_FALSE);
-		// --> fixes sun visible through selection
-		glColorMask(1, 1, 1, 0);
-		
 		textureman.bind(0, Textureman::T_SELECTION);
 		
 		// render quad(s)
@@ -193,72 +210,7 @@ namespace cppcraft
 		glDisable(GL_BLEND);
 		glDepthMask(GL_TRUE);
 		
-		delete vertexData;
 		glColorMask(1, 1, 1, 1);
 	}
 	
-		//handle mining timing & results
-		/*
-		if plogic.Action = paction.mineblock Then
-			
-			//get current atomic time
-			Dim As Double currenttime = Timer()
-			
-			if currenttime > plogic.MineTiming + plogic.mine_speed Then
-				plogic.MineTiming = currenttime //reset offset
-				
-				//make crc of internal position
-				Dim As Integer mintest = ddx * blocksz * blocksz + ddz * blocksz + ddy
-				
-				if plogic.Minimizer <> mintest Then
-					
-					// make a change in mining stuff
-					plogic.MineTimer = getMiningTimes(selectionid->id)
-					if plogic.minimizer = -2 then
-						// we have mined before
-						plogic.MineTimer += 6 // extra wait time
-					endif
-					// set the rest, and prepare for battle =)
-					plogic.MineMax = plogic.MineTimer
-					plogic.Minimizer = mintest
-				endif
-				
-				if plogic.MineTimer > 0 Then
-					
-					// propagate start of mining
-					if network.mymine = false then
-						#ifdef USE_INET
-							networkSend("PMINE 1")
-						#endif
-						network.mymine = true
-					endif
-					
-					//create mining debris, and propagate over inet
-					#ifdef USE_OBJECTS
-						dim itm as inventoryitem = TransformParticle(selectionid)
-						itm.count = 2 * (plogic.MineMax - plogic.MineTimer) / plogic.MineMax
-						if itm.count <> 0 And itm.id <> 0 then
-							CreateObjectMining(s, ddx, ddy, ddz, selface, itm)
-							networkSendObject(s, ddx, ddy, ddz, selface, @itm)
-						endif
-					#endif
-					
-					// create particles using fractionals
-					// newParticleB(s, bx, by, bz, PARTICLE_M_GENER, 3)
-					
-					//play mining sound based on material
-					if plogic.MineTimer Mod plogic.MINE_SOUNDMOD = 0 Then
-						#ifdef USE_SOUND
-							PlaySound(selectionid->id, sound_mine) //mining sound!
-						#endif
-					endif
-					
-					plogic.MineTimer -= 1
-					
-				else
-					plogic.Action = paction.remblock
-				endif
-			endif
-		End if
-	*/
 }

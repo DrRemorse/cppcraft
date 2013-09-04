@@ -33,6 +33,6 @@ void main(void)
 {
 	float alpha = texture2D(texture, texCoord).r;
 	
-	gl_FragColor = vec4(selectionColor, alpha);
+	gl_FragData[0] = vec4(selectionColor, alpha);
 }
 #endif

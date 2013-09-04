@@ -34,7 +34,9 @@ namespace cppcraft
 			VOXELOBJECT,
 			ACTOR,
 			PARTICLE,
+			
 			SELECTION,
+			SELECTION_MINING,
 			
 			PLAYERHAND,
 			HANDITEM,
