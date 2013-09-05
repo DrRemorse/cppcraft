@@ -6,6 +6,7 @@
 #include "library/opengl/vao.hpp"
 #include "library/math/toolbox.hpp"
 #include "library/math/vector.hpp"
+#include "blockmodels.hpp"
 #include "camera.hpp"
 #include "menu.hpp"
 #include "player.hpp"
@@ -27,6 +28,7 @@ namespace cppcraft
 	class PlayerHand
 	{
 		VAO vao;
+		VAO cubeVAO;
 		vec3 lastHand;
 		double lastTime;
 		int lastMode;
@@ -58,13 +60,11 @@ namespace cppcraft
 		// hand scale matrix
 		Matrix handScale;
 		
-		// last shadow color
-		unsigned int lastShadow = 65535;
-		
 	public:
 		PlayerHand();
 		void render(double frameCounter);
 		void renderItem();
+		void renderHandItem(vec4& shadow, vec4& torch, float modulation);
 	};
 	PlayerHand playerHand;
 	
@@ -207,61 +207,7 @@ namespace cppcraft
 		vec4 torch = library::colorToVector(plogic.torchColor);
 		float modulation = torchlight.getModulation(frameCounter);
 		
-		// render held item
-		InventoryItem& helditem = menu.getHeldItem();
-		
-		bool isVoxelBlock = helditem.isBlock() && voxels.isVoxelBlock(helditem.getID());
-		
-		if (helditem.isItem() || isVoxelBlock)
-		{
-			Shader& shd = shaderman[Shaderman::VOXEL];
-			shd.bind();
-			// player shadow & torchlight color
-			if (plogic.shadowColor != lastShadow)
-			{
-				shd.sendVec4("lightdata", shadow);
-				shd.sendVec4("torchlight", torch);
-			}
-			// torchlight modulation
-			shd.sendFloat("modulation", modulation);
-			// view matrix
-			Matrix matview(1.0);
-			Matrix matrot;
-			if (helditem.isToolItem())
-			{
-				matview.translate(lastHand.x, lastHand.y - 0.1, lastHand.z + 0.1);
-				matrot.rotateZYX(0, PI / 2, PI/4);
-			}
-			else
-			{
-				matview.translate(lastHand.x + 0.1, lastHand.y, lastHand.z + 0.25);
-				matrot.rotateZYX(0, PI / 2, 0);
-			}
-			
-			matview *= matrot;
-			
-			shd.sendMatrix("matnrot", matrot);
-			shd.sendMatrix("matmvp", camera.getProjection() * matview);
-			
-			// rotated lighting & ambience
-			shd.sendVec3("lightVector", thesun.getRealtimeAngle());
-			shd.sendFloat("daylight", thesun.getRealtimeDaylight());
-			// send rotation matrix when camera has been rotated
-			if (camera.rotated)
-			{
-				shd.sendMatrix("matrot", camera.getRotationMatrix());
-			}
-			
-			glEnable(GL_DEPTH_TEST);
-			glDepthMask(GL_TRUE);
-			if (isVoxelBlock)
-				voxels.renderBlock(helditem.getID());
-			else
-				voxels.renderItem(helditem.getID());
-			
-			glDisable(GL_DEPTH_TEST);
-			glDepthMask(GL_FALSE);
-		}
+		renderHandItem(shadow, torch, modulation);
 		
 		// render player hand
 		Shader& shd = shaderman[Shaderman::PLAYERHAND];
@@ -270,11 +216,8 @@ namespace cppcraft
 		shd.sendVec3("lightVector", thesun.getRealtimeAngle());
 		shd.sendFloat("daylight", thesun.getRealtimeDaylight());
 		// player shadow & torchlight color
-		if (plogic.shadowColor != lastShadow)
-		{
-			shd.sendVec4("lightdata", shadow);
-			shd.sendVec4("torchlight", torch);
-		}
+		shd.sendVec4("lightdata", shadow);
+		shd.sendVec4("torchlight", torch);
 		// torchlight modulation
 		shd.sendFloat("modulation", modulation);
 		
@@ -305,8 +248,156 @@ namespace cppcraft
 		
 		// finally, render...
 		vao.render(GL_QUADS);
-		
-		
-		lastShadow = plogic.shadowColor;
 	}
+	
+	void PlayerHand::renderHandItem(vec4& shadow, vec4& torch, float modulation)
+	{
+		// render held item
+		InventoryItem& helditem = menu.getHeldItem();
+		// no item, no render
+		if (helditem.isAlive() == false) return;
+		
+		glEnable(GL_DEPTH_TEST);
+		glDepthMask(GL_TRUE);
+		
+		bool isVoxelBlock = helditem.isBlock() && voxels.isVoxelBlock(helditem.getID());
+		
+		if (helditem.isItem() || isVoxelBlock)
+		{
+			Shader& shd = shaderman[Shaderman::VOXEL];
+			shd.bind();
+			// player shadow & torchlight color
+			shd.sendVec4("lightdata", shadow);
+			shd.sendVec4("torchlight", torch);
+			// torchlight modulation
+			shd.sendFloat("modulation", modulation);
+			// view matrix
+			Matrix matview(1.0);
+			Matrix matrot;
+			if (helditem.isToolItem())
+			{
+				matview.translate(lastHand.x, lastHand.y - 0.1, lastHand.z + 0.1);
+				matrot.rotateZYX(0, PI / 2, PI/4);
+			}
+			else
+			{
+				if (isVoxelBlock && isDoor(helditem.getID()))
+				{
+					// doors are really tall
+					matview.translate(lastHand.x + 0.1, lastHand.y - 0.8, lastHand.z + 0.25);
+				}
+				else
+				{
+					matview.translate(lastHand.x + 0.1, lastHand.y, lastHand.z + 0.25);
+				}
+				matrot.rotateZYX(0, PI / 2, 0);
+			}
+			
+			matview *= matrot;
+			
+			shd.sendMatrix("matnrot", matrot);
+			shd.sendMatrix("matmvp", camera.getProjection() * matview);
+			
+			// rotated lighting & ambience
+			shd.sendVec3("lightVector", thesun.getRealtimeAngle());
+			shd.sendFloat("daylight", thesun.getRealtimeDaylight());
+			// send rotation matrix when camera has been rotated
+			if (camera.rotated)
+			{
+				shd.sendMatrix("matrot", camera.getRotationMatrix());
+			}
+			
+			if (isVoxelBlock)
+				voxels.renderBlock(helditem.getID());
+			else
+				voxels.renderItem(helditem.getID());
+			
+		}
+		else
+		{
+			// bind blocks diffuse texture
+			textureman.bind(0, Textureman::T_DIFFUSE);
+			// helditem block mesh shader
+			Shader& shd = shaderman[Shaderman::PHAND_HELDITEM];
+			shd.bind();
+			// lighting & ambience
+			shd.sendVec3("lightVector", thesun.getRealtimeAngle());
+			shd.sendFloat("daylight", thesun.getRealtimeDaylight());
+			// player shadow & torchlight color
+			shd.sendVec4("lightdata", shadow);
+			shd.sendVec4("torchlight", torch);
+			// torchlight modulation
+			shd.sendFloat("modulation", modulation);
+			
+			// send rotation matrix when camera has been rotated
+			if (camera.rotated)
+			{
+				shd.sendMatrix("matrot", camera.getRotationMatrix());
+			}
+			
+			// view matrix
+			Matrix matview;
+			
+			// update vertex data
+			block_t id = helditem.getID();
+			
+			int count = 0;
+			vertex_t* vertices = nullptr;
+			
+			if (id == _LANTERN)
+			{
+				// lantern model
+				count = blockmodels.lanterns.totalCount();
+				vertices = new vertex_t[count];
+				blockmodels.lanterns.copyAll(vertices);
+				
+				// texture id
+				for (int i = 0; i < count; i++)
+					vertices[i].w = Block::cubeFaceById(helditem.getID(), (i / 24) * 2, 0);
+				
+				// translation & scaling
+				matview = Matrix(0.5);
+				matview.translated(lastHand.x - 0.35, lastHand.y, lastHand.z - 0.6);
+			}
+			else
+			{
+				// normal block model
+				int model = Block::blockModel(id);
+				
+				count = blockmodels.cubes[model].totalCount();
+				vertices = new vertex_t[count];
+				blockmodels.cubes[model].copyAll(vertices);
+				
+				// texture id
+				for (int i = 0; i < count; i++)
+					vertices[i].w = Block::cubeFaceById(helditem.getID(), i / 4, 3);
+				
+				// translation & scaling
+				matview.identity();
+				matview.translated(lastHand.x - 0.15, lastHand.y - 0.1, lastHand.z - 0.6);
+				matview *= Matrix(0.6);
+			}
+			
+			if (count)
+			{
+				shd.sendMatrix("matview", matview);
+				
+				cubeVAO.begin(sizeof(vertex_t), count, vertices);
+				cubeVAO.attrib(0, 3, GL_SHORT, GL_FALSE, offsetof(vertex_t, x));
+				cubeVAO.attrib(1, 3, GL_BYTE,  GL_TRUE,  offsetof(vertex_t, nx));
+				cubeVAO.attrib(2, 3, GL_BYTE,  GL_TRUE,  offsetof(vertex_t, tx));
+				cubeVAO.attrib(3, 3, GL_SHORT, GL_FALSE, offsetof(vertex_t, u));
+				cubeVAO.end();
+				
+				delete vertices;
+				// finally, render...
+				cubeVAO.render(GL_QUADS);
+			}
+			
+		}
+		
+		glDisable(GL_DEPTH_TEST);
+		glDepthMask(GL_FALSE);
+	}
+	
 }

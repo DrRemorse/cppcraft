@@ -237,6 +237,17 @@ namespace cppcraft
 		shaders[PLAYERHAND].sendInteger("texture", 0);
 		shaders[PLAYERHAND].sendMatrix("matproj", matproj);
 		
+		linkstage.clear();
+		linkstage.emplace_back("in_vertex");
+		linkstage.emplace_back("in_normal");
+		linkstage.emplace_back("in_tangent");
+		linkstage.emplace_back("in_texture");
+		
+		// playerhand held-item, re-using meshobjects
+		shaders[PHAND_HELDITEM] = Shader("shaders/playerhand_helditem.glsl", tokenizer, linkstage);
+		shaders[PHAND_HELDITEM].sendInteger("texture", 0);
+		shaders[PHAND_HELDITEM].sendMatrix("matproj", matproj);
+		
 		// Multi-purpose GUI shader
 		linkstage.clear();
 		linkstage.emplace_back("in_vertex");

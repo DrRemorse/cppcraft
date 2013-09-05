@@ -16,6 +16,7 @@ namespace library
 		typedef std::string (*processFunc)(std::string text);
 		
 		Shader() {};
+		Shader(std::string filename, std::vector<std::string>& linkstage);
 		Shader(std::string filename, processFunc tokenizer, std::vector<std::string>& linkstage);
 		
 		// binds/activates this shader

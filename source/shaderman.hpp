@@ -39,7 +39,7 @@ namespace cppcraft
 			SELECTION_MINING,
 			
 			PLAYERHAND,
-			HANDITEM,
+			PHAND_HELDITEM,
 			VOXEL,
 			PLAYERMODEL,
 			

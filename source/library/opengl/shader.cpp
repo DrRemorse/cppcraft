@@ -142,6 +142,10 @@ namespace library
 		return shaderText;
 	}
 	
+	Shader::Shader(std::string filename, std::vector<std::string>& linkstage) :
+		Shader(filename, nullptr, linkstage)
+	{ }
+	
 	Shader::Shader(std::string filename, processFunc tokenizer, std::vector<std::string>& linkstage)
 	{
 		// recursively process text from files and #includes

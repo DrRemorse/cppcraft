@@ -24,6 +24,7 @@ namespace cppcraft
 		{
 			inventory(x, quickbarY) = InventoryItem(IT_WOODPICK + x, ITT_ITEM, 64);
 		}
+		inventory(4, quickbarY) = InventoryItem(_WOODDOOR, ITT_BLOCK, 64);
 		inventory(5, quickbarY) = InventoryItem(_PLANK, ITT_BLOCK, 64);
 		inventory(6, quickbarY) = InventoryItem(_LADDER, ITT_BLOCK, 64);
 		inventory(7, quickbarY) = InventoryItem(_TORCH, ITT_BLOCK, 64);

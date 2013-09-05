@@ -85,13 +85,15 @@ namespace cppcraft
 	int MeshContainer::copyAll(void* dest) const
 	{
 		int vertices = 0;
+		int tbytes = 0;
 		for (size_t i = 0; i < meshes.size(); i++)
 		{
-			memcpy(dest,	// destination
+			memcpy((char*) dest + tbytes, // destination
 				meshes[i].getData(), // source
 				meshes[i].getTotalBytes() // size
 			);
 			vertices += meshes[i].getVertices();
+			tbytes += meshes[i].getTotalBytes();
 		}
 		// return the number of vertices we just copied
 		return vertices;

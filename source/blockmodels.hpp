@@ -71,6 +71,19 @@ namespace cppcraft
 		int copyTo(int meshid, void* dest) const;
 		int copyAll(void* dest) const;
 		
+		int getCount(int meshid) const
+		{
+			return meshes[meshid].getVertices();
+		}
+		int totalCount() const
+		{
+			int vertices = 0;
+			for (std::size_t i = 0; i < meshes.size(); i++)
+				vertices += meshes[i].getVertices();
+			
+			return vertices;
+		}
+		
 		// special function, making the assumption that this container only has BlockMeshes
 		vertex_t& get(int meshid, int vertex);
 	};
