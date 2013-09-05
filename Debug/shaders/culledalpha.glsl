@@ -47,17 +47,17 @@ void main(void)
 	
 	texCoord = vec3(in_texture.st / VERTEX_SCALE, in_texture.p);
 	
-	if (texCoord.z > 54.5 && texCoord.z < 62.5 || texCoord.z > 176.5 && texCoord.z < 178.5)
+	/*if (mod(in_texture.p, 16.0) >= 14.5)
 	{
 		// leafs gone with the wind
 		float strength = LEAFWIND_STRENGTH * (0.25 + vertdist * 0.005);
 		position.yx += vec2(cos(frameCounter - in_vertex.x / VERTEX_SCALE / 4.0 * PI2),
 							sin(frameCounter - in_vertex.y / VERTEX_SCALE / 4.0 * PI2)) * strength;
-	} // leafs
+	}*/	// leafs
 	
 	gl_Position = matproj * position;
 	
-	v_eye = -position.xyz / vec3(vertdist);
+	v_eye = -position.xyz / vertdist;
 	v_ldir = mat3(matview) * lightVector;
 	
 	// dotlight

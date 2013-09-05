@@ -266,6 +266,8 @@ namespace cppcraft
 		case _WOODDOOR:
 		case _WOODPOLE:
 		case _WOODFENCE:
+		case _TORCH:
+		case _LADDER:
 			return MS_WOOD;
 			
 		case _STONESTAIR:

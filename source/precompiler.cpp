@@ -34,6 +34,16 @@ namespace cppcraft
 		logger << Log::INFO << "* Initializing precompiler" << Log::ENDL;
 		int NUM_PCTHREADS = config.get("threading", 2);
 		
+		const int pipelineSize[RenderConst::MAX_UNIQUE_SHADERS] =
+		{
+			6000, // TX_REPEAT
+			7000, // TX_SOLID
+			3000, // TX_TRANS
+			8000, // TX_2SIDED
+			4000, // TX_CROSS
+			4000  // TX_WATER
+		};
+		
 		for (int t = 0; t < NUM_PCTHREADS; t++)
 		{
 			// create precomiler thread objects
@@ -42,7 +52,7 @@ namespace cppcraft
 			for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 			{
 				// initialize thread object
-				pcthreads[t].pcg.databuffer[i] = new vertex_t[RenderConst::MAX_FACES_PER_SECTOR * 4];
+				pcthreads[t].pcg.databuffer[i] = new vertex_t[pipelineSize[i]];
 			}
 		}
 		

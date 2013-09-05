@@ -122,7 +122,7 @@ namespace cppcraft
 		renderModel(voxelItems[modelid]);
 	}
 	
-	int VoxelModels::isVoxelBlock(block_t id)
+	bool VoxelModels::isVoxelBlock(block_t id)
 	{
 		if (id == _LADDER || isDoor(id)) return true;
 		return isCross(id);

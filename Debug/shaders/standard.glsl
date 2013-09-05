@@ -46,7 +46,7 @@ void main(void)
 	vertdist = length(position.xyz);
 	gl_Position = matproj * position;
 	
-	v_eye = normalize(-position.xyz);
+	v_eye = -position.xyz / vertdist;
 	v_ldir = mat3(matview) * lightVector;
 	
 	/* ice reflection */

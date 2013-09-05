@@ -53,7 +53,7 @@ void main(void)
 	color.rgb *= texture2D(depth, screenPos).a;
 	
 	// limit flare to horizon
-	color *= pow( 1.0 - clamp(-norm.y / 0.001,  0.0, 1.0),  3.0 );
+	color *= pow( 1.0 - clamp(-norm.y / 0.01,  0.0, 1.0),  3.0 );
 	
 	gl_FragData[0] = vec4(color, 1.0);
 	gl_FragDepth = 1.0;

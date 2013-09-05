@@ -17,6 +17,8 @@
 #include "worldmanager.hpp"
 #include <cmath>
 
+//#define DEBUG
+
 using namespace library;
 
 namespace cppcraft

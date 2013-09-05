@@ -110,28 +110,32 @@ namespace cppcraft
 	
 	int GUIInventory::emit(InventoryItem& itm, float x, float y, float size)
 	{
-		if (itm.getType() == ITT_ITEM)
+		if (itm.isItem())
 		{
 			// texture tile id
 			float tile = items.tileByID(itm.getID());
 			
 			return quickbarItems.emitQuad(itm, x, y, size, tile);
 		}
-		else if (itm.getType() == ITT_BLOCK)
+		else if (itm.isBlock())
 		{
+			// some blocks can be represented by quads
+			if (itm.getID() == _LADDER || isCross(itm.getID()))
+			{
+				return quickbarItems.emitBlockQuad(itm, x, y, size);
+			}
+			// presentable rotated blocks
 			return quickbarItems.emitBlock(itm, x, y, size * 0.8);
 		}
 		return 0;
 	}
 	
-	// FIXME: SLOW AS FUCK
 	int GUIInventory::emitQuad(InventoryItem& itm, float x, float y, float size, float tile)
 	{
 		// no item, no texture!
 		if (itm.getID() == IT_NONE) return 0;
 		// no count, no item!
 		if (itm.getCount() == 0) return 0;
-		
 		// create single quad
 		itemTiles.emplace_back( (inventory_t)
 			{ x,        y + size, 0,   0, 0, tile,   BGRA8(255, 255, 255,   0) });
@@ -145,9 +149,23 @@ namespace cppcraft
 		return 4;
 	}
 	
+	int GUIInventory::emitBlockQuad(InventoryItem& itm, float x, float y, float size)
+	{
+		// face value is "as if" front
+		float tile = Block::cubeFaceById(itm.getID(), 0, 0);
+		// create single quad
+		blockTiles.emplace_back( (inventory_t)
+			{ x,        y + size, 0,   0, 0, tile,   BGRA8(255, 255, 255,   0) });
+		blockTiles.emplace_back( (inventory_t)
+			{ x + size, y + size, 0,   1, 0, tile,   BGRA8(255, 255, 255,   0) });
+		blockTiles.emplace_back( (inventory_t)
+			{ x + size, y,        0,   1, 1, tile,   BGRA8(255, 255, 255,   0) });
+		blockTiles.emplace_back( (inventory_t)
+			{ x,        y,        0,   0, 1, tile,   BGRA8(255, 255, 255, 128) });
+		return 4;
+	}
 	int GUIInventory::emitBlock(InventoryItem& itm, float x, float y, float size)
 	{
-		// texture tile id
 		vec3 offset = vec3(x, y, -1) + vec3(size, size, 0) * 0.6;
 		
 		for (size_t i = 0; i < transformedCube.size(); i++)
@@ -164,8 +182,7 @@ namespace cppcraft
 			blockTiles.emplace_back( (inventory_t)
 				{ v.x, v.y, v.z,  vertex.u, vertex.v, tw,  vertex.color });
 		}
-		
-		return 0;
+		return 12;
 	}
 	
 	void GUIInventory::upload()

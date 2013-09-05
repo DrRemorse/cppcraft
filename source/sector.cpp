@@ -75,6 +75,7 @@ namespace cppcraft
 		}
 		
 		blockpt->lights = lights;
+		this->torchlight = lights;
 		return lights;
 	}
 	

@@ -24,10 +24,11 @@ namespace cppcraft
 		{
 			inventory(x, quickbarY) = InventoryItem(IT_WOODPICK + x, ITT_ITEM, 64);
 		}
-		for (int x = inventory.getWidth() / 2; x < inventory.getWidth(); x++)
-		{
-			inventory(x, quickbarY) = InventoryItem(_WOODBROWN + x - inventory.getWidth() / 2, ITT_BLOCK, 64);
-		}
+		inventory(5, quickbarY) = InventoryItem(_PLANK, ITT_BLOCK, 64);
+		inventory(6, quickbarY) = InventoryItem(_LADDER, ITT_BLOCK, 64);
+		inventory(7, quickbarY) = InventoryItem(_TORCH, ITT_BLOCK, 64);
+		inventory(8, quickbarY) = InventoryItem(_LANTERN, ITT_BLOCK, 64);
+		
 		inventory.setChanged(true);
 		
 	}

@@ -116,7 +116,7 @@ namespace cppcraft
 			placement_test &= (selection.facing != 2 && selection.facing != 3);
 			
 			// override facing
-			facing = Block::cubeToFacing(facing);
+			//facing = Block::cubeToFacing(facing);
 		}
 		else if (isStair(id))
 		{
@@ -184,8 +184,7 @@ namespace cppcraft
 			Block& newBlock = Spiders::getBlock(ddx, ddy, ddz);
 			if (Block::blockPlacement(newBlock.getID()))
 			{
-					logger << "Placing block... plstest" << Log::ENDL;
-				// finally, we can place the block
+				// tests passed, we can place the block
 				
 				if (isDoor(id))
 				{
@@ -215,7 +214,6 @@ namespace cppcraft
 					block_t bfield = facing + (item.getSpecial() << 2);
 					// add block to world
 					bool placed = Spiders::addblock(ddx, ddy, ddz, id, bfield, true);
-					logger << "Placed block: " << id << Log::ENDL;
 					
 					if (placed)
 					{

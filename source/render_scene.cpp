@@ -213,8 +213,12 @@ namespace cppcraft
 			skyrenderer.renderClouds(*this, renderer.frametick);
 		}
 		
+		glColorMask(1, 1, 1, 0);
+		
 		// render particles
 		particleSystem.render(snapWX, snapWZ);
+		
+		glColorMask(1, 1, 1, 1);
 		
 	} // render scene
 	

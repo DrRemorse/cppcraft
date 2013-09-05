@@ -152,7 +152,7 @@ namespace cppcraft
 			case 2: return 4;
 			case 3: return 5;
 		}
-		throw "Block::facingToCube(): Illegal facing value";
+		throw std::string("Block::facingToCube(): Illegal facing value");
 	}
 	int Block::cubeToFacing(block_t facing)
 	{
@@ -163,7 +163,7 @@ namespace cppcraft
 			case 4: return 2;
 			case 5: return 3;
 		}
-		throw "Block::cubeToFacing(): Illegal facing value";
+		throw std::string("Block::cubeToFacing(): Illegal facing value");
 	}
 	
 	short Block::bigFaceById(block_t id, block_t face, block_t facing)

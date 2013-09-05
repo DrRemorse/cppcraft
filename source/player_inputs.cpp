@@ -3,6 +3,7 @@
 #include "library/config.hpp"
 #include "library/log.hpp"
 #include "input.hpp"
+#include "menu.hpp"
 #include "player_inputs.hpp"
 #include "sectors.hpp"
 #include "sun.hpp"
@@ -72,6 +73,19 @@ namespace cppcraft
 				// toggle flying
 				player.Flying = ! player.Flying;
 			}
+		}
+		
+		int wheel = input.getWheel();
+		if (wheel < 0)
+		{
+			if (menu.quickbarX)
+				menu.quickbarX -= 1;
+			else
+				menu.quickbarX = inventory.getWidth()-1;
+		}
+		else if (wheel > 0)
+		{
+			menu.quickbarX = (menu.quickbarX + 1) % inventory.getWidth();
 		}
 		
 		if (input.getKey(GLFW_KEY_ESCAPE))

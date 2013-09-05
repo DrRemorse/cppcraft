@@ -37,6 +37,7 @@ namespace cppcraft
 		
 		int emitQuad(InventoryItem& itm, float x, float y, float size, float tile);
 		int emitBlock(InventoryItem& itm, float x, float y, float size);
+		int emitBlockQuad(InventoryItem& itm, float x, float y, float size);
 	};
 }
 

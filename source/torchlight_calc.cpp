@@ -45,9 +45,12 @@ namespace cppcraft
 			
 			if (ss.render)
 			{
-				ss.progress = Sector::PROG_NEEDRECOMP;
-				
-				if (instant) precompq.addTruckload(ss);
+				// as long as not already in precompiler queue (??)
+				if (ss.progress != Sector::PROG_RECOMP)
+				{
+					ss.progress = Sector::PROG_NEEDRECOMP;
+					if (instant) precompq.addTruckload(ss);
+				}
 			}
 			
 			z += 1;

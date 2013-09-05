@@ -61,8 +61,8 @@ namespace cppcraft
 		// cross selection box
 		const float IN_WARD = 0.25;
 		const float OUTWARD = 1.0 - IN_WARD;
-		const float Y_BASE  = 0.01;
-		const float Y_TOP   = 0.5;
+		const float Y_BASE  = 0.001;
+		const float Y_TOP   = 0.501;
 		
 		float minicube_vertices[6][12] =
 		{

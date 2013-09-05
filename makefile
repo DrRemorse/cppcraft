@@ -12,7 +12,8 @@ RESOURCES = res/cppcraft.rc
 
 # build options
 # -Ofast -msse4.1 -ffast-math -mfpmath=both
-BUILDOPT = -Ofast -msse4.1 -ffast-math -mfpmath=both
+# BUILDOPT = -O2 -msse4.1 -mfpmath=both
+BUILDOPT = -O3 -mtune=native -march=native
 # output file
 OUTPUT   = ./Debug/cppcraft
 

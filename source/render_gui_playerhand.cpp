@@ -210,7 +210,9 @@ namespace cppcraft
 		// render held item
 		InventoryItem& helditem = menu.getHeldItem();
 		
-		if (helditem.isItem())
+		bool isVoxelBlock = helditem.isBlock() && voxels.isVoxelBlock(helditem.getID());
+		
+		if (helditem.isItem() || isVoxelBlock)
 		{
 			Shader& shd = shaderman[Shaderman::VOXEL];
 			shd.bind();
@@ -224,9 +226,18 @@ namespace cppcraft
 			shd.sendFloat("modulation", modulation);
 			// view matrix
 			Matrix matview(1.0);
-			matview.translate(lastHand.x, lastHand.y - 0.1, lastHand.z + 0.1);
 			Matrix matrot;
-			matrot.rotateZYX(0, PI / 2, PI/4);
+			if (helditem.isToolItem())
+			{
+				matview.translate(lastHand.x, lastHand.y - 0.1, lastHand.z + 0.1);
+				matrot.rotateZYX(0, PI / 2, PI/4);
+			}
+			else
+			{
+				matview.translate(lastHand.x + 0.1, lastHand.y, lastHand.z + 0.25);
+				matrot.rotateZYX(0, PI / 2, 0);
+			}
+			
 			matview *= matrot;
 			
 			shd.sendMatrix("matnrot", matrot);
@@ -243,7 +254,11 @@ namespace cppcraft
 			
 			glEnable(GL_DEPTH_TEST);
 			glDepthMask(GL_TRUE);
-			voxels.renderItem(helditem.getID());
+			if (isVoxelBlock)
+				voxels.renderBlock(helditem.getID());
+			else
+				voxels.renderItem(helditem.getID());
+			
 			glDisable(GL_DEPTH_TEST);
 			glDepthMask(GL_FALSE);
 		}

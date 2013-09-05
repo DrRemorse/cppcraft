@@ -56,7 +56,7 @@ namespace cppcraft
 		// z extrude scale 1:Z
 		static const float VOXELMODELS_ZSCALE;
 		
-		int  isVoxelBlock(block_t id);
+		bool isVoxelBlock(block_t id);
 		int  getVoxelId  (block_t id);
 		
 		void createItemModels (library::Bitmap& bmp);

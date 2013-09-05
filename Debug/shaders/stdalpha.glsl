@@ -44,7 +44,7 @@ void main(void)
 	position = matview * position;
 	vertdist = length(position.xyz);
 	
-	v_eye = normalize(-position.xyz);
+	v_eye = -position.xyz / vertdist;
 	v_ldir = mat3(matview) * lightVector;
 	
 	texCoord = vec3(in_texture.st / VERTEX_SCALE, in_texture.p);
