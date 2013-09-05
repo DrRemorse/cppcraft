@@ -2,6 +2,7 @@
 
 #include "library/log.hpp"
 #include "library/config.hpp"
+#include "library/math/toolbox.hpp"
 #include "blocks.hpp"
 #include "flatlands.hpp"
 #include "lighttable.hpp"
@@ -18,10 +19,8 @@ namespace cppcraft
 	const float PI = atan(1.0) * 4;
 	LightingClass Lighting;
 	
-	const float LightingClass::MAX_ADDITIONAL_LIGHT = 0.95f;
-	
 	const float LightingClass::DARKNESS = 256 * 0.96;
-	const float LightingClass::SHADOWS  = 256 * 0.68;
+	const float LightingClass::SHADOWS  = 256 * 0.65;
 	const float LightingClass::CORNERS  = 256 * 0.46;
 	
 	const float LightingClass::RAY_CRASH_CONSTANT = 16.0f;
@@ -30,17 +29,14 @@ namespace cppcraft
 	
 	void LightingClass::init()
 	{
-		this->ray_length = 48;
-		this->ray_count  = 2;
-		
 		// raycaster method
-		this->ray_length = config.get("light.ray_length", this->ray_length);
+		this->ray_length = config.get("light.ray_length", 48);
 		// clamp to some minimum value
 		if (this->ray_length < 16) this->ray_length = 16;
 		
-		this->ray_count  = config.get("light.ray_count", this->ray_count);
-		if (this->ray_count < 1) this->ray_count = 1;
-		if (this->ray_count > 6) this->ray_count = 6;
+		this->ray_count  = config.get("light.ray_count", 3);
+		if (this->ray_count <  0) this->ray_count =  0;
+		if (this->ray_count > 16) this->ray_count = 16;
 		
 		// crash factor based on distance and fixed crash constant
 		this->ray_crash_factor = this->RAY_CRASH_CONSTANT / this->ray_length;
@@ -62,7 +58,7 @@ namespace cppcraft
 			if (id < BLEND_BARRIER)
 			{
 				// deal some dmg
-				ray += prediction * sqrtf(distance_curve);
+				ray += prediction * distance_curve;
 			}
 			prediction = 0.0;
 		}
@@ -413,7 +409,7 @@ namespace cppcraft
 		return tmplight;
 	}
 	
-	vertex_color_t LightingClass::lightCheck(LightList& list, Sector& sector, int bx, int by, int bz)
+	vertex_color_t LightingClass::lightCheck(LightList& list, Sector& sector, int bx, int by, int bz, int rayCount)
 	{
 		float tmplight;
 		int bxx = bx, byy = by, bzz = bz;
@@ -428,18 +424,13 @@ namespace cppcraft
 		
 	/* scope */;
 	{
-		float radangle = thesun.getRadianAngle();
-		float angle_x  = thesun.getAngle().x;
-		float angle_y  = thesun.getAngle().y;
+		vec2 angle = thesun.getAngle().xy();
 		
-		if (angle_y < 0)
+		if (angle.y < 0)
 		{
-			angle_y = -angle_y;
-			radangle += PI;
+			angle.x = -angle.x;
+			angle.y = -angle.y;
 		}
-		
-		float half_x   = angle_x * 0.5 + 0.5 * angle_y;
-		float half_y   = half_x;
 		
 		vec3 position = vec3(
 			s2->x * Sector::BLOCKS_XZ + bxx, 
@@ -447,55 +438,59 @@ namespace cppcraft
 			s2->z * Sector::BLOCKS_XZ + bzz
 		);
 		
-		#define sunray   lightRay2D(position, angle_x, angle_y)
-		#define halfray  lightRay2D(position, half_x,  half_y)
-		#define skyray   lightRay1D(position)
+		#define sunray   lightRay2D(position, angle.x, angle.y)
+		#define halfray  lightRay2D(position, half1.x, half1.y)
 		
-		if (Lighting.ray_count <= 1)
+		if (rayCount <= 0)
+		{
+			// towards the sky
+			tmplight = lightRay1D(position);
+		}
+		else if (rayCount == 1)
 		{
 			// towards sun
-			tmplight = skyray; //sunray;
+			tmplight = sunray;
 		}
-		else if (Lighting.ray_count == 2)
+		else if (rayCount == 2)
 		{
-			// towards sun & sky
-			tmplight = sunray * 0.6 + halfray * 0.4;
-		}
-		else if (Lighting.ray_count == 3)
-		{
-			// towards sun & sky
-			tmplight = sunray * 0.5 + halfray * 0.25 + skyray * 0.25;
+			const vec3& half1 = thesun.getHalfAngle();
+			// towards sun & halfray
+			tmplight = sunray * 0.8 + halfray * 0.2;
 		}
 		else
 		{
-			// towards sun
-			float sunlight = sunray;
-			// towards sky
-			float skylight = skyray * 0.5 + halfray * 0.5;
-			
-			if (angle_y > 0.15)
+			if (rayCount == 3)
 			{
-				// move ray to avoid hitting self at low angle
-				position.x += angle_x;
-				position.y += angle_y;
+				const vec3& half1 = thesun.getHalfAngle();
+				const vec3& half2 = thesun.getHalf2Angle();
+				
+				// additional halfrays
+				#define halfray2 lightRay2D(position, half2.x, half2.y)
+				
+				tmplight = sunray * 0.6 + halfray * 0.2 + halfray2 * 0.2;
 			}
-			
-			static const float deg15 = PI / 2 / 6;
-			static const float deg30 = PI / 2 / 3;
-			static const float cos30 = cosf(deg30);
-			static const float sin30 = sinf(deg30);
-			
-			#define bouncelight tmplight
-			
-			// +/- x
-			bouncelight  = lightRay3D(position, vec3(cosf(radangle - deg15), sinf(radangle - deg15), 0.0));
-			bouncelight += lightRay3D(position, vec3(cosf(radangle + deg15), sinf(radangle + deg15), 0.0));
-			// +/- z
-			bouncelight += lightRay3D(position, vec3(sin30 * angle_x, cos30 * angle_y,  sin30 * cos30 * angle_y));
-			bouncelight += lightRay3D(position, vec3(sin30 * angle_x, cos30 * angle_y, -sin30 * cos30 * angle_y));
-			bouncelight *= 1.0 / 4.0;
-			
-			tmplight = sunlight * 0.3 + bouncelight * 0.4 + skylight * 0.3;
+			else
+			{
+				const int rays = 4;
+				const int rounds = rayCount / 4;
+				const float phi = PI * 2 / rays;
+				float light = 0;
+				
+				for (int j = 1; j <= rounds; j++)
+				{
+					vec3 a = vec3(angle.x - j * 0.05, angle.y, 0);
+					a.normalize();
+					
+					for (int i = 0; i < rays; i++)
+					{
+						light += lightRay3D(position, a);
+						a = a.rotateOnAxis(thesun.getAngle(), phi);
+					}
+				}
+				light /= (float)rays * rounds;
+				
+				tmplight = sunray * 0.1 + light * 0.9;
+			}
 		}
 		
 	} // end scope

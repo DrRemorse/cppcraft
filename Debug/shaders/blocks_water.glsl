@@ -215,7 +215,7 @@ void main(void)
 	float spec = max(0.0, dot(reflect(-vLight, viewNormal), vEye));
 	
 	vec3 specular = SUNCOLOR * SUNSPEC * pow(spec, 16.0) + pow(spec, 4.0) * 0.2;
-	color.rgb += specular * pow(shine, SUNSHINE) * daylight * shadow;
+	color.rgb += specular * pow(shine, SUNSHINE) * daylight * shadow * shadow;
 	
 #ifdef SUPERFOG
 	// super fog

@@ -23,6 +23,14 @@ namespace cppcraft
 	{
 		return this->angle;
 	}
+	const library::vec3& SunClass::getHalfAngle() const
+	{
+		return this->half1;
+	}
+	const library::vec3& SunClass::getHalf2Angle() const
+	{
+		return this->half2;
+	}
 	
 	void SunClass::setRadianAngle(float angle)
 	{
@@ -33,6 +41,14 @@ namespace cppcraft
 		this->radianAngle = angle;
 		this->angle.x   = cos(angle);
 		this->angle.y   = sin(angle);
+		
+		float direction = 1.0;
+		if (this->angle.x < 0) direction = -1.0;
+		
+		half1 = library::vec3(this->angle.x + direction * 0.08, this->angle.y, 0.0);
+		half1.normalize();
+		half2 = library::vec3(this->angle.x + direction * 0.12, this->angle.y, 0.0);
+		half2.normalize();
 	}
 	
 	void SunClass::integrate(float step)

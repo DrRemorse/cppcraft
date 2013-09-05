@@ -53,7 +53,7 @@ namespace cppcraft
 			return table.color(x, y, z);
 		}
 		// otherwise, calculate new complex color
-		vertex_color_t vcolor = Lighting.lightCheck(*this, sector, x, y, z);
+		vertex_color_t vcolor = Lighting.lightCheck(*this, sector, x, y, z, Lighting.ray_count);
 		// set value
 		table.set(x, y, z, vcolor);
 		// return value

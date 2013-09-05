@@ -10,6 +10,8 @@ namespace cppcraft
 	private:
 		float radianAngle;   // target angle
 		library::vec3 angle; // target sun vector from player
+		library::vec3 half1;
+		library::vec3 half2;
 		
 		float realRadian;
 		library::vec3 realAngle;
@@ -28,6 +30,8 @@ namespace cppcraft
 		
 		// getters for static sun values
 		const library::vec3& getAngle() const;
+		const library::vec3& getHalfAngle() const;
+		const library::vec3& getHalf2Angle() const;
 		float getRadianAngle() const;
 		
 		// daylight multiplier: 1.0 = full daylight, 0.0 = total darkness
