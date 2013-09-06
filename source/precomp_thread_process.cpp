@@ -7,6 +7,7 @@
 #include "precompiler.hpp"
 #include "renderconst.hpp"
 #include "torchlight.hpp"
+#include <cstring>
 
 using namespace library;
 
@@ -403,6 +404,21 @@ namespace cppcraft
 			}
 			// increase precomp vertices for current shader
 			this->vertices[shaderLine] += vertices;
+			// resize shaderline if needed (96 vertices treshold)
+			if (this->vertices[shaderLine] + 96 >= pipelineSize[shaderLine])
+			{
+				//logger << shaderLine << ": Increasing size from " << pipelineSize[shaderLine] << " to " << pipelineSize[shaderLine] + 250 << Log::ENDL;
+				// resize operation
+				vertex_t* old = this->databuffer[shaderLine];
+				int oldsize = pipelineSize[shaderLine];
+				pipelineSize[shaderLine] += 250;
+				this->databuffer[shaderLine] = new vertex_t[pipelineSize[shaderLine]];
+				memcpy (this->databuffer[shaderLine], old, oldsize * sizeof(vertex_t));
+				delete old;
+				// set new vertex position
+				indic = this->databuffer[shaderLine] + this->vertices[shaderLine];
+			}
+			
 			
 		} // if (facing)
 		

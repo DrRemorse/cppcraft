@@ -17,6 +17,7 @@ namespace cppcraft
 	class PrecompThreadData
 	{
 	public:
+		int pipelineSize[RenderConst::MAX_UNIQUE_SHADERS];
 		// working buffers
 		vertex_t* databuffer[RenderConst::MAX_UNIQUE_SHADERS];
 		int       vertices[RenderConst::MAX_UNIQUE_SHADERS];

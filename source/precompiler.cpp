@@ -6,7 +6,7 @@
 #include "blockmodels.hpp"
 #include "precomp_thread.hpp"
 #include "torchlight.hpp"
-
+#include <initializer_list>
 #include <string>
 
 using namespace library;
@@ -34,25 +34,27 @@ namespace cppcraft
 		logger << Log::INFO << "* Initializing precompiler" << Log::ENDL;
 		int NUM_PCTHREADS = config.get("threading", 2);
 		
-		const int pipelineSize[RenderConst::MAX_UNIQUE_SHADERS] =
-		{
-			6000, // TX_REPEAT
-			7000, // TX_SOLID
-			3000, // TX_TRANS
-			8000, // TX_2SIDED
-			4000, // TX_CROSS
-			4000  // TX_WATER
-		};
+		auto init = std::initializer_list<int>
+		({
+			5000, // TX_REPEAT
+			5000, // TX_SOLID
+			8000, // TX_TRANS
+			1500, // TX_2SIDED
+			1500, // TX_CROSS
+			2000  // TX_WATER
+		});
 		
 		for (int t = 0; t < NUM_PCTHREADS; t++)
 		{
 			// create precomiler thread objects
 			pcthreads.emplace_back(PrecompThread());
+			// set initial shaderline sizes
+			std::copy(init.begin(), init.end(), pcthreads[t].pcg.pipelineSize);
 			// initialize each shaderline
 			for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 			{
 				// initialize thread object
-				pcthreads[t].pcg.databuffer[i] = new vertex_t[pipelineSize[i]];
+				pcthreads[t].pcg.databuffer[i] = new vertex_t[pcthreads[t].pcg.pipelineSize[i]];
 			}
 		}
 		

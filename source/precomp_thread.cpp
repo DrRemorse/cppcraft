@@ -381,9 +381,6 @@ namespace cppcraft
 				memcpy(datadump + cnt, pcg.databuffer[i], pcg.vertices[i] * sizeof(vertex_t));
 				cnt += pcg.vertices[i];
 			}
-			//if (pcg.vertices[i] > 5000)
-			//logger << Log::INFO << "Vertices " << i << ": " << pcg.vertices[i] << Log::ENDL;
-			
 		}
 		
 		// ambient occlusion processing stage
