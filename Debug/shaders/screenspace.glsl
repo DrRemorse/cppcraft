@@ -16,20 +16,15 @@ void main(void)
 
 #ifdef FRAGMENT_PROGRAM
 uniform sampler2D texture;
-uniform sampler2D depthtexture;
 #ifdef LENSFLARE
 uniform sampler2D lensflare;
 #endif
-uniform int submerged;
+uniform int   submerged;
 
 in vec2 texCoord;
 
 const vec3 SUB_WATER = vec3(0.01, 0.08, 0.3);
 const vec3 SUB_LAVA  = vec3(0.28, 0.06, 0.0);
-
-const float MOTION_BLUR = 0.225;
-
-float linearizeDepth(float Z);
 
 const float ZFAR
 const float ZNEAR
@@ -49,10 +44,8 @@ vec3 Uncharted2Tonemap(vec3 x)
 
 void main()
 {
-	float depth = texture2D(depthtexture, texCoord).x;
-	depth = linearizeDepth(depth);
-	
 	vec4 color = texture2D(texture, texCoord);
+	float depth = color.a;
 	
 	if (submerged == 1)
 	{	// submerged in water
@@ -86,15 +79,7 @@ void main()
 	//color = pow(color, vec3(1.0/2.2));
 	*/
 	
-	gl_FragData[0] = vec4(color.rgb, 1.0);
-}
-
-float linearizeDepth(float Z)
-{
-	float depth = 2 * Z - 1;
-	
-	// linearize to [0, 1]
-	return 2.0 * ZNEAR / (ZFAR + ZNEAR - depth * (ZFAR - ZNEAR)); // * ZFAR
+	gl_FragData[0] = color;
 }
 
 #endif

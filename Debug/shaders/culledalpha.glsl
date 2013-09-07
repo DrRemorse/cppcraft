@@ -30,8 +30,6 @@ out vec4 biomeColor;
 flat out float worldLight;
 
 out float vertdist;
-out vec3 v_ldir;
-out vec3 v_eye;
 
 const float VERTEX_SCALE
 const float ZFAR
@@ -47,18 +45,7 @@ void main(void)
 	
 	texCoord = vec3(in_texture.st / VERTEX_SCALE, in_texture.p);
 	
-	/*if (mod(in_texture.p, 16.0) >= 14.5)
-	{
-		// leafs gone with the wind
-		float strength = LEAFWIND_STRENGTH * (0.25 + vertdist * 0.005);
-		position.yx += vec2(cos(frameCounter - in_vertex.x / VERTEX_SCALE / 4.0 * PI2),
-							sin(frameCounter - in_vertex.y / VERTEX_SCALE / 4.0 * PI2)) * strength;
-	}*/	// leafs
-	
 	gl_Position = matproj * position;
-	
-	v_eye = -position.xyz / vertdist;
-	v_ldir = mat3(matview) * lightVector;
 	
 	// dotlight
 	#include "worldlight.glsl"
@@ -86,12 +73,7 @@ in vec4 biomeColor;
 flat in float worldLight;
 
 in float vertdist;
-in vec3 v_ldir;
-in vec3 v_eye;
-
 const float ZFAR
-
-#include "stdfog.glsl"
 
 void main(void)
 {
@@ -109,16 +91,9 @@ void main(void)
 	
 	#include "stdlight.glsl"
 	
-#ifdef SUPERFOG
-	// super fog
-	float fogdist = 1.0 - vertdist / ZFAR;
-	superFog(color.rgb, fogdist, v_eye, v_ldir);
-#endif
-	
 	#include "horizonfade.glsl"
 	
 	#include "finalcolor.glsl"
-	
 }
 
 #endif

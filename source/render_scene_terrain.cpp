@@ -2,6 +2,7 @@
 
 #include "library/log.hpp"
 #include "library/opengl/opengl.hpp"
+#include "library/opengl/fbo.hpp"
 #include "columns.hpp"
 #include "drawq.hpp"
 #include "camera.hpp"
@@ -54,7 +55,7 @@ namespace cppcraft
 			else
 				x0 = playerSectorX - camera.cameraViewSectors;
 			
-			x1 = x0 + camera.cameraViewSectors * 2;
+			x1 = playerSectorX + camera.cameraViewSectors;
 			
 			if (x0 < visibility_border)
 				x0 = visibility_border;
@@ -68,7 +69,7 @@ namespace cppcraft
 			if (look.x < -half_fov)
 				x0 = playerSectorX + safety_border;
 			else
-				x0 = x1 + camera.cameraViewSectors * 2;
+				x0 = playerSectorX + camera.cameraViewSectors;
 			
 			if (x1 < visibility_border)
 				x1 = visibility_border;
@@ -87,7 +88,7 @@ namespace cppcraft
 			else
 				z0 = playerSectorZ - camera.cameraViewSectors;
 			
-			z1 = z0 + camera.cameraViewSectors * 2;
+			z1 = playerSectorZ + camera.cameraViewSectors;
 			
 			if (z0 < visibility_border)
 				z0 = visibility_border;
@@ -101,7 +102,7 @@ namespace cppcraft
 			if (look.z < -half_fov)
 				z0 = playerSectorZ + safety_border;
 			else
-				z0 = z1 + camera.cameraViewSectors * 2;
+				z0 = playerSectorZ + camera.cameraViewSectors;
 			
 			if (z1 < visibility_border)
 				z1 = visibility_border;
@@ -124,9 +125,9 @@ namespace cppcraft
 				majority = 1; // -x
 		}
 		else if (look.z >= 0)
-			majority = 4; // +z
+			majority = 2; // +z
 		else
-			majority = 5; // -z
+			majority = 3; // -z
 		
 		// reset drawqing queue
 		DrawQueue::reset();
@@ -136,6 +137,7 @@ namespace cppcraft
 		rv.ystp = ystp;
 		rv.zstp = zstp;
 		rv.majority = majority;
+		rv.playerY  = playerY;
 		
 		// start at roomsize 1, avoiding "everything"
 		RenderGrid::uniformGrid(rv, x0, x1, z0, z1, 1);
@@ -179,11 +181,11 @@ namespace cppcraft
 					}
 					else camera.needsupd = 2; // we need to update again :(
 				}
-				else if (cv->occluded[i] == 3)
+				/*else if (cv->occluded[i] == 3)
 				{
 					// uncontested from last frame --> 1
 					cv->occluded[i] = 1;
-				}
+				}*/
 				
 				// finally, as long as not completely occluded/discarded
 				if (cv->occluded[i] != 2)
@@ -213,7 +215,7 @@ namespace cppcraft
 			// cool effect
 			if (cv->pos.y < 0.0)
 			{
-				cv->pos.y += 0.125 * dtime;
+				cv->pos.y += 0.25 * dtime;
 				if (cv->pos.y > 0.0) cv->pos.y = 0.0;
 			}
 		}
@@ -254,13 +256,18 @@ namespace cppcraft
 		location = shd.getUniform("texrange");
 	}
 	
-	void SceneRenderer::renderScene(Renderer& renderer)
+	void SceneRenderer::renderScene(Renderer& renderer, FBO& sceneFBO)
 	{
 		GLint loc_vtrans, location;
 		vec3  position(-1);
 		
 		// bind skybox at slot 4
 		textureman.bind(4, Textureman::T_SKYBOX);
+		
+		// vector for attachments after removing water texture
+		//std::vector<int> dbuffer;
+		//dbuffer.emplace_back(GL_COLOR_ATTACHMENT0);
+		//dbuffer.emplace_back(GL_COLOR_ATTACHMENT2);
 		
 		// bind standard shader
 		handleSceneUniforms(renderer.frametick, 
@@ -340,12 +347,16 @@ namespace cppcraft
 				
 				if (plogic.FullySubmerged == plogic.PS_None)
 					glEnable(GL_CULL_FACE);
+				glDisable(GL_BLEND);
 				
 				position = vec3(-1);
 				
-				// copy screen as underwatermap
+				// stop writing to underwatermap
+				sceneFBO.removeColor(1);
+				sceneFBO.drawBuffers();
+				//sceneFBO.drawBuffers(dbuffer);
+				// bind underwater map for water rendering
 				textureman.bind(3, Textureman::T_UNDERWATERMAP);
-				textureman.copyScreen(renderer.gamescr, Textureman::T_UNDERWATERMAP);
 				
 				// change shader-set
 				handleSceneUniforms(renderer.frametick, 
@@ -358,7 +369,7 @@ namespace cppcraft
 				break;
 			}
 			
-			if (camera.ref)
+			if (camera.needsupd)
 			{
 				// render and count visible samples
 				for (int j = 0; j < drawq[i].count(); j++)

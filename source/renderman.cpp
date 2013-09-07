@@ -143,8 +143,8 @@ namespace cppcraft
 		thesun.integrate(0.02 * dtime);
 		
 		// clear buffers
-		glDepthMask(GL_TRUE);
-		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+		//glDepthMask(GL_TRUE);
+		//glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		
 		switch (worldman.getState())
 		{

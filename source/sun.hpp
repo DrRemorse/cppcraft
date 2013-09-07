@@ -3,6 +3,11 @@
 
 #include "library/math/vector.hpp"
 
+namespace library
+{
+	class Matrix;
+}
+
 namespace cppcraft
 {
 	class SunClass
@@ -45,6 +50,8 @@ namespace cppcraft
 		const library::vec3& getRealtimeAngle() const;
 		float getRealtimeRadianAngle() const;
 		float getRealtimeDaylight() const;
+		
+		library::Matrix getSunMatrix() const;
 		
 		// sky renderer uses this class extensively
 		friend class SkyRenderer;

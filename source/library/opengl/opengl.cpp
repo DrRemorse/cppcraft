@@ -100,6 +100,7 @@ namespace library
 												GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLint mask, GLenum filter))
 												glfwGetProcAddress("glBlitFramebuffer");
 		glCheckFramebufferStatus = (GLenum(GLapi*) (GLenum bufferType))glfwGetProcAddress("glCheckFramebufferStatus");
+		glDrawBuffers           = (void(GLapi*) (GLsizei count, GLenum* buffers))glfwGetProcAddress("glDrawBuffers");
 		// renderbuffers
 		glGenRenderbuffers 		= (void(GLapi*) (GLsizei count, GLuint* rboIDs))glfwGetProcAddress("glGenRenderbuffers");
 		glBindRenderbuffer 		= (void(GLapi*) (GLenum bufferType, GLuint rbo))glfwGetProcAddress("glBindRenderbuffer");

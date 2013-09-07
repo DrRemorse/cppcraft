@@ -40,7 +40,7 @@ namespace cppcraft
 		
 	public:
 		// number of columns
-		static const int COLUMNS_Y = 2;
+		static const int COLUMNS_Y = 4;
 		// size of each column in sectors
 		static const int COLUMNS_SIZE = Sectors.SECTORS_Y / COLUMNS_Y;
 		

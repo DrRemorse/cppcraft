@@ -4,6 +4,7 @@
 #include "library/opengl/opengl.hpp"
 #include "library/opengl/vao.hpp"
 #include "library/opengl/window.hpp"
+#include "library/math/matrix.hpp"
 #include "camera.hpp"
 #include "player.hpp"
 #include "render_sky.hpp"
@@ -23,6 +24,15 @@ namespace cppcraft
 		lensMatrix = Matrix().bias() * camera.getProjection();
 	}
 	
+	vec2 FSRenderer::getSunVector(const Matrix& matsun)
+	{
+		// create sun coordinate 2-vector
+		vec4 sunproj = lensMatrix * matsun * vec4(0.0, 0.0, 0.0, 1.0);
+		sunproj.x /= sunproj.w;
+		sunproj.y /= sunproj.w;
+		return sunproj.xy();
+	}
+	
 	void FSRenderer::renderLensflare(WindowClass& gamescr)
 	{
 		textureman.unbind(0);
@@ -35,13 +45,9 @@ namespace cppcraft
 		glViewport(0, 0, flareTxW, flareTxH);
 		glClear(GL_COLOR_BUFFER_BIT);
 		
-		//  render sun sphere and check samples passed using GL_LEQUAL
-		glEnable(GL_DEPTH_TEST);
-		
 		//  render sun (again) to texture 0
-		Matrix matsun = skyrenderer.renderSunProj(1.0);
-		
-		glDisable(GL_DEPTH_TEST);
+		Matrix matsun = skyrenderer.renderSunProj();
+		vec2 sunproj = getSunVector(matsun);
 		
 		// check that the sun is in fact in the camera
 		if (thesun.getRealtimeAngle().dot(player.getLookVector()) < 0.5)
@@ -52,10 +58,6 @@ namespace cppcraft
 			glViewport(0, 0, gamescr.SW, gamescr.SH);
 			return;
 		}
-		
-		vec4 sunproj = lensMatrix * matsun * vec4(0.0, 0.0, 0.0, 1.0);
-		sunproj.x /= sunproj.w;
-		sunproj.y /= sunproj.w;
 		
 		//  LOW blur sun sphere horizontally (low)
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_LENSFLARE3), 0);
@@ -85,7 +87,7 @@ namespace cppcraft
 		
 		textureman.bind(0, Textureman::T_LENSFLARE2);
 		
-		blur.sendInteger("Width", 5);
+		blur.sendInteger("Width", 4);
 		blur.sendVec2("dir", vec2(1.0 / flareTxW, 0.0));
 		
 		//  render
@@ -110,7 +112,7 @@ namespace cppcraft
 		
 		Shader& lens = shaderman[Shaderman::LENSFLARE];
 		lens.bind();
-		lens.sendVec2("sunproj", sunproj.xy());
+		lens.sendVec2("sunproj", sunproj);
 		
 		//  render final lens image
 		screenVAO.render(GL_QUADS);

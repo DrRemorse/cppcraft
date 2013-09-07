@@ -1,10 +1,10 @@
 #version 130
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
-#define NOISE_WATER
-precision mediump float;
 
 #ifdef VERTEX_PROGRAM
+precision highp float;
+
 uniform mat4 matproj;
 uniform mat4 matview;
 uniform vec3 vtrans;
@@ -30,7 +30,6 @@ out vec3 v_eye;
 out vec3 v_normal;
 out vec3 l_normal;
 out vec3 l_reflect;
-out mat3 tbn;
 
 out vec4 waves;
 
@@ -44,7 +43,7 @@ void main(void)
 	gl_Position = matproj * position;
 	
 	// light and eye direction in view space
-	v_eye = normalize(-position.xyz);
+	v_eye = -position.xyz / vertdist;
 	v_ldir = mat3(matview) * lightVector;
 	v_half = normalize(v_eye + v_ldir);
 	// reflect light in view space using view-normal
@@ -56,24 +55,12 @@ void main(void)
 	// galactic coordinates
 	vec3 w_vertex  = position.xyz * mat3(matview) - worldOffset;
 	
-#ifdef NOISE_WATER
 	// Current water vertex position, scaled down a lot, then motion added in one direction	
 	// output to fragment shader
 	float timer = frameCounter / 35.0;
 	
 	waves.xy  = w_vertex.xz * vec2(0.10, 0.02) + timer * vec2(0.2, 0.0);
 	waves.zw  = w_vertex.xz * vec2(0.25, 0.05) + timer * vec2(0.25, 0.05);
-	
-#else
-	// texture to local space matrix
-	vec3 binormal = cross(in_normal, in_tangent);
-	tbn = mat3(in_tangent, binormal, in_normal);
-	
-	// output to fragment shader
-	waves.xy  = w_vertex.zx * vec2( 0.005, 0.01)  + vec2(0.0, frameCounter / 5000.0);
-	waves.zw  = w_vertex.zx * vec2(0.0125, 0.025) + vec2(0.0, frameCounter / 1000.0);
-	
-#endif
 	
 	lightdata   = in_color;
 	torchlight  = in_color2;
@@ -112,14 +99,10 @@ in vec4 waves; // wave positions
 
 const float ZFAR
 
-#ifdef NOISE_WATER
 #include "srdnoise.glsl"
-#endif
-#include "stdfog.glsl"
 
 void main(void)
 {
-#ifdef NOISE_WATER
 	// derivative simplex noise
 	vec2 grad, grad2;
 	srdnoise(waves.xy, 0.0, grad);
@@ -140,41 +123,40 @@ void main(void)
 	
 	vec3 vReflect   = l_reflect + Normal * 0.125;
 	
-#else
-	// normal-mapped (tangent space) noise
 	
-	// read from normal in tangent-space
-	vec3 n1 = texture2D(wavenormals, waves.xy).rgb * 2.0 - vec3(1.0);
-	vec3 n2 = texture2D(wavenormals, waves.zw).rgb * 2.0 - vec3(1.0);
-	vec3 Normal = n1 + n2; //mix(n1, n2, 0.5);
-	// rotate wavenormals from tangent space to world space
-	Normal = normalize(tbn * Normal);
-	// rotate world space normal to camera (view) space
-	vec3 vNormal = mat3(matview) * Normal;
-	
-	vec3 viewNormal = normalize(v_normal + vNormal * 0.5);
-	vec3 vReflect   = l_reflect + Normal * 0.15;
-	
-#endif
-	
-	vec3 vEye   = normalize(v_eye);
-	vec3 vLight = normalize(v_ldir);
+	#define vEye   v_eye
+	#define vLight v_ldir
+	//vec3 vEye   = normalize(v_eye);
+	//vec3 vLight = normalize(v_ldir);
 	
 	//----- fresnel term -----
 	
 	float fresnel = dot(vEye, viewNormal);
-	float fdepth = -min(fresnel, 0.0);
 	fresnel = pow(1.0 - abs(fresnel), 5.0);
 	
 	//----- REFRACTION -----
 	
 	// underwatermap coordinates
-	vec2 refcoord = gl_FragCoord.xy / screendata.xy;
-	refcoord.y -= viewNormal.z * fdepth * 0.25 * (1.0 - refcoord.y * refcoord.y);
-	refcoord.xy += Normal.xz * 0.0025;
 	
 	// start with underwater texture
-	vec4 color = texture2D(underwatermap, refcoord.xy);
+	vec2 refcoord = gl_FragCoord.xy / screendata.xy;
+	// read total depth from eye to seafloor
+	vec4 color = texture2D(underwatermap, refcoord);
+	float wdepth = color.a;
+	// remove depth to water, aka. calculate seafloor depth from waterline
+	wdepth = clamp(wdepth - vertdist / ZFAR, 0.0, 1.0);
+	
+	// fake refraction
+	refcoord.y -= viewNormal.z * 0.25 * wdepth;
+	// wave modulation
+	refcoord.xy += Normal.xz * 0.025 * wdepth;
+	
+	// read refracted ray
+	vec4 color2 = texture2D(underwatermap, refcoord);
+	
+	// mix only if the new depth is positive
+	//color.rgb = color2.rgb; //mix(color.rgb, color2.rgb, step(vertdist / ZFAR, color2.a));
+	
 	// apply gamma ramp
 	color.rgb = pow(color.rgb, vec3(2.2));
 	
@@ -182,10 +164,10 @@ void main(void)
 	const vec3 deepwater = vec3(0.02, 0.10, 0.20);
 	const vec3 shallowwater = vec3(0.2, 0.3, 0.2);
 	
-	float dep = length(color) * 0.6;
-	color.rgb *= pow(vec3(dep), vec3(2.0, 1.4, 1.0));
+	float dep = 1.0 - step(color.a, 0.995) * color.a;
+	dep *= dep;
 	
-	vec3 waterColor = mix(deepwater, shallowwater, dep * dep);
+	vec3 waterColor = mix(deepwater, shallowwater, dep);
 	color.rgb = mix(waterColor, color.rgb, dep);
 	
 	// fettskit
@@ -198,7 +180,7 @@ void main(void)
 	color.rgb = mix(color.rgb, reflection, 0.1 + 0.6 * fresnel);
 	
 	// fake waves
-	color.rgb *= 1.0 + (dot(Normal, l_normal) + 0.75) * 0.1;
+	color.rgb *= 1.0 + dot(Normal, l_normal) * 0.05;
 	
 	// degamma
 	color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
@@ -214,14 +196,8 @@ void main(void)
 	float shine = max(0.0, dot(viewNormal, normalize(v_half)) );
 	float spec = max(0.0, dot(reflect(-vLight, viewNormal), vEye));
 	
-	vec3 specular = SUNCOLOR * SUNSPEC * pow(spec, 16.0) + pow(spec, 4.0) * 0.2;
+	vec3 specular = SUNCOLOR * SUNSPEC * pow(spec, 16.0) + pow(spec, 4.0) * 0.3;
 	color.rgb += specular * pow(shine, SUNSHINE) * daylight * shadow * shadow;
-	
-#ifdef SUPERFOG
-	// super fog
-	float fogdist = 1.0 - vertdist / ZFAR;
-	superFog(color.rgb, fogdist, vEye, vLight);
-#endif
 	
 	#include "horizonfade.glsl"
 	

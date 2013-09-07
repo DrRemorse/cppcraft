@@ -20,7 +20,8 @@ namespace cppcraft
 	LightingClass Lighting;
 	
 	const float LightingClass::DARKNESS = 256 * 0.96;
-	const float LightingClass::SHADOWS  = 256 * 0.65;
+	static const float DARK_SHADOWS     = 256 * 0.70;
+	const float LightingClass::SHADOWS  = 256 * 0.62;
 	const float LightingClass::CORNERS  = 256 * 0.46;
 	
 	const float LightingClass::RAY_CRASH_CONSTANT = 16.0f;
@@ -111,7 +112,7 @@ namespace cppcraft
 		else return 10000;
 	}
 	
-	float LightingClass::lightRay3D(vec3 position, vec3 angle)
+	float LightingClass::lightRay3D(float tmplight, float maxlight, vec3 position, vec3 angle)
 	{
 		int max_x = Sectors.getXZ() * Sector::BLOCKS_XZ;
 		const int max_y = Sectors.getY() * Sector::BLOCKS_Y;
@@ -121,17 +122,6 @@ namespace cppcraft
 			position.y < 0 || 
 			position.z < 0 || position.z >= max_x-0.5
 		) return 0.0;
-		
-		float maxlight = Lighting.SHADOWS;
-		float tmplight = 0;
-		
-		// underground additional ray damage
-		if (position.y < 64)
-		{
-			tmplight = 1.0 - position.y / 64;
-			maxlight += tmplight * (Lighting.DARKNESS - Lighting.SHADOWS);
-			tmplight *= maxlight;
-		}
 		
 		// avoid invalid angle
 		if (angle.y < 0) return maxlight;
@@ -222,7 +212,7 @@ namespace cppcraft
 		return tmplight;
 	}
 	
-	float LightingClass::lightRay2D(vec3 position, float stepx, float stepy)
+	float LightingClass::lightRay2D(float tmplight, float maxlight, vec3 position, float stepx, float stepy)
 	{
 		int max_x = Sectors.getXZ() * Sector::BLOCKS_XZ;
 		const int max_y = Sectors.getY() * Sector::BLOCKS_Y;
@@ -233,19 +223,8 @@ namespace cppcraft
 			position.z < 0 || position.z >= max_x-0.5
 		) return 0.0;
 		
-		float maxlight = Lighting.SHADOWS;
-		float tmplight = 0;
-		
 		// avoid invalid angle
 		if (stepy < 0) return maxlight;
-		
-		// underground additional ray damage
-		if (position.y < 64)
-		{
-			tmplight = 1.0 - position.y / 64;
-			maxlight += tmplight * (Lighting.DARKNESS - Lighting.SHADOWS);
-			tmplight *= maxlight;
-		}
 		
 		block_t id;
 		float inv_reach = 1.0 / Lighting.ray_length;
@@ -325,7 +304,7 @@ namespace cppcraft
 		return tmplight;
 	}
 	
-	float LightingClass::lightRay1D(vec3 position)
+	float LightingClass::lightRay1D(float tmplight, float maxlight, vec3 position)
 	{
 		int max_x = Sectors.getXZ() * Sector::BLOCKS_XZ;
 		const int max_y = Sectors.getY() * Sector::BLOCKS_Y;
@@ -334,18 +313,7 @@ namespace cppcraft
 		if (position.x < 0 || position.x >= max_x-0.5 || 
 			position.y < 0 || 
 			position.z < 0 || position.z >= max_x-0.5
-		) return 0.0;
-		
-		float maxlight = Lighting.SHADOWS;
-		float tmplight = 0;
-		
-		// underground additional ray damage
-		if (position.y < 64)
-		{
-			tmplight = 1.0 - position.y / 64;
-			maxlight += tmplight * (Lighting.DARKNESS - Lighting.SHADOWS);
-			tmplight *= maxlight;
-		}
+		) return tmplight;
 		
 		block_t id;
 		float inv_reach = 1.0 / Lighting.ray_length;
@@ -411,16 +379,12 @@ namespace cppcraft
 	
 	vertex_color_t LightingClass::lightCheck(LightList& list, Sector& sector, int bx, int by, int bz, int rayCount)
 	{
-		float tmplight;
+		float tmplight = 0.0;
 		int bxx = bx, byy = by, bzz = bz;
 		
 		// start from s, and work out possibly new position
 		Sector* s2 = Spiders::spiderwrap(sector, bxx, byy, bzz);
-		if (s2 == nullptr)
-		{
-			tmplight = 0.0f;
-			goto theend;
-		}
+		if (s2 == nullptr) goto theend;
 		
 	/* scope */;
 	{
@@ -438,13 +402,37 @@ namespace cppcraft
 			s2->z * Sector::BLOCKS_XZ + bzz
 		);
 		
-		#define sunray   lightRay2D(position, angle.x, angle.y)
-		#define halfray  lightRay2D(position, half1.x, half1.y)
+		// pre-calculate darkness level
+		// underground additional ray damage
+		int darklevel = Flatlands.getGroundLevel(position.x, position.z) - 2;
+		static const int darkramp  = 32;
+		static const int underlevel = 64;
+		
+		float maxlight = SHADOWS;
+		float light = 0.0;
+		
+		if (position.y < darklevel)
+		{
+			light = (darklevel - position.y) / darkramp;
+			if (light > 1.0) light = 1.0;
+			maxlight = SHADOWS * (1.0 - light) + light * DARK_SHADOWS;
+			light = 0.0;
+		}
+		if (position.y < underlevel)
+		{
+			light = position.y / underlevel;
+			light *= light;
+			maxlight = maxlight * light + (1.0 - light) * DARKNESS;
+			light *= maxlight;
+		}
+		
+		#define sunray   lightRay2D(light, maxlight, position, angle.x, angle.y)
+		#define halfray  lightRay2D(light, maxlight, position, half1.x, half1.y)
 		
 		if (rayCount <= 0)
 		{
 			// towards the sky
-			tmplight = lightRay1D(position);
+			tmplight = lightRay1D(light, maxlight, position);
 		}
 		else if (rayCount == 1)
 		{
@@ -465,7 +453,7 @@ namespace cppcraft
 				const vec3& half2 = thesun.getHalf2Angle();
 				
 				// additional halfrays
-				#define halfray2 lightRay2D(position, half2.x, half2.y)
+				#define halfray2 lightRay2D(light, maxlight, position, half2.x, half2.y)
 				
 				tmplight = sunray * 0.6 + halfray * 0.2 + halfray2 * 0.2;
 			}
@@ -474,7 +462,6 @@ namespace cppcraft
 				const int rays = 4;
 				const int rounds = rayCount / 4;
 				const float phi = PI * 2 / rays;
-				float light = 0;
 				
 				for (int j = 1; j <= rounds; j++)
 				{
@@ -483,13 +470,13 @@ namespace cppcraft
 					
 					for (int i = 0; i < rays; i++)
 					{
-						light += lightRay3D(position, a);
+						tmplight += lightRay3D(light, maxlight, position, a);
 						a = a.rotateOnAxis(thesun.getAngle(), phi);
 					}
 				}
-				light /= (float)rays * rounds;
+				tmplight /= (float)rays * rounds;
 				
-				tmplight = sunray * 0.1 + light * 0.9;
+				tmplight = sunray * 0.1 + tmplight * 0.9;
 			}
 		}
 		

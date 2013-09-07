@@ -27,8 +27,6 @@ out vec4 biomeColor;
 out vec3 out_normal;
 
 out float vertdist;
-out vec3 v_ldir;
-out vec3 v_eye;
 
 const int TX_2SIDED
 const int TX_CROSS
@@ -43,9 +41,6 @@ void main(void)
 	vec4 position = vec4(in_vertex / VERTEX_SCALE + vtrans, 1.0);
 	position = matview * position;
 	vertdist = length(position.xyz);
-	
-	v_eye = -position.xyz / vertdist;
-	v_ldir = mat3(matview) * lightVector;
 	
 	texCoord = vec3(in_texture.st / VERTEX_SCALE, in_texture.p);
 	
@@ -105,14 +100,10 @@ in vec4 biomeColor;
 in vec3 out_normal;
 
 in float vertdist;
-in vec3  v_ldir;
-in vec3  v_eye;
 
 const float ZFAR
 const int TX_2SIDED
 const int TX_CROSS
-
-#include "stdfog.glsl"
 
 void main(void)
 {
@@ -130,12 +121,6 @@ void main(void)
 	#include "worldlight_frag.glsl"
 	
 	#include "stdlight.glsl"
-	
-#ifdef SUPERFOG
-	// super fog
-	float fogdist = 1.0 - vertdist / ZFAR;
-	superFog(color.rgb, fogdist, v_eye, v_ldir);
-#endif
 	
 	#include "horizonfade.glsl"
 	

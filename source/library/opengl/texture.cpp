@@ -128,11 +128,12 @@ namespace library
 	void Texture::create(bool mipmap, int levels, int width, int height)
 	{
 		bind(0);
-		GLint minfilter = (mipmap) ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR;
+		GLint minfilter = (mipmap) ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST;
+		GLint maxfilter = (mipmap) ? GL_LINEAR : GL_NEAREST;
 		
 		glTexParameteri(this->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(this->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(this->type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(this->type, GL_TEXTURE_MAG_FILTER, maxfilter);
 		glTexParameteri(this->type, GL_TEXTURE_MIN_FILTER, minfilter);
 		
 		this->width  = width;
@@ -172,6 +173,21 @@ namespace library
 		}
 	}
 	
+	void Texture::setInterpolation(bool linear)
+	{
+		GLint maxfilter = (linear) ? GL_LINEAR : GL_NEAREST;
+		GLint minfilter = maxfilter;
+		if (isMipmapped) minfilter = (linear) ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST;
+		
+		glTexParameteri(this->type, GL_TEXTURE_MAG_FILTER, maxfilter);
+		glTexParameteri(this->type, GL_TEXTURE_MIN_FILTER, minfilter);
+	}
+	void Texture::setWrapMode(GLint wrapmode)
+	{
+		glTexParameteri(this->type, GL_TEXTURE_WRAP_S, wrapmode);
+		glTexParameteri(this->type, GL_TEXTURE_WRAP_T, wrapmode);
+	}
+	
 	void Texture::createDepth(bool stencil24d8s, int width, int height)
 	{
 		bind(0);
@@ -190,8 +206,9 @@ namespace library
 		}
 		else
 		{
-			this->format = GL_DEPTH_COMPONENT24;
-			glTexImage2D(this->type, 0, format, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+			// let opengl give the highest supported for this context
+			this->format = GL_DEPTH_COMPONENT;
+			glTexImage2D(this->type, 0, format, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, nullptr);
 		}
 		if (OpenGL::checkError())
 		{

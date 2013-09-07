@@ -340,6 +340,7 @@ opengl_ext_decl void (*glFramebufferTexture)(GLenum bufferType, GLenum attachmen
 opengl_ext_decl void (*glBlitFramebuffer)(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1,
 										  GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLint mask, GLenum filter);
 opengl_ext_decl GLenum (*glCheckFramebufferStatus)(GLenum bufferType);
+opengl_ext_decl void (*glDrawBuffers)(GLsizei count, GLenum* buffers);
 // framebuffer renderbuffers
 opengl_ext_decl void (*glGenRenderbuffers)(GLsizei count, GLuint* rboIDs);
 opengl_ext_decl void (*glBindRenderbuffer)(GLenum bufferType, GLuint rbo);

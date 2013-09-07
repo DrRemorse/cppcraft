@@ -15,43 +15,41 @@ void main(void)
 
 #ifdef FRAGMENT_PROGRAM
 uniform sampler2D terrain;
-uniform sampler2D depthtexture;
+//uniform sampler2D depthtexture;
 uniform sampler2D blurtexture;
-uniform sampler2D skytexture;
+//uniform sampler2D skytexture;
 
 in vec2 texCoord;
 
-float linearizeDepth(float Z);
+void linearizeDepth(inout float Z);
 const float ZFAR
 const float ZNEAR
 
 void main()
 {
-	float depth = texture2D(depthtexture, texCoord).x;
-	depth = linearizeDepth(depth);
+	//float depth = texture2D(depthtexture, texCoord).x;
+	//linearizeDepth(depth);
 	
 	// base color
-	const float BLURMULT    = 1.0;
-	float mixAmount = smoothstep(0.2, 0.8, depth) * BLURMULT;
-	
 	vec4 color = texture2D(terrain, texCoord);
-	color = mix(color, texture2D(blurtexture, texCoord), mixAmount);
+	// blurred color
+	vec4 blur = texture2D(blurtexture, texCoord);
 	
-	// fade out world based on depth
-	float fade = 1.0 - color.a;
+	float depth = step(blur.a, 0.995) * blur.a;
 	
-	vec3 skyColor = texture2D(skytexture, texCoord).rgb;
-	color.rgb = mix(color.rgb, skyColor, fade);
+	// blur distance
+	float mixAmount = smoothstep(0.3, 0.9, depth);
+	color = mix(color, blur, mixAmount);
 	
-	gl_FragData[0] = vec4(color.rgb, fade);
+	gl_FragData[0] = color;
 }
 
-float linearizeDepth(float Z)
+void linearizeDepth(inout float Z)
 {
-	float depth = 2 * Z - 1;
+	Z = 2.0 * Z - 1.0;
 	
 	// linearize to [0, 1]
-	return 2.0 * ZNEAR / (ZFAR + ZNEAR - depth * (ZFAR - ZNEAR)); // * ZFAR
+	Z = 2.0 * ZNEAR / (ZFAR + ZNEAR - Z * (ZFAR - ZNEAR));
 }
 
 #endif

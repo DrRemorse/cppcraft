@@ -1,5 +1,8 @@
-#include "library/math/matrix.hpp"
-#include "library/math/vector.hpp"
+
+namespace library
+{
+	class FBO;
+}
 
 namespace cppcraft
 {
@@ -16,7 +19,7 @@ namespace cppcraft
 	private:
 		// snapshots
 		double playerX, playerY, playerZ;
-		bool playerMoved;
+		bool playerMoved, underwater;
 		int playerSectorX, playerSectorZ;
 		int snapWX, snapWZ;
 		
@@ -32,7 +35,7 @@ namespace cppcraft
 		void recalculateFrustum();
 		void compressRenderingQueue();
 		// main scene rendering function
-		void renderScene(Renderer& renderer);
+		void renderScene(Renderer& renderer, library::FBO& sceneFBO);
 		
 		friend class SkyRenderer;
 	};

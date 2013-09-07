@@ -1,6 +1,10 @@
 #include "sun.hpp"
 
+#include "library/math/matrix.hpp"
+#include "camera.hpp"
 #include <cmath>
+
+using namespace library;
 
 namespace cppcraft
 {
@@ -19,15 +23,15 @@ namespace cppcraft
 		this->realAmbience = daylight(realRadian);
 	}
 	
-	const library::vec3& SunClass::getAngle() const
+	const vec3& SunClass::getAngle() const
 	{
 		return this->angle;
 	}
-	const library::vec3& SunClass::getHalfAngle() const
+	const vec3& SunClass::getHalfAngle() const
 	{
 		return this->half1;
 	}
-	const library::vec3& SunClass::getHalf2Angle() const
+	const vec3& SunClass::getHalf2Angle() const
 	{
 		return this->half2;
 	}
@@ -45,19 +49,19 @@ namespace cppcraft
 		float direction = 1.0;
 		if (this->angle.x < 0) direction = -1.0;
 		
-		half1 = library::vec3(this->angle.x + direction * 0.08, this->angle.y, 0.0);
+		half1 = vec3(this->angle.x + direction * 0.08, this->angle.y, 0.0);
 		half1.normalize();
-		half2 = library::vec3(this->angle.x + direction * 0.12, this->angle.y, 0.0);
+		half2 = vec3(this->angle.x + direction * 0.12, this->angle.y, 0.0);
 		half2.normalize();
 	}
 	
 	void SunClass::integrate(float step)
 	{
-		library::vec3 newAngle = getRealtimeAngle().mix(getAngle(), step);
+		vec3 newAngle = getRealtimeAngle().mix(getAngle(), step);
 		
 		realRadian = atan2(newAngle.y, newAngle.x);
 		
-		realAngle = library::vec3(cos(realRadian), sin(realRadian), 0.0);
+		realAngle = vec3(cos(realRadian), sin(realRadian), 0.0);
 		realAmbience = 1.0 - daylight(realAngle.y);
 	}
 	
@@ -97,24 +101,24 @@ namespace cppcraft
 		return noonlight + (nightlight - noonlight) * transit;
 	}
 	
-	library::vec3 SunClass::ambienceColor()
+	vec3 SunClass::ambienceColor()
 	{
 		float yy = fabs(angle.y) * angle.y; // ogl.lastsun(1)) * ogl.lastsun(1);
 		
 		if (yy < -0.15)
 		{
-			return library::vec3(1.0 + yy, 1.0 + yy,  1.0);
+			return vec3(1.0 + yy, 1.0 + yy,  1.0);
 		}
 		else
 		{
 			float redness = 0.7 + 0.3 * yy;
 			#define blueness 0
 			
-			return library::vec3(1.0 - blueness, 0.4 + redness * 0.6 - blueness, redness);
+			return vec3(1.0 - blueness, 0.4 + redness * 0.6 - blueness, redness);
 		}
 	}
 	
-	const library::vec3& SunClass::getRealtimeAngle() const
+	const vec3& SunClass::getRealtimeAngle() const
 	{
 		return realAngle;
 	}
@@ -125,6 +129,17 @@ namespace cppcraft
 	float SunClass::getRealtimeDaylight() const
 	{
 		return realAmbience;
+	}
+	
+	Matrix SunClass::getSunMatrix() const
+	{
+		Matrix matsun, mattemp;
+		mattemp.rotateZYX(0.0, -PI / 2, 0.0);
+		matsun.rotateZYX(thesun.getRealtimeRadianAngle(), 0.0, 0.0);
+		mattemp *= matsun;
+		mattemp.translated(0.0, 0.0, -thesun.renderDist);
+		
+		return camera.getRotationMatrix() * mattemp;
 	}
 	
 }

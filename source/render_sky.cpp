@@ -69,7 +69,6 @@ namespace cppcraft
 		
 		glDisable(GL_BLEND);
 		glColorMask(1, 1, 1, 1);
-		
 	}
 	
 	void SkyRenderer::renderSun()
@@ -79,17 +78,8 @@ namespace cppcraft
 		Shader& sunshader = shaderman[Shaderman::SUN];
 		sunshader.bind();
 		
-		Matrix matsun, mattemp;
-		mattemp.rotateZYX(0.0, -PI / 2, 0.0);
-		matsun.rotateZYX(thesun.getRealtimeRadianAngle(), 0.0, 0.0);
-		mattemp *= matsun;
-		mattemp.translated(0.0, 0.0, -thesun.renderDist);
-		
-		matsun = camera.getRotationMatrix() * mattemp;
-		
 		// view matrix
-		sunshader.sendMatrix("matview", matsun);
-		
+		sunshader.sendMatrix("matview", thesun.getSunMatrix());
 		// rotation matrix
 		sunshader.sendMatrix("matrot", camera.getRotationMatrix());
 		
@@ -99,18 +89,12 @@ namespace cppcraft
 		satteliteVAO.render(GL_QUADS);
 	}
 	
-	Matrix SkyRenderer::renderSunProj(GLuint samples)
+	Matrix SkyRenderer::renderSunProj()
 	{
 		Shader& sunshader = shaderman[Shaderman::SUNPROJ];
 		sunshader.bind();
 		
-		Matrix matsun, mattemp;
-		mattemp.rotateZYX(0.0, -PI / 2, 0.0);
-		matsun.rotateZYX(thesun.getRealtimeRadianAngle(), 0.0, 0.0);
-		mattemp *= matsun;
-		mattemp.translated(0.0, 0.0, -thesun.renderDist);
-		
-		matsun = camera.getRotationMatrix() * mattemp;
+		Matrix matsun = thesun.getSunMatrix();
 		
 		// view matrix
 		sunshader.sendMatrix("matview", matsun);
@@ -118,7 +102,7 @@ namespace cppcraft
 		sunshader.sendMatrix("matrot", camera.getRotationMatrix());
 		
 		// depth used as stencil buffer
-		textureman.bind(1, Textureman::T_RENDERBUFFER);
+		textureman.bind(1, Textureman::T_FOGBUFFER);
 		textureman.bind(0, Textureman::T_SUN);
 		
 		// rendering call

@@ -30,6 +30,7 @@ namespace library
 		glfwWindowHint(GLFW_SAMPLES, wndconf.multisample);
 		
 		glfwWindowHint(GLFW_ALPHA_BITS, 8);
+		glfwWindowHint(GLFW_STENCIL_BITS, 8);
 		
 		// create new glfw3 window
 		this->wndHandle = glfwCreateWindow(SW, SH, wndconf.title.c_str(), monitor, nullptr);

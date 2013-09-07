@@ -4,6 +4,8 @@
 namespace library
 {
 	class WindowClass;
+	class vec2;
+	class Matrix;
 }
 
 namespace cppcraft
@@ -26,7 +28,10 @@ namespace cppcraft
 		void initFlare();
 		void render(library::WindowClass& gamescr);
 		void blur(library::WindowClass& gamescr);
+		void fog(library::WindowClass& gamescr);
 		void terrain(library::WindowClass& gamescr);
+		
+		library::vec2 getSunVector(const library::Matrix& matsun);
 		
 		friend class Textureman;
 	};

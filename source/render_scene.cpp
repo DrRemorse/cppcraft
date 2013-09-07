@@ -2,6 +2,7 @@
 
 #include "library/config.hpp"
 #include "library/log.hpp"
+#include "library/opengl/fbo.hpp"
 #include "library/opengl/opengl.hpp"
 #include "library/opengl/window.hpp"
 
@@ -23,6 +24,8 @@ using namespace library;
 
 namespace cppcraft
 {
+	FBO sceneFBO;
+	
 	void SceneRenderer::init(Renderer& renderer)
 	{
 		// initialize terrain renderer
@@ -33,15 +36,58 @@ namespace cppcraft
 		
 		// initialize minimap
 		minimap.init();
+		
+		sceneFBO.create();
 	}
 	
 	// render normal scene
 	void SceneRenderer::render(Renderer& renderer, WorldManager& worldman)
 	{
 		bool frustumRecalc = false;
-		bool underwater    = false;
 		
-		// render each blah, because of blah-bah
+		// bind the FBO that we are rendering the entire scene into
+		sceneFBO.bind();
+		sceneFBO.attachColor(0, textureman.get(Textureman::T_FOGBUFFER));
+		sceneFBO.attachColor(1, textureman.get(Textureman::T_UNDERWATERMAP));
+		sceneFBO.attachColor(2, textureman.get(Textureman::T_SKYBUFFER));
+		sceneFBO.attachDepth(textureman.get(Textureman::T_DEPTHBUFFER));
+		
+		// add all attachments to rendering output
+		std::vector<int> dbuffers;
+		dbuffers.emplace_back(GL_COLOR_ATTACHMENT0);
+		dbuffers.emplace_back(GL_COLOR_ATTACHMENT1);
+		dbuffers.emplace_back(GL_COLOR_ATTACHMENT2);
+		
+		sceneFBO.drawBuffers(dbuffers);
+		
+		glDepthMask(GL_TRUE);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+		glDisable(GL_CULL_FACE); // because the lower half hemisphere is inverted
+		glDisable(GL_DEPTH_TEST);
+		glDepthMask(GL_FALSE);
+		
+		// render atmosphere, moon, etc.
+		skyrenderer.render(*this, underwater);
+		
+		// render clouds before terrain if we are submerged in water
+		if (underwater)
+		{
+			glEnable(GL_BLEND);
+			glColorMask(1, 1, 1, 0);
+			
+			// render clouds
+			skyrenderer.renderClouds(*this, renderer.frametick);
+			
+			glDisable(GL_BLEND);
+			glColorMask(1, 1, 1, 1);
+		}
+		
+		////////////////////////////////////////////////////
+		/// take snapshots of player state               ///
+		/// and recalculate rendering queue if necessary ///
+		////////////////////////////////////////////////////
+		
 		if (mtx.sectorseam.try_lock())
 		{
 			mtx.playermove.lock();
@@ -125,13 +171,6 @@ namespace cppcraft
 					// disable full refresh
 					camera.ref = false;
 				}
-				// if signal for refresh
-				else if (camera.needsupd == 1)
-				{
-					// run occlusion test
-					camera.ref = true;
-					camera.needsupd = 0;
-				}
 			}
 			mtx.sectorseam.unlock();
 		}
@@ -143,28 +182,16 @@ namespace cppcraft
 			compressRenderingQueue();
 		}
 		
-		glDisable(GL_CULL_FACE); // because the lower half hemisphere is inverted
-		glDisable(GL_DEPTH_TEST);
-		glDepthMask(GL_FALSE);
+		// remove skybuffer from rendering output
+		// and replace it with the normals texture
+		sceneFBO.removeColor(2);
+		//sceneFBO.attachColor(2, textureman.get(Textureman::T_FSNORMALS));
+		// update buffer list
+		dbuffers.clear();
+		dbuffers.emplace_back(GL_COLOR_ATTACHMENT0);
+		dbuffers.emplace_back(GL_COLOR_ATTACHMENT1);
+		sceneFBO.drawBuffers(dbuffers);
 		
-		// render sky
-		skyrenderer.render(*this, underwater);
-		
-		if (underwater)
-		{
-			glEnable(GL_BLEND);
-			glColorMask(1, 1, 1, 0);
-			
-			// render clouds
-			skyrenderer.renderClouds(*this, renderer.frametick);
-			
-			glDisable(GL_BLEND);
-			glColorMask(1, 1, 1, 1);
-		}
-		
-		// copy sky to texture (skybuffer)
-		textureman.bind(5, Textureman::T_SKYBUFFER);
-		textureman.copyScreen(renderer.gamescr, Textureman::T_SKYBUFFER);
 		
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
@@ -175,50 +202,57 @@ namespace cppcraft
 		
 		/// render physical scene w/depth ///
 		
-		renderScene(renderer);
+		renderScene(renderer, sceneFBO);
 		
 		glDisable(GL_MULTISAMPLE_ARB);
-		glDisable(GL_CULL_FACE); // because the lower half hemisphere is inverted
+		glDisable(GL_CULL_FACE);
 		
 		glDisable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
 		
 		/// take snapshot of scene ///
 		// there are no more things in the depth buffer after rendering scene
-		textureman.bind(1, Textureman::T_DEPTHBUFFER);
-		textureman.copyScreen(renderer.gamescr, Textureman::T_DEPTHBUFFER);
+		sceneFBO.removeDepth();
+		sceneFBO.unbind();
 		
-		// first snapshot of world
-		textureman.bind(0, Textureman::T_RENDERBUFFER);
-		textureman.copyScreen(renderer.gamescr, Textureman::T_RENDERBUFFER);
+		// create fog based on depth
+		screenspace.fog(renderer.gamescr);
 		
 		// blur the render buffer
+		textureman.bind(0, Textureman::T_RENDERBUFFER);
 		screenspace.blur(renderer.gamescr);
 		
 		// without affecting depth, use screenspace renderer to render blurred terrain
 		// and also blend terrain against sky background
+		sceneFBO.bind();
+		sceneFBO.attachColor(0, textureman.get(Textureman::T_FOGBUFFER));
 		
 		screenspace.terrain(renderer.gamescr);
+		
+		// render clouds & particles
+		sceneFBO.attachDepth(textureman.get(Textureman::T_DEPTHBUFFER));
 		
 		glEnable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
 		glDepthFunc(GL_LEQUAL);
 		glEnable(GL_BLEND);
 		
-		if (!underwater)
+		glColorMask(1, 1, 1, 0);
+		
+		if (underwater == false)
 		{
-			glDisable(GL_CULL_FACE);
-			
 			// render clouds
 			skyrenderer.renderClouds(*this, renderer.frametick);
 		}
-		
-		glColorMask(1, 1, 1, 0);
 		
 		// render particles
 		particleSystem.render(snapWX, snapWZ);
 		
 		glColorMask(1, 1, 1, 1);
+		glDisable(GL_BLEND);
+		
+		sceneFBO.removeDepth();
+		sceneFBO.unbind();
 		
 	} // render scene
 	

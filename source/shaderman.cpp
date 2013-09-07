@@ -208,18 +208,22 @@ namespace cppcraft
 		shaders[GAUSS] = Shader("shaders/blurGaussian.glsl", nullptr, linkstage);
 		shaders[GAUSS].sendInteger("texture", 0);
 		
+		// screenspace fog shader
+		shaders[FSTERRAINFOG] = Shader("shaders/fsterrainfog.glsl", tokenizer, linkstage);
+		shaders[FSTERRAINFOG].sendInteger("terrain",    0);
+		shaders[FSTERRAINFOG].sendInteger("skytexture", 1);
+		shaders[FSTERRAINFOG].sendInteger("normals",    2);
+		shaders[FSTERRAINFOG].sendInteger("noisetex",   3);
+		
 		// screenspace terrain shader
 		shaders[FSTERRAIN] = Shader("shaders/fsterrain.glsl", tokenizer, linkstage);
 		shaders[FSTERRAIN].sendInteger("terrain",      0);
-		shaders[FSTERRAIN].sendInteger("depthtexture", 1);
-		shaders[FSTERRAIN].sendInteger("blurtexture",  2);
-		shaders[FSTERRAIN].sendInteger("skytexture",   3);
+		shaders[FSTERRAIN].sendInteger("blurtexture",  1);
 		
 		// screenspace postprocessing shader
 		shaders[POSTPROCESS] = Shader("shaders/screenspace.glsl", tokenizer, linkstage);
-		shaders[POSTPROCESS].sendInteger("texture",      0);
-		shaders[POSTPROCESS].sendInteger("depthtexture", 1);
-		shaders[POSTPROCESS].sendInteger("lensflare",    2);
+		shaders[POSTPROCESS].sendInteger("texture",   0);
+		shaders[POSTPROCESS].sendInteger("lensflare", 1);
 		
 		// minimap shader
 		shaders[MINIMAP] = Shader("shaders/minimap.glsl", tokenizer, linkstage);

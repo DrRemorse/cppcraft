@@ -1,5 +1,6 @@
 #include "fbo.hpp"
 
+#include "../log.hpp"
 #include "opengl.hpp"
 #include "texture.hpp"
 
@@ -40,18 +41,63 @@ namespace library
 	
 	void FBO::attachColor(GLenum index, Texture& texture)
 	{
-		if (fbo == 0) throw std::string("FBO was not yet created");
-		if (lastFBO != fbo) throw std::string("FBO was not currently bound, cannot attach color target");
-		
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, texture.getHandle(), 0);
+		attachColor(index, texture.getHandle());
 	}
-	
-	void FBO::attachDepth(Texture& texture)
+	void FBO::attachColor(GLenum index, GLuint texture)
 	{
 		if (fbo == 0) throw std::string("FBO was not yet created");
 		if (lastFBO != fbo) throw std::string("FBO was not currently bound, cannot attach color target");
 		
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, texture.getHandle(), 0);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, texture, 0);
+	}
+	
+	void FBO::removeColor(GLenum index)
+	{
+		if (fbo == 0) throw std::string("FBO was not yet created");
+		if (lastFBO != fbo) throw std::string("FBO was not currently bound, cannot attach color target");
+		
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, 0, 0);
+	}
+	
+	void FBO::attachDepth(Texture& texture)
+	{
+		attachDepth(texture.getHandle());
+	}
+	void FBO::attachDepth(GLuint texture)
+	{
+		if (fbo == 0) throw std::string("FBO was not yet created");
+		if (lastFBO != fbo) throw std::string("FBO was not currently bound, cannot attach color target");
+		
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, texture, 0);
+	}
+	void FBO::removeDepth()
+	{
+		if (fbo == 0) throw std::string("FBO was not yet created");
+		if (lastFBO != fbo) throw std::string("FBO was not currently bound, cannot attach color target");
+		
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0);
+	}
+	
+	void FBO::drawBuffers(std::vector<int> buffers)
+	{
+		glDrawBuffers(buffers.size(), (GLenum*) buffers.data());
+		
+		if (OpenGL::checkError())
+		{
+			logger << Log::ERR << "FBO::drawBuffers(vector): Error setting draw buffers" << Log::ENDL;
+			throw std::string("FBO::drawBuffers(vector): Error setting draw buffers");
+		}
+	}
+	void FBO::drawBuffers()
+	{
+		GLenum one = GL_COLOR_ATTACHMENT0;
+		glDrawBuffers(1, &one);
+		
+		if (OpenGL::checkError())
+		{
+			logger << Log::ERR << "FBO::drawBuffers(): Error setting draw buffer" << Log::ENDL;
+			throw std::string("FBO::drawBuffers(): Error setting draw buffer");
+		}
 	}
 	
 	bool FBO::isComplete()

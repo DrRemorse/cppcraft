@@ -3,11 +3,12 @@
 //
 #define POSTPROCESS
 
-const float fade_dist = 0.85 * ZFAR;
+//const float fade_dist = 0.85 * ZFAR;
+//1.0 - clamp((vertdist - fade_dist) / (ZFAR - fade_dist), 0.0, 1.0);
 
 #ifdef POSTPROCESS
 	
-	color.a = 1.0 - clamp((vertdist - fade_dist) / (ZFAR - fade_dist), 0.0, 1.0);
+	color.a = min(1.0, vertdist / ZFAR);
 	
 #else
 	

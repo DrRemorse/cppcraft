@@ -28,6 +28,7 @@ namespace cppcraft
 			CULLED_BLOCKS,
 			ALPHA_BLOCKS,
 			BLOCKS_WATER,
+			FSTERRAINFOG,
 			FSTERRAIN,
 			
 			OBJECT,

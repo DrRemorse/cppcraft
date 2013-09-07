@@ -1,9 +1,9 @@
 #version 130
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
+precision mediump float;
 
 #ifdef VERTEX_PROGRAM
-precision mediump float;
 
 uniform mat4 matproj;
 uniform mat4 matview;
@@ -27,11 +27,10 @@ out vec4 biomeColor;
 flat out float worldLight;
 
 out float vertdist;
-out vec3 v_ldir;
-out vec3 v_eye;
+//flat out vec3 out_normal;
 
-flat out float reflection;
-out vec3 v_reflect;
+//flat out float reflection;
+//out vec3 v_reflect;
 
 const int TX_REPEAT
 const int TX_SOLID
@@ -46,20 +45,20 @@ void main(void)
 	vertdist = length(position.xyz);
 	gl_Position = matproj * position;
 	
-	v_eye = -position.xyz / vertdist;
-	v_ldir = mat3(matview) * lightVector;
-	
 	/* ice reflection */
-	reflection = 0.0;
+	/*reflection = 0.0;
+	v_eye = -position.xyz / vertdist;
 	if (in_texture.p == ICE_TILE)
 	{
 		reflection = 1.0;
 		
 		// real reflection vector
 		v_reflect = reflect((-v_eye) * mat3(matview), in_normal);
-	}
+	}*/
 	
 	texCoord = vec3(in_texture.st / VERTEX_SCALE, in_texture.p);
+	
+	//out_normal = in_normal.xyz * 2.0 - vec3(1.0);
 	
 	// dotlight
 	#include "worldlight.glsl"
@@ -91,8 +90,7 @@ in vec4 biomeColor;
 flat in float worldLight;
 
 in float vertdist;
-in vec3 v_ldir;
-in vec3 v_eye;
+//flat in vec3 out_normal;
 
 flat in float reflection;
 in vec3 v_reflect;
@@ -127,12 +125,6 @@ void main(void)
 	#include "degamma.glsl"
 	
 	#include "stdlight.glsl"
-	
-#ifdef SUPERFOG
-	// super fog
-	float fogdist = 1.0 - vertdist / ZFAR;
-	superFog(color.rgb, fogdist, v_eye, v_ldir);
-#endif
 	
 	#include "horizonfade.glsl"
 	

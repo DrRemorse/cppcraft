@@ -37,7 +37,7 @@ namespace cppcraft
 		
 		Sound::setMasterVolume(0.3);
 		musicPlayer    = StreamChannel(0.0005, 0.2);
-		ambiencePlayer = StreamChannel(0.001,  0.6);
+		ambiencePlayer = StreamChannel(0.001,  0.75);
 		underwaterPlayer = StreamChannel(0.01, 0.5);
 		
 		logger << Log::INFO << "* Sound system initialized" << Log::ENDL;
@@ -125,14 +125,13 @@ namespace cppcraft
 	// returns the id of a random song in the playlist
 	void Soundman::handleSounds(int terrain)
 	{
-		return;
 		// if player is under the terrain, somehow change
 		// ambience & music to cave themes
 		int skyLevel    = Flatlands.getSkyLevel(player.X, player.Z);
 		int groundLevel = Flatlands.getGroundLevel(player.X, player.Z);
 		const int CAVE_DEPTH = 6;
 		
-		bool inCaves = (player.Y < groundLevel - CAVE_DEPTH);
+		bool inCaves = (player.Y < groundLevel - CAVE_DEPTH && player.Y < 64);
 		
 		if (inCaves)
 		{

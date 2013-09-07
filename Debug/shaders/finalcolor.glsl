@@ -14,5 +14,6 @@
 	
 	// back to gamma space
 	gl_FragData[0] = vec4(pow(color.rgb, gamma), color.a);
+	//gl_FragData[1] = vec4(pow(color.rgb, gamma), color.a);
 	
 #endif

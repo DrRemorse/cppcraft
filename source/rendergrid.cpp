@@ -11,8 +11,7 @@ using namespace library;
 
 namespace cppcraft
 {
-	static const float gs_half = Sector::BLOCKS_XZ * 0.5f;
-	static const int   visibility_border = RenderGrid::visibility_border;
+	static const int visibility_border = RenderGrid::visibility_border;
 	
 	// forward
 	void gridTesting(RenderGrid::rendergrid_t& rg, int x, int z, int axis);
@@ -36,7 +35,7 @@ namespace cppcraft
 		int countX = (x1 - x0) / bigstpx + 1;
 		int countZ = (z1 - z0) / bigstpz + 1;
 		
-		if (rg.majority)
+		if (rg.majority < 2)
 		{
 			for (int x = x0; countX-- != 0; x += bigstpx)
 			{
@@ -81,11 +80,9 @@ namespace cppcraft
 	{
 		int x0 = x, x1;
 		int z0 = z, z1;
-		int y0, y1;
 		
 		if (rg.xstp == 1)
 		{
-			// x0 == x
 			if (x0 < visibility_border) x0 = visibility_border;
 			
 			x1 = x + (axis - 1);
@@ -96,7 +93,6 @@ namespace cppcraft
 		}
 		else
 		{
-			// x0 == x
 			if (x0 >= Sectors.getXZ() - visibility_border)
 				x0 = Sectors.getXZ()-1 - visibility_border;
 			
@@ -106,6 +102,7 @@ namespace cppcraft
 			if (x1 >= Sectors.getXZ() - visibility_border || x1 > x0) return;
 		}
 		
+		int y0, y1;
 		if (rg.ystp == 1)
 		{
 			y0 = 0;
@@ -119,7 +116,6 @@ namespace cppcraft
 		
 		if (rg.zstp == 1)
 		{
-			// z0 = z
 			if (z0 < visibility_border) z0 = visibility_border;
 			
 			z1 = z + (axis - 1);
@@ -130,7 +126,6 @@ namespace cppcraft
 		}
 		else
 		{
-			// z0 = z
 			if (z0 >= Sectors.getXZ() - visibility_border)
 				z0 = Sectors.getXZ()-1 - visibility_border;
 			
@@ -142,8 +137,8 @@ namespace cppcraft
 		
 		int y = y0;
 		x = x0; z = z0;
-		int center_grid = (Sectors.getXZ() / 2) + 0.5;
-		int max_gridrad = (center_grid-1);
+		float center_grid = Sectors.getXZ() / 2;
+		float max_gridrad = (center_grid-1);
 		max_gridrad *= max_gridrad;
 		
 		float fx = (x + 0.5) - center_grid;
@@ -157,12 +152,14 @@ namespace cppcraft
 			{
 				if (fx*fx + fz*fz < max_gridrad)
 				{
+					static const float gs_half = Sector::BLOCKS_XZ * 0.5;
+					
 					if (camera.getFrustum().column(
 							x * Sector::BLOCKS_XZ + gs_half,
 							z * Sector::BLOCKS_XZ + gs_half,
 							y * Columns.COLUMNS_SIZE * Sector::BLOCKS_Y,
 							Columns.COLUMNS_SIZE * Sector::BLOCKS_Y, 
-							gs_half // 12.65
+							gs_half
 						))
 					{
 						cv.pos.x = x * Sector::BLOCKS_XZ;
@@ -173,10 +170,10 @@ namespace cppcraft
 							if (cv.vertices[i])
 							{
 								// as long as not currently testing:
-								if (cv.occluded[i] != 1)
+								if (false) //cv.occluded[i] != 1)
 								{
 									// as long as not contested or was not rendered last frame
-									//cv.occluded[i] = 3;
+									cv.occluded[i] = 3;
 								}
 								
 								// add to draw queue
@@ -199,7 +196,7 @@ namespace cppcraft
 				
 			} // render test
 			
-			if (rg.majority)
+			if (rg.majority < 2)
 			{
 				// Y -> Z -> X
 				if (y == y1)
@@ -233,6 +230,9 @@ namespace cppcraft
 					}
 					else x += rg.xstp;
 					y = y0;
+					// set new (fx, fy) centroidal position
+					fx = (x + 0.5) - center_grid;
+					fz = (z + 0.5) - center_grid;
 				}
 				else y += rg.ystp;
 				
