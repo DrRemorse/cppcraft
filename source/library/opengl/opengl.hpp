@@ -20,9 +20,6 @@ namespace library
 		GLint imageformat;
 		GLint storageformat;
 		
-		GLint multisample;
-		GLint anisotrophy;
-		
 		void init(WindowClass& window);
 		
 		static const bool checkError();

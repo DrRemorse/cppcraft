@@ -5,6 +5,17 @@
 
 namespace library
 {
+	WindowConfig::WindowConfig()
+	{
+		// set default window settings
+		this->title = "Untitled window";
+		this->SW = 640;
+		this->SH = 480;
+		this->fullscreen = false;
+		this->vsync = true;
+		this->multisample = 0;
+	}
+	
 	void WindowClass::open(WindowConfig& wndconf)
 	{
 		if (this->init == false)
@@ -18,19 +29,24 @@ namespace library
 		this->SH = wndconf.SH;
 		this->SA = (float)this->SW / (float)this->SH;
 		
-		// fullscreen (boolean)
-		bool fullscr = wndconf.fullscreen;
+		// fullscreen enables setting refresh rate
+		this->fullscreen = wndconf.fullscreen;
 		
 		GLFWmonitor* monitor = nullptr;
 		// set primary monitor if we are to run in fullscreen
-		if (fullscr) monitor = glfwGetPrimaryMonitor();
+		if (fullscreen) monitor = glfwGetPrimaryMonitor();
 		
 		glfwWindowHint(GLFW_REFRESH_RATE, wndconf.refreshrate);
 		glfwWindowHint(GLFW_RESIZABLE, 0);
-		glfwWindowHint(GLFW_SAMPLES, wndconf.multisample);
 		
+		// clamp multisample to at least 0
+		if (wndconf.multisample < 0) wndconf.multisample = 0;
+		// set multisampling level for main framebuffer
+		glfwWindowHint(GLFW_SAMPLES, wndconf.multisample);
+		// common alpha, stencil & depth settings
 		glfwWindowHint(GLFW_ALPHA_BITS, 8);
 		glfwWindowHint(GLFW_STENCIL_BITS, 8);
+		glfwWindowHint(GLFW_DEPTH_BITS, 24);
 		
 		// create new glfw3 window
 		this->wndHandle = glfwCreateWindow(SW, SH, wndconf.title.c_str(), monitor, nullptr);

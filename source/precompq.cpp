@@ -41,7 +41,7 @@ namespace cppcraft
 		threadpool = new ThreadPool::TPool(this->threads);
 		// create fixed amount of jobs
 		for (int i = 0; i < threads; i++)
-			jobs.push_back(new PrecompJob(-1));
+			jobs.push_back(new PrecompJob(i));
 	}
 	
 	// stop precompq
@@ -133,7 +133,11 @@ namespace cppcraft
 		if (queueCount == 0) return false;
 		// current thread id
 		int t_mod = 0;
+		
 		finish();
+		// always check if time is out
+		if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT) return true;
+		
 		// ------------ PRECOMPILER -------------- //
 		
 		// reset if out of bounds

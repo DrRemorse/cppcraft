@@ -14,6 +14,8 @@ namespace library
 	struct WindowConfig
 	{
 	public:
+		WindowConfig();
+		
 		std::string title;
 		bool fullscreen;
 		bool vsync;
@@ -34,6 +36,7 @@ namespace library
 		
 		int SW, SH; // window size
 		float SA;   // window aspect
+		bool fullscreen;
 		
 		// opens an OpenGL context window
 		void open(WindowConfig& wndconf);

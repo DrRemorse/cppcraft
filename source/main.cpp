@@ -10,6 +10,7 @@
 #include "library/log.hpp"
 #include "library/math/matrix.hpp"
 
+#include "gameconf.hpp"
 #include "generator.hpp"
 #include "input.hpp"
 #include "renderman.hpp"
@@ -42,6 +43,9 @@ int main(int argc, char* argv[])
 	// read config file
 	if (config.load("config.ini") == false)
 		logger << Log::WARN << "Could not find config file: " << configFile << Log::ENDL;
+	
+	// read game configuration
+	cppcraft::gameconf.init();
 	
 	// initialize renderer
 	cppcraft::Renderer renderer;

@@ -6,6 +6,7 @@
 
 #include "compilers.hpp"
 #include "camera.hpp"
+#include "gameconf.hpp"
 #include "render_fs.hpp"
 #include "render_gui.hpp"
 #include "render_scene.hpp"
@@ -50,16 +51,11 @@ namespace cppcraft
 			wndconf.SH = config.get("window.height", 720);
 		}
 		wndconf.vsync       = config.get("opengl.vsync", true);
-		wndconf.multisample = config.get("multisampling", 0);
+		wndconf.multisample = gameconf.multisampling;
 		
-		// initialize GLFW window
+		// open a GLFW ogl context window
 		gamescr.open(wndconf);
-		
-		// set multisampling & anisotropic filtering level
-		ogl.multisample = wndconf.multisample;
-		ogl.anisotrophy = config.get("anisotropy", 1);
-		if (ogl.anisotrophy < 1) ogl.anisotrophy = 1;
-		// initialize openGL
+		// initialize openGL extensions
 		ogl.init(gamescr);
 		
 		// GL_COMPRESSED_RGBA setting

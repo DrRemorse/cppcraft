@@ -9,7 +9,7 @@
 namespace library
 {
 	GLuint Texture::lastid[TEXTURE_UNITS] = {0};
-	GLenum Texture::lastUnit = 0;
+	GLenum Texture::lastUnit = -1;
 	
 	Texture::Texture() : id(0), type(0), format(0), boundUnit(0), isMipmapped(false) {}
 	
@@ -39,8 +39,6 @@ namespace library
 	void Texture::create(const Bitmap& bmp, bool mipmap = true, GLint wrapmode = GL_CLAMP_TO_EDGE, GLint magfilter = GL_NEAREST, GLint minfilter = GL_LINEAR_MIPMAP_LINEAR)
 	{
 		bind(0);
-		glTexParameteri(this->type, GL_TEXTURE_MAX_ANISOTROPY_EXT, ogl.anisotrophy);
-		
 		glTexParameteri(this->type, GL_TEXTURE_WRAP_S, wrapmode);
 		glTexParameteri(this->type, GL_TEXTURE_WRAP_T, wrapmode);
 		glTexParameteri(this->type, GL_TEXTURE_MAG_FILTER, magfilter);
@@ -186,6 +184,10 @@ namespace library
 	{
 		glTexParameteri(this->type, GL_TEXTURE_WRAP_S, wrapmode);
 		glTexParameteri(this->type, GL_TEXTURE_WRAP_T, wrapmode);
+	}
+	void Texture::setAnisotropy(float samples)
+	{
+		glTexParameterf(this->type, GL_TEXTURE_MAX_ANISOTROPY_EXT, samples);
 	}
 	
 	void Texture::createDepth(bool stencil24d8s, int width, int height)

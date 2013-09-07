@@ -69,8 +69,9 @@ namespace library
 		void create(bool mipmap, int levels, int width, int height); // texture buffer
 		void createDepth(bool stencil24d8s, int width, int height);
 		// modify attributes
-		void setInterpolation(bool linear);
+		void setAnisotropy(float samples);
 		void setWrapMode(GLint wrapmode);
+		void setInterpolation(bool linear);
 		
 		// bind this texture to texture unit
 		void bind(GLenum unit);

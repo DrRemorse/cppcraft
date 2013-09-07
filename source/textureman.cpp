@@ -5,6 +5,7 @@
 #include "library/bitmap/bitmap.hpp"
 #include "library/opengl/window.hpp"
 #include "library/opengl/opengl.hpp"
+#include "gameconf.hpp"
 #include "items.hpp"
 #include "render_fs.hpp"
 #include "sun.hpp"
@@ -38,6 +39,7 @@ namespace cppcraft
 			
 			textures[T_DIFFUSE] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_DIFFUSE].create(bmp, true, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
+			textures[T_DIFFUSE].setAnisotropy(gameconf.anisotropy);
 			
 			// voxelize (some) tiles
 			voxels.createBlockModels(bmp);
@@ -51,6 +53,7 @@ namespace cppcraft
 			
 			textures[T_TONEMAP] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_TONEMAP].create(bmp, true, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
+			textures[T_TONEMAP].setAnisotropy(gameconf.anisotropy);
 		}
 		else throw std::string("Materials(2) missing source file: Tonemap");
 		if (ogl.checkError()) throw std::string("Materials(2) texture2d array error");
@@ -66,6 +69,7 @@ namespace cppcraft
 			
 			textures[T_BIG_DIFF] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_BIG_DIFF].create(bmp, true, GL_REPEAT, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
+			textures[T_BIG_DIFF].setAnisotropy(gameconf.anisotropy);
 		}
 		else throw std::string("Materials(3) missing source file: Bigdiff");
 		if (ogl.checkError()) throw std::string("Materials(3) texture2d array error");
@@ -76,6 +80,7 @@ namespace cppcraft
 			
 			textures[T_BIG_TONE] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_BIG_TONE].create(bmp, true, GL_REPEAT, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
+			textures[T_BIG_TONE].setAnisotropy(gameconf.anisotropy);
 		}
 		else throw std::string("Materials(4) missing source file: Bigtone");
 		if (ogl.checkError()) throw std::string("Materials(4) texture2d array error");
@@ -104,6 +109,7 @@ namespace cppcraft
 			
 			textures[T_PLAYERMODELS] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_PLAYERMODELS].create(bmp, true, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
+			textures[T_PLAYERMODELS].setAnisotropy(gameconf.anisotropy);
 		}
 		else throw std::string("Missing source file: Player skins");
 		if (ogl.checkError()) throw std::string("Player skins texture2d array error");

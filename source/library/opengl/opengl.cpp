@@ -11,10 +11,7 @@ namespace library
 	
 	OpenGL::OpenGL()
 	{
-		// disabled multisampling & anisotropic filtering
-		multisample = 0;
-		anisotrophy = 0;
-		// standard formats
+		// standard 32-bits formats
 		imageformat   = GL_RGBA8;
 		storageformat = GL_UNSIGNED_BYTE;
 	}
@@ -22,7 +19,7 @@ namespace library
 	// initialize glfw, open OpenGL window, read function entry points
 	void OpenGL::init(WindowClass& window)
 	{
-		// default viewport
+		// set default viewport
 		glViewport(0, 0, window.SW, window.SH);
 		
 		//-== openGL extensions ==-//

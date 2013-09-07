@@ -9,6 +9,7 @@
 #include "biome.hpp"
 #include "blocks.hpp"
 #include "flatlands.hpp"
+#include "gameconf.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
 #include <bass.h>
@@ -133,91 +134,98 @@ namespace cppcraft
 		
 		bool inCaves = (player.Y < groundLevel - CAVE_DEPTH && player.Y < 64);
 		
-		if (inCaves)
+		if (gameconf.music)
 		{
-			musicPlayer.stop();
-		}
-		else
-		{
-			// set music stream by terrain
-			switch (terrain)
-			{
-			case Biomes::T_AUTUMN:
-				musicPlayer.play(music[MUSIC_AUTUMN]);
-				break;
-			case Biomes::T_DESERT:
-				musicPlayer.play(music[MUSIC_DESERT]);
-				break;
-			case Biomes::T_MUSHROOMS:
-			case Biomes::T_GRASS:
-				musicPlayer.play(music[MUSIC_FOREST]);
-				break;
-			case Biomes::T_ISLANDS:
-				musicPlayer.play(music[MUSIC_ISLANDS]);
-				break;
-			case Biomes::T_MARSH:
-			case Biomes::T_JUNGLE:
-				musicPlayer.play(music[MUSIC_JUNGLE]);
-				break;
-			case Biomes::T_ICECAP:
-			case Biomes::T_SNOW:
-				musicPlayer.play(music[MUSIC_WINTER]);
-				break;
-			default:
-				musicPlayer.stop();
-			}
-		}
-		// ambience stream
-		if (plogic.FullySubmerged) // submerged priority over caves
-		{
-			ambiencePlayer.fullStop();
-			underwaterPlayer.play(ambience[MA_UNDERWATER]);
-		}
-		else
-		{
-			underwaterPlayer.stop();
-			
 			if (inCaves)
 			{
-				ambiencePlayer.play(ambience[MA_CAVES]);
+				musicPlayer.stop();
 			}
 			else
 			{
-				// by terrain
+				// set music stream by terrain
 				switch (terrain)
 				{
 				case Biomes::T_AUTUMN:
-					ambiencePlayer.play(ambience[MA_AUTUMN]);
+					musicPlayer.play(music[MUSIC_AUTUMN]);
 					break;
 				case Biomes::T_DESERT:
-					ambiencePlayer.play(ambience[MA_DESERT]);
+					musicPlayer.play(music[MUSIC_DESERT]);
 					break;
 				case Biomes::T_MUSHROOMS:
 				case Biomes::T_GRASS:
-					ambiencePlayer.play(ambience[MA_FOREST]);
+					musicPlayer.play(music[MUSIC_FOREST]);
 					break;
 				case Biomes::T_ISLANDS:
-					ambiencePlayer.play(ambience[MA_ISLANDS]);
+					musicPlayer.play(music[MUSIC_ISLANDS]);
 					break;
 				case Biomes::T_MARSH:
 				case Biomes::T_JUNGLE:
-					ambiencePlayer.play(ambience[MA_JUNGLE]);
+					musicPlayer.play(music[MUSIC_JUNGLE]);
 					break;
 				case Biomes::T_ICECAP:
 				case Biomes::T_SNOW:
-					ambiencePlayer.play(ambience[MA_WINTER]);
+					musicPlayer.play(music[MUSIC_WINTER]);
 					break;
 				default:
-					ambiencePlayer.stop();
+					musicPlayer.stop();
 				}
-				
-			} // ambience
+			}
+			// slowly crossfade in/out streams as needed
+			musicPlayer.integrate();
 		}
 		
-		// slowly crossfade in/out streams as needed
-		musicPlayer.integrate();
-		ambiencePlayer.integrate();
-		underwaterPlayer.integrate();
+		if (gameconf.ambience)
+		{
+			// ambience stream
+			if (plogic.FullySubmerged) // submerged priority over caves
+			{
+				ambiencePlayer.fullStop();
+				underwaterPlayer.play(ambience[MA_UNDERWATER]);
+			}
+			else
+			{
+				underwaterPlayer.stop();
+				
+				if (inCaves)
+				{
+					ambiencePlayer.play(ambience[MA_CAVES]);
+				}
+				else
+				{
+					// by terrain
+					switch (terrain)
+					{
+					case Biomes::T_AUTUMN:
+						ambiencePlayer.play(ambience[MA_AUTUMN]);
+						break;
+					case Biomes::T_DESERT:
+						ambiencePlayer.play(ambience[MA_DESERT]);
+						break;
+					case Biomes::T_MUSHROOMS:
+					case Biomes::T_GRASS:
+						ambiencePlayer.play(ambience[MA_FOREST]);
+						break;
+					case Biomes::T_ISLANDS:
+						ambiencePlayer.play(ambience[MA_ISLANDS]);
+						break;
+					case Biomes::T_MARSH:
+					case Biomes::T_JUNGLE:
+						ambiencePlayer.play(ambience[MA_JUNGLE]);
+						break;
+					case Biomes::T_ICECAP:
+					case Biomes::T_SNOW:
+						ambiencePlayer.play(ambience[MA_WINTER]);
+						break;
+					default:
+						ambiencePlayer.stop();
+					}
+					
+				} // ambience
+			}
+			// slowly crossfade in/out streams as needed
+			ambiencePlayer.integrate();
+			underwaterPlayer.integrate();
+		}
 	}
 	
 	int Soundman::blockToMaterial(int id) const
