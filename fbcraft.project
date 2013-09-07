@@ -316,6 +316,8 @@
     <File Name="source/render_gui_helditem.cpp"/>
     <File Name="source/gameconf.hpp"/>
     <File Name="source/gameconf.cpp"/>
+    <File Name="source/compressor_rle.hpp"/>
+    <File Name="source/compressor_rle.cpp"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>

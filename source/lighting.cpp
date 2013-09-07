@@ -420,10 +420,9 @@ namespace cppcraft
 		}
 		if (position.y < underlevel)
 		{
-			light = position.y / underlevel;
-			light *= light;
-			maxlight = maxlight * light + (1.0 - light) * DARKNESS;
-			light *= maxlight;
+			light = 1.0 - position.y / underlevel;
+			maxlight = maxlight * (1.0 - light) + light * DARKNESS;
+			light *= maxlight * 2.0;
 		}
 		
 		#define sunray   lightRay2D(light, maxlight, position, angle.x, angle.y)

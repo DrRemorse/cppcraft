@@ -2,6 +2,7 @@
 
 #include "library/log.hpp"
 #include "library/compression/lzo.hpp"
+#include "compressor_rle.hpp"
 #include "sectors.hpp"
 #include "flatlands.hpp"
 
@@ -88,21 +89,19 @@ namespace cppcraft
 			
 			if (y < datalength.sectors)
 			{
-				// current sectorblock
-				Sector::sectorblock_t* b = (Sector::sectorblock_t*) cpos;
-				
 				// check if any blocks are present
-				if (b->blocks)
+				if (rle.hasBlocks(cpos))
 				{
 					// copy data to engine side
 					if (sector.hasBlocks() == false)
 						sector.createBlocks();
 					
-					memcpy (sector.blockpt, cpos, sizeof(Sector::sectorblock_t));
+					// decompress directly onto sectors sectorblock
+					rle.decompress(cpos, *sector.blockpt);
 					
 					// set sector flags (based on sectorblock flags)
-					sector.hardsolid  = b->hardsolid;
-					sector.torchlight = b->lights;
+					sector.hardsolid  = sector.blockpt->hardsolid;
+					sector.torchlight = sector.blockpt->lights;
 					sector.haslight   = 0; // flag as needing light gathering
 					
 					// set sector-has-data flag
@@ -116,7 +115,9 @@ namespace cppcraft
 				}
 				
 				// go to next sectorblock
-				cpos += sizeof(Sector::sectorblock_t);
+				//cpos += sizeof(Sector::sectorblock_t);
+				// go to next RLE compressed sector
+				cpos += rle.getSize();
 			}
 			else
 			{	// out of bounds, just null it

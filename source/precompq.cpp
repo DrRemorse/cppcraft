@@ -135,6 +135,7 @@ namespace cppcraft
 		int t_mod = 0;
 		
 		finish();
+		
 		// always check if time is out
 		if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT) return true;
 		
