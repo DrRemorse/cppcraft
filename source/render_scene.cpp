@@ -7,6 +7,7 @@
 #include "library/opengl/window.hpp"
 
 #include "camera.hpp"
+#include "gameconf.hpp"
 #include "minimap.hpp"
 #include "particles.hpp"
 #include "player.hpp"
@@ -37,7 +38,11 @@ namespace cppcraft
 		// initialize minimap
 		minimap.init();
 		
+		// the FBO we render the main scene to
 		sceneFBO.create();
+		sceneFBO.bind();
+		sceneFBO.createDepthRBO(renderer.gamescr.SW, renderer.gamescr.SH);
+		sceneFBO.unbind();
 	}
 	
 	// render normal scene
@@ -56,7 +61,6 @@ namespace cppcraft
 		sceneFBO.attachColor(0, textureman.get(Textureman::T_FOGBUFFER));
 		sceneFBO.attachColor(1, textureman.get(Textureman::T_UNDERWATERMAP));
 		sceneFBO.attachColor(2, textureman.get(Textureman::T_SKYBUFFER));
-		sceneFBO.attachDepth(textureman.get(Textureman::T_DEPTHBUFFER));
 		
 		// add all attachments to rendering output
 		std::vector<int> dbuffers;
@@ -162,21 +166,20 @@ namespace cppcraft
 			else
 			{
 				// not recalculating frustum
+				camera.ref = false;
 				
 				// if last frame was an occlusion test
-				if (camera.ref)
+				if (camera.needsupd == 1)
 				{
-					// gather occlusion data
+					// gather occlusion results
 					camera.needsupd = 2;
-					// disable full refresh
-					camera.ref = false;
 				}
 			}
 			mtx.sectorseam.unlock();
 		}
 		
 		// render queue needed update
-		if (camera.needsupd)
+		if (camera.needsupd == 2)
 		{
 			// compress rendering queue to minimal size by occlusion culling
 			compressRenderingQueue();
@@ -198,24 +201,26 @@ namespace cppcraft
 		glDepthMask(GL_TRUE);
 		
 		glEnable(GL_CULL_FACE);
-		glEnable(GL_MULTISAMPLE_ARB);
-		
+		if (gameconf.multisampling)
+		{
+			glEnable(GL_MULTISAMPLE_ARB);
+		}
 		/// render physical scene w/depth ///
 		
 		renderScene(renderer, sceneFBO);
 		
-		glDisable(GL_MULTISAMPLE_ARB);
+		if (gameconf.multisampling)
+		{
+			glDisable(GL_MULTISAMPLE_ARB);
+		}
 		glDisable(GL_CULL_FACE);
 		
 		glDisable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
 		
-		/// take snapshot of scene ///
-		// there are no more things in the depth buffer after rendering scene
-		sceneFBO.removeDepth();
 		sceneFBO.unbind();
 		
-		// create fog based on depth
+		/// create fog based on depth ///
 		textureman.bind(0, Textureman::T_FOGBUFFER);
 		textureman.bind(1, Textureman::T_SKYBUFFER);
 		//textureman.bind(2, Textureman::T_FSNORMALS);
@@ -234,8 +239,7 @@ namespace cppcraft
 		
 		screenspace.terrain(renderer.gamescr);
 		
-		// render clouds & particles
-		sceneFBO.attachDepth(textureman.get(Textureman::T_DEPTHBUFFER));
+		///  render clouds & particles  ///
 		
 		glEnable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
@@ -256,7 +260,6 @@ namespace cppcraft
 		glColorMask(1, 1, 1, 1);
 		glDisable(GL_BLEND);
 		
-		sceneFBO.removeDepth();
 		sceneFBO.unbind();
 		
 	} // render scene

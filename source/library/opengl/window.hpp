@@ -15,7 +15,9 @@ namespace library
 	{
 	public:
 		WindowConfig();
+		WindowConfig(std::string title, int width, int height);
 		
+		// values used to create a GLFW window
 		std::string title;
 		bool fullscreen;
 		bool vsync;
@@ -48,6 +50,8 @@ namespace library
 		void setTitle(std::string);
 		// set window position on screen to (x, y)
 		void setPosition(int x, int y);
+		// make this window the current context
+		void setCurrent();
 		// starts a running rendering loop, that executes renderFunc
 		// each frame, until renderFunc returns false
 		void startRenderingLoop(renderFunc, double granularity);

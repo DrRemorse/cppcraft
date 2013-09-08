@@ -17,6 +17,7 @@
 #include "threading.hpp"
 #include "worldmanager.hpp"
 #include <cmath>
+#include <sstream>
 
 //#define DEBUG
 
@@ -51,41 +52,17 @@ namespace cppcraft
 			wndconf.SH = config.get("window.height", 720);
 		}
 		wndconf.vsync       = config.get("opengl.vsync", true);
-		wndconf.multisample = gameconf.multisampling;
 		
 		// open a GLFW ogl context window
 		gamescr.open(wndconf);
 		// initialize openGL extensions
 		ogl.init(gamescr);
 		
-		// GL_COMPRESSED_RGBA setting
-		glHint(GL_TEXTURE_COMPRESSION_HINT, GL_NICEST);
-		// GL_GENERATE_MIPMAP setting
-		glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
-		// perspective-correct interpolation setting
-		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-		
-		// buffer cleared color
-		glClearColor(0.0, 0.0, 0.0, 0.0);
-		// (initial) depth settings
-		glClearDepth(1.0);
-		glDepthRange(0.0, 1.0);
-		glDepthFunc(GL_LEQUAL);
-		glEnable(GL_DEPTH_TEST);
-		
-		// culling & shading
-		glCullFace(GL_BACK);
-		glPolygonMode(GL_FRONT, GL_FILL);
-		
-		// blend function
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		
-		// point sprites
+		// enable custom point sprites
 		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE_ARB);
 		glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
 		
-		// texturing
-		// seamless cubemaps globally
+		// enable seamless cubemaps (globally)
 		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 		
 		if (OpenGL::checkError())
@@ -189,12 +166,23 @@ namespace cppcraft
 		const double render_granularity = 0.01; // 10ms granularity
 		double t0 = glfwGetTime();
 		
+		float FPS = 0.0;
+		
 		while (glfwWindowShouldClose(gamescr.window()) == 0 && mtx.terminate == false)
 		{
 			// variable delta frame timing
 			double t1 = t0;
 			t0 = glfwGetTime();
 			dtime = 1.0 * (t0 - t1) / render_granularity;
+			
+			/// FPS COUNTER ///
+			/*
+			FPS = FPS * 0.9 + (1.0 / (t0 - t1)) * 0.1;
+			
+			std::stringstream ss;
+			ss << "Camera update value: " << camera.needsupd; //"FPS: " << FPS;
+			glfwSetWindowTitle(gamescr.window(), ss.str().c_str());
+			*/
 			
 			// compiling columns
 		#ifdef DEBUG

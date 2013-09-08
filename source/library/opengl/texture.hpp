@@ -67,6 +67,7 @@ namespace library
 		
 		void create(const Bitmap& bmp, bool mipmap, GLint wm, GLint magf, GLint minf); // regular texture
 		void create(bool mipmap, int levels, int width, int height); // texture buffer
+		void createMultisample(int numsamples, int width, int height);
 		void createDepth(bool stencil24d8s, int width, int height);
 		// modify attributes
 		void setAnisotropy(float samples);

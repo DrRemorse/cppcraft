@@ -369,7 +369,7 @@ namespace cppcraft
 				break;
 			}
 			
-			if (camera.needsupd)
+			if (camera.needsupd == 1)
 			{
 				// render and count visible samples
 				for (int j = 0; j < drawq[i].count(); j++)
@@ -383,6 +383,9 @@ namespace cppcraft
 					
 					// end counting
 					glEndQuery(GL_ANY_SAMPLES_PASSED);
+					
+					// set this as having been sampled
+					cv->occluded[i] = 1;
 				}
 			}
 			else

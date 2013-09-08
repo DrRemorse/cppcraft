@@ -128,7 +128,6 @@ namespace cppcraft
 	{
 		// if player is under the terrain, somehow change
 		// ambience & music to cave themes
-		int skyLevel    = Flatlands.getSkyLevel(player.X, player.Z);
 		int groundLevel = Flatlands.getGroundLevel(player.X, player.Z);
 		const int CAVE_DEPTH = 6;
 		

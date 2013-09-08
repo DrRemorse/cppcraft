@@ -126,8 +126,8 @@ namespace library
 	void Texture::create(bool mipmap, int levels, int width, int height)
 	{
 		bind(0);
-		GLint minfilter = (mipmap) ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST;
-		GLint maxfilter = (mipmap) ? GL_LINEAR : GL_NEAREST;
+		const GLint minfilter = (mipmap) ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST;
+		const GLint maxfilter = (mipmap) ? GL_LINEAR : GL_NEAREST;
 		
 		glTexParameteri(this->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(this->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -188,6 +188,24 @@ namespace library
 	void Texture::setAnisotropy(float samples)
 	{
 		glTexParameterf(this->type, GL_TEXTURE_MAX_ANISOTROPY_EXT, samples);
+	}
+	
+	void Texture::createMultisample(int numsamples, int width, int height)
+	{
+		bind(0);
+		this->width  = width;
+		this->height = height;
+		this->type = GL_TEXTURE_2D_MULTISAMPLE;
+		this->isMipmapped = false;
+		
+		const GLint minfilter = GL_NEAREST;
+		const GLint maxfilter = GL_NEAREST;
+		
+		glTexParameteri(this->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(this->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(this->type, GL_TEXTURE_MAG_FILTER, maxfilter);
+		glTexParameteri(this->type, GL_TEXTURE_MIN_FILTER, minfilter);
+		glTexImage2DMultisample(this->type, numsamples, GL_RGBA, width, height, false);
 	}
 	
 	void Texture::createDepth(bool stencil24d8s, int width, int height)

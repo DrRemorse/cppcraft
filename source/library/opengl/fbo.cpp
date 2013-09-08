@@ -78,6 +78,24 @@ namespace library
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0);
 	}
 	
+	void FBO::createDepthRBO(int width, int height)
+	{
+		// depth renderbuffer
+		GLuint rbo;
+		glGenRenderbuffers(1, &rbo);
+		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+		// attach the rbo to this fbo
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
+		
+		if (OpenGL::checkError())
+		{
+			logger << Log::ERR << "FBO::createDepthRBO(): Error creating depth renderbuffer" << Log::ENDL;
+			throw std::string("FBO::createDepthRBO(): Error creating depth renderbuffer");
+		}
+	}
+	
 	void FBO::drawBuffers(std::vector<int> buffers)
 	{
 		glDrawBuffers(buffers.size(), (GLenum*) buffers.data());

@@ -32,10 +32,15 @@ namespace library
 		void attachColor(GLenum index, Texture& texture);
 		void attachColor(GLenum index, GLuint texture);
 		void removeColor(GLenum index);
-		// attached a depth texture to this FBO
+		// resolve a multisampling texture and remove it
+		void resolve(GLenum index);
+		// attach a depth texture to this FBO
 		void attachDepth(Texture& texture);
 		void attachDepth(GLuint texture);
 		void removeDepth();
+		
+		// create depth renderbuffer
+		void createDepthRBO(int width, int height);
 		
 		// select which attachments to draw to
 		static void drawBuffers(std::vector<int> buffers);

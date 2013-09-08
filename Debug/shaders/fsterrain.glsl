@@ -15,21 +15,15 @@ void main(void)
 
 #ifdef FRAGMENT_PROGRAM
 uniform sampler2D terrain;
-//uniform sampler2D depthtexture;
 uniform sampler2D blurtexture;
-//uniform sampler2D skytexture;
 
 in vec2 texCoord;
 
-void linearizeDepth(inout float Z);
 const float ZFAR
 const float ZNEAR
 
 void main()
 {
-	//float depth = texture2D(depthtexture, texCoord).x;
-	//linearizeDepth(depth);
-	
 	// base color
 	vec4 color = texture2D(terrain, texCoord);
 	// blurred color

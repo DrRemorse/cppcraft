@@ -35,6 +35,7 @@ namespace library
 		glGenerateMipmap	= (void(GLapi*)(GLenum))glfwGetProcAddress("glGenerateMipmap");
 		glActiveTexture		= (void(GLapi*)(GLenum))glfwGetProcAddress("glActiveTexture");
 		glTexImage3D		= (void(GLapi*)(GLenum, GLint, GLint, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, GLvoid*))glfwGetProcAddress("glTexImage3D");
+		glTexImage2DMultisample = (void(GLapi*)(GLenum, GLsizei, GLint, GLsizei, GLsizei, GLboolean))glfwGetProcAddress("glTexImage2DMultisample");
 		
 		// shader pipeline
 		glCreateProgram			= (GLuint(GLapi*)())glfwGetProcAddress("glCreateProgram");
@@ -130,6 +131,28 @@ namespace library
 			logger << Log::ERR << "Your video card does not support automatic mipmap generation. Exiting." << Log::ENDL;
 			throw std::string("Opengl::init(): Missing mipmap generation support, check your drivers!");
 		}
+		
+		// default states
+		// GL_COMPRESSED_RGBA setting
+		glHint(GL_TEXTURE_COMPRESSION_HINT, GL_NICEST);
+		// GL_GENERATE_MIPMAP setting
+		glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
+		// perspective-correct interpolation setting
+		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+		
+		// cleared colorbuffer value
+		glClearColor(0.0, 0.0, 0.0, 0.0);
+		// cleared depth values
+		glClearDepth(1.0);
+		// full depth range
+		glDepthRange(0.0, 1.0);
+		
+		// default backface culling & fulfilled shading
+		glCullFace(GL_BACK);
+		glPolygonMode(GL_FRONT, GL_FILL);
+		
+		// default blend function
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		
 		GLenum glerr = glGetError();
 		if (glerr)

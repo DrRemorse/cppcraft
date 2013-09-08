@@ -17,7 +17,7 @@ using namespace library;
 namespace cppcraft
 {
 	const double TIMING_TICKTIMER = 0.0125;
-	const double MAX_TIMING_WAIT  = 0.01;
+	const double MAX_TIMING_WAIT  = 0.0125;
 	
 	void WorldManager::main()
 	{
@@ -71,9 +71,14 @@ namespace cppcraft
 			if (timeout == false)
 			if (worldbuilder.getMode() != worldbuilder.MODE_GENERATING)
 			{
+				//double t0 = timer.getDeltaTime();
+				
 				// as long as not currently 'generating' world:
 				// start precompiling sectors
 				if (precompq.run(timer, _localtime)) timeout = true;
+				
+				//double t1 = timer.getDeltaTime();
+				//logger << "pcq time: " << t1 - t0 << Log::ENDL;
 			}
 			
 			// ----------- WORLD BUILDER ------------ //

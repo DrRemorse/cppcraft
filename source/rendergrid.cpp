@@ -175,7 +175,7 @@ namespace cppcraft
 									// as long as not contested or was not rendered last frame
 									cv.occluded[i] = 3;
 								}
-								
+								cv.occluded[i] = 0;
 								// add to draw queue
 								drawq[i].add(&cv);
 							}	

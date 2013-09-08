@@ -10,20 +10,22 @@
 namespace library
 {
 	#define opengl_ext GLapi
-
+	
 	// openGL extensions
 	opengl_ext void (*glGenerateMipmap)(GLenum target);
-
+	
 	// vertex buffer objects
 	opengl_ext void (*glGenBuffers)(GLsizei n, GLuint* ids);
 	opengl_ext void (*glBindBuffer)(GLenum target, GLuint id);
 	opengl_ext void (*glBufferData)(GLenum target, GLint size, GLvoid* data, GLenum usage);
 	opengl_ext void (*glBufferSubData)(GLenum target, GLint offset, GLsizei size, GLvoid* data);
 	opengl_ext void (*glDeleteBuffers)(GLsizei n, GLuint* ids);
-
+	
+	// texturing extensions
 	opengl_ext void (*glActiveTexture)(GLenum textureunit);
 	opengl_ext void (*glTexImage3D)(GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, GLvoid* data);
-
+	opengl_ext void (*glTexImage2DMultisample)(GLenum target, GLsizei samples, GLint internalformat, GLsizei width, GLsizei height, GLboolean fixedSampleLocations);
+	
 	// shaders
 	opengl_ext GLuint (*glCreateProgram)();
 	opengl_ext void (*glDeleteProgram)(GLuint program);
@@ -50,9 +52,9 @@ namespace library
 	opengl_ext void (*glUniform4f)(GLint location, GLfloat v1, GLfloat v2, GLfloat v3, GLfloat v4);
 	opengl_ext void (*glUniform3fv)(GLint location, GLsizei instances, GLfloat* first);
 	opengl_ext void (*glUniform4fv)(GLint location, GLsizei instances, GLfloat* first);
-
+	
 	opengl_ext void (*glUniformMatrix4fv)(GLint location, GLsizei count, GLboolean transpose, GLfloat* first);
-
+	
 	// vertex arrays
 	opengl_ext void (*glGenVertexArrays)(GLsizei count, GLuint* ids);
 	opengl_ext void (*glBindVertexArray)(GLuint target);

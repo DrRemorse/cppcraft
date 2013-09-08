@@ -26,8 +26,8 @@ namespace cppcraft
 		this->blurTxW = gamescr.SW;
 		this->blurTxH = gamescr.SH;
 		
-		this->flareTxW = gamescr.SW / 4;
-		this->flareTxH = gamescr.SH / 4;
+		this->flareTxW = gamescr.SW / 2;
+		this->flareTxH = gamescr.SH / 2;
 		
 		// create screenspace FBOs
 		glGenFramebuffers(1, &blurFBO);

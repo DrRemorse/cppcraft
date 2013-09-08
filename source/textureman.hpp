@@ -57,7 +57,6 @@ namespace cppcraft
 			
 			T_FOGBUFFER,
 			T_RENDERBUFFER,
-			T_DEPTHBUFFER,
 			T_SKYBUFFER,
 			
 			T_UNDERWATERMAP,

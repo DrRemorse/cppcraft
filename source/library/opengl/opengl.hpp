@@ -30,6 +30,7 @@ namespace library
 // texture constants & rendering hints
 #define GL_MIRRORED_REPEAT 0x8370
 #define GL_TEXTURE_3D 0x806F
+#define GL_TEXTURE_2D_ARRAY 0x8C1A
 #define GL_DEPTH_TEXTURE_MODE 0x884B
 #define GL_TEXTURE_COMPARE_FUNC 0x884D
 #define GL_TEXTURE_COMPARE_MODE 0x884C
@@ -250,7 +251,6 @@ namespace library
 #define GL_DEPTH_COMPONENT16 0x81A5
 #define GL_DEPTH_COMPONENT24 0x81A6
 #define GL_DEPTH_COMPONENT32 0x81A7
-#define GL_TEXTURE_2D_ARRAY 0x8C1A
 
 // point sprites
 #define GL_POINT_SPRITE                   0x8861
@@ -283,6 +283,7 @@ opengl_ext_decl void (*glDeleteBuffers)(GLsizei n, GLuint* ids);
 
 opengl_ext_decl void (*glActiveTexture)(GLenum textureunit);
 opengl_ext_decl void (*glTexImage3D)(GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, GLvoid* data);
+opengl_ext_decl void (*glTexImage2DMultisample)(GLenum target, GLsizei samples, GLint internalformat, GLsizei width, GLsizei height, GLboolean fixedSampleLocations);
 
 // shaders
 opengl_ext_decl GLuint (*glCreateProgram)();

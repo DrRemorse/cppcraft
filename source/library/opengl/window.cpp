@@ -12,6 +12,18 @@ namespace library
 		this->SW = 640;
 		this->SH = 480;
 		this->fullscreen = false;
+		this->refreshrate = 60;
+		this->vsync = true;
+		this->multisample = 0;
+	}
+	WindowConfig::WindowConfig(std::string title, int width, int height)
+	{
+		// set default window settings
+		this->title = title;
+		this->SW = width;
+		this->SH = height;
+		this->fullscreen = false;
+		this->refreshrate = 60;
 		this->vsync = true;
 		this->multisample = 0;
 	}
@@ -45,8 +57,8 @@ namespace library
 		glfwWindowHint(GLFW_SAMPLES, wndconf.multisample);
 		// common alpha, stencil & depth settings
 		glfwWindowHint(GLFW_ALPHA_BITS, 8);
+		glfwWindowHint(GLFW_DEPTH_BITS,  24);
 		glfwWindowHint(GLFW_STENCIL_BITS, 8);
-		glfwWindowHint(GLFW_DEPTH_BITS, 24);
 		
 		// create new glfw3 window
 		this->wndHandle = glfwCreateWindow(SW, SH, wndconf.title.c_str(), monitor, nullptr);
@@ -59,13 +71,10 @@ namespace library
 		}
 		
 		// make this window the current OpenGL context
-		glfwMakeContextCurrent(this->wndHandle);
+		setCurrent();
 		
 		// vertical sync
-		if (wndconf.vsync)
-		{
-			glfwSwapInterval(1);
-		}
+		glfwSwapInterval((wndconf.vsync) ? 1 : 0);
 	}
 	
 	void WindowClass::close()
@@ -87,6 +96,12 @@ namespace library
 	void WindowClass::setPosition(int x, int y)
 	{
 		glfwSetWindowPos(wndHandle, x, y);
+	}
+	
+	// makes this window the current opengl context
+	void WindowClass::setCurrent()
+	{
+		glfwMakeContextCurrent(this->wndHandle);
 	}
 	
 	void WindowClass::startRenderingLoop(renderFunc renderfunc, double granularity)
