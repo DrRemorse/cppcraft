@@ -219,10 +219,11 @@ namespace cppcraft
 						list.table.clear();
 						
 						// light gathering
-						if (sector->haslight == 1)
+						if (sector->hasLight == 1)
 						{
 							// avoid gathering light data
 							list.gathered = true;
+							list.lights.clear();
 						}
 						else
 						{

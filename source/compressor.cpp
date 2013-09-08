@@ -102,7 +102,7 @@ namespace cppcraft
 					// set sector flags (based on sectorblock flags)
 					sector.hardsolid  = sector.blockpt->hardsolid;
 					sector.torchlight = sector.blockpt->lights;
-					sector.haslight   = 0; // flag as needing light gathering
+					sector.hasLight   = 0; // flag as needing light gathering
 					
 					// set sector-has-data flag
 					sector.contents = Sector::CONT_SAVEDATA;

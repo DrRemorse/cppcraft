@@ -27,8 +27,6 @@ namespace cppcraft
 		
 		unsigned short vertices    [RenderConst::MAX_UNIQUE_SHADERS];
 		unsigned short bufferoffset[RenderConst::MAX_UNIQUE_SHADERS];
-		
-		visiblefaces_t testdata;
 	};
 	
 	class Precompiler

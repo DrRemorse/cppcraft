@@ -318,6 +318,7 @@
     <File Name="source/gameconf.cpp"/>
     <File Name="source/compressor_rle.hpp"/>
     <File Name="source/compressor_rle.cpp"/>
+    <File Name="source/blocks_vfaces.cpp"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>

@@ -101,7 +101,7 @@ in vec3 color_rayleigh;
 in vec3 color_mie;
 in vec3 starc;
 
-const float exposure = 2.0;
+const float exposure = 2.5;
 
 void main (void)
 {

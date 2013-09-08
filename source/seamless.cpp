@@ -74,7 +74,8 @@ namespace cppcraft
 		if (s.render)
 		{
 			// newly introduced sectors can have additional torchlight
-			s.haslight = 0;
+			// this sector has NEW exposure to lights it didn't have before
+			s.hasLight = 0;
 			// recompile sector mesh
 			s.progress = Sector::PROG_NEEDRECOMP;
 		}
@@ -84,7 +85,7 @@ namespace cppcraft
 	void Seamless::seamless_preconditions()
 	{
 		// finish all running precompiler threads
-		precompq.finish();
+		//precompq.finish();
 	}
 	
 	// big huge monster function

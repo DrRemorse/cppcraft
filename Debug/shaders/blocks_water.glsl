@@ -164,7 +164,10 @@ void main(void)
 	const vec3 deepwater = vec3(0.02, 0.10, 0.20);
 	const vec3 shallowwater = vec3(0.2, 0.3, 0.2);
 	
-	float dep = 1.0 - step(color.a, 0.995) * color.a;
+	// if player is underwater, we need to see the sky properly:
+	//float dep = 1.0 - step(color.a, 0.995) * color.a;
+	// otherwise:
+	float dep = 1.0 - color.a;
 	dep *= dep;
 	
 	vec3 waterColor = mix(deepwater, shallowwater, dep);

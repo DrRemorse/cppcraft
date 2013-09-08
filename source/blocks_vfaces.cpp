@@ -1,6 +1,6 @@
 #include "blocks.hpp"
 
-#include "sector.hpp"
+#include "sectors.hpp"
 #include "spiders.hpp"
 
 namespace cppcraft
@@ -127,122 +127,129 @@ namespace cppcraft
 		return lbx;
 	}
 	
-	unsigned short Block::visibleFaces(int bx, int by, int bz) const
+	unsigned short Block::visibleFaces(Sector& sector, int bx, int by, int bz) const
 	{
 		unsigned short lbx = 0;
 		
 		// left side -x
 		if (bx == 0) // facing = 5
 		{
-			if (pcg.test_x_m == 1) // nullsector
+			if (sector.x > 0)
 			{
-				lbx |= 32;  // true
-			}
-			else if (pcg.test_x_m == 2) // contains data
-			{
-				if (visibilityComp(pcg.sb_x_m[0](Sector::BLOCKS_XZ-1, by, bz), 3))
-					lbx |= 32;  // true
+				Sector& s = Sectors(sector.x-1, sector.y, sector.z);
+				if (s.contents > Sector::CONT_UNKNOWN)
+				{
+					if (visibilityComp(s(Sector::BLOCKS_XZ-1, by, bz), 3))
+						lbx |= 32;
+				}
+				else lbx |= 32;
 			}
 		}
 		else
 		{
-			if (visibilityComp(pcg.sector[0](bx-1, by, bz), 3))
-				lbx |= 32; // true
+			if (visibilityComp(sector(bx-1, by, bz), 3))
+				lbx |= 32;
 		}
 		
 		// right side +x
 		if (bx == Sector::BLOCKS_XZ-1) // facing = 4
 		{
-			if (pcg.test_x_p == 1) // nullsector
+			if (sector.x < Sectors.getXZ()-1)
 			{
-				lbx |= 16; // true
-			}
-			else if (pcg.test_x_p == 2) // contains data
-			{
-				if (visibilityComp(pcg.sb_x_p[0](0, by, bz), 2))
-					lbx |= 16; // true
+				Sector& s = Sectors(sector.x+1, sector.y, sector.z);
+				if (s.contents > Sector::CONT_UNKNOWN)
+				{
+					if (visibilityComp(s(0, by, bz), 2))
+						lbx |= 16;
+				}
+				else lbx |= 16;
 			}
 		}
 		else
 		{
-			if (visibilityComp(pcg.sector[0](bx+1, by, bz), 2))
-				lbx |= 16; // true
+			if (visibilityComp(sector(bx+1, by, bz), 2))
+				lbx |= 16;
 		}
 		
 		// bottom -y
 		if (by == 0)
 		{
-			if (pcg.test_y_m == 1) // nullsector
+			if (sector.y > 0)
 			{
-				lbx |= 8;
-			}
-			else if (pcg.test_y_m == 2) // contains data
-			{
-				if (visibilityCompBottom(pcg.sb_y_m[0](bx, Sector::BLOCKS_Y-1, bz)))
-					lbx |= 8;
+				Sector& s = Sectors(sector.x, sector.y-1, sector.z);
+				if (s.contents > Sector::CONT_UNKNOWN)
+				{
+					if (visibilityCompBottom(s(bx, Sector::BLOCKS_Y-1, bz)))
+						lbx |= 8;
+				}
+				else lbx |= 8;
 			}
 		}
 		else
 		{
-			if (visibilityCompBottom(pcg.sector[0](bx, by-1, bz))) 
+			if (visibilityCompBottom(sector(bx, by-1, bz)))
 				lbx |= 8;
 		}
 		
 		// top +y
 		if (by == Sector::BLOCKS_Y-1)
 		{
-			if (pcg.test_y_p == 1) // nullsector
+			if (sector.y < Sectors.getY()-1)
 			{
-				lbx |= 4;
-			}
-			else if (pcg.test_y_p == 2) // contains data
-			{
-				if (visibilityCompTop(pcg.sb_y_p[0](bx, 0, bz)))
-					lbx |= 4;
+				Sector& s = Sectors(sector.x, sector.y+1, sector.z);
+				if (s.contents > Sector::CONT_UNKNOWN)
+				{
+					if (visibilityCompTop(s(bx, 0, bz)))
+						lbx |= 4;
+				}
+				else lbx |= 4;
 			}
 		}
 		else
 		{
-			if (visibilityCompTop(pcg.sector[0](bx, by+1, bz)))
+			if (visibilityCompTop(sector(bx, by+1, bz)))
 				lbx |= 4;
 		}
 		
-		// front +z
+		// back -z
 		if (bz == 0)
 		{
-			if (pcg.test_z_m == 1) // nullsector
+			if (sector.z > 0)
 			{
-				lbx |= 2;
-			}
-			else if (pcg.test_z_m == 2) // contains data
-			{
-				if (visibilityComp(pcg.sb_z_m[0](bx, by, Sector::BLOCKS_XZ-1), 1))
-					lbx |= 2;
+				Sector& s = Sectors(sector.x, sector.y, sector.z-1);
+				if (s.contents > Sector::CONT_UNKNOWN)
+				{
+					if (visibilityComp(s(bx, by, Sector::BLOCKS_XZ-1), 1))
+						lbx |= 2;
+				}
+				else lbx |= 2;
 			}
 		}
 		else
 		{
-			if (visibilityComp(pcg.sector[0](bx, by, bz-1), 1))
+			if (visibilityComp(sector(bx, by, bz-1), 1))
 				lbx |= 2;
 		}
 		
 		if (bz == Sector::BLOCKS_XZ-1)
 		{
-			if (pcg.test_z_p == 1) // nullsector
+			if (sector.z < Sectors.getXZ()-1)
 			{
-				lbx |= 1;
-			}
-			else if (pcg.test_z_p == 2) // contains data
-			{
-				if (visibilityComp(pcg.sb_z_p[0](bx, by, 0), 0))
-					lbx |= 1;
+				Sector& s = Sectors(sector.x, sector.y, sector.z+1);
+				if (s.contents > Sector::CONT_UNKNOWN)
+				{
+					if (visibilityComp(s(bx, by, 0), 0))
+						lbx |= 1;
+				}
+				else lbx |= 1;
 			}
 		}
 		else
 		{
-			if (visibilityComp(pcg.sector[0](bx, by, bz+1), 0))
+			if (visibilityComp(sector(bx, by, bz+1), 0))
 				lbx |= 1;
 		}
+		
 		return lbx;
 	}
 	

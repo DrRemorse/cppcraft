@@ -255,17 +255,17 @@ namespace cppcraft
 		/// Fullscreen Buffers ///
 		
 		// fullscreen fog colorbuffer
-		textures[T_FOGBUFFER] = Texture(GL_TEXTURE_2D, GL_RGBA16F_ARB);
+		textures[T_FOGBUFFER] = Texture(GL_TEXTURE_2D);
 		textures[T_FOGBUFFER].create(false, 0, gamescr.SW, gamescr.SH);
 		// fullscreen colorbuffer
-		textures[T_RENDERBUFFER] = Texture(GL_TEXTURE_2D, GL_RGBA16F_ARB);
+		textures[T_RENDERBUFFER] = Texture(GL_TEXTURE_2D);
 		textures[T_RENDERBUFFER].create(false, 0, gamescr.SW, gamescr.SH);
 		textures[T_RENDERBUFFER].setInterpolation(true);
 		// fullscreen depthbuffer
 		textures[T_DEPTHBUFFER] = Texture(GL_TEXTURE_2D);
 		textures[T_DEPTHBUFFER].createDepth(true, gamescr.SW, gamescr.SH);
 		// fullscreen skybuffer
-		textures[T_SKYBUFFER] = Texture(GL_TEXTURE_2D, GL_RGBA16F_ARB);
+		textures[T_SKYBUFFER] = Texture(GL_TEXTURE_2D);
 		textures[T_SKYBUFFER].create(false, 0, gamescr.SW, gamescr.SH);
 		// fullscreen underwater texture
 		textures[T_UNDERWATERMAP] = Texture(GL_TEXTURE_2D);

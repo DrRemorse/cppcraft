@@ -20,6 +20,7 @@ namespace cppcraft
 	public:
 		static Block& getBlock(int x, int y, int z);
 		static Block& getBlock(Sector&, int x, int y, int z);
+		static Block& getBlockNoGen(Sector&, int x, int y, int z);
 		static Block& getBlock(double x, double y, double z, double size_xz);
 		
 		// converts a position (x, y, z) to an explicit in-system position

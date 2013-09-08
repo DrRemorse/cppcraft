@@ -173,7 +173,7 @@ namespace cppcraft
 		// current thread id
 		int t_mod = 0;
 		
-		finish();
+		//finish();
 		
 		// always check if time is out
 		if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT) return true;
@@ -197,6 +197,8 @@ namespace cppcraft
 					
 					if (startJob(t_mod, currentPrecomp))
 					{
+						finish();
+						
 						// increase count so we can get out now
 						currentPrecomp += 1;
 						return true;
@@ -228,7 +230,7 @@ namespace cppcraft
 		currentPrecomp = 0;
 		
 		// finish jobs & clear queue
-		//finish();
+		finish();
 		
 		// always check if time is out
 		if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT) return true;

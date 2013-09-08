@@ -21,7 +21,6 @@ namespace cppcraft
 	public:
 		VAO vao;
 		
-		float m_nSamples;
 		float m_Kr, m_Kr4PI;
 		float m_Km, m_Km4PI;
 		float m_ESun, m_g;
@@ -58,7 +57,6 @@ namespace cppcraft
 	
 	void Scatterer::init()
 	{
-		m_nSamples = 3;		// Number of sample rays to use in integral equation
 		m_Kr = 0.0025;		// Rayleigh scattering constant
 		m_Kr4PI = m_Kr * 4.0 * PI;
 		m_Km = 0.0025;		// Mie scattering constant

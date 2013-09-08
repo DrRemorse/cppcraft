@@ -84,6 +84,14 @@ namespace cppcraft
 		
 		return ptr[0](x, y, z);
 	}
+	Block& Spiders::getBlockNoGen(Sector& s, int x, int y, int z)
+	{
+		Sector* ptr = spiderwrap(s, x, y, z);
+		if (ptr == nullptr) return air_block;
+		if (ptr->contents < Sector::CONT_SAVEDATA) return air_block;
+		
+		return ptr[0](x, y, z);
+	}
 	
 	Block& Spiders::getBlock(double x, double y, double z, double size)
 	{

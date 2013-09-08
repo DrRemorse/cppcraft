@@ -36,9 +36,6 @@ namespace cppcraft
 		} sectorblock_t;
 		#pragma pack(pop)
 		
-		// grid position
-		int x, y, z;
-		
 		// data/blocks
 		sectorblock_t* blockpt;
 		// opengl vbo data
@@ -46,18 +43,19 @@ namespace cppcraft
 		// special datablock
 		//specialptr special;
 		
-		// flags
-		unsigned char render    : 1; // renderable
-		unsigned char progress  : 3; // progress_t
-		unsigned char contents  : 2; // sectorcontents_t
-		unsigned char precomp   : 3; // precompilation pipeline stage
-		// misc flags
-		unsigned char culled    : 1;
-		unsigned char haswork   : 1;
-		// 0 = unknown (not computed), 1 = found no lights, 2 = found light(s)
-		unsigned char haslight  : 2;
-		unsigned char hardsolid;
+		// grid position
+		int x, y, z;
 		
+		// flags
+		bool render;   // renderable
+		char progress; // progress_t
+		char contents; // sectorcontents_t
+		char precomp;  // precompilation stage
+		bool culled;
+		bool hasWork;
+		// 0 = unknown (not computed), 1 = found no lights, 2 = found light(s)
+		char hasLight;
+		unsigned char hardsolid;
 		short torchlight; // number of lights (if any)
 		
 		typedef enum

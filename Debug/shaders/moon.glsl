@@ -53,7 +53,7 @@ void main(void)
 	// degamma
 	color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
 #endif
-	color.rgb += horizon * 0.5;
+	//color.rgb += horizon * 0.5;
 	
 	gl_FragColor = color;
 }

@@ -158,7 +158,7 @@ namespace cppcraft
 		{
 			Sector& s2 = Sectors(x, y, z);
 			
-			if (s2.torchlight != 0 && s2.contents == Sector::CONT_SAVEDATA)
+			if (s2.torchlight != 0 && s2.hasLight != 1 && s2.contents == Sector::CONT_SAVEDATA)
 			{
 				// backwards counter used for early exiting
 				short total = s2.torchlight;
@@ -192,7 +192,7 @@ namespace cppcraft
 								{
 									// add light
 									list.lights.push_back(
-										(blocklight_t) { &s2, bx, by, bz, lem }
+										(blocklight_t) { &s2, (short)bx, (short)by, (short)bz, lem }
 									);
 									
 								} // visibility culling
@@ -221,11 +221,11 @@ namespace cppcraft
 		// avoid counting again, unless absolutely necessary
 		if (list.lights.size())
 		{
-			sector.haslight = 2; // has lights
+			sector.hasLight = 2; // has lights
 		}
 		else
 		{
-			sector.haslight = 1; // has no lights
+			sector.hasLight = 1; // has no lights
 		}
 	}
 	

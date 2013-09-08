@@ -392,9 +392,6 @@ namespace cppcraft
 			pc.vertices[i]     = pcg.vertices[i];
 		}
 		
-		// neighbor testdata needed by AO stage
-		pc.testdata = pcg.testdata;
-		
 		// this stage has ended
 		// go to next stage: ambient occlusion gradients
 		sector.precomp = 3;

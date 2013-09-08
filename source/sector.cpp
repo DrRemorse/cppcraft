@@ -21,9 +21,9 @@ namespace cppcraft
 		this->contents = CONT_UNKNOWN; // unknown content
 		this->precomp  = 0;            // no precompilation stage
 		
-		this->culled = 0;    // not culled / covered by other sectors
-		this->haswork = 0;   // no work
-		this->haslight = 0;  // unknown state
+		this->culled  = false; // not culled / covered by other sectors
+		this->hasWork = false; // no work
+		this->hasLight = 0;  // unknown: we don't know if its exposed to any lights
 		this->hardsolid = 0; // hardsolid bitmask
 		
 	}
@@ -96,8 +96,8 @@ namespace cppcraft
 		torchlight = 0;   // no more light
 		// clear many flags, just because... bite me
 		culled = false;
-		haswork = false;
-		haslight = 0;     // just saying
+		hasWork = false;
+		hasLight = 1;     // no lights (NOTE: MAY BE WRONG)
 		
 		// remove additional data
 		/*if (special)

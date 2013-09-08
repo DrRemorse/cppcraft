@@ -45,6 +45,12 @@ namespace cppcraft
 	{
 		bool frustumRecalc = false;
 		
+		// update frustum rotation matrix
+		if (camera.rotated)
+		{
+			camera.setRotation(player.xrotrad, player.yrotrad, 0.0);
+		}
+		
 		// bind the FBO that we are rendering the entire scene into
 		sceneFBO.bind();
 		sceneFBO.attachColor(0, textureman.get(Textureman::T_FOGBUFFER));
@@ -132,12 +138,6 @@ namespace cppcraft
 				frustumRecalc = true;
 			}
 			
-			// update frustum rotation matrix
-			if (camera.rotated)
-			{
-				camera.setRotation(player.xrotrad, player.yrotrad, 0.0);
-			}
-			
 			//---------------------------------//
 			// Start of frustum recalculations //
 			//---------------------------------//
@@ -216,6 +216,11 @@ namespace cppcraft
 		sceneFBO.unbind();
 		
 		// create fog based on depth
+		textureman.bind(0, Textureman::T_FOGBUFFER);
+		textureman.bind(1, Textureman::T_SKYBUFFER);
+		//textureman.bind(2, Textureman::T_FSNORMALS);
+		//textureman.bind(3, Textureman::T_NOISE);
+		
 		screenspace.fog(renderer.gamescr);
 		
 		// blur the render buffer

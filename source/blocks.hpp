@@ -96,6 +96,8 @@ namespace cppcraft
 		
 		// run visibility tests, revealing visible sides of this cube by comparing neighbors
 		unsigned short visibleFaces(visiblefaces_t& pcg, int bx, int by, int bz) const;
+		// run visibility tests using spiders
+		unsigned short visibleFaces(Sector& sector, int bx, int by, int bz) const;
 		
 		// converts sides (0, 1, 2, 3) to cube faces (0, 1, 4, 5)
 		static int facingToCube(block_t facing);

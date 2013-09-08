@@ -80,6 +80,7 @@ namespace cppcraft
 			// recount lights for sector (can't be bothered to manage this manually)
 			s->countLights();
 			// update nearby sectors due to change in light count
+			// also, the haslights flag will be RESET for all neighboring sectors to this
 			torchlight.lightSectorUpdates(*s, id, immediate);
 		}
 		else

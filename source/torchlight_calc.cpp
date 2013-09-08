@@ -41,7 +41,7 @@ namespace cppcraft
 			Sector& ss = Sectors(x, y, z);
 			
 			// set lights flag: unknown number of gatherable lights
-			ss.haslight = 0;
+			ss.hasLight = 0;
 			
 			if (ss.render)
 			{
