@@ -24,7 +24,17 @@ namespace cppcraft
 		void run (void* pthread)
 		{
 			PrecompThread& pt = *(PrecompThread*)pthread;
-			pt.precompile();
+			
+			if (pt.precomp->sector->precomp == 2)
+			{
+				// first precompiler stage: mesh generation
+				pt.precompile();
+			}
+			else if (pt.precomp->sector->precomp == 4)
+			{
+				// second stage: AO
+				pt.ambientOcclusion();
+			}
 		}
 	};
 	std::vector<PrecompJob*> jobs;
@@ -122,6 +132,33 @@ namespace cppcraft
 		return (queueCount < Precompiler::MAX_PRECOMPQ);
 	}
 	
+	bool PrecompQ::startJob(int& t_mod, int job)
+	{
+		// set thread job info
+		PrecompThread& pt = precompiler.getThread(t_mod);
+		pt.precomp = &precompiler[job];
+		
+		// queue thread job
+		threadpool->run(jobs[t_mod], &pt, false);
+		
+		// go to next thread
+		t_mod = (t_mod + 1) % precompiler.getThreads();
+		
+		// if we are back at the start, we may just be exiting
+		if (t_mod == 0)
+		{
+			//finish();
+			
+			// check if we need to bail out
+			if (true) // timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT)
+			{
+				// exit
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	void PrecompQ::finish()
 	{
 		threadpool->sync_all();
@@ -151,34 +188,22 @@ namespace cppcraft
 			{
 				Sector* sector = precompiler[currentPrecomp].sector;
 				
-				if (sector->precomp == 1)
+				if (sector->precomp == 1 || sector->precomp == 3)
 				{
-					sector->precomp = 2;
+					// go to next intermediary stage (just to avoid running into this if() again)
+					sector->precomp += 1;
 					
-					// set thread job info
-					PrecompThread& pt = precompiler.getThread(t_mod);
-					pt.precomp = &precompiler[currentPrecomp];
-					
-					// queue thread job
-					threadpool->run(jobs[t_mod], &pt, false);
-					
-					t_mod = (t_mod + 1) % precompiler.getThreads();
-					if (t_mod == 0)
+					if (startJob(t_mod, currentPrecomp))
 					{
-						//finish();
-						
-						// check if we need to bail out
-						if (true) // timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT)
-						{
-							// increase count so we can get out now
-							currentPrecomp += 1;
-							// exit
-							return true;
-						}
+						// increase count so we can get out now
+						currentPrecomp += 1;
+						return true;
 					}
 					
 				}
-				//else if (precompiler[currentPrecomp].sector->precomp == 2)
+				// (precomp == 2 || precomp == 4) are being worked on by precompq threadpool
+				
+				//else if (precompiler[currentPrecomp].sector->precomp == 5)
 				//{
 				//	// sectorcompiler is working on this (hopefully)
 				//}

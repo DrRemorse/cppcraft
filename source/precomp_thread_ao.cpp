@@ -30,6 +30,30 @@ namespace cppcraft
 		visiblefaces_t testdata;
 	};
 	
+	void PrecompThread::ambientOcclusion()
+	{
+		// recount total vertices
+		int cnt = precomp->vertices[0];
+		for (int i = 1; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
+		{
+			cnt += precomp->vertices[i];
+		}
+		
+		vertex_t* datadump = precomp->datadump;
+		
+		
+		// ambient occlusion processing stage
+		#ifdef AMBIENT_OCCLUSION_GRADIENTS
+			ambientOcclusionGradients(datadump, cnt);
+		#endif
+		
+		Sector& sector = *precomp->sector;
+		
+		sector.progress = Sector::PROG_NEEDCOMPILE;
+		sector.culled  = false;
+		sector.precomp = 5; // flag as ready for compiler
+	}
+	
 	short addCornerShadowVertex(ao_struct& ao, vertex_t* vt, short x, short y, short z)
 	{
 		short corner = vt->face >> 3;

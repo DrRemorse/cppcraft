@@ -41,7 +41,7 @@ namespace cppcraft
 		if (progress == PROG_NEEDGEN)
 		{
 			// generate blocks now, no flag CHANGES
-			Generator::generate(*this);
+			Generator::generate(*this, nullptr, 0);
 		}
 		
 		if (contents == CONT_NULLSECTOR)

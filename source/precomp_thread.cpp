@@ -383,25 +383,17 @@ namespace cppcraft
 			}
 		}
 		
-		// ambient occlusion processing stage
-		#ifdef AMBIENT_OCCLUSION_GRADIENTS
-			ambientOcclusionGradients(datadump, cnt);
-		#endif
-		
 		// send to sectorcompiler
-		//mtx.precompiler.lock();
-		;{
-			pc.datadump = datadump;
-			for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
-			{
-				// copy over to dump, but only if it had faces
-				pc.bufferoffset[i] = bufferoffset[i];
-				pc.vertices[i] = pcg.vertices[i];
-			}
-			sector.progress = Sector::PROG_NEEDCOMPILE;
-			sector.culled  = false;
-			sector.precomp = 3; // flag as ready for compiler
+		pc.datadump = datadump;
+		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
+		{
+			// copy over to dump, but only if it had faces
+			pc.bufferoffset[i] = bufferoffset[i];
+			pc.vertices[i]     = pcg.vertices[i];
 		}
-		//mtx.precompiler.unlock();
+		
+		// this stage has ended
+		// go to next stage: ambient occlusion gradients
+		sector.precomp = 3;
 	}
 }

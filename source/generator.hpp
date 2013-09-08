@@ -11,6 +11,11 @@
 
 #include "sector.hpp"
 
+namespace library
+{
+	class Timer;
+}
+
 namespace cppcraft
 {
 	class Sector;
@@ -19,7 +24,7 @@ namespace cppcraft
 	{
 	public:
 		static void init();
-		static void generate(Sector& sector);
+		static bool generate(Sector& sector, library::Timer* timer, double timeOut);
 		
 	private:
 		static void loadSector(Sector&, std::ifstream&, unsigned int);

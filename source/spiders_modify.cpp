@@ -130,7 +130,7 @@ namespace cppcraft
 		if (s->progress == Sector::PROG_NEEDGEN)
 		{
 			// if the sector needed gen, generate immediately
-			Generator::generate(*s);
+			Generator::generate(*s, nullptr, 0);
 			
 			// AGAIN, if the *new* sector is a nullsector ...
 			if (s->contents == Sector::CONT_NULLSECTOR) return air_block; // do nada

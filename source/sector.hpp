@@ -50,7 +50,7 @@ namespace cppcraft
 		unsigned char render    : 1; // renderable
 		unsigned char progress  : 3; // progress_t
 		unsigned char contents  : 2; // sectorcontents_t
-		unsigned char precomp   : 2; // precompilation pipeline stage
+		unsigned char precomp   : 3; // precompilation pipeline stage
 		// misc flags
 		unsigned char culled    : 1;
 		unsigned char haswork   : 1;

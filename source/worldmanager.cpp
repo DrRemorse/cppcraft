@@ -1,5 +1,7 @@
 #include "worldmanager.hpp"
 
+#include "library/log.hpp"
+#include "library/timing/timer.hpp"
 #include "chunks.hpp"
 #include "particles.hpp"
 #include "player.hpp"
@@ -9,9 +11,6 @@
 #include "threading.hpp"
 #include "worldbuilder.hpp"
 #include "world.hpp"
-
-#include "library/log.hpp"
-#include "library/timing/timer.hpp"
 
 using namespace library;
 

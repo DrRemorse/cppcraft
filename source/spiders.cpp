@@ -59,7 +59,7 @@ namespace cppcraft
 				throw std::string("ERROR: Sector was nullsector (CONT_NULLSECTOR), yet needed generation (PROG_NEEDGEN).");
 			}
 			// generate sector
-			Generator::generate(*ptr);
+			Generator::generate(*ptr, nullptr, 0);
 		}
 		if (ptr->contents == Sector::CONT_NULLSECTOR) return air_block;
 		
@@ -78,7 +78,7 @@ namespace cppcraft
 				throw std::string("ERROR: Sector was nullsector (CONT_NULLSECTOR), yet needed generation (PROG_NEEDGEN).");
 			}
 			// generate sector
-			Generator::generate(*ptr);
+			Generator::generate(*ptr, nullptr, 0);
 		}
 		if (ptr->contents == Sector::CONT_NULLSECTOR) return air_block;
 		

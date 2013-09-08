@@ -65,12 +65,13 @@ namespace cppcraft
 		}
 	}
 	
-	inline void wrunGen(Sector& s)
+	bool wrunGen(Sector& s, Timer& timer, double timeOut)
 	{
 		if (s.progress == Sector::PROG_NEEDGEN)
 		{
-			Generator::generate(s);
+			if (Generator::generate(s, &timer, timeOut)) return true;
 		}
+		return false;
 	}
 	
 	bool wrunPrecomp(int xx, int zz)
@@ -146,7 +147,7 @@ namespace cppcraft
 				{
 					// load compressed sectors, flatlands, sector dumps
 					Sector& s = Sectors(xx, 0, zz);
-					wrunGen(s);
+					if (wrunGen(s, timer, localTime + WORLDBUILDER_MAX_TIME_SPENT)) return true;
 				}
 				else
 				{	// alternatively, adding to precompiler queue
@@ -167,7 +168,7 @@ namespace cppcraft
 				{
 					// load compressed sectors, flatlands, sector dumps
 					Sector& s = Sectors(xx, 0, zz);
-					wrunGen(s);
+					if (wrunGen(s, timer, localTime + WORLDBUILDER_MAX_TIME_SPENT)) return true;
 				}
 				else
 				{	// alternatively, adding to precompiler queue
@@ -188,7 +189,7 @@ namespace cppcraft
 				{
 					// load compressed sectors, flatlands, sector dumps
 					Sector& s = Sectors(xx, 0, zz);
-					wrunGen(s);
+					if (wrunGen(s, timer, localTime + WORLDBUILDER_MAX_TIME_SPENT)) return true;
 				}
 				else
 				{	// alternatively, adding to precompiler queue
@@ -209,7 +210,7 @@ namespace cppcraft
 				{
 					// load compressed sectors, flatlands, sector dumps
 					Sector& s = Sectors(xx, 0, zz);
-					wrunGen(s);
+					if (wrunGen(s, timer, localTime + WORLDBUILDER_MAX_TIME_SPENT)) return true;
 				}
 				else
 				{	// alternatively, adding to precompiler queue

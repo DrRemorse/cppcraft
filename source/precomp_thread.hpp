@@ -119,6 +119,7 @@ namespace cppcraft
 		void cancelPrecomp();
 		
 		// ao gradient program, adding corner shadows to a completed mesh
+		void ambientOcclusion();
 		void ambientOcclusionGradients(vertex_t* datadump, int vertexCount);
 	};
 	

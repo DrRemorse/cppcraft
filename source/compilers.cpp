@@ -34,7 +34,7 @@ namespace cppcraft
 			{
 				//mtx.precompiler.lock();
 				Sector* s = p.sector;
-				if (s->precomp == 3)
+				if (s->precomp == 5)
 				{
 					//mtx.precompiler.unlock();
 					sectorCompiler(*s, p);
@@ -108,6 +108,11 @@ namespace cppcraft
 		v->pcdata = pc.datadump;  // set vbodata to become precomp data
 		pc.datadump = nullptr;    // unassign precomp data pointer
 		
+		// free precomp slot (as early as possible)
+		pc.alive  = false;
+		// reset sector state to unqueued
+		s.precomp = 0;
+		
 		// set renderable flag to sector
 		s.render = true;
 		// set progress to finished state
@@ -115,11 +120,6 @@ namespace cppcraft
 		{
 			s.progress = Sector::PROG_COMPILED;
 		}
-		
-		// free precomp slot
-		pc.alive  = false;
-		// reset sector state to unqueued
-		s.precomp = 0;
 		
 		// check if this column may be complete (ready to be compiled)
 		int cy = s.y / Columns.COLUMNS_SIZE;

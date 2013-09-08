@@ -2,6 +2,7 @@
 
 #include "library/config.hpp"
 #include "library/log.hpp"
+#include "library/timing/timer.hpp"
 #include "chunks.hpp"
 #include "flatlands.hpp"
 #include "minimap.hpp"
@@ -29,7 +30,7 @@ namespace cppcraft
 		{
 			if (Sectors(x, 0, z).contents == Sector::CONT_UNKNOWN)
 			{
-				Generator::generate(Sectors(x, 0, z));
+				Generator::generate(Sectors(x, 0, z), nullptr, 0);
 			}
 		}
 		worldbuilder.setMode(WorldBuilder::MODE_PRECOMPILE);
@@ -71,13 +72,13 @@ namespace cppcraft
 	 * and attempt to load as many sectors from this chunk as possible in one go.
 	 * Will first attempt to decompress a compressed column, then replace with modified sectors as they appear
 	**/
-	void Generator::generate(Sector& sector)
+	bool Generator::generate(Sector& sector, Timer* timer, double timeOut)
 	{
 		
 		if (sector.progress != Sector::PROG_NEEDGEN)
 		{
 			logger << Log::WARN << "Generator::generate(): sector did not need gen" << Log::ENDL;
-			return;
+			return false;
 		}
 		
 		// open this chunks .compressed file
@@ -183,11 +184,19 @@ namespace cppcraft
 					
 				} // sector in unknown-state
 				
+				// for each finished column we can potentially exit
+				// if the current time is more than the timeout value, we need to exit now
+				if (timer)
+				{
+					if (timer->getDeltaTime() > timeOut) return true;
+				}
 			} // z
 		} // x
 		
 		//if (ff.is_open()) ff.close();
 		//if (cf.is_open()) cf.close();
+		// time did not run out
+		return false;
 		
 	} // generate()
 	
