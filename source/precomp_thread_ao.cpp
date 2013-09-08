@@ -39,12 +39,9 @@ namespace cppcraft
 			cnt += precomp->vertices[i];
 		}
 		
-		vertex_t* datadump = precomp->datadump;
-		
-		
 		// ambient occlusion processing stage
 		#ifdef AMBIENT_OCCLUSION_GRADIENTS
-			ambientOcclusionGradients(datadump, cnt);
+			ambientOcclusionGradients(precomp->datadump, cnt, precomp->testdata);
 		#endif
 		
 		Sector& sector = *precomp->sector;
@@ -116,7 +113,7 @@ namespace cppcraft
 		return (id > AIR_END && id < CROSS_START && id != _LANTERN && id != _VINES);
 	}
 	
-	void PrecompThread::ambientOcclusionGradients(vertex_t* datadump, int vertexCount)
+	void PrecompThread::ambientOcclusionGradients(vertex_t* datadump, int vertexCount, visiblefaces_t& testdata)
 	{
 		// ambient occlusion structure
 		ao_struct ao;
@@ -161,10 +158,10 @@ namespace cppcraft
 		ao.testdata.sb_z_m = &sector; ao.testdata.sb_z_p = &sector;
 		
 		// - Y
-		if (pcg.testdata.test_y_m == 2)
+		if (testdata.test_y_m == 2)
 		{
 			// set sectorblock pointer to this test-subject
-			ao.testdata.sector = pcg.testdata.sb_y_m;
+			ao.testdata.sector = testdata.sb_y_m;
 			ao.testdata.test_y_p = 2; // test y-negative
 			
 			// run tests
@@ -193,10 +190,10 @@ namespace cppcraft
 			ao.testdata.test_y_p = false;
 		}
 		// + Y
-		if (pcg.testdata.test_y_p == 2)
+		if (testdata.test_y_p == 2)
 		{
 			// set sectorblock pointer to this test-subject
-			ao.testdata.sector = pcg.testdata.sb_y_p;
+			ao.testdata.sector = testdata.sb_y_p;
 			ao.testdata.test_y_m = 2; // test y- from +y sector
 			
 			// run tests
@@ -225,10 +222,10 @@ namespace cppcraft
 		}
 		
 		// + X
-		if (pcg.testdata.test_x_p == 2)
+		if (testdata.test_x_p == 2)
 		{
 			// set sectorblock pointer to this test-subject
-			ao.testdata.sector = pcg.testdata.sb_x_p;
+			ao.testdata.sector = testdata.sb_x_p;
 			ao.testdata.test_x_m = 2; // test -x
 			
 			// run tests
@@ -254,10 +251,10 @@ namespace cppcraft
 			ao.testdata.test_x_m = false;
 		}
 		// - X
-		if (pcg.testdata.test_x_m == 2)
+		if (testdata.test_x_m == 2)
 		{
 			// set sectorblock pointer to this test-subject
-			ao.testdata.sector = pcg.testdata.sb_x_m;
+			ao.testdata.sector = testdata.sb_x_m;
 			ao.testdata.test_x_p = 2; // test +x
 			
 			// run tests
@@ -284,10 +281,10 @@ namespace cppcraft
 		}
 		
 		// + Z
-		if (pcg.testdata.test_z_p == 2)
+		if (testdata.test_z_p == 2)
 		{
 			// set sectorblock pointer to this test-subject
-			ao.testdata.sector = pcg.testdata.sb_z_p;
+			ao.testdata.sector = testdata.sb_z_p;
 			ao.testdata.test_z_m = 2; // test -z
 			
 			// run tests
@@ -315,10 +312,10 @@ namespace cppcraft
 			ao.testdata.test_z_m = false;
 		}
 		// - Z
-		if (pcg.testdata.test_z_m == 2)
+		if (testdata.test_z_m == 2)
 		{
 			// set sectorblock pointer to this test-subject
-			ao.testdata.sector = pcg.testdata.sb_z_m;
+			ao.testdata.sector = testdata.sb_z_m;
 			ao.testdata.test_z_p = 2; // test +z
 			
 			// run tests

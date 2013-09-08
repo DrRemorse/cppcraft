@@ -402,9 +402,12 @@ namespace cppcraft
 				indic->z += vz;
 				indic += 1;
 			}
-			// increase precomp vertices for current shader
+			// increase vertex count for current shaderline
 			this->vertices[shaderLine] += vertices;
+			
 			// resize shaderline if needed (96 vertices treshold)
+			// NOTE: if any meshes are larger than 96 vertices there WILL be a crash
+			
 			if (this->vertices[shaderLine] + 96 >= pipelineSize[shaderLine])
 			{
 				//logger << shaderLine << ": Increasing size from " << pipelineSize[shaderLine] << " to " << pipelineSize[shaderLine] + 250 << Log::ENDL;
