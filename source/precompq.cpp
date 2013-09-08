@@ -71,6 +71,7 @@ namespace cppcraft
 		{
 			Sector& s2 = Sectors(s.x, y, s.z);
 			
+			// always add 's' but only s2 if it could be renderable
 			if ( (s2.contents == Sector::CONT_SAVEDATA && s2.vbodata == nullptr) || &s2 == &s )
 			{
 				addPrecomp(s2);
@@ -89,9 +90,10 @@ namespace cppcraft
 		if (s.precomp)
 		{
 			// if the sector is currently running, just flag it for (later) recompilation
-			if (s.precomp == 2) s.progress = Sector::PROG_NEEDRECOMP;
+			if (s.precomp >= 2) s.progress = Sector::PROG_NEEDRECOMP;
 			
 			// since something is going on, exit
+			// NOTE: returning false here can make the queue become clogged up
 			return true;
 		}
 		

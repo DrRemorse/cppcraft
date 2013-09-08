@@ -6,6 +6,7 @@
 #include "lighting.hpp"
 #include "precompiler.hpp"
 #include "sector.hpp"
+#include "spiders.hpp"
 #include "renderconst.hpp"
 
 using namespace library;
@@ -39,12 +40,12 @@ namespace cppcraft
 			cnt += precomp->vertices[i];
 		}
 		
+		Sector& sector = *precomp->sector;
+		
 		// ambient occlusion processing stage
 		#ifdef AMBIENT_OCCLUSION_GRADIENTS
-			ambientOcclusionGradients(precomp->datadump, cnt, precomp->testdata);
+			ambientOcclusionGradients(precomp->datadump, cnt);
 		#endif
-		
-		Sector& sector = *precomp->sector;
 		
 		sector.progress = Sector::PROG_NEEDCOMPILE;
 		sector.culled  = false;
@@ -113,7 +114,7 @@ namespace cppcraft
 		return (id > AIR_END && id < CROSS_START && id != _LANTERN && id != _VINES);
 	}
 	
-	void PrecompThread::ambientOcclusionGradients(vertex_t* datadump, int vertexCount, visiblefaces_t& testdata)
+	void PrecompThread::ambientOcclusionGradients(vertex_t* datadump, int vertexCount)
 	{
 		// ambient occlusion structure
 		ao_struct ao;
@@ -157,187 +158,26 @@ namespace cppcraft
 		ao.testdata.sb_y_m = &sector; ao.testdata.sb_y_p = &sector;
 		ao.testdata.sb_z_m = &sector; ao.testdata.sb_z_p = &sector;
 		
-		// - Y
-		if (testdata.test_y_m == 2)
+		for (int x = -1; x <= Sector::BLOCKS_XZ; x++)
+		for (int z = -1; z <= Sector::BLOCKS_XZ; z++)
+		for (int y = -1; y <= Sector::BLOCKS_Y; y++)
 		{
-			// set sectorblock pointer to this test-subject
-			ao.testdata.sector = testdata.sb_y_m;
-			ao.testdata.test_y_p = 2; // test y-negative
-			
-			// run tests
-			for (int bx = 0; bx < Sector::BLOCKS_XZ; bx++)
+			if (x == -1 || z == -1 || y == -1 || x == Sector::BLOCKS_XZ || z == Sector::BLOCKS_XZ || y == Sector::BLOCKS_Y)
 			{
-				for (int bz = 0; bz < Sector::BLOCKS_XZ; bz++)
+				Block& block = Spiders::getBlockNoGen(sector, x, y, z);
+				// shaky test to ignore ids that definitely can't produce corner shadows
+				if (cornerShadowBlocktest(block))
 				{
-					// testing y = blockszy-1, on the sector above us
-					const Block& block = ao.testdata.sector[0](bx, Sector::BLOCKS_Y-1, bz);
+					// finally run transversal
+					int bx = x, by = y, bz = z;
+					Sector* testsector = Spiders::spiderwrap(sector, bx, by, bz);
+					unsigned short facing = block.visibleFaces(*testsector, bx, by, bz);
 					
-					// shaky test to ignore ids that definitely can't produce corner shadows
-					if (cornerShadowBlocktest(block))
-					{
-						// finally run transversal
-						unsigned short facing = block.visibleFaces(ao.testdata, bx, Sector::BLOCKS_Y-1, bz);
-						
-						if (facing) runCornerShadowTest(ao, facing, bx, -1, bz);
-						
-					} // correct id
+					// add corners to THIS sector
+					if (facing) runCornerShadowTest(ao, facing, x, y, z);
 					
-				} // next bz
-				
-			} // next bx
-			
-			// disable test y-positive
-			ao.testdata.test_y_p = false;
-		}
-		// + Y
-		if (testdata.test_y_p == 2)
-		{
-			// set sectorblock pointer to this test-subject
-			ao.testdata.sector = testdata.sb_y_p;
-			ao.testdata.test_y_m = 2; // test y- from +y sector
-			
-			// run tests
-			for (int bx = 0; bx < Sector::BLOCKS_XZ; bx++)
-			{
-				for (int bz = 0; bz < Sector::BLOCKS_XZ; bz++)
-				{
-					// testing y = 0, on the sector above us
-					const Block& block = ao.testdata.sector[0](bx, 0, bz);
-					
-					// shaky test to ignore ids that definitely can't produce corner shadows
-					if (cornerShadowBlocktest(block))
-					{
-						// finally run transversal
-						unsigned short facing = block.visibleFaces(ao.testdata, bx, 0, bz);
-						
-						if (facing) runCornerShadowTest(ao, facing, bx, Sector::BLOCKS_Y, bz);
-						
-					} // correct id
-					
-				} // next bz
-			} // next bx
-			
-			// disable test y-
-			ao.testdata.test_y_m = false;
-		}
-		
-		// + X
-		if (testdata.test_x_p == 2)
-		{
-			// set sectorblock pointer to this test-subject
-			ao.testdata.sector = testdata.sb_x_p;
-			ao.testdata.test_x_m = 2; // test -x
-			
-			// run tests
-			for (int bz = 0; bz < Sector::BLOCKS_XZ; bz++)
-			{
-				for (int by = 0; by < Sector::BLOCKS_Y; by++)
-				{
-					// testing x = 0, on the sector to the right
-					const Block& block = ao.testdata.sector[0](0, by, bz);
-					
-					// shaky test to ignore ids that definitely can't produce corner shadows
-					if (cornerShadowBlocktest(block))
-					{
-						// finally run transversal
-						unsigned short facing = block.visibleFaces(ao.testdata, 0, by, bz);
-						
-						if (facing) runCornerShadowTest(ao, facing, Sector::BLOCKS_XZ, by, bz);
-					}
-				}
+				} // correct id
 			}
-			
-			// disable test x-
-			ao.testdata.test_x_m = false;
-		}
-		// - X
-		if (testdata.test_x_m == 2)
-		{
-			// set sectorblock pointer to this test-subject
-			ao.testdata.sector = testdata.sb_x_m;
-			ao.testdata.test_x_p = 2; // test +x
-			
-			// run tests
-			for (int bz = 0; bz < Sector::BLOCKS_XZ; bz++)
-			{
-				for (int by = 0; by < Sector::BLOCKS_Y; by++)
-				{
-					// testing x = blocksz-1, on the sector to the left
-					const Block& block = ao.testdata.sector[0](Sector::BLOCKS_XZ-1, by, bz);
-					
-					// shaky test to ignore ids that definitely can't produce corner shadows
-					if (cornerShadowBlocktest(block))
-					{
-						// finally run transversal
-						unsigned short facing = block.visibleFaces(ao.testdata, Sector::BLOCKS_XZ-1, by, bz);
-						
-						if (facing) runCornerShadowTest(ao, facing, -1, by, bz);
-					}
-				}
-			}
-			
-			// disable test x+
-			ao.testdata.test_x_p = false;
-		}
-		
-		// + Z
-		if (testdata.test_z_p == 2)
-		{
-			// set sectorblock pointer to this test-subject
-			ao.testdata.sector = testdata.sb_z_p;
-			ao.testdata.test_z_m = 2; // test -z
-			
-			// run tests
-			for (int bx = 0; bx < Sector::BLOCKS_XZ; bx++)
-			{
-				for (int by = 0; by < Sector::BLOCKS_Y; by++)
-				{
-					// testing z = 0, on the sector in front
-					const Block& block = ao.testdata.sector[0](bx, by, 0);
-					
-					// shaky test to ignore ids that definitely can't produce corner shadows
-					if (cornerShadowBlocktest(block))
-					{
-						// finally run transversal
-						unsigned short facing = block.visibleFaces(ao.testdata, bx, by, 0);
-						
-						if (facing) runCornerShadowTest(ao, facing, bx, by, Sector::BLOCKS_XZ);
-						
-					} // correct id
-					
-				} // bz
-			} // bx
-			
-			// disable test z-
-			ao.testdata.test_z_m = false;
-		}
-		// - Z
-		if (testdata.test_z_m == 2)
-		{
-			// set sectorblock pointer to this test-subject
-			ao.testdata.sector = testdata.sb_z_m;
-			ao.testdata.test_z_p = 2; // test +z
-			
-			// run tests
-			for (int bx = 0; bx < Sector::BLOCKS_XZ; bx++)
-			{
-				for (int by = 0; by < Sector::BLOCKS_Y; by++)
-				{
-					// testing z = blocksz-1, on the sector to the back
-					const Block& block = ao.testdata.sector[0](bx, by, Sector::BLOCKS_XZ-1);
-					
-					// shaky test to ignore ids that definitely can't produce corner shadows
-					if (cornerShadowBlocktest(block))
-					{
-						// finally run transversal
-						unsigned short facing = block.visibleFaces(ao.testdata, bx, by, Sector::BLOCKS_XZ-1);
-						
-						if (facing) runCornerShadowTest(ao, facing, bx, by, -1);
-						
-					} // correct id
-					
-				} // bz
-			} // bx
 		}
 		
 		if (ao.count >= ao.CRASH_MAX_POINTS)
