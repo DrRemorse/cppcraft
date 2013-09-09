@@ -1,6 +1,7 @@
 #ifndef INPUT_HPP
 #define INPUT_HPP
 
+#include "library/math/vector.hpp"
 #include <string>
 
 struct GLFWwindow;
@@ -46,7 +47,16 @@ namespace cppcraft
 		const input_t& getMouseEx(int) const;
 		key_t getMouse(int) const;
 		void  holdMouse(int);
-		// returns mousewheel status AND resets it internally
+		// rotation functions
+		inline const library::vec2& getRotation() const noexcept
+		{
+			return this->rotation;
+		}
+		inline void setRotation(const library::vec2& newRotation)
+		{
+			this->rotation = newRotation;
+		}
+		// returns mousewheel status _AND_ resets it internally
 		int getWheel(); // 0 = no change, down < 0, up > 0
 		
 		// wide text string for keyboardType
@@ -58,6 +68,9 @@ namespace cppcraft
 		double lastmx, lastmy;
 		double speed;
 		double sensitivity;
+		
+		// pitch & yaw
+		library::vec2 rotation;
 		
 		// keyboard keys
 		static const int MAX_KEYS = 512;

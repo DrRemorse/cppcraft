@@ -66,6 +66,24 @@ namespace library
 			lzo_workmem
 		) == LZO_E_OK;
 	}
+	bool LZO::compressHard(lzo_bytep data, int datalen)
+	{
+		// allocate buffer, if not allocated
+		if (compression_buffer == nullptr)
+		{
+			compression_buffer = (lzo_bytep) malloc(datalen + 64);
+		}
+		
+		// compress n (to n + nlen) into compression_buffer
+		// lzobuffer.compression_length is the resulting compressed size
+		return lzo1x_999_compress(
+			data, 
+			datalen, 
+			compression_buffer, 
+			&compression_length, 
+			lzo_workmem
+		) == LZO_E_OK;
+	}
 	
 	bool LZO::decompress(lzo_bytep data, int datalen)
 	{

@@ -39,7 +39,7 @@ namespace cppcraft
 	};
 	std::vector<PrecompJob*> jobs;
 	
-	const double PRECOMPQ_MAX_THREADWAIT = 0.01;
+	const double PRECOMPQ_MAX_THREADWAIT = 0.0125;
 	
 	void PrecompQ::init()
 	{
@@ -140,23 +140,18 @@ namespace cppcraft
 		PrecompThread& pt = precompiler.getThread(t_mod);
 		pt.precomp = &precompiler[job];
 		
-		// queue thread job
-		threadpool->run(jobs[t_mod], &pt, false);
-		
-		// go to next thread
-		t_mod = (t_mod + 1) % precompiler.getThreads();
-		
-		// if we are back at the start, we may just be exiting
-		if (t_mod == 0)
+		// before starting job we need to isolate all data properly
+		// then check if the precomp can actually be run
+		if (pt.isolator())
 		{
-			//finish();
+			// queue thread job
+			threadpool->run(jobs[t_mod], &pt, false);
 			
-			// check if we need to bail out
-			if (true) // timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT)
-			{
-				// exit
-				return true;
-			}
+			// go to next thread
+			t_mod = (t_mod + 1) % precompiler.getThreads();
+			
+			// if we are back at the start, we may just be exiting
+			if (t_mod == 0) return true;
 		}
 		return false;
 	}
@@ -172,11 +167,6 @@ namespace cppcraft
 		if (queueCount == 0) return false;
 		// current thread id
 		int t_mod = 0;
-		
-		//finish();
-		
-		// always check if time is out
-		if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT) return true;
 		
 		// ------------ PRECOMPILER -------------- //
 		
@@ -229,8 +219,11 @@ namespace cppcraft
 		queueCount = 0;
 		currentPrecomp = 0;
 		
-		// finish jobs & clear queue
-		finish();
+		if (t_mod)
+		{
+			// finish jobs & clear queue
+			finish();
+		}
 		
 		// always check if time is out
 		if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT) return true;

@@ -114,12 +114,17 @@ namespace cppcraft
 		Precomp* precomp;
 		PrecompThreadData pcg;
 		
+		// stage 1, gathering info
+		bool isolator();
+		// stage 2, generating mesh
 		void precompile();
+		// stage 3, computing AO
+		void ambientOcclusion();
+		
 		void killPrecomp();
 		void cancelPrecomp();
 		
 		// ao gradient program, adding corner shadows to a completed mesh
-		void ambientOcclusion();
 		void ambientOcclusionGradients(vertex_t* datadump, int vertexCount);
 	};
 	

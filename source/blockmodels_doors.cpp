@@ -33,13 +33,6 @@ namespace cppcraft
 			{127, 0, 0}, {-128,  0,  0}  // right left
 		};
 		
-		signed char cube_tangents[6][3] =
-		{
-			{127, 0,  0}, {-128,  0,    0}, // front back
-			{127, 0,  0}, {-128,  0,    0}, // top   bottom
-			{0, 0, -128}, { 0  ,  0,  127}  // right left
-		};
-		
 		const short VERTEX_SCALE = RenderConst::VERTEX_SCALE;
 		
 		// huge monstrous loop, creating 8 doors, one set for closed doors
@@ -160,10 +153,6 @@ namespace cppcraft
 				bm[index].nx = cube_normals[face][0]; // nx
 				bm[index].ny = cube_normals[face][1]; // ny
 				bm[index].nz = cube_normals[face][2]; // nz
-				
-				bm[index].tx = cube_tangents[face][0]; // tx
-				bm[index].ty = cube_tangents[face][1]; // ty
-				bm[index].tz = cube_tangents[face][2]; // tz
 				
 				index++;
 				

@@ -120,7 +120,6 @@ namespace library
 			logger << Log::ERR << toString() << Log::ENDL;
 			throw std::string("Texture::create(): OpenGL state error");
 		}
-		
 	}
 	
 	void Texture::create(bool mipmap, int levels, int width, int height)

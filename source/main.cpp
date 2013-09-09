@@ -8,11 +8,12 @@
 
 #include "library/config.hpp"
 #include "library/log.hpp"
-#include "library/math/matrix.hpp"
+#include "library/math/vector.hpp"
 
 #include "gameconf.hpp"
 #include "generator.hpp"
 #include "input.hpp"
+#include "player.hpp"
 #include "renderman.hpp"
 #include "threading.hpp"
 #include "worldmanager.hpp"
@@ -25,6 +26,7 @@ const std::string configFile = "config.ini";
 const std::string logFile    = "cppcraft.log";
 
 using namespace library;
+using namespace cppcraft;
 
 int main(int argc, char* argv[])
 {
@@ -45,10 +47,10 @@ int main(int argc, char* argv[])
 		logger << Log::WARN << "Could not find config file: " << configFile << Log::ENDL;
 	
 	// read game configuration
-	cppcraft::gameconf.init();
+	gameconf.init();
 	
 	// initialize renderer
-	cppcraft::Renderer renderer;
+	Renderer renderer;
 	try
 	{
 		renderer.create("test window");
@@ -61,10 +63,10 @@ int main(int argc, char* argv[])
 	}
 	
 	// initialize game/world manager
-	cppcraft::WorldManager worldman;
+	WorldManager worldman;
 	try
 	{
-		worldman.init(cppcraft::WorldManager::GS_RUNNING, wfolder);
+		worldman.init(WorldManager::GS_RUNNING, wfolder);
 	}
 	catch (std::string errorstring)
 	{
@@ -74,7 +76,8 @@ int main(int argc, char* argv[])
 	}
 	
 	// initialize input systems
-	cppcraft::input.init(renderer.getScreen());
+	input.init(renderer.getScreen());
+	input.setRotation(vec2(player.xrotrad, player.yrotrad));
 	
 	try
 	{
@@ -92,7 +95,7 @@ int main(int argc, char* argv[])
 	{
 		// initialize generator as late as possible because
 		// there's some rendering dependencies that are just barely finished
-		cppcraft::Generator::init();
+		Generator::init();
 	}
 	catch (std::string errorstring)
 	{
@@ -104,7 +107,7 @@ int main(int argc, char* argv[])
 	try
 	{
 		// start world manager thread
-		cppcraft::mtx.initThreading(worldman);
+		mtx.initThreading(worldman);
 	}
 	catch (std::string errorstring)
 	{
@@ -121,7 +124,7 @@ int main(int argc, char* argv[])
 	logger << Log::INFO << "Ending..." << Log::ENDL;
 	
 	// cleanup
-	cppcraft::mtx.cleanupThreading();
+	mtx.cleanupThreading();
 	
 	return 0;
 }

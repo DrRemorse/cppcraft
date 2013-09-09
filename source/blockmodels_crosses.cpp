@@ -17,11 +17,6 @@ namespace cppcraft
 			0, 127, 0 // top
 		};
 		
-		signed char cross_tangents[3] =
-		{
-			127, 0,  0 // front back
-		};
-		
 		float cross_texcoords[16] =
 		{
 			0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0,
@@ -42,10 +37,6 @@ namespace cppcraft
 				bm[vert].ny = cross_normals[1]; // ny
 				bm[vert].nz = cross_normals[2]; // nz
 				bm[vert].face = 0;
-				
-				bm[vert].tx = cross_tangents[0]; // tx
-				bm[vert].ty = cross_tangents[1]; // ty
-				bm[vert].tz = cross_tangents[2]; // tz
 				
 				// texture coordinates
 				bm[vert].u = cross_texcoords[vert * 2 + 0] * RenderConst::VERTEX_SCALE; // u

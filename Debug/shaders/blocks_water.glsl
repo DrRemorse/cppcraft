@@ -15,8 +15,8 @@ uniform float frameCounter;
 
 in vec3 in_vertex;
 in vec3 in_normal;
-in vec3 in_tangent;
 in vec3 in_texture;
+in vec4 in_biome;
 in vec4 in_color;
 in vec4 in_color2;
 
@@ -91,7 +91,6 @@ in vec3 v_ldir;
 in vec3 v_half;
 in vec3 v_eye;
 in vec3 v_normal;
-in mat3 tbn; // tangent space
 
 in vec3 l_normal;
 in vec3 l_reflect;

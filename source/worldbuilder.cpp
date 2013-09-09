@@ -153,10 +153,10 @@ namespace cppcraft
 				{	// alternatively, adding to precompiler queue
 					if (wrunPrecomp(xx, zz)) return true;
 				}
+				if (timer.getDeltaTime() > localTime + WORLDBUILDER_MAX_TIME_SPENT) return true;
 			}
 			
 			this->lastPosition = 1;
-			if (timer.getDeltaTime() > localTime + WORLDBUILDER_MAX_TIME_SPENT) return true;
 			
 	wb_position1:
 			
@@ -174,10 +174,10 @@ namespace cppcraft
 				{	// alternatively, adding to precompiler queue
 					if (wrunPrecomp(xx, zz)) return true;
 				}
+				if (timer.getDeltaTime() > localTime + WORLDBUILDER_MAX_TIME_SPENT) return true;
 			}
 			
 			this->lastPosition = 2;
-			if (timer.getDeltaTime() > localTime + WORLDBUILDER_MAX_TIME_SPENT) return true;
 			
 	wb_position2:
 			
@@ -195,10 +195,10 @@ namespace cppcraft
 				{	// alternatively, adding to precompiler queue
 					if (wrunPrecomp(xx, zz)) return true;
 				}
+				if (timer.getDeltaTime() > localTime + WORLDBUILDER_MAX_TIME_SPENT) return true;
 			}
 			
 			this->lastPosition = 3;
-			if (timer.getDeltaTime() > localTime + WORLDBUILDER_MAX_TIME_SPENT) return true;
 			
 	wb_position3:
 			
@@ -216,6 +216,7 @@ namespace cppcraft
 				{	// alternatively, adding to precompiler queue
 					if (wrunPrecomp(xx, zz)) return true;
 				}
+				if (timer.getDeltaTime() > localTime + WORLDBUILDER_MAX_TIME_SPENT) return true;
 			}
 			
 			// back to start
@@ -236,8 +237,6 @@ namespace cppcraft
 				// exit
 				break;
 			}
-			
-			if (timer.getDeltaTime() > localTime + WORLDBUILDER_MAX_TIME_SPENT) return true;
 		}
 		return false;
 		

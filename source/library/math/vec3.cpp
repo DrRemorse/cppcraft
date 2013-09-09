@@ -5,6 +5,8 @@
 
 namespace library
 {
+	static const double PI = 4 * atan(1);
+	
 	// vec3 constructors
 	vec3::vec3()
 	{
@@ -115,6 +117,28 @@ namespace library
 	{
 		// formula: vector * cos a + dot(vector, axis) * axis * (1 - cos a) + cross(axis, vector) * sin a
 		return *this * cosf(angle) + this->dot(axis) * axis * (1.0 - cosf(angle)) + axis.cross(*this) * sinf(angle);
+	}
+	
+	// transforms this vector into a rotation expressed by two angles (rotX, rotY)
+	vec3& vec3::lookVector(const vec2& rot)
+	{
+		x =  sinf(rot.y) * cosf(rot.x);
+		y = 			  -sinf(rot.x);
+		z = -cosf(rot.y) * cosf(rot.x);
+		return *this;
+	}
+	
+	vec2 vec3::toPitchYaw() const
+	{
+		float xzdist = xz().length();
+		// pitch
+		float pitch = -atan2(y, xzdist);
+		
+		// yaw
+		float yaw = atan2(x, -z);
+		if (yaw < 0) yaw += PI * 2;
+		
+		return vec2(pitch, yaw);
 	}
 	
 	const vec3::vector_t vec3::min() const
@@ -258,6 +282,11 @@ namespace library
 	}
 	
 	// vector language functions
+	vec3 distance(const vec3& va, const vec3& vb)
+	{
+		return (va - vb).length();
+	}
+	
 	vec3::vector_t dot(const vec3& va, const vec3& vb)
 	{
 		return va.dot(vb);

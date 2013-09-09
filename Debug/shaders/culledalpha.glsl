@@ -17,7 +17,6 @@ uniform vec3  moonVector;
 
 in vec3 in_vertex;
 in vec3 in_normal;
-in vec3 in_tangent;
 in vec3 in_texture;
 in vec4 in_color;
 in vec4 in_color2;

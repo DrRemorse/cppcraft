@@ -319,6 +319,7 @@
     <File Name="source/compressor_rle.hpp"/>
     <File Name="source/compressor_rle.cpp"/>
     <File Name="source/blocks_vfaces.cpp"/>
+    <File Name="source/precomp_thread_isolator.cpp"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>

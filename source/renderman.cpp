@@ -7,6 +7,7 @@
 #include "compilers.hpp"
 #include "camera.hpp"
 #include "gameconf.hpp"
+#include "player.hpp"
 #include "render_fs.hpp"
 #include "render_gui.hpp"
 #include "render_scene.hpp"
@@ -20,6 +21,7 @@
 #include <sstream>
 
 //#define DEBUG
+#include "input.hpp"
 
 using namespace library;
 
@@ -166,7 +168,7 @@ namespace cppcraft
 		const double render_granularity = 0.01; // 10ms granularity
 		double t0 = glfwGetTime();
 		
-		float FPS = 0.0;
+		//float FPS = 0.0;
 		
 		while (glfwWindowShouldClose(gamescr.window()) == 0 && mtx.terminate == false)
 		{
@@ -180,7 +182,7 @@ namespace cppcraft
 			FPS = FPS * 0.9 + (1.0 / (t0 - t1)) * 0.1;
 			
 			std::stringstream ss;
-			ss << "Camera update value: " << camera.needsupd; //"FPS: " << FPS;
+			ss << FPS;
 			glfwSetWindowTitle(gamescr.window(), ss.str().c_str());
 			*/
 			
@@ -224,6 +226,9 @@ namespace cppcraft
 		#endif
 			// poll for events
 			glfwPollEvents();
+			
+			// handle rotation
+			player.handleRotation();
 			
 		}
 		

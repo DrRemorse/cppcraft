@@ -33,13 +33,6 @@ namespace cppcraft
 			{127, 0, 0}, {-128,  0,  0}  // right left
 		};
 		
-		signed char cube_tangents[6][3] =
-		{
-			{127, 0,  0}, {-128,  0,    0}, // front back
-			{127, 0,  0}, {-128,  0,    0}, // top   bottom
-			{0, 0, -128}, { 0  ,  0,  127}  // right left
-		};
-		
 		const short VERTEX_SCALE = RenderConst::VERTEX_SCALE;
 		
 		for (int model = 0; model < 4; model++)
@@ -90,10 +83,6 @@ namespace cppcraft
 				bm[index].nx = cube_normals[face][0];
 				bm[index].ny = cube_normals[face][1];
 				bm[index].nz = cube_normals[face][2];
-				
-				bm[index].tx = cube_tangents[face][0];
-				bm[index].ty = cube_tangents[face][1];
-				bm[index].tz = cube_tangents[face][2];
 				
 				/// pole selection box ///
 				sm[index].x = bm[index].x / (float)VERTEX_SCALE;

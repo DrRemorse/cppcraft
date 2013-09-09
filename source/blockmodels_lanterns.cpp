@@ -52,13 +52,6 @@ namespace cppcraft
 			{127, 0, 0}, {-128,  0,  0}  // right left
 		};
 		
-		signed char cube_tangents[6][3] =
-		{
-			{127, 0,  0}, {-128,  0,    0}, // front back
-			{127, 0,  0}, {-128,  0,    0}, // top   bottom
-			{0, 0, -128}, { 0  ,  0,  127}  // right left
-		};
-		
 		const short VERTEX_SCALE = RenderConst::VERTEX_SCALE;
 		
 		BlockMesh bm1(6 * 4);
@@ -80,9 +73,9 @@ namespace cppcraft
 			bm1[index].ny = cube_normals[face][1];
 			bm1[index].nz = cube_normals[face][2];
 			// tx ty tz
-			bm1[index].tx = cube_tangents[face][0];
-			bm1[index].ty = cube_tangents[face][1];
-			bm1[index].tz = cube_tangents[face][2];
+			//bm1[index].tx = cube_tangents[face][0];
+			//bm1[index].ty = cube_tangents[face][1];
+			//bm1[index].tz = cube_tangents[face][2];
 			
 			// uvw
 			bm1[index].u = cube_texcoords[face][vert * 2 + 0] * VERTEX_SCALE;
@@ -100,10 +93,6 @@ namespace cppcraft
 			bm2[index].nx = cube_normals[face][0];
 			bm2[index].ny = cube_normals[face][1];
 			bm2[index].nz = cube_normals[face][2];
-			// tx ty tz
-			bm2[index].tx = cube_tangents[face][0];
-			bm2[index].ty = cube_tangents[face][1];
-			bm2[index].tz = cube_tangents[face][2];
 			
 			// uvw
 			bm2[index].u = cube_texcoords[face][vert * 2 + 0] * VERTEX_SCALE;

@@ -3,8 +3,6 @@
 #include "library/log.hpp"
 #include "library/math/toolbox.hpp"
 #include "library/opengl/window.hpp"
-#include "camera.hpp"
-#include "player.hpp"
 #include <GL/glfw3.h>
 #include <cmath>
 
@@ -28,6 +26,8 @@ namespace cppcraft
 		this->sensitivity = 5;
 		this->lastmx   = gamescr.SW / 2;
 		this->lastmy   = gamescr.SH / 2;
+		// default rotation
+		this->rotation = vec2(0.0);
 		
 		// hook keyboard events
 		glfwSetKeyCallback (gamescr.window(), &keyboard);
@@ -115,21 +115,19 @@ namespace cppcraft
 		if (fabs(dy) > input.sensitivity)
 			dy = toolbox::signum(dy) * input.sensitivity + dy / input.sensitivity;
 		
-		player.yrot += dx;
-		player.xrot += dy;
-		if (player.xrot >   89) player.xrot =  89;
-		if (player.xrot <  -89) player.xrot = -89;
-		if (player.yrot <    0) player.yrot += 360;
-		if (player.yrot >= 360) player.yrot -= 360;
+		const double PI = 4 * atan(1);
+		const double degToRad = PI / 180;
+		const double maxX = 89 * degToRad;
+		const double maxY = PI * 2.0;
 		
-		const double degToRad = (4 * atan(1)) / 180;
-		
-		player.yrotrad = player.yrot * degToRad;
-		player.xrotrad = player.xrot * degToRad;
-		
-		camera.recalc  = true; // rebuild visibility set
-		camera.rotated = true; // resend all rotation matrices
-		player.rotated();      // for updating networking
+		// rotation on axes
+		input.rotation.y += dx * degToRad;
+		input.rotation.x += dy * degToRad;
+		// clamping
+		if (input.rotation.x >  maxX) input.rotation.x =  maxX;
+		if (input.rotation.x < -maxX) input.rotation.x = -maxX;
+		if (input.rotation.y <     0) input.rotation.y += PI * 2;
+		if (input.rotation.y >= maxY) input.rotation.y -= PI * 2;
 		
 		// move mouse to center
 		input.lastmx = input.gamescr->SW / 2;

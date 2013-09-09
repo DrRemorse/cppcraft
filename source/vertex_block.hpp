@@ -23,21 +23,16 @@ namespace cppcraft
 		GLbyte nz;
 		GLbyte p1;
 		
-		GLbyte tx;
-		GLbyte ty;
-		GLbyte tz;
-		GLbyte p2;
-		
 		GLshort u; // 16
 		GLshort v;
 		GLshort w;
 		GLshort p;
 		
+		GLuint biome; // 20
+		
 		unsigned long long c; // 24
 		
-		GLuint biome; // 32
-		
-	};  // 36
+	};  // 32
 	#pragma pack(pop)
 	
 	typedef GLushort indice_t;

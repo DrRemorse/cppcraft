@@ -65,7 +65,11 @@ namespace library
 		vec3 reflect(const vec3&) const;
 		vec3 mix(const vec3&, float) const;
 		
-		vec3 rotateOnAxis(const vec3& axis, float angle) const;
+		// rotate this vector by (angle) on (axis)
+		vec3  rotateOnAxis(const vec3& axis, float angle) const;
+		// transform this vector from pitch and yaw
+		vec3& lookVector(const vec2& rot);
+		vec2  toPitchYaw() const;
 		
 		// returns the smallest/biggest values of this(x, y, z)
 		const vector_t min() const;
@@ -148,6 +152,7 @@ namespace library
 	
 	// vector language functions
 	vec3::vector_t dot(const vec3& va, const vec3& vb);
+	vec3 distance(const vec3& va, const vec3& vb);
 	vec3 normalize(const vec3&);
 	//void normalize(vec3&);
 	vec3 cross(const vec3&, const vec3&);

@@ -20,7 +20,6 @@ namespace cppcraft
 		int    snapStage;
 		
 		// rotation
-		float xrot, yrot;
 		float xrotrad, yrotrad;
 		
 		// acceleration
@@ -39,8 +38,8 @@ namespace cppcraft
 		// then finally, we finish by running this once
 		void handleActions(double frametime);
 		
-		// signals rotation of player, used for networking
-		void rotated();
+		// handles player rotation by following the input rotation vector
+		void handleRotation();
 		// returns the player look vector
 		library::vec3 getLookVector() const;
 		// returns the cube face that would face the player

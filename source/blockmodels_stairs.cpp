@@ -47,13 +47,6 @@ namespace cppcraft
 			{127, 0, 0}, {-128,  0,  0}  // right left
 		};
 		
-		signed char cube_tangents[6][3] =
-		{
-			{127, 0,  0}, {-128,  0,    0}, // front back
-			{127, 0,  0}, {-128,  0,    0}, // top   bottom
-			{0, 0, -128}, { 0  ,  0,  127}  // right left
-		};
-		
 		const short VERTEX_SCALE = RenderConst::VERTEX_SCALE;
 		
 		// huge monstrous loop, creating sides of different types of cubes
@@ -119,9 +112,9 @@ namespace cppcraft
 					bm[index].nz = cube_normals[side][2]; // nz
 					
 					// tangents
-					bm[index].tx = cube_tangents[side][0]; // tx
-					bm[index].ty = cube_tangents[side][1]; // ty
-					bm[index].tz = cube_tangents[side][2]; // tz
+					//bm[index].tx = cube_tangents[side][0]; // tx
+					//bm[index].ty = cube_tangents[side][1]; // ty
+					//bm[index].tz = cube_tangents[side][2]; // tz
 					
 					// texcoords
 					bm[index].u = cube_texcoords[side][vert * 2 + 0] * VERTEX_SCALE;

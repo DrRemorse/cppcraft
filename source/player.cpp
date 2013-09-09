@@ -3,6 +3,7 @@
 #include "library/log.hpp"
 #include "library/math/vector.hpp"
 #include "camera.hpp"
+#include "input.hpp"
 #include "player_actions.hpp"
 #include "player_logic.hpp"
 #include "player_physics.hpp"
@@ -61,11 +62,6 @@ namespace cppcraft
 		player.initInputs();
 	}
 	
-	void PlayerClass::rotated()
-	{
-		plogic.Rotate = true;
-	}
-	
 	int PlayerClass::getTerrain() const
 	{
 		return plogic.terrain;
@@ -101,6 +97,8 @@ namespace cppcraft
 	
 	void PlayerClass::handlePlayerTicks()
 	{
+		// handle player rotation
+		handleRotation();
 		// acceleration & movement inputs
 		playerPhysics.handleMomentum();
 		// jumping, big enough to get its own module
@@ -136,8 +134,9 @@ namespace cppcraft
 			snapX = X;
 			snapY = Y;
 			snapZ = Z;
+			
 			// true if the player is moving (on purpose)
-			// used to modulate player camera
+			// used to modulate player camera giving the effect of movement
 			JustMoved = plogic.Moved == true && (plogic.freefall == false || plogic.Ladderized);
 			
 			//logger << "JustMoved: " << JustMoved << Log::ENDL;
@@ -147,6 +146,36 @@ namespace cppcraft
 		
 		// handle player selection, actions and building
 		paction.handle(frametime);
+	}
+	
+	void PlayerClass::handleRotation()
+	{
+		// measure closeness
+		float dx = fabsf(player.xrotrad - input.getRotation().x);
+		float dy = fabsf(player.yrotrad - input.getRotation().y);
+		// rotate if too far apart
+		if (dx > 0.0001 || dy > 0.0001)
+		{
+			// get old look vector
+			vec3 look1;
+			look1.lookVector(vec2(player.xrotrad, player.yrotrad));
+			
+			vec3 look2;
+			look2.lookVector(input.getRotation());
+			
+			// interpolate
+			vec3 newLook = look1.mix(look2, 0.40);
+			newLook.normalize();
+			
+			// back to pitch/yaw radians
+			vec2 newRot = newLook.toPitchYaw();
+			player.xrotrad = newRot.x; // pitch
+			player.yrotrad = newRot.y; // yaw
+			
+			camera.recalc  = true; // rebuild visibility set
+			camera.rotated = true; // resend all rotation matrices
+			plogic.Rotate = true;
+		}
 	}
 	
 }

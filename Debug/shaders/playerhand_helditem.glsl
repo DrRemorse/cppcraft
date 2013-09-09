@@ -11,7 +11,6 @@ uniform vec3 lightVector;
 
 in vec3 in_vertex;
 in vec3 in_normal;
-in vec3 in_tangent;
 in vec3 in_texture;
 
 out vec3 texCoord;

@@ -33,12 +33,12 @@ namespace cppcraft
 			{127, 0, 0}, {-128,  0,  0}  // right left
 		};
 		
-		signed char cube_tangents[6][3] =
+		/*signed char cube_tangents[6][3] =
 		{
 			{127, 0,  0}, {-128,  0,    0}, // front back
 			{127, 0,  0}, {-128,  0,    0}, // top   bottom
 			{0, 0, -128}, { 0  ,  0,  127}  // right left
-		};
+		};*/
 		
 		const short VERTEX_SCALE = RenderConst::VERTEX_SCALE;
 		
@@ -96,9 +96,9 @@ namespace cppcraft
 					bm[vertex].ny = cube_normals[face][1]; // ny
 					bm[vertex].nz = cube_normals[face][2]; // nz
 					
-					bm[vertex].tx = cube_tangents[face][0]; // tx
-					bm[vertex].ty = cube_tangents[face][1]; // ty
-					bm[vertex].tz = cube_tangents[face][2]; // tz
+					//bm[vertex].tx = cube_tangents[face][0]; // tx
+					//bm[vertex].ty = cube_tangents[face][1]; // ty
+					//bm[vertex].tz = cube_tangents[face][2]; // tz
 					
 					bm[vertex].u = cube_texcoords[face][vertex * 2    ] * VERTEX_SCALE; // u
 					bm[vertex].v = cube_texcoords[face][vertex * 2 + 1] * VERTEX_SCALE; // v

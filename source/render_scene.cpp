@@ -50,12 +50,6 @@ namespace cppcraft
 	{
 		bool frustumRecalc = false;
 		
-		// update frustum rotation matrix
-		if (camera.rotated)
-		{
-			camera.setRotation(player.xrotrad, player.yrotrad, 0.0);
-		}
-		
 		// bind the FBO that we are rendering the entire scene into
 		sceneFBO.bind();
 		sceneFBO.attachColor(0, textureman.get(Textureman::T_FOGBUFFER));
@@ -77,7 +71,15 @@ namespace cppcraft
 		glDisable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
 		
-		// render atmosphere, moon, etc.
+		/// update frustum rotation matrix ///
+		if (camera.rotated)
+		{
+			camera.setRotation(player.xrotrad, player.yrotrad, 0.0);
+		}
+		
+		/////////////////////////////////////////
+		///   render atmosphere, moon, etc.   ///
+		/////////////////////////////////////////
 		skyrenderer.render(*this, underwater);
 		
 		// render clouds before terrain if we are submerged in water
@@ -184,6 +186,7 @@ namespace cppcraft
 			// compress rendering queue to minimal size by occlusion culling
 			compressRenderingQueue();
 		}
+		
 		
 		// remove skybuffer from rendering output
 		// and replace it with the normals texture

@@ -217,17 +217,14 @@ namespace cppcraft
 		glVertexAttribPointer(0, 3, GL_SHORT,			GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, x )); // vertex
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(1, 3, GL_BYTE,			GL_TRUE,  sizeof(vertex_t), (void*) offsetof(vertex_t, nx)); // normal
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(2, 3, GL_BYTE,			GL_TRUE,  sizeof(vertex_t), (void*) offsetof(vertex_t, tx)); // tangent
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(3, 3, GL_SHORT,			GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, u )); // texture
+		glVertexAttribPointer(2, 3, GL_SHORT,			GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, u )); // texture
 		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(4, 4, GL_UNSIGNED_BYTE,	GL_TRUE,  sizeof(vertex_t), (void*) offsetof(vertex_t, c));  // shadow and brightness
+		glVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE,	GL_TRUE,  sizeof(vertex_t), (void*) offsetof(vertex_t, biome)); // biome color
 		glEnableVertexAttribArray(4);
-		glVertexAttribPointer(5, 4, GL_UNSIGNED_BYTE,	GL_TRUE,  sizeof(vertex_t), (void*) (offsetof(vertex_t, c) + 4)); // torchlight color
+		glVertexAttribPointer(4, 4, GL_UNSIGNED_BYTE,	GL_TRUE,  sizeof(vertex_t), (void*) offsetof(vertex_t, c));  // shadow and brightness
 		glEnableVertexAttribArray(5);
-		glVertexAttribPointer(6, 4, GL_UNSIGNED_BYTE,	GL_TRUE,  sizeof(vertex_t), (void*) offsetof(vertex_t, biome)); // biome color
-		glEnableVertexAttribArray(6);
+		glVertexAttribPointer(5, 4, GL_UNSIGNED_BYTE,	GL_TRUE,  sizeof(vertex_t), (void*) (offsetof(vertex_t, c) + 4)); // torchlight color
 		}
 		
 		// disable vao & vbo
@@ -237,7 +234,7 @@ namespace cppcraft
 		// disable vertex attributes
 		if (updateAttribs)
 		{
-			for (int i = 0; i < 7; i++)
+			for (int i = 0; i < 6; i++)
 				glDisableVertexAttribArray(i);
 		}
 		

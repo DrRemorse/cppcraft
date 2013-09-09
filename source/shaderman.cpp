@@ -85,11 +85,10 @@ namespace cppcraft
 		
 		linkstage.emplace_back("in_vertex");
 		linkstage.emplace_back("in_normal");
-		linkstage.emplace_back("in_tangent");
 		linkstage.emplace_back("in_texture");
+		linkstage.emplace_back("in_biome");
 		linkstage.emplace_back("in_color");
 		linkstage.emplace_back("in_color2");
-		linkstage.emplace_back("in_biome");
 		
 		// block shaders
 		for (int i = 0; i < 4; i++)
@@ -240,12 +239,6 @@ namespace cppcraft
 		shaders[PLAYERHAND] = Shader("shaders/playerhand.glsl", tokenizer, linkstage);
 		shaders[PLAYERHAND].sendInteger("texture", 0);
 		shaders[PLAYERHAND].sendMatrix("matproj", matproj);
-		
-		linkstage.clear();
-		linkstage.emplace_back("in_vertex");
-		linkstage.emplace_back("in_normal");
-		linkstage.emplace_back("in_tangent");
-		linkstage.emplace_back("in_texture");
 		
 		// playerhand held-item, re-using meshobjects
 		shaders[PHAND_HELDITEM] = Shader("shaders/playerhand_helditem.glsl", tokenizer, linkstage);

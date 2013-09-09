@@ -385,8 +385,7 @@ namespace cppcraft
 				cubeVAO.begin(sizeof(vertex_t), count, vertices);
 				cubeVAO.attrib(0, 3, GL_SHORT, GL_FALSE, offsetof(vertex_t, x));
 				cubeVAO.attrib(1, 3, GL_BYTE,  GL_TRUE,  offsetof(vertex_t, nx));
-				cubeVAO.attrib(2, 3, GL_BYTE,  GL_TRUE,  offsetof(vertex_t, tx));
-				cubeVAO.attrib(3, 3, GL_SHORT, GL_FALSE, offsetof(vertex_t, u));
+				cubeVAO.attrib(2, 3, GL_SHORT, GL_FALSE, offsetof(vertex_t, u));
 				cubeVAO.end();
 				
 				delete vertices;

@@ -1,5 +1,6 @@
 #include "gameconf.hpp"
 
+#include "library/log.hpp"
 #include "library/config.hpp"
 
 using namespace library;
@@ -12,7 +13,7 @@ namespace cppcraft
 	{
 		// rendering
 		multisampling = config.get("multisampling", 0);
-		anisotropy    = config.get("anisotropy", 2);
+		anisotropy    = config.get("anisotropy", 2.0f);
 		
 		postprocess   = config.get("postprocess", true);
 		highq_blur    = config.get("highq_blur", true);

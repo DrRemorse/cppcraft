@@ -22,6 +22,7 @@ namespace library
 		bool init(int bufferlen);
 		
 		bool compress(lzo_bytep data, int datalen);
+		bool compressHard(lzo_bytep data, int datalen);
 		bool decompress(lzo_bytep data, int datalen);
 		
 		lzo_uint  getDataLength();

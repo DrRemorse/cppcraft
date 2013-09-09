@@ -29,8 +29,7 @@ namespace cppcraft
 		// world manager main loop
 		while (mtx.terminate == false)
 		{
-			// variable delta frame timing
-			// 
+			// fixed timestep
 			_localtime = timer.getDeltaTime();
 			
 			// handle player inputs, just once
@@ -51,6 +50,9 @@ namespace cppcraft
 				soundman.handleSounds(player.getTerrain());
 				
 				_ticktimer += TIMING_TICKTIMER;
+				
+				// fixed timestep
+				_localtime = timer.getDeltaTime();
 			}
 			
 			// if the player moved, or is doing stuff we will be doing it here
@@ -72,10 +74,17 @@ namespace cppcraft
 			if (worldbuilder.getMode() != worldbuilder.MODE_GENERATING)
 			{
 				//double t0 = timer.getDeltaTime();
+				double t0 = _localtime;
 				
 				// as long as not currently 'generating' world:
 				// start precompiling sectors
 				if (precompq.run(timer, _localtime)) timeout = true;
+				
+				double t1 = timer.getDeltaTime();
+				if (t1 - t0 > 0.020)
+				{
+					logger << "Precomp delta: " << t1 - t0 << Log::ENDL;
+				}
 				
 				//double t1 = timer.getDeltaTime();
 				//logger << "pcq time: " << t1 - t0 << Log::ENDL;
@@ -85,8 +94,15 @@ namespace cppcraft
 			if (timeout == false)
 			{
 				//double t0 = timer.getDeltaTime();
+				double t0 = _localtime;
 				
 				worldbuilder.run(timer, _localtime);
+				
+				double t1 = timer.getDeltaTime();
+				if (t1 - t0 > 0.020)
+				{
+					logger << "Worldbuilder delta: " << t1 - t0 << Log::ENDL;
+				}
 				
 				//double t1 = timer.getDeltaTime();
 				//logger << "WB time: " << t1 - t0 << Log::ENDL;
