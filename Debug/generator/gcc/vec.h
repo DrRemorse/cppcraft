@@ -1,5 +1,5 @@
-#ifndef VEC_H
-#define VEC_H
+#ifndef VEC_HPP
+#define VEC_HPP
 
 typedef float  f32_t;
 typedef double f64_t;

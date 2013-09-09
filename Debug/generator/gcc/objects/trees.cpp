@@ -1,148 +1,11 @@
-#include "vec.h"
-#include <stdlib.h>
+#include "trees.hpp"
+
+#include "../blocks.hpp"
+#include "../generator.h"
+#include "../vec.h"
+#include "helpers.hpp"
+#include <cstdlib>
 #include <math.h>
-
-int ofacing(int dx, int dz)
-{	// +z = 0 (front), -z = 1 (back), +x = 2 (right), -x = 3 (left)
-	if (abs(dx) > abs(dz)) {
-		if (dx > 0) return 2; else return 3;
-	} else {
-		if (dz > 0) return 0; else return 1;
-	}
-}
-int ofacingNeg(int dx, int dz)
-{	// note: this function is OPPOSITE and only to be used with negated blocks (slopes)
-	if (abs(dx) > abs(dz)) {
-		if (dx > 0) return 3; else return 2;
-	} else {
-		if (dz > 0) return 1; else return 0;
-	}
-}
-
-int coretest(int x, int y, int z, int rad)
-{
-	int dx, dy, dz; block* b;
-	
-	for (dx = x - rad; dx < x + rad; dx++)
-	for (dz = z - rad; dz < z + rad; dz++)
-	{
-		for (dy = y; dy < y + 4; dy++)
-		{
-			// same-level (exit when not AIR)
-			b = getb(dx, dy, dz); if (!b) return GEN_FALSE;
-			if (b->id != _AIR) return GEN_FALSE;
-		}
-		// below (exit when AIR)
-		b = getb(dx, y-1, dz); if (!b) return GEN_FALSE;
-		if (b->id == _AIR) return GEN_FALSE;
-	}
-	return GEN_TRUE;
-}
-
-void downSpider(int x, int y, int z, block_t id, int tries)
-{
-	block* this = getb(x, y, z);
-	if (this == 0) return;
-	
-	// air, crosses, water
-	if (isCross(this->id) || isAir(this->id) || this->id == _WATER) {
-		if (tries--) downSpider(x, y-1, z, id, tries);
-		setb(x, y, z, id, 1, 0);
-	}
-}
-
-void ocircleXZroots(int x, int y, int z, float radius, block_t id)
-{
-	int dx, dz, r = radius*radius;
-	for (dx = -radius; dx <= radius; dx++)
-	for (dz = -radius; dz <= radius; dz++)
-	{
-		if (dx*dx + dz*dz <= r)
-		{
-			setb(x+dx, y, z+dz, id, 1, 0);
-			downSpider(x+dx, y-1, z+dz, id, 6);
-		}
-	}
-}
-
-void ocircleXZ(int x, int y, int z, float radius, block_t id)
-{
-	int dx, dz, r = radius*radius;
-	for (dx = -radius; dx <= radius; dx++)
-	for (dz = -radius; dz <= radius; dz++)
-	{
-		if (dx*dx + dz*dz <= r) setb(x+dx, y, z+dz, id, 1, 0);
-	}
-}
-
-void oellipsoidXZ(int x, int y, int z, int radius, float radx, float radz, block_t id)
-{
-	int dx, dz;
-	float r1 = radius*radx; r1 *= r1;
-	float r2 = radius*radz; r2 *= r2;
-	
-	for (dx = -radius; dx <= radius; dx++)
-	for (dz = -radius; dz <= radius; dz++)
-		if (dx*dx / r1 + dz*dz / r2 <= 1)
-			setb(x+dx, y, z+dz, id, 1, 0);
-	
-}
-void oellipsoidXY(int x, int y, int z, int radius, float radx, float rady, float stencil, block_t id)
-{
-	int dx, dy;
-	float r1 = radius*radx; r1 *= r1;
-	float r2 = radius*rady; r2 *= r2;
-	float r;
-	
-	for (dx = -radius; dx <= radius; dx++)
-	for (dy = -radius; dy <= radius; dy++) {
-		r = dx*dx / r1 + dy*dy / r2;
-		if (r <= 1) {
-			if (r < 0.65)
-				setb(x+dx, y+dy, z, id, 0, 0);
-			else if (iRnd(x+dx, y+dy, z+613) < stencil)
-			// always passes with stencil = 1.0, never passes with 0.0
-				setb(x+dx, y+dy, z, id, 0, 0);
-		}
-	}
-}
-
-void obell(int x, int y, int z, block_t id, int lower, int height, int radius, int inner_rad, int midlevel, float midstrength, float understrength, float stencilchance)
-{
-	float radf, lradf, midd, dr;
-	int dx, dy, dz, radxz;
-	int r, l;
-	
-	for (dy = lower; dy <= height; dy++)
-	{
-		midd = 1.0 - fabs(dy - midlevel) / (height-midlevel);
-		midd *= midstrength;
-		if (dy < 0) midd = -dy * understrength;
-		
-		r = pow(radius - midd, 2.0);
-		l = pow(inner_rad - midd, 2.0);
-		
-		dr = (float)dy / (float)height * (float)radius;
-		radf = r - dr*dr;
-		lradf = l - dr*dr;
-		
-		for (dx = -radius; dx <= radius; dx++)
-		for (dz = -radius; dz <= radius; dz++)
-		{
-			radxz = dx*dx + dz*dz;
-			if (radxz >= lradf && radxz <= radf) {
-				if (stencilchance < 1.0) {
-					if (iRnd(x+dx, y+dy, z+dz) < stencilchance)
-						setb(x+dx, y+dy, z+dz, id, 1, 0);
-				} else {
-					setb(x+dx, y+dy, z+dz, id, 1, 0);
-				}
-			} // rad
-		}
-		
-	}	
-	
-}
 
 void otreeSphere(int gx, int gy, int gz)
 {
@@ -202,7 +65,8 @@ void otreeSabal(int gx, int gy, int gz, int height)
 	makenorm3v(&dir); // from 0.0->1.0 to -1.0->1.0
 	norm3v(&dir);     // normalize
 	
-	vec3 ray = (vec3) { x, y, z }; // starting ray
+	// starting ray
+	vec3 ray = (vec3) { (double)x, (double)y, (double)z };
 	
 	float dy;
 	for (y = 0; y < height; y++) {
@@ -222,7 +86,7 @@ void otreeSabal(int gx, int gy, int gz, int height)
 	for (n = 0; n < rays; n++)
 	{
 		// actual ray
-		ray = (vec3) { x + 0.5, y, z + 0.5 };
+		ray = (vec3) { x + 0.5, (double)y, z + 0.5 };
 		// create direction
 		dir = (vec3) { iRnd(x + n, y - n * 31, gz - n * 31), 1.0, iRnd(x + n * 31, y + n * 31, z - n) };
 		makenorm3v(&dir); // from 0.0->1.0 to -1.0->1.0
@@ -243,12 +107,13 @@ void otreeSabal(int gx, int gy, int gz, int height)
 
 void otreeVine(int gx, int gy, int gz, int facing)
 {
-	switch (facing) {
-	// move away from origin block
-	case 0: gz++; break;
-	case 1: gz--; break;
-	case 2: gx++; break;
-	case 3: gx--; break;
+	switch (facing)
+	{
+		// move away from origin block
+		case 0: gz++; break;
+		case 1: gz--; break;
+		case 2: gx++; break;
+		case 3: gx--; break;
 	}
 	
 	int height = 3 + iRnd(gx, gy+31, gz) * 13;
@@ -439,5 +304,4 @@ void otreeHuge(int gx, int gy, int gz, int height)
 	otreeHugeBranch(dx+1, gy+y-1, dz  , rad0, branchlength);
 	otreeHugeBranch(dx  , gy+y-1, dz-1, rad0, branchlength);
 	otreeHugeBranch(dx  , gy+y-1, dz+1, rad0, branchlength);
-	
 }

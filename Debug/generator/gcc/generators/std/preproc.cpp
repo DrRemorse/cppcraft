@@ -1,6 +1,10 @@
-#include "biome.h"
-#include "volumetrics.c"
+#include "preproc.hpp"
 
+#include "../../blocks.hpp"
+#include "../../generator.h"
+#include "../../genthread.h"
+#include "../../biome/biome.hpp"
+#include "../../objects/volumetrics.hpp"
 
 void preProcess(genthread* l_thread)
 {
@@ -16,20 +20,16 @@ void preProcess(genthread* l_thread)
 	void* flat = getFlatland( wx, wz );
 	int terrain;
 	
-	void* sector; // sector pointer, used with iRnd2(sector, x, y, z)
-	vec3 p;       // world coordinates for noise
 	int dx, dy, dz;
 	block *lastb, *b;
 	block airblock = (block) {0, 0, 0};
-	int counter, lastcounter;
-	int air, skylight, treecount;
+	int counter;
+	int air, treecount;
 	
-	for (dx = x; dx < x + BLOCKS_XZ; dx++) {
-		p.x = l_thread->p.x + (double)(dx - x) / (double)(BLOCKS_XZ * BLOCKS_XZ);
-		
-		for (dz = z; dz < z + BLOCKS_XZ; dz++) {
-			p.z = l_thread->p.z + (double)(dz - z) / (double)(BLOCKS_XZ * BLOCKS_XZ);
-			
+	for (dx = x; dx < x + BLOCKS_XZ; dx++)
+	{
+		for (dz = z; dz < z + BLOCKS_XZ; dz++)
+		{
 			// get terrain id
 			terrain = getTerrain(flat, dx & (BLOCKS_XZ-1), dz & (BLOCKS_XZ-1));
 			
@@ -39,21 +39,20 @@ void preProcess(genthread* l_thread)
 			// start counting from top (pretend really high)
 			counter = GEN_FULLHEIGHT; // - (maxy + 1);
 			air = counter; // used to determine light!
-			skylight = 0; treecount = 0;
+			treecount = 0;
 			
-			for (dy = maxy; dy >= miny; dy--) {
-				
-				sector = getSector(wx, dy >> 3, wz);
+			for (dy = maxy; dy >= miny; dy--)
+			{
 				b = getb(dx, dy, dz);
 				
 				if (isLeaf(b->id)) treecount++;
 				
 				// check if ultradifferent
-				if (b->id != lastb->id) {
-					
+				if (b->id != lastb->id)
+				{
 					// check if megatransparent
-					if (blockTransparent(lastb->id)) {
-						
+					if (blockTransparent(lastb->id))
+					{
 						// if we get here, the block above was transparent (air etc.)
 						// air determines how many transparent blocks were traversed
 						// counter determines how many blocks of THE SAME ID were traversed
@@ -85,7 +84,7 @@ void preProcess(genthread* l_thread)
 					
 					// remember this id! and reset counters!
 					lastb = b;
-					lastcounter = counter;  counter = 0;
+					counter = 0;
 					
 				}  // id != lastid
 				else

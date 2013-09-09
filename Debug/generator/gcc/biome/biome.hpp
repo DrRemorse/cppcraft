@@ -1,7 +1,7 @@
-#ifndef BIOME_H
-#define BIOME_H
+#ifndef BIOME_HPP
+#define BIOME_HPP
 	
-	#include "genthread.h"
+	struct genthread;
 	
 	// prototypes
 	void biomeGenerator(genthread* l_thread);

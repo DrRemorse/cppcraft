@@ -1,12 +1,12 @@
-#include "noise.h"
+#include "terrain.hpp"
 
-#include "generator.h"
-#include "blocks.h"
-#include "vec.h"  // vec-thors
+#include "../../generator.h"
+#include "../../blocks.hpp"
+#include "../../vec.h"
 #include <math.h>
 
-#include "noise\cosnoise.h"
-#include "noise\simplex1234.h"
+#include "../../noise/cosnoise.h"
+#include "../../noise/simplex1234.h"
 
 #define sfreq(v, n) snoise3(v.x * n, v.y * n, v.z * n)
 #define sfreq2d(v, n) snoise2(v.x * n, v.z * n)
@@ -186,7 +186,7 @@ f32_t getnoise_islands(vec3 p)
 	const f64_t COSN_FAT   = 0.0;
 	const f64_t COSN_CUTS  = 0.5; //p.y * 0.2 + 0.4;
 	
-	const f64_t cliffscale = 0.005; // higher = narrower
+	//const f64_t cliffscale = 0.005; // higher = narrower
 	f64_t landx = 0.05; // + fabs(landscape - n0) * cliffscale;
 	f64_t landz = 0.05; // + fabs(n0 - landscape) * cliffscale;
 	

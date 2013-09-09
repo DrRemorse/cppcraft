@@ -1,5 +1,7 @@
-#ifndef VOLUMETRICS_C
-	#define VOLUMETRICS_C
+#include "volumetrics.hpp"
+
+#include "../blocks.hpp"
+#include "../generator.h"
 
 int discover(int x, int y, int z, int id)
 {
@@ -26,10 +28,10 @@ int discover(int x, int y, int z, int id)
 
 int volumetricDepth(int x, int y, int z, int depth)
 {
-	block* this = getb(x, y, z);
-	if (this == 0) return 0; // out of bounds
+	block* currentBlock = getb(x, y, z);
+	if (currentBlock == 0) return 0; // out of bounds
 	
-	if (isAir(this->id))
+	if (isAir(currentBlock->id))
 	{
 		if (depth--) return 1 + volumetricDepth(x, y-1, z, depth);
 		return 1;
@@ -101,5 +103,3 @@ int volumetricFill(int x, int y, int z, int id, int volsize)
 	
 	return GEN_TRUE;
 }
-
-#endif

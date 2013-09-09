@@ -1,11 +1,12 @@
-#include "biome.h"
-#include "generator.h"
+#include "biome.hpp"
+
+#include "../generator.h"
+#include "../genthread.h"
+#include "../noise/simplex1234.h"
 #include <math.h>
 
-#include "noise\simplex1234.h"
-
 // colors for 2D gradients
-#include "colortable.c"
+#include "colortable.cpp"
 
 int toTerrain(int biome)
 {

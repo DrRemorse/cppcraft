@@ -1,7 +1,7 @@
-#ifndef __POSTPROC_H
-	#define __POSTPROC_H
+#ifndef PROCESS_HPP
+#define PROCESS_HPP
 	
-	#include "genthread.h"
+	struct genthread;
 	
 	void preProcess(genthread* l_thread);
 	void postPostProcess(genthread* l_thread);

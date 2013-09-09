@@ -1,12 +1,14 @@
-#include "stdpp.h"
+#include "process.hpp"
 
-#include "blocks.h"
-#include "generator.h"
-#include "biome.h"
-#include "trees.c"
-#include "mushrooms.c"
-#include "noise\simplex1234.h"
-#include "vec.h"
+#include "../../blocks.hpp"
+#include "../../generator.h"
+#include "../../genthread.h"
+#include "../../vec.h"
+#include "../../biome/biome.hpp"
+#include "../../objects/trees.hpp"
+#include "../../objects/mushrooms.hpp"
+#include "../../objects/volumetrics.hpp"
+#include "../../noise/simplex1234.h"
 
 // terrain crosses
 block_t c_autumn[3] = { _GRASS_SHORT, _GRASS_LONG, _PLANT_DRYBROWN };
@@ -33,17 +35,6 @@ f32_t   depo_depth[NUM_ORES] = {  1.0,   0.8,   0.4,     0.2,       0.2,        
 // deposition function
 void pp_depositOre(int ore, int* orecount, int x, int y, int z);
 
-
-int blockTransparent(block_t id)
-{
-	// high chance its air
-	if (isAir(id)) return GEN_TRUE;
-	if (id > halfblock_start) return GEN_TRUE;
-	return GEN_FALSE;
-}
-
-#include "stdpre.c"
-#include "stdpost.c"
 
 void areaPostProcess(genthread* l_thread)
 {
@@ -221,17 +212,19 @@ void areaPostProcess(genthread* l_thread)
 								const int distance = 3;
 								
 								if ((dx & distance) == 0  &&  (dz & distance) == 0)
-								if (snoise2(p.x * 1.8, p.z * 1.8) > 0.25)
 								{
-									int height = 8 + iRnd(dx, dy+1, dz) * 12;
-									
-									// top cap
-									if (dy + height < 200)
-										ingenPine(dx, dy+1, dz, height);
-								}
-								else if (rand < 0.01)
-								{	// setting a cross using 0 = no overwrite, 0 = facing (crosses don't have facing)
-									setb(dx, dy+1, dz, _FLOWERRED, 0, 0);
+									if (snoise2(p.x * 1.8, p.z * 1.8) > 0.25)
+									{
+										int height = 8 + iRnd(dx, dy+1, dz) * 12;
+										
+										// top cap
+										if (dy + height < 200)
+											ingenPine(dx, dy+1, dz, height);
+									}
+									else if (rand < 0.01)
+									{	// setting a cross using 0 = no overwrite, 0 = facing (crosses don't have facing)
+										setb(dx, dy+1, dz, _FLOWERRED, 0, 0);
+									}
 								}
 								
 							} // rand / air
@@ -244,26 +237,28 @@ void areaPostProcess(genthread* l_thread)
 								const int distance = 7;
 								
 								if ((x & distance) == 0  &&  (z & distance) == 0)
-								if (snoise2(p.x * 1.8, p.z * 1.8) > 0.25)
 								{
-									int height = 8 + iRnd(dx, dy+1, dz) * 12;
-									
-									// top cap
-									if (dy + height < 200)
-										ingenPine(dx, dy+1, dz, height);
-								}
-								else if (rand < 0.05)
-								{
-									// grass
-									if (snoise2(p.x * 4.0, p.z * 4.0) > 0.0)
+									if (snoise2(p.x * 1.8, p.z * 1.8) > 0.25)
 									{
-										setb(dx, dy+1, dz, _PLANT_DRYBROWN, 0, 0 );
+										int height = 8 + iRnd(dx, dy+1, dz) * 12;
+										
+										// top cap
+										if (dy + height < 200)
+											ingenPine(dx, dy+1, dz, height);
 									}
-									
-								}
-								else if (rand < 0.01)
-								{	// setting a cross using 0 = no overwrite, 0 = facing (crosses don't have facing)
-									setb(dx, dy+1, dz, _FLOWERRED, 0, 0);
+									else if (rand < 0.05)
+									{
+										// grass
+										if (snoise2(p.x * 4.0, p.z * 4.0) > 0.0)
+										{
+											setb(dx, dy+1, dz, _PLANT_DRYBROWN, 0, 0 );
+										}
+										
+									}
+									else if (rand < 0.01)
+									{	// setting a cross using 0 = no overwrite, 0 = facing (crosses don't have facing)
+										setb(dx, dy+1, dz, _FLOWERRED, 0, 0);
+									}
 								}
 								
 							} // rand / air

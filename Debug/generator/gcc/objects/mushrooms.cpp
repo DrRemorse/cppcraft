@@ -1,7 +1,11 @@
-#include "vec.h"
-#include <stdlib.h>
+#include "mushrooms.hpp"
+
+#include "../blocks.hpp"
+#include "../generator.h"
+#include "../vec.h"
+#include "helpers.hpp"
+#include <cstdlib>
 #include <math.h>
-#include "blocks.h"
 
 typedef unsigned short block_t;
 
@@ -14,9 +18,9 @@ void omushHood(int x, int y, int z, int radius, block_t mat_top, block_t mat_top
 	float rad, fdx, fdy, fdz;
 	
 	// block with special from 0 to 15
-	block mat = (block) { 0, 0, (int)(iRnd(x, y+11, z) * 16) };
+	block mat = (block) { 0, 0, (block_t)(iRnd(x, y+11, z) * 16) };
 	
-	int dx, dy, dz, tempy;
+	int dx, dy, dz;
 	
 	for (dx = -radius; dx <= radius; dx++)
 	{
@@ -58,7 +62,7 @@ void omushWildShroom(int x, int y, int z, int height)
 {
 	float lowrad = iRnd(x, z, y) * 4 + 8;
 	float toprad = lowrad * 0.4;
-	float currad;
+	float currad = 0;
 	
 	const float jitter = 2.0;
 	const float interpolback = 0.05;
@@ -95,7 +99,7 @@ void omushStrangeShroom(int x, int y, int z, int height)
 {
 	float lowrad = (float)height / 2.8;
 	float toprad = lowrad * 0.4;
-	float currad;
+	float currad = 0;
 	
 	const float jitter = 1.0;
 	const float interpolback = 0.05;
@@ -128,10 +132,9 @@ void omushStrangeShroom(int x, int y, int z, int height)
 	float inner_rad, shiftup;
 	float dist;
 	
-	const float top_rad = 0.9;
 	const int speckle_chance = 8;
 	
-	block mat = (block) { 0, 0, (int)(iRnd(x, y+13, z) * 16) };
+	block mat = (block) { 0, 0, (block_t)(iRnd(x, y+13, z) * 16) };
 	
 	const float shift_strength       = 3.0;
 	const float shift_top_slope      = 0.5;

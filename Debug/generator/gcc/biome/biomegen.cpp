@@ -1,51 +1,52 @@
-#include "biome.h"
-#include "generator.h"
-#include <math.h>
+#include "biome.hpp"
 
-#include "noise\simplex1234.h"
+#include "../noise/simplex1234.h"
+#include <math.h>
 
 // 2D biomes
 
 int biomeTable[9][9] =
 {
-	 0, 0, 0, 0, 0, 0, 0, 1,  1,
-	 0, 0, 0, 1, 2, 3, 2, 3,  3,
-	 1, 2, 3, 4, 5, 5, 6, 6,  6,
-	10,11, 3, 5, 5, 8, 7, 8,  8,
-	12,12, 7, 5, 6, 7, 8, 9,  9,
-	13,12, 9,10,11,12, 9,10, 10,
-	13,19,18,15,15, 9,16,20, 20,
-	14,13,18,15,16,16,20,17, 17,
-	14,13,18,15,16,16,20,17, 17,
+	{  0, 0, 0, 0, 0, 0, 0, 1,  1 },
+	{  0, 0, 0, 1, 2, 3, 2, 3,  3 },
+	{  1, 2, 3, 4, 5, 5, 6, 6,  6 },
+	{ 10,11, 3, 5, 5, 8, 7, 8,  8 },
+	{ 12,12, 7, 5, 6, 7, 8, 9,  9 },
+	{ 13,12, 9,10,11,12, 9,10, 10 },
+	{ 13,19,18,15,15, 9,16,20, 20 },
+	{ 14,13,18,15,16,16,20,17, 17 },
+	{ 14,13,18,15,16,16,20,17, 17 }
 };
 
 int cols[21][3] =
 {
-	232,232,232, // ice
-		89, 92, 76, // polar stone/ice desert
-		66, 72, 46, // beginning tundra
-		77, 76, 46, // tundra
-
-		85, 83, 47, // tundra to boreal
-		43, 50, 20, // boreal 1
-		48, 66, 23, // boreal 2
-		51, 63, 24, // hemiboreal 1
-
-		30, 51, 13, // hemiboreal 2
-		56, 79, 26, // temperate
-		66, 92, 33, // Mediterranean 1
-		79, 92, 41, // Mediterranean 2
-
-	107,105, 56, // subtropical dry
-	200,177,144, // desert
-	211,157,111, // red desert
-		70, 68, 37, // wet/dry savanna
-
-		35, 48, 16, // monsoon
-		36, 85, 19, // rainforest
-	156,138, 89, // dry
-	167,150,116, // chinese desert
-		31, 65, 13, // amazonas rf
+	{ 232,232,232},  // ice
+	{ 89, 92, 76 },  // polar stone/ice desert
+	{ 66, 72, 46 },  // beginning tundra
+	{ 77, 76, 46 },  // tundra
+	
+	{ 85, 83, 47 },  // tundra to boreal
+	{ 43, 50, 20 },  // boreal 1
+	{ 48, 66, 23 },  // boreal 2
+	{ 51, 63, 24 },  // hemiboreal 1
+	
+	{ 30, 51, 13 },  // hemiboreal 2
+	{ 56, 79, 26 },  // temperate
+	{ 66, 92, 33 },  // Mediterranean 1
+	{ 79, 92, 41 },  // Mediterranean 2
+	
+	{ 107,105, 56 },  // subtropical dry
+	{ 200,177,144 },  // desert
+	{ 211,157,111 },  // red desert
+	
+	{ 70, 68, 37 },  // wet/dry savanna
+	
+	{  35, 48, 16 }, // monsoon
+	{  36, 85, 19 }, // rainforest
+	{ 156,138, 89 }, // dry
+	
+	{ 167,150,116 }, // chinese desert
+	{  31, 65, 13 }  // amazonas rf
 };
 //#define COLINT(cc,c1,c2,f) { cc[0] = c1[0]+(c2[0]-c1[0])*f; cc[1] = c1[1]+(c2[1]-c1[1])*f; cc[2] = c1[2]+(c2[2]-c1[2])*f; }
 

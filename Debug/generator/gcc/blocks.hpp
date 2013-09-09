@@ -1,5 +1,7 @@
-#ifndef BLOCKS_H
-#define BLOCKS_H
+#ifndef BLOCKS_HPP
+#define BLOCKS_HPP
+
+typedef unsigned short block_t;
 
 #define max_unique_ids  1023
 
@@ -234,5 +236,13 @@
 #define isCross(id) (id >= cross_start && id <= cross_end)
 #define isFluid(id) (id == _WATER || id == _LAVABLOCK)
 #define isLight(id) (id == _TORCH || id == _MOLTENSTONE || id == _LAVABLOCK || id == _REDSTONE || id == _GREENSTONE || id == _FIRE || id == _LANTERN)
+
+inline int blockTransparent(block_t id)
+{
+	// high chance its air
+	if (isAir(id)) return 1;
+	if (id > halfblock_start) return 1;
+	return 0;
+}
 
 #endif

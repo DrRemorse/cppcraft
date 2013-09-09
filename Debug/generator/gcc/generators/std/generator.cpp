@@ -1,11 +1,12 @@
-#include "stdgen.h"
+#include "generator.hpp"
 
-#include "generator.h"
-#include "blocks.h"
-#include "biome.h"
-#include "vec.h"
-#include "noise.h"
-#include "noise\simplex1234.h"
+#include "../../blocks.hpp"
+#include "../../generator.h"
+#include "../../genthread.h"
+#include "../../vec.h"
+#include "../../biome/biome.hpp"
+#include "../../noise/simplex1234.h"
+#include "terrain.hpp"
 #include <math.h>
 
 /*
@@ -135,9 +136,6 @@ block_t getTerrainComplex(f32_t y, f32_t in_beachhead, f32_t density, f32_t cave
 
 void terrainGenerator(genthread* l_thread)
 {
-	//if (l_thread->z == 0)
-	//	fbprintf("generating row %3.0f%% ", (f64_t) l_thread->x / (f64_t)(SECTORS_XZ-1) * 100.0f);
-	
 	// interpolation grid partitions
 	#define ngrid 8
 	#define ygrid 4 // not yet used
@@ -249,7 +247,7 @@ void terrainGenerator(genthread* l_thread)
 		// if at the top of a new sector, get sector pointer
 		if (by == BLOCKS_Y-1) s = getSector(wx, y >> 3, wz);
 		
-		block_t *sb = getSectorBlock(s);
+		block_t* sb = (block_t*) getSectorBlock(s);
 		
 		// set generic blocks using getTerrainSimple()
 		// interpolate using linear bore-a-thon
@@ -292,7 +290,7 @@ void terrainGenerator(genthread* l_thread)
 					if (id)
 					{
 						// create only on-demand!
-						if (!sb) sb = createSectorBlock(s);
+						if (!sb) sb = (block_t*) createSectorBlock(s);
 						// directly set block value
 						sb[x * BLOCKS_XZ * BLOCKS_Y + z * BLOCKS_Y + by] = id;
 						
