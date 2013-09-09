@@ -3,7 +3,7 @@
 #define FRAGMENT_PROGRAM
 
 #ifdef VERTEX_PROGRAM
-precision highp float;
+//precision highp float;
 
 uniform mat4 matproj;
 uniform mat4 matview;
@@ -24,9 +24,9 @@ out vec4 lightdata;
 out vec4 torchlight;
 
 out float vertdist;
+out vec3 v_eye;
 out vec3 v_ldir;
 out vec3 v_half;
-out vec3 v_eye;
 out vec3 v_normal;
 out vec3 l_normal;
 out vec3 l_reflect;
@@ -73,7 +73,6 @@ void main(void)
 precision highp float;
 
 uniform sampler2D underwatermap;
-uniform sampler2D wavenormals;
 uniform samplerCube skymap;
 
 uniform mat4 matview;
@@ -151,7 +150,7 @@ void main(void)
 	refcoord.xy += Normal.xz * 0.025 * wdepth;
 	
 	// read refracted ray
-	vec4 color2 = texture2D(underwatermap, refcoord);
+	//vec4 color2 = texture2D(underwatermap, refcoord);
 	
 	// mix only if the new depth is positive
 	//color.rgb = color2.rgb; //mix(color.rgb, color2.rgb, step(vertdist / ZFAR, color2.a));

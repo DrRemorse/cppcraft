@@ -116,16 +116,14 @@ namespace cppcraft
 			// texture units
 			shaders[sbase + i].sendInteger("texture", 0);
 			shaders[sbase + i].sendInteger("tonemap", 1);
-			shaders[sbase + i].sendInteger("skymap",  4);
-			//shaders[sbase + i].sendInteger("skybuffer", 5);
-			
-			// send viewport size & aspect
-			shaders[sbase + i].sendVec3("screendata", vecScreen);
 		}
 		
 		// extra textures for water
-		shaders[BLOCKS_WATER].sendInteger("wavenormals",   2);
+		shaders[BLOCKS_WATER].bind();
 		shaders[BLOCKS_WATER].sendInteger("underwatermap", 3);
+		shaders[BLOCKS_WATER].sendInteger("skymap",  4);
+		// send viewport size & aspect
+		shaders[BLOCKS_WATER].sendVec3("screendata", vecScreen);
 		
 		linkstage.clear();
 		linkstage.emplace_back("in_vertex");
