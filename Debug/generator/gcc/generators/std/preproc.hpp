@@ -3,6 +3,6 @@
 
 struct genthread;
 
-void preProcess(genthread* l_thread);
+extern void preProcess(genthread* l_thread);
 
 #endif

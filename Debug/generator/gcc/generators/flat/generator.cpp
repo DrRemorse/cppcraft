@@ -3,11 +3,11 @@
 	Test generator
 */
 // sadface :(
-#include "biome.h"
-#include "blocks.h"
-#include "generator.h"
+#include "../../blocks.hpp"
+#include "../../generator.h"
+#include "../../biome/biome.hpp"
+#include "../../noise/simplex1234.h"
 #include "flatpp.h"
-#include "noise/simplex1234.h"
 
 // the main generator!
 

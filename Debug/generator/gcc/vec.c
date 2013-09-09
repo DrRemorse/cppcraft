@@ -133,5 +133,4 @@ vec3 getnormal3(f64_t n10, f64_t n01, f64_t delta)
 	c.y = - (z2 * x1);
 	c.z =   (x1 * y2);
 	return c;
-	
 }

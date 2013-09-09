@@ -6,7 +6,7 @@
 #include <math.h>
 
 // colors for 2D gradients
-#include "colortable.cpp"
+#include "colortable.hpp"
 
 int toTerrain(int biome)
 {

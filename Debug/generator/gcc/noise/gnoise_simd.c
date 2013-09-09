@@ -65,7 +65,7 @@ void permsetup(NoiseContext *nc) {
         nc->offsets[i][k][l] = offs_init[i][k][l];
 }
 
-float noise3(float x, float y, float z, NoiseContext *nc) {
+float simd_noise3(float x, float y, float z, NoiseContext *nc) {
 	v4sf vs[4], vsum;
 	int gi[4], mask, c;
 	v4sf v0;

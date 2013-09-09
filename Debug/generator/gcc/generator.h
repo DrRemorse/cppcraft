@@ -1,5 +1,5 @@
-#ifndef __GENERATOR_H
-	#define __GENERATOR_H
+#ifndef GENERATOR_H
+#define GENERATOR_H
 
 #define GEN_TRUE 1
 #define GEN_FALSE 0
@@ -35,32 +35,32 @@ typedef struct block {
 #include "vec.h"
 
 // console
-void (*logText)(char* text);
+extern void (*logText)(char* text);
 
 // threading
-void (*startJob)(void* func, void* struct_ptr);
-void (*waitJobs)();
+extern void (*startJob)(void* func, void* struct_ptr);
+extern void (*waitJobs)();
 
 // world
-void (*generate)(void* genfunc, int use_border);
-void* (*getSector)(int x, int y, int z);
-int (*getWorldOffsetX)();
-int (*getWorldOffsetZ)();
+extern void (*generate)(void* genfunc, int use_border);
+extern void* (*getSector)(int x, int y, int z);
+extern int (*getWorldOffsetX)();
+extern int (*getWorldOffsetZ)();
 
 // interpolation
-f32_t (*mix)(f32_t a, f32_t b, f32_t mixrate);
-f32_t (*cosintrp)(f32_t a, f32_t b, f32_t mixrate);
-f32_t (*iarray)(f32_t *weights, f32_t x, f32_t y);
-f32_t (*cosarray)(f32_t *weights, f32_t x, f32_t y);
-f32_t (*cubic)(f32_t *p, f32_t x);
-f32_t (*catmull_rom)(f32_t *p, f32_t x);
-f32_t (*bicubic)(f32_t *p, f32_t x, f32_t y);
-f32_t (*bicubic_catmull)(f32_t *p, f32_t x, f32_t y);
-f32_t (*trilin)(f32_t *p, f32_t x, f32_t y, f32_t z);
-f64_t (*tri64)(f64_t *p, f64_t x, f64_t y, f64_t z);
-f32_t (*costri)(f32_t *p, f32_t x, f32_t y, f32_t z);
-f64_t (*costri64)(f64_t *p, f64_t x, f64_t y, f64_t z);
-f32_t (*tricubic)(f32_t *p, f32_t x, f32_t y, f32_t z);
+extern f32_t (*mix)(f32_t a, f32_t b, f32_t mixrate);
+extern f32_t (*cosintrp)(f32_t a, f32_t b, f32_t mixrate);
+extern f32_t (*iarray)(f32_t *weights, f32_t x, f32_t y);
+extern f32_t (*cosarray)(f32_t *weights, f32_t x, f32_t y);
+extern f32_t (*cubic)(f32_t *p, f32_t x);
+extern f32_t (*catmull_rom)(f32_t *p, f32_t x);
+extern f32_t (*bicubic)(f32_t *p, f32_t x, f32_t y);
+extern f32_t (*bicubic_catmull)(f32_t *p, f32_t x, f32_t y);
+extern f32_t (*trilin)(f32_t *p, f32_t x, f32_t y, f32_t z);
+extern f64_t (*tri64)(f64_t *p, f64_t x, f64_t y, f64_t z);
+extern f32_t (*costri)(f32_t *p, f32_t x, f32_t y, f32_t z);
+extern f64_t (*costri64)(f64_t *p, f64_t x, f64_t y, f64_t z);
+extern f32_t (*tricubic)(f32_t *p, f32_t x, f32_t y, f32_t z);
 
 // curves
 #define cosp(f)    ((1.0 - cos(f * PI)) * 0.5)
@@ -72,36 +72,36 @@ f32_t (*tricubic)(f32_t *p, f32_t x, f32_t y, f32_t z);
 // voronoi diagrams
 typedef float vor_weights;
 
-f64_t (*voronoi)(f64_t x, f64_t z, void* distfunc);
-void  (*voronoiGrad)(f64_t x, f64_t z, int weights, vor_weights* w);
-f64_t (*vor_euclidian)(f64_t, f64_t, f64_t, f64_t);
-f64_t (*vor_quadratic)(f64_t, f64_t, f64_t, f64_t);
-f64_t (*vor_linsquare)(f64_t, f64_t, f64_t, f64_t);
-f64_t (*vor_minkowski)(f64_t, f64_t, f64_t, f64_t);
-f64_t (*vor_manhattan)(f64_t, f64_t, f64_t, f64_t);
-f64_t (*vor_chebyshev)(f64_t, f64_t, f64_t, f64_t);
+extern f64_t (*voronoi)(f64_t x, f64_t z, void* distfunc);
+extern void  (*voronoiGrad)(f64_t x, f64_t z, int weights, vor_weights* w);
+extern f64_t (*vor_euclidian)(f64_t, f64_t, f64_t, f64_t);
+extern f64_t (*vor_quadratic)(f64_t, f64_t, f64_t, f64_t);
+extern f64_t (*vor_linsquare)(f64_t, f64_t, f64_t, f64_t);
+extern f64_t (*vor_minkowski)(f64_t, f64_t, f64_t, f64_t);
+extern f64_t (*vor_manhattan)(f64_t, f64_t, f64_t, f64_t);
+extern f64_t (*vor_chebyshev)(f64_t, f64_t, f64_t, f64_t);
 
 // standard stuff
-f32_t (*ramp)(f32_t r, f32_t power);
+extern f32_t (*ramp)(f32_t r, f32_t power);
 #define _mix(a, b, m) ((1.0 - m) * (a) + (m) * (b))
 #define FASTFLOOR(x) ( ((x)>0) ? ((int)x) : (((int)x)-1) )
 
-f64_t (*clamp)(f64_t a, f64_t b, f64_t value);
-f64_t (*min)(f64_t a, f64_t b, f64_t value);
-f64_t (*min2)(f64_t *a, int32_t size);
-f64_t (*max)(f64_t a, f64_t b);
-f64_t (*max2)(f64_t *a, int32_t size);
-f64_t (*ramp64d)(f64_t r, f64_t power);
+extern f64_t (*clamp)(f64_t a, f64_t b, f64_t value);
+extern f64_t (*min)(f64_t a, f64_t b, f64_t value);
+extern f64_t (*min2)(f64_t *a, int32_t size);
+extern f64_t (*max)(f64_t a, f64_t b);
+extern f64_t (*max2)(f64_t *a, int32_t size);
+extern f64_t (*ramp64d)(f64_t r, f64_t power);
 
 // blocks
-void* (*getSectorBlock)(void* sector);
-void* (*createSectorBlock)(void* sector);
-void (*setsimple)(void* sector, int x, int y, int z, block_t id);
-void (*setb)(int x, int y, int z, block_t id, int overwrite, int facing);
-void (*setbl)(int x, int y, int z, block* bl, int overwrite);
-void (*setblock)(void* sector, int x, int y, int z, block_t id, int overwrite, int facing);
-block* (*getb)(int x, int y, int z);
-int (*wrapb)(int x, int y, int z);   // returns GEN_FALSE if blocks are out of 'miniworld' bounds
+extern void* (*getSectorBlock)(void* sector);
+extern void* (*createSectorBlock)(void* sector);
+extern void (*setsimple)(void* sector, int x, int y, int z, block_t id);
+extern void (*setb)(int x, int y, int z, block_t id, int overwrite, int facing);
+extern void (*setbl)(int x, int y, int z, block* bl, int overwrite);
+extern void (*setblock)(void* sector, int x, int y, int z, block_t id, int overwrite, int facing);
+extern block* (*getb)(int x, int y, int z);
+extern int (*wrapb)(int x, int y, int z);   // returns GEN_FALSE if blocks are out of 'miniworld' bounds
 
 // biomes / flatland data
 
@@ -113,35 +113,35 @@ typedef struct cl_rgba {
 	int r, g, b, a;
 } cl_rgba;
 
-void* (*getFlatland)(int x, int z);
-void (*setTerrain)(void* fland, int bx, int bz, int value);
-int  (*getTerrain)(void* fland, int bx, int bz);
-void (*setColor)(void* fland, int bx, int bz, int clid, cl_rgb* cl);
-void (*setColorExt)(void* fland, int bx, int bz, int clid, cl_rgba* cl);
-cl_rgb* (*getColor)(void* fland, int bx, int bz, int clid);
-void (*setLevels)(void* fland, int bx, int bz, int skyLevel, int groundLevel);
+extern void* (*getFlatland)(int x, int z);
+extern void (*setTerrain)(void* fland, int bx, int bz, int value);
+extern int  (*getTerrain)(void* fland, int bx, int bz);
+extern void (*setColor)(void* fland, int bx, int bz, int clid, cl_rgb* cl);
+extern void (*setColorExt)(void* fland, int bx, int bz, int clid, cl_rgba* cl);
+extern cl_rgb* (*getColor)(void* fland, int bx, int bz, int clid);
+extern void (*setLevels)(void* fland, int bx, int bz, int skyLevel, int groundLevel);
 
 // random functions
-f32_t (*iRnd)(int x, int y, int z);
-f32_t (*iRnd2)(void* sector, int bx, int by, int bz);
-f32_t (*iRnd1)(void* sector, int offset);
+extern f32_t (*iRnd)(int x, int y, int z);
+extern f32_t (*iRnd2)(void* sector, int bx, int by, int bz);
+extern f32_t (*iRnd1)(void* sector, int offset);
 
 // terrain value noise functions
-f32_t (*bigRnd)(int wx, int wy, int size);
-f32_t (*bigRndCat)(int wx, int wy, int size);
+extern f32_t (*bigRnd)(int wx, int wy, int size);
+extern f32_t (*bigRndCat)(int wx, int wy, int size);
 
 // inGen object functions
-void (*ingenAppleTree)(int x, int y, int z, int height);
-void (*ingenCactus)(int x, int y, int z, int height);
-void (*ingenBigDarkTree)(int x, int y, int z, int height);
-void (*ingenJungleTree)(int x, int y, int z, int height);
-void (*ingenTreeA)(int x, int y, int z, int height);
-void (*ingenPalm)(int x, int y, int z, int height);
-void (*ingenPine)(int x, int y, int z, int height);
-void (*ingenJungleTreeB)(int x, int y, int z, int h);
+extern void (*ingenAppleTree)(int x, int y, int z, int height);
+extern void (*ingenCactus)(int x, int y, int z, int height);
+extern void (*ingenBigDarkTree)(int x, int y, int z, int height);
+extern void (*ingenJungleTree)(int x, int y, int z, int height);
+extern void (*ingenTreeA)(int x, int y, int z, int height);
+extern void (*ingenPalm)(int x, int y, int z, int height);
+extern void (*ingenPine)(int x, int y, int z, int height);
+extern void (*ingenJungleTreeB)(int x, int y, int z, int h);
 
 // special object functions
-void (*ingenWildMushroom)(int x, int y, int z);
-void (*ingenStrangeShroom)(int x, int y, int z);
+extern void (*ingenWildMushroom)(int x, int y, int z);
+extern void (*ingenStrangeShroom)(int x, int y, int z);
 
 #endif

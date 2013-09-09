@@ -4,7 +4,9 @@
 #include "../../generator.h"
 #include "../../biome/biome.hpp"
 #include "generator.hpp"
+#include "preproc.hpp"
 #include "process.hpp"
+#include "postproc.hpp"
 
 void testGen()
 {

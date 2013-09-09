@@ -1,6 +1,6 @@
 c:\mingw64\bin\gcc
 -Wall -Wno-write-strings -m32 -Ofast -msse4.1 -mfpmath=both
--c -Iinc
+-c -Igcc
 -shared -Llib
 .
 ./biome

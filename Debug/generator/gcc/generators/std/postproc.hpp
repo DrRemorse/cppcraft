@@ -3,6 +3,6 @@
 
 struct genthread;
 
-void postProcess(genthread* l_thread);
+extern void postProcess(genthread* l_thread);
 
 #endif

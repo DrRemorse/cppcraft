@@ -1,9 +1,9 @@
-// color tables for 2D gradients
+#include "colortable.hpp"
+
+/// color tables for 2D gradients ///
 
 #include "../generator.h"
 #include "biome.hpp"
-
-#define GRAD_STONE  4
 
 cl_rgb StonyColors[GRAD_STONE][GRAD_STONE] =
 {
@@ -32,8 +32,6 @@ cl_rgb StonyColors[GRAD_STONE][GRAD_STONE] =
 		{ 116, 87, 74 }  // more copper
 	}
 };
-
-#define GRAD_GRASS  8
 
 cl_rgb GrassyColors[GRAD_GRASS][GRAD_GRASS] =
 {

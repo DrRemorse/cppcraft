@@ -1,10 +1,9 @@
 #ifndef BIOME_HPP
 #define BIOME_HPP
 	
-	struct genthread;
-	
 	// prototypes
-	void biomeGenerator(genthread* l_thread);
+	struct genthread;
+	extern void biomeGenerator(genthread* l_thread);
 	
 	typedef struct biome_t
 	{
@@ -12,8 +11,8 @@
 		float w[4];
 	} biome_t;
 	
-	biome_t biomeGen(double gx, double gy);
-	int toTerrain(int biome);
+	extern biome_t biomeGen(double gx, double gy);
+	extern int toTerrain(int biome);
 	
 	// scale
 	#define BIOME_SCALE 24.0
