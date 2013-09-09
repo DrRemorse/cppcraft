@@ -80,10 +80,10 @@ namespace cppcraft
 				// start precompiling sectors
 				if (precompq.run(timer, _localtime)) timeout = true;
 				
-				double t1 = timer.getDeltaTime();
-				if (t1 - t0 > 0.020)
+				double t1 = timer.getDeltaTime() - t0;
+				if (t1 > 0.020)
 				{
-					logger << "Precomp delta: " << t1 - t0 << Log::ENDL;
+					logger << "Precomp delta: " << t1 * 1000 << Log::ENDL;
 				}
 				
 				//double t1 = timer.getDeltaTime();
@@ -98,10 +98,10 @@ namespace cppcraft
 				
 				worldbuilder.run(timer, _localtime);
 				
-				double t1 = timer.getDeltaTime();
-				if (t1 - t0 > 0.020)
+				double t1 = timer.getDeltaTime() - t0;
+				if (t1 > 0.020)
 				{
-					logger << "Worldbuilder delta: " << t1 - t0 << Log::ENDL;
+					logger << "Worldbuilder delta: " << t1 * 1000 << Log::ENDL;
 				}
 				
 				//double t1 = timer.getDeltaTime();
