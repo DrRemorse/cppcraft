@@ -20,23 +20,26 @@ f32_t getnoise_caves(vec3 p)
 {
 	vec3 npos = (vec3) { p.x * 1.2, p.y * 2.0, p.z * 1.2 };
 	
-	f64_t n1 = snoise3(npos.x, npos.y, npos.z);
+	double n1 = snoise3(npos.x, npos.y, npos.z);
 	
-	if (fabs(n1) < 0.3)
+	const double CAVE_TRESHOLD = 0.15;
+	if (n1 >= 0.0 && n1 < CAVE_TRESHOLD)
 	{
 		npos.y *= 2.5;
 		
 		// cross noise
-		f64_t n2 = snoise3(npos.x, npos.y, npos.z);
-		f64_t n3 = snoise3(npos.x, npos.y + 3.5, npos.z);
-		f64_t n4 = snoise3(npos.x * 0.2, npos.y + 8.5, npos.z * 0.2);
+		double n2 = snoise3(npos.x, npos.y, npos.z);
+		double n3 = snoise3(npos.x, npos.y + 3.5, npos.z);
+		double n4 = snoise3(npos.x * 0.2, npos.y + 8.5, npos.z * 0.2);
 		
-		f64_t depth_density_increase = (1.0 - p.y * p.y) * 0.2;
+		// caves increase in density as we go lower
+		double DEPTH_DENSITY = 0.1 + (1.0 - p.y * p.y) * 0.2;
+		double cavenoise = fabs(n2 + n3 + n4);
 		
-		if (fabs(n2 + n3 + n4) < 0.1 + depth_density_increase)
+		if (cavenoise < DEPTH_DENSITY)
 		{
-			if (n1 >= 0.0 && n1 < 0.15)
-				return -(0.15 - n1) / (0.15);
+			double t = (DEPTH_DENSITY - cavenoise) / DEPTH_DENSITY;
+			return -t + 0.1;
 		}
 	}
 	return 0.0;

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Project Name="generator" InternalType="">
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00010001N0005Debug000000000000]]>
+    </Plugin>
+  </Plugins>
+  <VirtualDirectory Name="gcc">
+    <VirtualDirectory Name="generators">
+      <VirtualDirectory Name="flat">
+        <File Name="gcc/generators/flat/flat.cpp"/>
+        <File Name="gcc/generators/flat/flatgen.cpp"/>
+        <File Name="gcc/generators/flat/flatgen.hpp"/>
+        <File Name="gcc/generators/flat/flatpp.cpp"/>
+        <File Name="gcc/generators/flat/flatpp.hpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="std">
+        <File Name="gcc/generators/std/generator.cpp"/>
+        <File Name="gcc/generators/std/generator.hpp"/>
+        <File Name="gcc/generators/std/postproc.cpp"/>
+        <File Name="gcc/generators/std/postproc.hpp"/>
+        <File Name="gcc/generators/std/preproc.cpp"/>
+        <File Name="gcc/generators/std/preproc.hpp"/>
+        <File Name="gcc/generators/std/process.cpp"/>
+        <File Name="gcc/generators/std/process.hpp"/>
+        <File Name="gcc/generators/std/std.cpp"/>
+        <File Name="gcc/generators/std/terrain.cpp"/>
+        <File Name="gcc/generators/std/terrain.hpp"/>
+      </VirtualDirectory>
+    </VirtualDirectory>
+    <VirtualDirectory Name="biome">
+      <File Name="gcc/biome/biome.cpp"/>
+      <File Name="gcc/biome/biome.hpp"/>
+      <File Name="gcc/biome/biomegen.cpp"/>
+      <File Name="gcc/biome/colortable.cpp"/>
+      <File Name="gcc/biome/colortable.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="noise">
+      <File Name="gcc/noise/cosnoise.c"/>
+      <File Name="gcc/noise/cosnoise.h"/>
+      <File Name="gcc/noise/gabor.c"/>
+      <File Name="gcc/noise/gabor.h"/>
+      <File Name="gcc/noise/gnoise_simd.h"/>
+      <File Name="gcc/noise/multifractal.c"/>
+      <File Name="gcc/noise/multifractal.h"/>
+      <File Name="gcc/noise/noise1234.c"/>
+      <File Name="gcc/noise/noise1234.h"/>
+      <File Name="gcc/noise/sdnoise1234.c"/>
+      <File Name="gcc/noise/sdnoise1234.h"/>
+      <File Name="gcc/noise/simplex1234.c"/>
+      <File Name="gcc/noise/simplex1234.h"/>
+      <File Name="gcc/noise/srdnoise23.c"/>
+      <File Name="gcc/noise/srdnoise23.h"/>
+      <File Name="gcc/noise/torusnoise.c"/>
+      <File Name="gcc/noise/torusnoise.h"/>
+      <File Name="gcc/noise/worley.c"/>
+      <File Name="gcc/noise/worley.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="objects">
+      <File Name="gcc/objects/helpers.cpp"/>
+      <File Name="gcc/objects/helpers.hpp"/>
+      <File Name="gcc/objects/house.cpp"/>
+      <File Name="gcc/objects/house.hpp"/>
+      <File Name="gcc/objects/mushrooms.cpp"/>
+      <File Name="gcc/objects/mushrooms.hpp"/>
+      <File Name="gcc/objects/trees.cpp"/>
+      <File Name="gcc/objects/trees.hpp"/>
+      <File Name="gcc/objects/volumetrics.cpp"/>
+      <File Name="gcc/objects/volumetrics.hpp"/>
+    </VirtualDirectory>
+    <File Name="gcc/blocks.hpp"/>
+    <File Name="gcc/generator.c"/>
+    <File Name="gcc/generator.h"/>
+    <File Name="gcc/genthread.h"/>
+    <File Name="gcc/vec.c"/>
+    <File Name="gcc/vec.h"/>
+  </VirtualDirectory>
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="misc">
+    <File Name="Makefile"/>
+    <File Name="batch/all.batch"/>
+    <File Name="batch/c.batch"/>
+    <File Name="batch/flat.batch"/>
+  </VirtualDirectory>
+  <Settings Type="Dynamic Library">
+    <GlobalSettings>
+      <Compiler Options="" C_Options="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="">
+        <LibraryPath Value="."/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g" C_Options="-g" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="yes">
+        <RebuildCommand>mingw32-make rebuild</RebuildCommand>
+        <CleanCommand>mingw32-make clean</CleanCommand>
+        <BuildCommand>mingw32-make -j8</BuildCommand>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory>$(ProjectPath)</WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="" C_Options="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="-O2" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="yes">
+        <RebuildCommand/>
+        <CleanCommand>make clean</CleanCommand>
+        <BuildCommand>make</BuildCommand>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory>$(WorkspacePath)</WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+  </Settings>
+</CodeLite_Project>

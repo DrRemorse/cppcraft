@@ -16,11 +16,11 @@
 block_t getTerrainComplex(f32_t y, f32_t in_beachhead, f32_t density, f32_t caves)
 {
 	/* FOR MAKING CAVES */
-	//if (caves < 0.0) return _STONE;
-	//return _AIR;
+	if (caves < 0.0) return _STONE;
+	return _AIR;
 	
 	f32_t cavetresh = 0.0; // distance from air/dense barrier
-	if (density > -0.1 && density <= 0.0) cavetresh = 1.0 - density / -0.1;
+	//if (density > -0.1 && density <= 0.0) cavetresh = 1.0 - density / -0.1;
 	
 	// caves
 	const f32_t cave_lower = 0.0; // underworld cave density treshold
