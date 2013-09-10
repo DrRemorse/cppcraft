@@ -249,8 +249,8 @@ void biomeGenerator(genthread* l_thread)
 			determinator -= bigw;
 		}
 		
-		const f32_t GRASS_GRAD_WEIGHT = 0.5;
-		const f32_t TREES_GRAD_WEIGHT = 0.5;
+		const f32_t GRASS_GRAD_WEIGHT = 0.6;
+		const f32_t TREES_GRAD_WEIGHT = 0.55;
 		const f32_t STONE_GRAD_WEIGHT = 0.75;
 		
 		f32_t randomness  = 10.0 + snoise2(p.x*0.1, p.z*0.1) * 8.0 + snoise2(p.x*2.5, p.z*2.5) * 2.0;

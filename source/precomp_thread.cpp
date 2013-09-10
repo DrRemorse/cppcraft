@@ -130,7 +130,7 @@ namespace cppcraft
 		if (datadump == nullptr)
 		{
 			logger << Log::ERR << "PrecompThread::precompile(): datadump was null" << Log::ENDL;
-			// kill the precomp:
+			// we cannot continue, kill the precomp
 			killPrecomp();
 			return;
 		}
@@ -149,7 +149,7 @@ namespace cppcraft
 			}
 		}
 		
-		// send to sectorcompiler
+		// prepare for next stage
 		pc.datadump = datadump;
 		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 		{

@@ -40,6 +40,13 @@ namespace cppcraft
 			cnt += precomp->vertices[i];
 		}
 		
+		if (precomp->datadump == nullptr)
+		{
+			logger << Log::ERR << "PrecompThread::ambientOcclusion(): datadump was null" << Log::ENDL;
+			cancelPrecomp();
+			return;
+		}
+		
 		Sector& sector = *precomp->sector;
 		
 		// ambient occlusion processing stage
