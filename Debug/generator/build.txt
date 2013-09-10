@@ -1,6 +1,6 @@
-c:\mingw64\bin\gcc
--Wall -Wno-write-strings -m32 -Ofast -msse4.1 -mfpmath=both
--c -Igcc
+c:\mingw64\bin\g++
+-Wall -Wno-write-strings -m32 -Ofast -msse4.1 -mfpmath=both -fpermissive -Wl,--add-stdcall-alias
+-Igcc
 -shared -Llib
 .
 ./biome

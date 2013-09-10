@@ -1,16 +1,12 @@
 #include "generator.h"
 // console
-void (*logText)(char* text) = (void*)4257328;
-
-// threading
-void (*startJob)(void* func, void* struct_ptr) = (void*)4258368;
-void (*waitJobs)() = (void*)4258400;
+void (*logText)(char* text) = (void(*)(char*))4255040;
 
 // world
-void (*generate)(void* genfunc, int use_border) = (void*)4256960;
-void* (*getSector)(int x, int y, int z) = (void*)4257408;
-int (*getWorldOffsetX)() = (void*)4258304;
-int (*getWorldOffsetZ)() = (void*)4258336;
+void (*generate)(void* genfunc, int use_border) = (void*)4254672;
+void* (*getSector)(int x, int y, int z) = (void*)4255120;
+int (*getWorldOffsetX)() = (void*)4256016;
+int (*getWorldOffsetZ)() = (void*)4256048;
 
 // interpolation
 f32_t (*mix)(f32_t a, f32_t b, f32_t mixrate) = (void*)4210944;
@@ -34,31 +30,17 @@ f32_t (*tricubic)(f32_t *p, f32_t x, f32_t y, f32_t z) = (void*)4213600;
 #define quintic_heavy(f) ( x*x*x*x * ( 25.0 - 48.0 * x + x*x * ( 25.0 - x*x*x*x ) ) )
 #define catmull(p, x) ( p[1] + 0.5 * x*( p[2] - p[0] + x*( 2.0 * p[0] - 5.0*p[1] + 4.0*p[2] - p[3] + x*( 3.0 * (p[1] - p[2]) + p[3] - p[0]) ) ) )
 
-// voronoi diagrams
-f64_t (*voronoi)(f64_t x, f64_t z, void* distfunc) = (void*)4259664;
-void  (*voronoiGrad)(f64_t x, f64_t z, int weights, vor_weights* w) = (void*)4260064;
-f64_t (*vor_euclidian)(f64_t, f64_t, f64_t, f64_t) = (void*)4259136;
-f64_t (*vor_quadratic)(f64_t, f64_t, f64_t, f64_t) = (void*)4259216;
-f64_t (*vor_linsquare)(f64_t, f64_t, f64_t, f64_t) = (void*)4259296;
-f64_t (*vor_minkowski)(f64_t, f64_t, f64_t, f64_t) = (void*)4259360;
-f64_t (*vor_manhattan)(f64_t, f64_t, f64_t, f64_t) = (void*)4259504;
-f64_t (*vor_chebyshev)(f64_t, f64_t, f64_t, f64_t) = (void*)4259568;
-
 // standard stuff
 f32_t (*ramp)(f32_t r, f32_t power) = (void*)4211008;
 #define _mix(a, b, m) ((1.0 - m) * (a) + (m) * (b))
 #define FASTFLOOR(x) ( ((x)>0) ? ((int)x) : (((int)x)-1) )
 
 f64_t (*clamp)(f64_t a, f64_t b, f64_t value) = (void*)4210432;
-f64_t (*min)(f64_t a, f64_t b, f64_t value) = (void*)4210528;
-f64_t (*min2)(f64_t *a, int32_t size) = (void*)4210608;
-f64_t (*max)(f64_t a, f64_t b) = (void*)4210736;
-f64_t (*max2)(f64_t *a, int32_t size) = (void*)4210816;
 f64_t (*ramp64d)(f64_t r, f64_t power) = (void*)4211136;
 
 // blocks
-void* (*getSectorBlock)(void* sector) = (void*)4257568;
-void* (*createSectorBlock)(void* sector) = (void*)4257600;
+void* (*getSectorBlock)(void* sector) = (void*)4255280;
+void* (*createSectorBlock)(void* sector) = (void*)4255312;
 void (*setsimple)(void* sector, int x, int y, int z, block_t id) = (void*)4228080;
 void (*setb)(int x, int y, int z, block_t id, int overwrite, int facing) = (void*)4227072;
 void (*setbl)(int x, int y, int z, block* bl, int overwrite) = (void*)4227456;
@@ -68,13 +50,13 @@ int (*wrapb)(int x, int y, int z) = (void*)4226672;   // returns GEN_FALSE if bl
 
 // biomes / flatland data
 
-void* (*getFlatland)(int x, int z) = (void*)4257664;
-void (*setTerrain)(void* fland, int bx, int bz, int value) = (void*)4257776;
-void (*setColor)(void* fland, int bx, int bz, int clid, cl_rgb* cl) = (void*)4257888;
-void (*setColorExt)(void* fland, int bx, int bz, int clid, cl_rgba* cl) = (void*)4258144;
-cl_rgb* (*getColor)(void* fland, int bx, int bz, int clid) = (void*)4257968;
-int  (*getTerrain)(void* fland, int bx, int bz) = (void*)4257824;
-void (*setLevels)(void* fland, int bx, int bz, int, int) = (void*)4258240;
+void* (*getFlatland)(int x, int z) = (void*)4255376;
+void (*setTerrain)(void* fland, int bx, int bz, int value) = (void*)4255488;
+void (*setColor)(void* fland, int bx, int bz, int clid, cl_rgb* cl) = (void*)4255600;
+void (*setColorExt)(void* fland, int bx, int bz, int clid, cl_rgba* cl) = (void*)4255856;
+cl_rgb* (*getColor)(void* fland, int bx, int bz, int clid) = (void*)4255680;
+int  (*getTerrain)(void* fland, int bx, int bz) = (void*)4255536;
+void (*setLevels)(void* fland, int bx, int bz, int, int) = (void*)4255952;
 
 // random functions
 f32_t (*iRnd)(int x, int y, int z) = (void*)4215232;
@@ -94,8 +76,4 @@ void (*ingenTreeA)(int x, int y, int z, int height) = (void*)4230880;
 void (*ingenPalm)(int x, int y, int z, int height) = (void*)4231424;
 void (*ingenPine)(int x, int y, int z, int height) = (void*)4230464;
 void (*ingenJungleTreeB)(int x, int y, int z, int h) = (void*)4232240;
-
-// special object functions
-void (*ingenWildMushroom)(int x, int y, int z) = (void*)4263136;
-void (*ingenStrangeShroom)(int x, int y, int z) = (void*)4263936;
 

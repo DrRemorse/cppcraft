@@ -8,7 +8,17 @@
 #include "process.hpp"
 #include "postproc.hpp"
 
-void testGen()
+#define GAPIDECL  __declspec(dllexport) __stdcall
+#define GAPI  __stdcall
+
+extern "C"
+{
+
+GAPIDECL void testGen();
+GAPIDECL void finalpassBiome();
+GAPIDECL void testPP();
+
+GAPI void testGen()
 {
 	logText("-- stdGen 2D --");
 	
@@ -21,19 +31,17 @@ void testGen()
 	generate((void*) &terrainGenerator, GEN_FALSE);
 	
 	logText("-- done --");
-	
 }
 
-void finalpassBiome()
+GAPI void finalpassBiome()
 {
 	// generate biomes
 	generate((void*) &biomeGenerator, GEN_FALSE);
 	// post-processing (after objects)
 	generate((void*) &postPostProcess, GEN_FALSE);
-	
 }
 
-void testPP()
+GAPI void testPP()
 {
 	logText("-- stdPP --");
 	
@@ -45,4 +53,6 @@ void testPP()
 	generate((void*) &postPostProcess, GEN_FALSE);
 	
 	logText("-- done --");
+}
+
 }
