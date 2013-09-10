@@ -37,10 +37,6 @@ typedef struct block {
 // console
 extern void (*logText)(char* text);
 
-// threading
-extern void (*startJob)(void* func, void* struct_ptr);
-extern void (*waitJobs)();
-
 // world
 extern void (*generate)(void* genfunc, int use_border);
 extern void* (*getSector)(int x, int y, int z);
@@ -48,7 +44,6 @@ extern int (*getWorldOffsetX)();
 extern int (*getWorldOffsetZ)();
 
 // interpolation
-extern f32_t (*mix)(f32_t a, f32_t b, f32_t mixrate);
 extern f32_t (*cosintrp)(f32_t a, f32_t b, f32_t mixrate);
 extern f32_t (*iarray)(f32_t *weights, f32_t x, f32_t y);
 extern f32_t (*cosarray)(f32_t *weights, f32_t x, f32_t y);
@@ -82,16 +77,12 @@ extern f64_t (*vor_manhattan)(f64_t, f64_t, f64_t, f64_t);
 extern f64_t (*vor_chebyshev)(f64_t, f64_t, f64_t, f64_t);
 
 // standard stuff
-extern f32_t (*ramp)(f32_t r, f32_t power);
-#define _mix(a, b, m) ((1.0 - m) * (a) + (m) * (b))
+#define mix(a, b, m) ((1.0 - m) * (a) + (m) * (b))
 #define FASTFLOOR(x) ( ((x)>0) ? ((int)x) : (((int)x)-1) )
 
-extern f64_t (*clamp)(f64_t a, f64_t b, f64_t value);
-extern f64_t (*min)(f64_t a, f64_t b, f64_t value);
-extern f64_t (*min2)(f64_t *a, int32_t size);
-extern f64_t (*max)(f64_t a, f64_t b);
-extern f64_t (*max2)(f64_t *a, int32_t size);
+extern f32_t (*ramp)(f32_t r, f32_t power);
 extern f64_t (*ramp64d)(f64_t r, f64_t power);
+extern f64_t (*clamp)(f64_t a, f64_t b, f64_t value);
 
 // blocks
 extern void* (*getSectorBlock)(void* sector);

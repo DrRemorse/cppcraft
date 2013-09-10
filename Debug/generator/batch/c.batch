@@ -1,1 +1,1 @@
-compile ./generators/std
+compile gcc/generators/std

@@ -1,11 +1,11 @@
 #include "generator.hpp"
 
-#include "../../blocks.hpp"
-#include "../../generator.h"
-#include "../../genthread.h"
-#include "../../vec.h"
-#include "../../biome/biome.hpp"
-#include "../../noise/simplex1234.h"
+#include "blocks.hpp"
+#include "generator.h"
+#include "genthread.h"
+#include "vec.h"
+#include "biome/biome.hpp"
+#include "noise/simplex1234.h"
 #include "terrain.hpp"
 #include <math.h>
 
@@ -265,23 +265,23 @@ void terrainGenerator(genthread* l_thread)
 				frz = fz - (f32_t)bz; // fractional
 				
 				// density weights //
-				w0 = _mix( noisearray[bx][bz  ], noisearray[bx+1][bz  ], frx );
-				w1 = _mix( noisearray[bx][bz+1], noisearray[bx+1][bz+1], frx );
-				density = _mix( w0, w1, frz );
+				w0 = mix( noisearray[bx][bz  ], noisearray[bx+1][bz  ], frx );
+				w1 = mix( noisearray[bx][bz+1], noisearray[bx+1][bz+1], frx );
+				density = mix( w0, w1, frz );
 				// density weights //
 				
 				if (y <= GEN_WATERBLOCKS+1 || density < 0.0)
 				{
 					// caves weights //
-					w0 = _mix( cavesarray[bx][bz  ], cavesarray[bx+1][bz  ], frx );
-					w1 = _mix( cavesarray[bx][bz+1], cavesarray[bx+1][bz+1], frx );
-					caves = _mix( w0, w1, frz );
+					w0 = mix( cavesarray[bx][bz  ], cavesarray[bx+1][bz  ], frx );
+					w1 = mix( cavesarray[bx][bz+1], cavesarray[bx+1][bz+1], frx );
+					caves = mix( w0, w1, frz );
 					// caves weights //
 					
 					// beachhead weights //
-					w0 = _mix( beachhead[bx][bz  ], beachhead[bx+1][bz  ], frx );
-					w1 = _mix( beachhead[bx][bz+1], beachhead[bx+1][bz+1], frx );
-					beach = _mix( w0, w1, frz );
+					w0 = mix( beachhead[bx][bz  ], beachhead[bx+1][bz  ], frx );
+					w1 = mix( beachhead[bx][bz+1], beachhead[bx+1][bz+1], frx );
+					beach = mix( w0, w1, frz );
 					// beachhead weights //
 					
 					id = getTerrainComplex(p.y, beach, density, caves);

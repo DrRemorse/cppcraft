@@ -1,9 +1,9 @@
 #include "postproc.hpp"
 
-#include "../../blocks.hpp"
-#include "../../generator.h"
-#include "../../genthread.h"
-#include "../../biome/biome.hpp"
+#include "blocks.hpp"
+#include "generator.h"
+#include "genthread.h"
+#include "biome/biome.hpp"
 
 void postPostProcess(genthread* l_thread)
 {

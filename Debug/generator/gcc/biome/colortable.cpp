@@ -2,7 +2,7 @@
 
 /// color tables for 2D gradients ///
 
-#include "../generator.h"
+#include "generator.h"
 #include "biome.hpp"
 
 cl_rgb StonyColors[GRAD_STONE][GRAD_STONE] =

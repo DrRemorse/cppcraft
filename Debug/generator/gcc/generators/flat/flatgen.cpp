@@ -1,13 +1,13 @@
 
 /*
-	Test generator
+	Flat world generator
 */
 // sadface :(
-#include "../../blocks.hpp"
-#include "../../generator.h"
-#include "../../biome/biome.hpp"
-#include "../../noise/simplex1234.h"
-#include "flatpp.h"
+#include "blocks.hpp"
+#include "generator.h"
+#include "genthread.h"
+#include "biome/biome.hpp"
+#include "noise/simplex1234.h"
 
 // the main generator!
 
@@ -66,31 +66,4 @@ void flatTerrain(genthread* l_thread)
 		
 	} // y
 	
-}
-
-
-void flatGen()
-{
-	logText("-- flatGen --");
-	
-	// generate biomes
-	generate(&biomeGenerator, GEN_TRUE);
-	
-	// generate land
-	generate(&flatTerrain, GEN_FALSE);
-	
-	logText("-- done --");
-	
-}
-
-void flatPP()
-{
-	logText("-- flatPP --");
-	
-	// post-processing
-	generate(&flatPostProcess, GEN_FALSE);
-	// post-post-processing :)
-	generate(&postPostProcess, GEN_FALSE);
-	
-	logText("-- done --");
 }

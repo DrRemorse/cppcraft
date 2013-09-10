@@ -1,7 +1,7 @@
-#ifndef FLATPP_H
-#define FLATPP_H
+#ifndef FLATPP_HPP
+#define FLATPP_HPP
 
-#include "genthread.h"
+struct genthread;
 
 extern void flatPostProcess(genthread* l_thread);
 extern void postPostProcess(genthread* l_thread);

@@ -1,7 +1,7 @@
 #include "helpers.hpp"
 
-#include "../blocks.hpp"
-#include "../generator.h"
+#include "blocks.hpp"
+#include "generator.h"
 #include <math.h>
 
 int ofacing(int dx, int dz)
@@ -121,8 +121,8 @@ void obell(int x, int y, int z, block_t id, int lower, int height, int radius, i
 		midd *= midstrength;
 		if (dy < 0) midd = -dy * understrength;
 		
-		r = pow(radius - midd, 2.0);
-		l = pow(inner_rad - midd, 2.0);
+		r = powf(radius - midd, 2.0);
+		l = powf(inner_rad - midd, 2.0);
 		
 		dr = (float)dy / (float)height * (float)radius;
 		radf = r - dr*dr;
@@ -132,13 +132,18 @@ void obell(int x, int y, int z, block_t id, int lower, int height, int radius, i
 		for (dz = -radius; dz <= radius; dz++)
 		{
 			radxz = dx*dx + dz*dz;
-			if (radxz >= lradf && radxz <= radf) {
-				if (stencilchance < 1.0) {
+			if (radxz >= lradf && radxz <= radf)
+			{
+				if (stencilchance < 1.0 && radxz >= radf-8)
+				{
 					if (iRnd(x+dx, y+dy, z+dz) < stencilchance)
 						setb(x+dx, y+dy, z+dz, id, 1, 0);
-				} else {
+				}
+				else
+				{
 					setb(x+dx, y+dy, z+dz, id, 1, 0);
 				}
+				
 			} // rad
 		}
 		

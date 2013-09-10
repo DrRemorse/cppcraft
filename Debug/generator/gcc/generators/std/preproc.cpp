@@ -1,10 +1,10 @@
 #include "preproc.hpp"
 
-#include "../../blocks.hpp"
-#include "../../generator.h"
-#include "../../genthread.h"
-#include "../../biome/biome.hpp"
-#include "../../objects/volumetrics.hpp"
+#include "blocks.hpp"
+#include "generator.h"
+#include "genthread.h"
+#include "biome/biome.hpp"
+#include "objects/volumetrics.hpp"
 
 void preProcess(genthread* l_thread)
 {

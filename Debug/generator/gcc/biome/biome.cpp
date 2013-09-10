@@ -1,8 +1,8 @@
 #include "biome.hpp"
 
-#include "../generator.h"
-#include "../genthread.h"
-#include "../noise/simplex1234.h"
+#include "generator.h"
+#include "genthread.h"
+#include "noise/simplex1234.h"
 #include <math.h>
 
 // colors for 2D gradients

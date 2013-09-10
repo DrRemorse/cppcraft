@@ -1,7 +1,7 @@
 #include "volumetrics.hpp"
 
-#include "../blocks.hpp"
-#include "../generator.h"
+#include "blocks.hpp"
+#include "generator.h"
 
 int discover(int x, int y, int z, int id)
 {

@@ -1,6 +1,6 @@
 #include "biome.hpp"
 
-#include "../noise/simplex1234.h"
+#include "noise/simplex1234.h"
 #include <math.h>
 
 // 2D biomes

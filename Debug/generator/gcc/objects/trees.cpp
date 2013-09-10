@@ -1,8 +1,8 @@
 #include "trees.hpp"
 
-#include "../blocks.hpp"
-#include "../generator.h"
-#include "../vec.h"
+#include "blocks.hpp"
+#include "generator.h"
+#include "vec.h"
 #include "helpers.hpp"
 #include <cstdlib>
 #include <math.h>

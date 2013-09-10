@@ -1,7 +1,7 @@
 #include "house.hpp"
 
-#include "../blocks.hpp"
-#include "../generator.h"
+#include "blocks.hpp"
+#include "generator.h"
 #include <math.h>
 
 void createTable(int x, int y, int z)

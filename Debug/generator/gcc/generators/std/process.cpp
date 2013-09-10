@@ -1,14 +1,14 @@
 #include "process.hpp"
 
-#include "../../blocks.hpp"
-#include "../../generator.h"
-#include "../../genthread.h"
-#include "../../vec.h"
-#include "../../biome/biome.hpp"
-#include "../../objects/trees.hpp"
-#include "../../objects/mushrooms.hpp"
-#include "../../objects/volumetrics.hpp"
-#include "../../noise/simplex1234.h"
+#include "blocks.hpp"
+#include "generator.h"
+#include "genthread.h"
+#include "vec.h"
+#include "biome/biome.hpp"
+#include "objects/trees.hpp"
+#include "objects/mushrooms.hpp"
+#include "objects/volumetrics.hpp"
+#include "noise/simplex1234.h"
 
 // terrain crosses
 block_t c_autumn[3] = { _GRASS_SHORT, _GRASS_LONG, _PLANT_DRYBROWN };
