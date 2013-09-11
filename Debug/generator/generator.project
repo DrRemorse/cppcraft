@@ -26,6 +26,8 @@
         <File Name="gcc/generators/std/std.cpp"/>
         <File Name="gcc/generators/std/terrain.cpp"/>
         <File Name="gcc/generators/std/terrain.hpp"/>
+        <File Name="gcc/generators/std/terrain_functions.cpp"/>
+        <File Name="gcc/generators/std/terrain_functions.hpp"/>
       </VirtualDirectory>
     </VirtualDirectory>
     <VirtualDirectory Name="biome">
