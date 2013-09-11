@@ -164,7 +164,7 @@ namespace cppcraft
 #define HALFBLOCK_END    459
 
 #define STAIRS_START     _STONESTAIR
-#define STAIRS_END       (LOWBLOCK_START-1)
+#define STAIRS_END       HALFBLOCK_END
 
 #define LOWBLOCK_START   460
 #define LOWBLOCK_END     503

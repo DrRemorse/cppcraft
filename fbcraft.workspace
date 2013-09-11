@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Workspace Name="fbcraft" Database="./fbcraft.tags">
-  <Project Name="fbcraft" Path="fbcraft.project" Active="No"/>
-  <Project Name="generator" Path="Debug/generator/generator.project" Active="Yes"/>
+  <Project Name="fbcraft" Path="fbcraft.project" Active="Yes"/>
+  <Project Name="generator" Path="Debug/generator/generator.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="fbcraft" ConfigName="Debug"/>

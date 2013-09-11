@@ -75,7 +75,7 @@ namespace cppcraft
 		void emitCubeVertexNX(int model, block_t id, int by, int bz, block_t block_facing);
 		
 		// sloped leafs
-		int emitSloped(block_t id, int bx, int by, int bz, block_t block_facing);
+		int emitSloped(block_t id, int bx, int by, int bz, block_t model, block_t facing);
 		
 		// ladders
 		int emitLadder(block_t id, int bx, int by, int bz, block_t block_facing);

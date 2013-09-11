@@ -37,29 +37,16 @@ namespace cppcraft
 		
 		for (int model = 0; model < 4; model++)
 		{
-			// create mesh object with 5 * 4 vertices
-			BlockMesh bm(5 * 4);
-			int index = 0;
-			
-			for (int face = 0; face < 5; face++)
+			for (int face = 0; face < 6; face++)
 			{
-				int side = face;
-				
-				if (model < 2)
-				{
-					if (face >= model) side = face + 1;
-				}
-				else
-				{
-					if (face >= model + 2) side = face + 1;
-				}
+				BlockMesh bm(4);
 				
 				// iterate 4 vertices on quad
 				for (int vert = 0; vert < 4; vert++)
 				{
-					float x = cube_vertices[side][vert * 3 + 0];
-					float y = cube_vertices[side][vert * 3 + 1];
-					float z = cube_vertices[side][vert * 3 + 2];
+					float x = cube_vertices[face][vert * 3 + 0];
+					float y = cube_vertices[face][vert * 3 + 1];
+					float z = cube_vertices[face][vert * 3 + 2];
 					
 					switch (model)
 					{
@@ -77,24 +64,22 @@ namespace cppcraft
 						break;
 					}
 					
-					bm[index].x = x * VERTEX_SCALE; // x
-					bm[index].y = y * VERTEX_SCALE; // y
-					bm[index].z = z * VERTEX_SCALE; // z
-					bm[index].face = 0;
+					bm[vert].x = x * VERTEX_SCALE; // x
+					bm[vert].y = y * VERTEX_SCALE; // y
+					bm[vert].z = z * VERTEX_SCALE; // z
+					bm[vert].face = 0;
 					
-					bm[index].u = cube_texcoords[side][vert * 2 + 0] * VERTEX_SCALE;
-					bm[index].v = cube_texcoords[side][vert * 2 + 1] * VERTEX_SCALE;
-					bm[index].w = 0;
+					bm[vert].u = cube_texcoords[face][vert * 2 + 0] * VERTEX_SCALE;
+					bm[vert].v = cube_texcoords[face][vert * 2 + 1] * VERTEX_SCALE;
+					bm[vert].w = 0;
 					
-					bm[index].nx = cube_normals[side][0]; // nx
-					bm[index].ny = cube_normals[side][1]; // ny
-					bm[index].nz = cube_normals[side][2]; // nz
-					
-					index++;
+					bm[vert].nx = cube_normals[face][0]; // nx
+					bm[vert].ny = cube_normals[face][1]; // ny
+					bm[vert].nz = cube_normals[face][2]; // nz
 				}
+				// add face to sloped leaf model list
+				slopedLeafs[model].add(bm);
 			}
-			// add mesh object to sloped leaf model list
-			slopedLeafs.add(bm);
 		}
 		
 	} // initCubes()

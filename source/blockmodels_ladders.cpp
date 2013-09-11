@@ -93,25 +93,26 @@ namespace cppcraft
 				sm[index].y = cube_vertices[face][vert*3 + 1];
 				sm[index].z = cube_vertices[face][vert*3 + 2];
 				
-				const float EXTRUSION = 0.15;
+				const float EXTRUSION = 0.12;
+				const float POLYGON_OFFSET = 0.005;
 				
 				switch (model)
 				{
 				case 0:
 					sm[index].z *= EXTRUSION; // -z
-					sm[index].z += 0.005;
+					sm[index].z += POLYGON_OFFSET;
 					break;
 				case 1:
 					sm[index].z = (1.0 - EXTRUSION) + sm[index].z * EXTRUSION; // +z
-					sm[index].z -= 0.005;
+					sm[index].z -= POLYGON_OFFSET;
 					break;
 				case 2:
 					sm[index].x *= EXTRUSION; // -x
-					sm[index].x += 0.005;
+					sm[index].x += POLYGON_OFFSET;
 					break;
 				case 3:
 					sm[index].x = (1.0 - EXTRUSION) + sm[index].x * EXTRUSION; // +x
-					sm[index].z -= 0.005;
+					sm[index].x -= POLYGON_OFFSET;
 					break;
 				}
 				

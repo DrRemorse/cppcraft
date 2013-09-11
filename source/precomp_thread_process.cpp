@@ -138,7 +138,7 @@ namespace cppcraft
 					if (id == _LEAF_NEEDLE)
 					{
 						// sloped leafs
-						// check that the four sides (front, back, right, left) aren't visible
+						// check that at least one of the four sides (front, back, right, left) aren't visible
 						if ((sides & (1 + 2 + 16 + 32)) != (1 + 2 + 16 + 32))
 							model = PC_SLOPED;
 					}
@@ -339,7 +339,7 @@ namespace cppcraft
 			}
 			else if (model == PC_SLOPED)
 			{
-				vertices = emitSloped(id, bx, by, bz, currentBlock.getFacing());
+				vertices = emitSloped(id, bx, by, bz, currentBlock.getFacing(), sides);
 			}
 			else if (model == PC_POLE)
 			{

@@ -104,8 +104,8 @@ namespace cppcraft
 		// general 6-sided block models
 		// each "model" has 6 sides, in this SPECIAL element
 		MeshContainer cubes[MI_MODEL_COUNT];
-		// sloped leafs 4 sides x 5 faces x 4 vertices
-		MeshContainer slopedLeafs;
+		// sloped leafs [4 sides] with 5 faces x 4 vertices
+		MeshContainer slopedLeafs[4];
 		// 1. simple cross (2 crossed faces)
 		// 2. simple cross with bottom face (floating flowers)
 		// 3. bottom face only (simple floating flower)
