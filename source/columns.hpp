@@ -38,6 +38,14 @@ namespace cppcraft
 	private:
 		Column** columns;
 		
+		// used by: Seamless::seamlessness()
+		inline Column* & manipulate(int x, int y, int z)
+		{
+			#define COLUMN_MEMORY_LAYOUT  (x * Sectors.getXZ() * this->COLUMNS_Y + z * this->COLUMNS_Y + y)
+			
+			return *(this->columns + COLUMN_MEMORY_LAYOUT);
+		}
+		
 	public:
 		// number of columns
 		static const int COLUMNS_Y = 4;
@@ -45,11 +53,14 @@ namespace cppcraft
 		static const int COLUMNS_SIZE = Sectors.SECTORS_Y / COLUMNS_Y;
 		
 		void init();
-		// column index operator
-		Column& operator() (int x, int y, int z);
 		
-		// used by: Seamless::seamlessness()
-		Column* & manipulate(int x, int y, int z);
+		// column index operator
+		Column& operator() (int x, int y, int z)
+		{
+			return *manipulate(x, y, z);
+		}
+		
+		friend class Seamless;
 	};
 	extern ColumnsContainer Columns;
 }

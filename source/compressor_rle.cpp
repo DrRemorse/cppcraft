@@ -23,23 +23,24 @@ namespace cppcraft
 		rh = (RLEHeader*) data;
 		data += sizeof(RLEHeader);
 		
+		// get entry data
 		RLEEntry* entries = (RLEEntry*) data;
 		data += rh->getEntries() * sizeof(RLEEntry);
 		
+		// get palette data
 		Block* palette = (Block*) data;
 		
-		//logger << "RLE decompress: blocks=" << rh->getBlocks() << " lights=" << rh->getLights() << Log::ENDL;
-		//logger << "palettes=" << rh->getPalettes() << " entries=" << rh->getEntries() << Log::ENDL;
-		
+		// set sectorblock info
 		sb.blocks = rh->getBlocks();
 		sb.lights = rh->getLights();
 		sb.hardsolid = rh->getHardsolid();
 		
 		Block* block = sb.b[0][0];
 		
+		// fill sectorblock with palette from entries
 		for (int entry = 0; entry < rh->getEntries(); entry++)
 		{
-			for (int i = 0; i < entries[entry].count; i++)
+			while(entries[entry].count--)
 			{
 				*block = palette[ entries[entry].palid ];
 				block++;

@@ -50,8 +50,6 @@ namespace cppcraft
 		
 	}
 	
-	#define column_memory_layout  (x * Sectors.getXZ() * this->COLUMNS_Y + z * this->COLUMNS_Y + y)
-	
 	Column::Column(int x, int z)
 	{
 		this->wx = x;
@@ -61,16 +59,6 @@ namespace cppcraft
 		// set initial flags
 		this->updated    = false;
 		this->renderable = false;
-	}
-	
-	Column* & ColumnsContainer::manipulate(int x, int y, int z)
-	{
-		return *(this->columns + column_memory_layout);
-	}
-	
-	Column& ColumnsContainer::operator() (int x, int y, int z)
-	{
-		return *manipulate(x, y, z);
 	}
 	
 	void Column::compile(int x, int y, int z)

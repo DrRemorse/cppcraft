@@ -22,9 +22,24 @@ namespace cppcraft
 		static void reset();
 		
 		void add(Column*);
-		int  count();
-		void clear();
-		Column* get(int index);
+		
+		// returns the number of items in the current queue
+		inline int count() const
+		{
+			return this->items;
+		}
+		// "clears" the drawing queue
+		inline void clear()
+		{
+			this->items = 0;
+		}
+		
+		// returns an element from the draw queue
+		inline Column* get(int index)
+		{
+			return this->queue[index];
+		}
+		
 	};
 	extern DrawQueue drawq[RenderConst::MAX_UNIQUE_SHADERS];
 }

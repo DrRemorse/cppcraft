@@ -83,7 +83,7 @@ namespace cppcraft
 				double t1 = timer.getDeltaTime() - t0;
 				if (t1 > 0.020)
 				{
-					logger << "Precomp delta: " << t1 * 1000 << Log::ENDL;
+					//logger << "Precomp delta: " << t1 * 1000 << Log::ENDL;
 				}
 				
 				//double t1 = timer.getDeltaTime();
@@ -101,7 +101,7 @@ namespace cppcraft
 				double t1 = timer.getDeltaTime() - t0;
 				if (t1 > 0.020)
 				{
-					logger << "Worldbuilder delta: " << t1 * 1000 << Log::ENDL;
+					//logger << "Worldbuilder delta: " << t1 * 1000 << Log::ENDL;
 				}
 				
 				//double t1 = timer.getDeltaTime();

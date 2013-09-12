@@ -19,11 +19,6 @@ namespace library
 		this->desc = description;
 	}
 	
-	bool VAO::isGood() const
-	{
-		return (vao != 0 && vbo != 0 && isCreating == false);
-	}
-	
 	void VAO::begin(GLuint vertexSize, GLsizei vertices, GLvoid* data)
 	{
 		this->isCreating = true;

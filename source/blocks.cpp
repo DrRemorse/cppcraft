@@ -7,9 +7,6 @@
 
 namespace cppcraft
 {
-	// do nothing on default constructor
-	Block::Block() {}
-	
 	Block::Block(block_t id)
 	{
 		this->data = id;

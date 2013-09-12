@@ -40,8 +40,9 @@ namespace cppcraft
 		block_t data;
 		
 	public:
+		// DOES NOTHING on default constructor
+		Block() {}
 		// constructor taking block id as parameter
-		Block();
 		Block(block_t id);
 		// complete constructor
 		Block(block_t id, block_t facing, block_t special);

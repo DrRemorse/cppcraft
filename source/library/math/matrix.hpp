@@ -41,17 +41,21 @@ namespace library
 		
 		matrix_t* data();
 		
-		vec4 vright();		// right-vector
-		vec4 vup();			// up-vector
-		vec4 vforward();	// forward-vector
-		vec4 vtranslate();	// translation-vector
+		vec4 vright() const;	 // right-vector
+		vec4 vup() const;		 // up-vector
+		vec4 vforward() const;   // forward-vector
+		vec4 vtranslate() const; // translation-vector
 		
 		// ye olde identity matrix
 		Matrix& identity();
 		// normalized device coordinates matrix
 		Matrix& bias();
 		
-		const matrix_t& operator[] (int) const;
+		inline const matrix_t& operator[] (int i) const
+		{
+			return m[i];
+		}
+		
 		vec3    operator * (const vec3&) const;
 		vec4    operator * (const vec4&) const;
 		Matrix  operator * (const Matrix&) const;

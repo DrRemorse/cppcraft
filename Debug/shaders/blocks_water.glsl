@@ -122,10 +122,10 @@ void main(void)
 	vec3 vReflect   = l_reflect + Normal * 0.125;
 	
 	
-	#define vEye   v_eye
-	#define vLight v_ldir
-	//vec3 vEye   = normalize(v_eye);
-	//vec3 vLight = normalize(v_ldir);
+	//#define vEye   v_eye
+	//#define vLight v_ldir
+	vec3 vEye   = normalize(v_eye);
+	vec3 vLight = normalize(v_ldir);
 	
 	//----- fresnel term -----
 	

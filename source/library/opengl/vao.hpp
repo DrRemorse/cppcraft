@@ -28,7 +28,10 @@ namespace library
 		// of this VAO is (or simply its name), which is used in error reports
 		VAO(std::string description);
 		
-		bool isGood() const;
+		inline bool isGood() const
+		{
+			return (vao != 0 && vbo != 0 && isCreating == false);
+		}
 		
 		// create VAO
 		void begin(GLuint vertexSize, GLsizei vertices, GLvoid* data);

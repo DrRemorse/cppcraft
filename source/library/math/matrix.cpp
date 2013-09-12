@@ -60,26 +60,21 @@ namespace library
 		return *this;
 	}
 	
-	vec4 Matrix::vright()
+	vec4 Matrix::vright() const
 	{
 		return vec4(m[0], m[1], m[2], m[3]);
 	}
-	vec4 Matrix::vup()
+	vec4 Matrix::vup() const
 	{
 		return vec4(m[4], m[5], m[6], m[7]);
 	}
-	vec4 Matrix::vforward()
+	vec4 Matrix::vforward() const
 	{
 		return vec4(m[8], m[9], m[10], m[11]);
 	}
-	vec4 Matrix::vtranslate()
+	vec4 Matrix::vtranslate() const
 	{
 		return vec4(m[12], m[13], m[14], m[15]);
-	}
-	
-	const Matrix::matrix_t& Matrix::operator[] (int i) const
-	{
-		return m[i];
 	}
 	
 	// transform 3-vector (w = 1.0)

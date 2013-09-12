@@ -39,19 +39,4 @@ namespace cppcraft
 		this->items++;
 	}
 	
-	int DrawQueue::count()
-	{
-		return this->items;
-	}
-	
-	void DrawQueue::clear()
-	{
-		this->items = 0;
-	}
-	
-	Column* DrawQueue::get(int index)
-	{
-		return this->queue[index];
-	}
-	
 }

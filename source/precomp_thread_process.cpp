@@ -406,7 +406,7 @@ namespace cppcraft
 			// increase vertex count for current shaderline
 			this->vertices[shaderLine] += vertices;
 			
-			// resize shaderline if needed (96 vertices treshold)
+			// dynamic resize of shaderline if needed (96 vertices treshold)
 			// NOTE: if any meshes are larger than 96 vertices there WILL be a crash
 			
 			if (this->vertices[shaderLine] + 96 >= pipelineSize[shaderLine])
@@ -414,10 +414,12 @@ namespace cppcraft
 				//logger << shaderLine << ": Increasing size from " << pipelineSize[shaderLine] << " to " << pipelineSize[shaderLine] + 250 << Log::ENDL;
 				// resize operation
 				vertex_t* old = this->databuffer[shaderLine];
-				int oldsize = pipelineSize[shaderLine];
+				// increase size
 				pipelineSize[shaderLine] += 250;
+				// create new (bigger) buffer
 				this->databuffer[shaderLine] = new vertex_t[pipelineSize[shaderLine]];
-				memcpy (this->databuffer[shaderLine], old, oldsize * sizeof(vertex_t));
+				// copy old data, by exact count, to the new buffer
+				memcpy (this->databuffer[shaderLine], old, this->vertices[shaderLine] * sizeof(vertex_t));
 				delete old;
 				// set new vertex position
 				indic = this->databuffer[shaderLine] + this->vertices[shaderLine];
