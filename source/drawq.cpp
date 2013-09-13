@@ -19,24 +19,13 @@ namespace cppcraft
 		DrawQueue::reset();
 	}
 	
-	// reset all queue shaderlines
+	// reset all shaderlines
 	void DrawQueue::reset()
 	{
 		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 		{
 			drawq[i].clear();
 		}
-	}
-	
-	void DrawQueue::add(Column* cv)
-	{
-		if (this->items < queue.size())
-		{
-			this->queue[this->items] = cv;
-		}
-		else queue.push_back(cv);
-		
-		this->items++;
 	}
 	
 }

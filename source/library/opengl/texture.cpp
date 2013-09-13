@@ -191,20 +191,23 @@ namespace library
 	
 	void Texture::createMultisample(int numsamples, int width, int height)
 	{
+		// set type before binding
+		this->type = GL_TEXTURE_2D_MULTISAMPLE;
+		
 		bind(0);
 		this->width  = width;
 		this->height = height;
-		this->type = GL_TEXTURE_2D_MULTISAMPLE;
+		this->format = GL_RGBA;
 		this->isMipmapped = false;
 		
-		const GLint minfilter = GL_NEAREST;
-		const GLint maxfilter = GL_NEAREST;
+		glTexImage2DMultisample(this->type, numsamples, this->format, width, height, GL_TRUE);
 		
-		glTexParameteri(this->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(this->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(this->type, GL_TEXTURE_MAG_FILTER, maxfilter);
-		glTexParameteri(this->type, GL_TEXTURE_MIN_FILTER, minfilter);
-		glTexImage2DMultisample(this->type, numsamples, GL_RGBA, width, height, false);
+		if (OpenGL::checkError())
+		{
+			logger << Log::ERR << "Texture::createMultisample(): OpenGL state error" << Log::ENDL;
+			logger << Log::ERR << toString() << Log::ENDL;
+			throw std::string("Texture::createMultisample(): OpenGL state error");
+		}
 	}
 	
 	void Texture::createDepth(bool stencil24d8s, int width, int height)
@@ -322,6 +325,8 @@ namespace library
 			typeString = "GL_TEXTURE_1D"; break;
 		case GL_TEXTURE_2D:
 			typeString = "GL_TEXTURE_2D"; break;
+		case GL_TEXTURE_2D_MULTISAMPLE:
+			typeString = "GL_TEXTURE_2D_MULTISAMPLE"; break;
 		case GL_TEXTURE_2D_ARRAY:
 			typeString = "GL_TEXTURE_2D_ARRAY"; break;
 		case GL_TEXTURE_3D:

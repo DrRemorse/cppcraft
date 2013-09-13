@@ -153,7 +153,7 @@ namespace cppcraft
 		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 		{
 			int count = drawq[i].count();
-			// clear, setting count to 0 internally
+			// clear, which does only 1 thing: count = 0
 			drawq[i].clear();
 			
 			// loop through this shader line
@@ -191,9 +191,10 @@ namespace cppcraft
 				if (cv->occluded[i] != 2)
 				{
 					// add to new position, effectively compressing
-					// and linearizing queue interally
+					// and linearizing queue internally
 					drawq[i].add(cv);
 				}
+				
 			}
 			
 		} // next shaderline

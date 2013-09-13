@@ -8,13 +8,16 @@
 #include "library/opengl/vao.hpp"
 #include "library/opengl/texture.hpp"
 #include "biome.hpp"
+#include "camera.hpp"
 #include "flatlands.hpp"
 #include "player.hpp"
 #include "sectors.hpp"
 #include "seamless.hpp"
 #include "shaderman.hpp"
 #include "spiders.hpp"
+#include "worldbuilder.hpp"
 #include <cstring>
+#include <mutex>
 
 using namespace library;
 
@@ -23,6 +26,7 @@ namespace cppcraft
 	// the one and only Minimap(TM)
 	Minimap minimap;
 	VAO minimapVAO;
+	std::mutex minimapMutex;
 	
 	// constants
 	const float HEIGHTMAP_FACTOR = 2.5;
@@ -65,19 +69,24 @@ namespace cppcraft
 	
 	void Minimap::update()
 	{
-		// minimap subpixel offset
-		this->ofsX = (player.X - (Sectors.getXZ() * Sector::BLOCKS_XZ / 2)) / Seamless::OFFSET * 2;
-		this->ofsY = (player.Z - (Sectors.getXZ() * Sector::BLOCKS_XZ / 2)) / Seamless::OFFSET * 2;
+		if (camera.ref)
+		{
+			// minimap subpixel offset
+			this->ofsX = (player.X - (Sectors.getXZ() * Sector::BLOCKS_XZ / 2)) / Seamless::OFFSET * 2;
+			this->ofsY = (player.Z - (Sectors.getXZ() * Sector::BLOCKS_XZ / 2)) / Seamless::OFFSET * 2;
+		}
 		
 		// update synchronization
-		if (this->needs_update == false) return;
-		this->needs_update = false;
-		
-		// bind minimap texture
-		texture->bind(0);
-		// re-upload pixel data (and auto-generate mipmaps)
-		texture->uploadBGRA8(*bitmap);
-		// done
+		if (this->needs_update)
+		{
+			this->needs_update = false;
+			
+			// bind minimap texture
+			texture->bind(0);
+			// re-upload pixel data (and auto-generate mipmaps)
+			texture->uploadBGRA8(*bitmap);
+			// done
+		}
 	}
 	
 	void Minimap::render(Matrix& mvp)
@@ -312,9 +321,6 @@ namespace cppcraft
 		pixels[ (pz + 1) * scan + px ] = colors[1];
 		pixels[  pz      * scan + px + 1 ] = colors[2];
 		pixels[ (pz + 1) * scan + px + 1 ] = colors[3];
-		
-		// mark updated
-		this->needs_update = true;
 	}
 	
 	void Minimap::roll(int x, int z)
@@ -380,7 +386,8 @@ namespace cppcraft
 			// clear first 2 scanlines
 			memset(pixels, 0, page * 2 * sizeof(Bitmap::rgba8_t));
 		}
-		// minimap has been updated
-		needs_update = true;
+		
+		// mark as updated
+		this->needs_update = true;
 	}
 }

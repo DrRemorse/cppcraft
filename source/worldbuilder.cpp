@@ -27,15 +27,14 @@ namespace cppcraft
 		if (this->mode == MODE_GENERATING)
 		{
 			// already generating, reduce if we are generating on the edge
-			if (this->diagonal > halfW-2)
-				this->diagonal = halfW-2;
+			if (this->diagonal) this->diagonal--;
 		}
 		else
 		{
 			// not generating, just pick somewhere close to border
 			this->mode = MODE_GENERATING;
 			// can not be smaller than 2
-			this->diagonal = halfW-2;
+			this->diagonal = halfW-3;
 		}
 		// reset spiral side (last position in WorldBuilder::run())
 		this->lastPosition = 0;

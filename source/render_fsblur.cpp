@@ -20,7 +20,7 @@ namespace cppcraft
 		
 		// gaussian blur:
 		const double PI = 4 * atan(1);
-		const float sigma = 1.5;
+		const float sigma = 1.0;
 		blur.sendInteger("support", int(sigma * 3.0));
 		blur.sendVec2("sigma2", vec2(sigma * sigma, 1 / (sqrt(2 * PI) * sigma)));
 		
@@ -46,9 +46,6 @@ namespace cppcraft
 		
 		// render
 		screenVAO.render(GL_QUADS);
-		
-		// change back to normal
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 	
 }

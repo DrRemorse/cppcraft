@@ -23,8 +23,8 @@ namespace cppcraft
 		screenVAO.createScreenspaceVAO();
 		
 		// set texture sizes
-		this->blurTxW = gamescr.SW;
-		this->blurTxH = gamescr.SH;
+		this->blurTxW = gamescr.SW * 0.5;
+		this->blurTxH = gamescr.SH * 0.5;
 		
 		this->flareTxW = gamescr.SW / 2;
 		this->flareTxH = gamescr.SH / 2;
@@ -71,9 +71,6 @@ namespace cppcraft
 	
 	void FSRenderer::terrain(WindowClass& gamescr)
 	{
-		textureman.bind(0, Textureman::T_RENDERBUFFER);
-		textureman.bind(1, Textureman::T_BLURBUFFER2);
-		
 		// postprocessing shader
 		Shader& shd = shaderman[Shaderman::FSTERRAIN];
 		shd.bind();

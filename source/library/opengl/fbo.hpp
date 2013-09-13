@@ -32,8 +32,6 @@ namespace library
 		void attachColor(GLenum index, Texture& texture);
 		void attachColor(GLenum index, GLuint texture);
 		void removeColor(GLenum index);
-		// resolve a multisampling texture and remove it
-		void resolve(GLenum index);
 		// attach a depth texture to this FBO
 		void attachDepth(Texture& texture);
 		void attachDepth(GLuint texture);
@@ -41,6 +39,15 @@ namespace library
 		
 		// create depth renderbuffer
 		void createDepthRBO(int width, int height);
+		// create multisampling renderbuffer
+		void createMsaaRBO(int width, int height, int samples);
+		void createDepthMsaaRBO(int width, int height, int samples);
+		
+		// used for more advanced fbo mechanics
+		GLuint getHandle() const noexcept
+		{
+			return this->fbo;
+		}
 		
 		// select which attachments to draw to
 		static void drawBuffers(std::vector<int> buffers);

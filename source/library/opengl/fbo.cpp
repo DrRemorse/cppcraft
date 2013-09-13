@@ -96,6 +96,52 @@ namespace library
 		}
 	}
 	
+	void FBO::createMsaaRBO(int width, int height, int samples)
+	{
+		// depth renderbuffer
+		GLuint rbo;
+		glGenRenderbuffers(1, &rbo);
+		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+		glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_RGBA8, width, height);
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+		// attach the rbo to this fbo
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, rbo);
+		
+		if (isComplete() == false)
+		{
+			throw std::string(errorString());
+		}
+		
+		if (OpenGL::checkError())
+		{
+			logger << Log::ERR << "FBO::createMsaaRBO(): Error creating msaa renderbuffer" << Log::ENDL;
+			throw std::string("FBO::createMsaaRBO(): Error creating msaa renderbuffer");
+		}
+	}
+	
+	void FBO::createDepthMsaaRBO(int width, int height, int samples)
+	{
+		// depth renderbuffer
+		GLuint rbo;
+		glGenRenderbuffers(1, &rbo);
+		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+		glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT, width, height);
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+		// attach the rbo to this fbo
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
+		
+		if (isComplete() == false)
+		{
+			throw std::string(errorString());
+		}
+		
+		if (OpenGL::checkError())
+		{
+			logger << Log::ERR << "FBO::createDepthMsaaRBO(): Error creating msaa depth renderbuffer" << Log::ENDL;
+			throw std::string("FBO::createDepthMsaaRBO(): Error creating msaa depth renderbuffer");
+		}
+	}
+	
 	void FBO::drawBuffers(std::vector<int> buffers)
 	{
 		glDrawBuffers(buffers.size(), (GLenum*) buffers.data());

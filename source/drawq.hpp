@@ -18,10 +18,20 @@ namespace cppcraft
 	public:
 		// initialize drawing queue
 		static void init();
-		// reset drawing queue
+		// reset drawing queue (all shaderlines)
 		static void reset();
 		
-		void add(Column*);
+		// adds a column to this draw queue
+		inline void add(Column* cv)
+		{
+			if (this->items < queue.size())
+			{
+				this->queue[this->items] = cv;
+			}
+			else queue.push_back(cv);
+			
+			this->items++;
+		}
 		
 		// returns the number of items in the current queue
 		inline int count() const

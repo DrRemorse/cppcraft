@@ -343,6 +343,7 @@ opengl_ext_decl void (*glDrawBuffers)(GLsizei count, GLenum* buffers);
 opengl_ext_decl void (*glGenRenderbuffers)(GLsizei count, GLuint* rboIDs);
 opengl_ext_decl void (*glBindRenderbuffer)(GLenum bufferType, GLuint rbo);
 opengl_ext_decl void (*glRenderbufferStorage)(GLenum bufferType, GLenum storageType, GLsizei width, GLsizei height);
+opengl_ext_decl void (*glRenderbufferStorageMultisample)(GLenum bufferType, GLsizei samples, GLenum internalFormat, GLsizei width, GLsizei height);
 opengl_ext_decl void (*glFramebufferRenderbuffer)(GLenum frameBufferType, GLenum bindType, GLenum renderBufferType, GLuint rbo);
 
 }

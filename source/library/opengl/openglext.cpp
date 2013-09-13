@@ -86,6 +86,7 @@ namespace library
 	opengl_ext void (*glGenRenderbuffers)(GLsizei count, GLuint* rboIDs);
 	opengl_ext void (*glBindRenderbuffer)(GLenum bufferType, GLuint rbo);
 	opengl_ext void (*glRenderbufferStorage)(GLenum bufferType, GLenum storageType, GLsizei width, GLsizei height);
+	opengl_ext void (*glRenderbufferStorageMultisample)(GLenum bufferType, GLsizei samples, GLenum internalFormat, GLsizei width, GLsizei height);
 	opengl_ext void (*glFramebufferRenderbuffer)(GLenum frameBufferType, GLenum bindType, GLenum renderBufferType, GLuint rbo);
 	
 }

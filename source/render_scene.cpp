@@ -26,6 +26,7 @@ using namespace library;
 namespace cppcraft
 {
 	FBO sceneFBO;
+	FBO screenFBO;
 	
 	void SceneRenderer::init(Renderer& renderer)
 	{
@@ -43,6 +44,12 @@ namespace cppcraft
 		sceneFBO.bind();
 		sceneFBO.createDepthRBO(renderer.gamescr.SW, renderer.gamescr.SH);
 		sceneFBO.unbind();
+		
+		// the FBO we perform fullscreen operations on
+		screenFBO.create();
+		screenFBO.bind();
+		screenFBO.attachColor(0, textureman.get(Textureman::T_FOGBUFFER));
+		screenFBO.unbind();
 	}
 	
 	// render normal scene
@@ -212,16 +219,22 @@ namespace cppcraft
 		
 		renderScene(renderer, sceneFBO);
 		
-		if (gameconf.multisampling)
-		{
-			glDisable(GL_MULTISAMPLE_ARB);
-		}
 		glDisable(GL_CULL_FACE);
 		
 		glDisable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
 		
-		sceneFBO.unbind();
+		if (gameconf.multisampling)
+		{
+			glDisable(GL_MULTISAMPLE_ARB);
+			
+			/// resolve multisampling to T_RENDERBUFFER ///
+			/*glBindFramebuffer(GL_READ_FRAMEBUFFER_EXT, sceneFBO.getHandle());
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER_EXT, screenFBO.getHandle());
+			
+			glBlitFramebuffer(0, 0, renderer.gamescr.SW, renderer.gamescr.SH, 0, 0, renderer.gamescr.SW, renderer.gamescr.SH, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+			*/
+		}
 		
 		/// create fog based on depth ///
 		textureman.bind(0, Textureman::T_FOGBUFFER);
@@ -239,6 +252,9 @@ namespace cppcraft
 		// and also blend terrain against sky background
 		sceneFBO.bind();
 		sceneFBO.attachColor(0, textureman.get(Textureman::T_FOGBUFFER));
+		
+		textureman.bind(0, Textureman::T_RENDERBUFFER);
+		textureman.bind(1, Textureman::T_BLURBUFFER2);
 		
 		screenspace.terrain(renderer.gamescr);
 		

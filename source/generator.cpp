@@ -124,6 +124,8 @@ namespace cppcraft
 		if (z1 < 0) z1 = 0;            // CLAMP AFTER z2 IS SET!!!
 		if (z2 > Sectors.getXZ()) z2 = Sectors.getXZ();
 		
+		bool minimapUpdated = false;
+		
 		for (int x = x1; x < x2; x++)
 		{
 			for (int z = z1; z < z2; z++)
@@ -149,6 +151,7 @@ namespace cppcraft
 						
 						// update minimap (colors)
 						minimap.addSector(firstsector);
+						minimapUpdated = true;
 					}
 					else
 					{
@@ -188,13 +191,17 @@ namespace cppcraft
 				// if the current time is more than the timeout value, we need to exit now
 				if (timer)
 				{
-					if (timer->getDeltaTime() > timeOut) return true;
+					if (timer->getDeltaTime() > timeOut)
+					{
+						if (minimapUpdated) minimap.setUpdated();
+						return true;
+					}
 				}
 			} // z
 		} // x
 		
-		//if (ff.is_open()) ff.close();
-		//if (cf.is_open()) cf.close();
+		if (minimapUpdated) minimap.setUpdated();
+		
 		// time did not run out
 		return false;
 		

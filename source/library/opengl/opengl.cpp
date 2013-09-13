@@ -1,6 +1,7 @@
 #include "opengl.hpp"
 
 #include "../log.hpp"
+#include "fbo.hpp"
 #include "window.hpp"
 
 #include <string>
@@ -92,18 +93,19 @@ namespace library
 		glGenFramebuffers		= (void(GLapi*) (GLsizei count, GLuint* ids))glfwGetProcAddress("glGenFramebuffers");
 		glDeleteFramebuffers 	= (void(GLapi*) (GLsizei count, GLuint* ids))glfwGetProcAddress("glDeleteFramebuffers");
 		glBindFramebuffer 		= (void(GLapi*) (GLenum bufferType, GLuint fbo))glfwGetProcAddress("glBindFramebuffer");
-		glFramebufferTexture2D 	= (void(GLapi*) (GLenum bufferType, GLenum attachmentType, GLenum textureTarget, GLuint texture, GLint level))glfwGetProcAddress("glFramebufferTexture2D");
-		glFramebufferTexture 	= (void(GLapi*) (GLenum bufferType, GLenum attachmentType, GLuint texture, GLint level))glfwGetProcAddress("glFramebufferTexture");
-		glBlitFramebuffer 		= (void(GLapi*) (GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1,
-												GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLint mask, GLenum filter))
+		glFramebufferTexture2D 	= (void(GLapi*) (GLenum, GLenum, GLenum, GLuint, GLint))glfwGetProcAddress("glFramebufferTexture2D");
+		glFramebufferTexture 	= (void(GLapi*) (GLenum, GLenum, GLuint, GLint))glfwGetProcAddress("glFramebufferTexture");
+		glBlitFramebuffer 		= (void(GLapi*) (GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLenum))
 												glfwGetProcAddress("glBlitFramebuffer");
 		glCheckFramebufferStatus = (GLenum(GLapi*) (GLenum bufferType))glfwGetProcAddress("glCheckFramebufferStatus");
 		glDrawBuffers           = (void(GLapi*) (GLsizei count, GLenum* buffers))glfwGetProcAddress("glDrawBuffers");
 		// renderbuffers
 		glGenRenderbuffers 		= (void(GLapi*) (GLsizei count, GLuint* rboIDs))glfwGetProcAddress("glGenRenderbuffers");
 		glBindRenderbuffer 		= (void(GLapi*) (GLenum bufferType, GLuint rbo))glfwGetProcAddress("glBindRenderbuffer");
-		glRenderbufferStorage 	= (void(GLapi*) (GLenum bufferType, GLenum storageType, GLsizei width, GLsizei height))glfwGetProcAddress("glRenderbufferStorage");
-		glFramebufferRenderbuffer = (void(GLapi*) (GLenum frameBufferType, GLenum bindType, GLenum renderBufferType, GLuint rbo))glfwGetProcAddress("glFramebufferRenderbuffer");
+		glRenderbufferStorage 	= (void(GLapi*) (GLenum, GLenum, GLsizei, GLsizei))glfwGetProcAddress("glRenderbufferStorage");
+		glRenderbufferStorageMultisample = 	(void(GLapi*) (GLenum, GLsizei, GLenum, GLsizei, GLsizei))
+												glfwGetProcAddress("glRenderbufferStorageMultisample");
+		glFramebufferRenderbuffer = (void(GLapi*) (GLenum, GLenum, GLenum, GLuint))glfwGetProcAddress("glFramebufferRenderbuffer");
 		
 		if (glGenBuffers == nullptr)
 		{
@@ -183,6 +185,7 @@ namespace library
 				
 			case GL_INVALID_FRAMEBUFFER_OPERATION:
 				errorString = "Invalid operation on incomplete framebuffer (GL_INVALID_FRAMEBUFFER_OPERATION)";
+				errorString += "\nFramebuffer error: " + FBO::errorString();
 				break;
 				
 			default:
