@@ -50,7 +50,7 @@ namespace cppcraft
 		return Lighting.LIGHT_MEDI_DAMAGE;
 	}
 	
-	bool LightingClass::raySurvivalTest(block_t id, float& ray, float maxdmg, float& prediction, float distance_curve)
+	bool raySurvivalTest(block_t id, float& ray, float maxdmg, float& prediction, float distance_curve)
 	{
 		// add predicted damage
 		if (prediction)
@@ -72,7 +72,7 @@ namespace cppcraft
 		return false;
 	}
 	
-	bool LightingClass::damageRay(block_t id, float& ray, float maxdmg, float& prediction, float distance_curve)
+	bool damageRay(block_t id, float& ray, float maxdmg, float& prediction, float distance_curve)
 	{
 		if (id < ALPHA_BARRIER)
 		{

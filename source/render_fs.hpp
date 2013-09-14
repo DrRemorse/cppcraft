@@ -26,10 +26,11 @@ namespace cppcraft
 	public:
 		void init(library::WindowClass& gamescr);
 		void initFlare();
-		void render(library::WindowClass& gamescr);
 		void blur(library::WindowClass& gamescr);
 		void fog(library::WindowClass& gamescr);
 		void terrain(library::WindowClass& gamescr);
+		
+		void render(library::WindowClass& gamescr, double frameCounter);
 		
 		library::vec2 getSunVector(const library::Matrix& matsun);
 		

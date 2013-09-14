@@ -4,6 +4,7 @@
 
 #ifdef VERTEX_PROGRAM
 //precision highp float;
+precision mediump float;
 
 uniform mat4 matproj;
 uniform mat4 matview;
@@ -81,6 +82,7 @@ uniform vec3  screendata;
 uniform float daylight;
 uniform vec4  playerLight;
 uniform float modulation;
+uniform int playerSubmerged;
 
 in vec4 lightdata;
 in vec4 torchlight;
@@ -138,22 +140,15 @@ void main(void)
 	
 	// start with underwater texture
 	vec2 refcoord = gl_FragCoord.xy / screendata.xy;
-	// read total depth from eye to seafloor
-	vec4 color = texture2D(underwatermap, refcoord);
-	float wdepth = color.a;
-	// remove depth to water, aka. calculate seafloor depth from waterline
-	wdepth = clamp(wdepth - vertdist / ZFAR, 0.0, 1.0);
+	float wdepth = vertdist / ZFAR;
 	
 	// fake refraction
-	refcoord.y -= viewNormal.z * 0.25 * wdepth;
+	//refcoord.y -= viewNormal.z * 0.25 * wdepth;
 	// wave modulation
 	refcoord.xy += Normal.xz * 0.025 * wdepth;
 	
 	// read refracted ray
-	//vec4 color2 = texture2D(underwatermap, refcoord);
-	
-	// mix only if the new depth is positive
-	//color.rgb = color2.rgb; //mix(color.rgb, color2.rgb, step(vertdist / ZFAR, color2.a));
+	vec4 color = texture2D(underwatermap, refcoord);
 	
 	// apply gamma ramp
 	color.rgb = pow(color.rgb, vec3(2.2));
@@ -162,17 +157,21 @@ void main(void)
 	const vec3 deepwater = vec3(0.02, 0.10, 0.20);
 	const vec3 shallowwater = vec3(0.2, 0.3, 0.2);
 	
+	float dep;
 	// if player is underwater, we need to see the sky properly:
-	//float dep = 1.0 - step(color.a, 0.995) * color.a;
-	// otherwise:
-	float dep = 1.0 - color.a;
+	if (playerSubmerged != 0)
+	{
+		dep = 1.0 - step(color.a, 0.995) * color.a;
+	}
+	else
+	{
+		dep = 1.0 - color.a;
+	}
 	dep *= dep;
 	
 	vec3 waterColor = mix(deepwater, shallowwater, dep);
-	color.rgb = mix(waterColor, color.rgb, dep);
+	color.rgb = mix(waterColor, color.rgb, dep * dep);
 	
-	// fettskit
-	//color *= max(0.25, 1.0 - fresnel);
 	
 	//----- REFLECTIONS -----
 	

@@ -36,9 +36,6 @@ namespace cppcraft
 		
 		void init();
 		
-		bool raySurvivalTest(block_t id, float& ray, float maxdmg, float& prediction, float distance_curve);
-		bool damageRay(block_t id, float& ray, float maxdmg, float& prediction, float distance_curve);
-		
 		float lightRay3D(float slight, float darkness, library::vec3 position, library::vec3 angle);
 		float lightRay2D(float slight, float darkness, library::vec3 position, float stepx, float stepy);
 		float lightRay1D(float slight, float darkness, library::vec3 position);

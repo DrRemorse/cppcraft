@@ -245,7 +245,7 @@ namespace cppcraft
 			// small generic smoke particle
 			p.acc = vec3(0.0);
 			p.spd = vec3(prandv(var_generic), prandv(var_generic) + 0.01, prandv(var_generic));
-			p.TTL = 64;
+			p.TTL = 80;
 			p.fadeTTL = 32;
 			p.tileID = 2 + 1 * tiles.partsX; // (2, 1) = smoke
 			break;
@@ -270,7 +270,7 @@ namespace cppcraft
 			// water drops in the air
 			p.acc = vec3(0.0);
 			p.spd = vec3(0.0, 0.01, 0.0);
-			p.TTL = 64;
+			p.TTL = 80;
 			p.fadeTTL = 20;
 			p.tileID = 0 + 1 * tiles.partsX; // (0, 1) = waterdrop
 			break;
@@ -279,7 +279,7 @@ namespace cppcraft
 			// water drops in the air
 			p.acc = vec3(prandv(0.002), 0.0, 0.0);
 			p.spd = vec3(0.0, -0.02, 0.0);
-			p.TTL = 64;
+			p.TTL = 80;
 			p.fadeTTL = 20;
 			p.tileID = 0 + 1 * tiles.partsX; // (0, 1) = waterdrop
 			break;
@@ -288,7 +288,7 @@ namespace cppcraft
 			// dandelions blowing in the wind
 			p.acc = vec3(0.0, 0.0, 0.002);
 			p.spd = vec3(0.0, -0.05, 0.0);
-			p.TTL = 128;
+			p.TTL = 160;
 			p.fadeTTL = 32;
 			p.tileID = 2 + 0 * tiles.partsX; // (2, 0) = dandelion
 			break;
@@ -298,7 +298,7 @@ namespace cppcraft
 			// leafs blowing in the wind
 			p.acc = vec3(0.0, 0.0, 0.002);
 			p.spd = vec3(0.0, -0.05, 0.0);
-			p.TTL = 128;
+			p.TTL = 160;
 			p.fadeTTL = 32;
 			p.tileID = 0; // (0, 0) = leaf
 			break;
@@ -307,7 +307,7 @@ namespace cppcraft
 			// fairy forest
 			p.acc = vec3(0.0, 0.0, 0.0);
 			p.spd = vec3(prandv(var_forest), prandv(var_forest), prandv(var_forest));
-			p.TTL = 128;
+			p.TTL = 160;
 			p.fadeTTL = 32;
 			p.tileID = 0 + 1 * tiles.partsX; // (0, 1) = light
 			break;
@@ -316,7 +316,7 @@ namespace cppcraft
 			// slow snow
 			p.acc = vec3(0.0, 0.0, 0.0);
 			p.spd = vec3(0.0, -0.05, 0.0);
-			p.TTL = 128;
+			p.TTL = 180;
 			p.fadeTTL = 32;
 			p.tileID = 1 + 1 * tiles.partsX; // (1, 1) = snow particle
 			break;
@@ -325,7 +325,7 @@ namespace cppcraft
 			// windy sand
 			p.acc = vec3(0.0, 0.0, 0.002);
 			p.spd = vec3(0.0, -0.05, 0.2);
-			p.TTL = 128;
+			p.TTL = 160;
 			p.fadeTTL = 32;
 			p.tileID = 1 + 0 * tiles.partsX; // (1, 0) = sand
 			break;
@@ -374,7 +374,7 @@ namespace cppcraft
 					
 					newParticle(position, PARTICLE_WATER);
 				}
-				else if (i == 0)
+				else if (i == 0 || fs.terrain == Biomes::T_DESERT)
 				{
 					// not waterlevel, use terrain-specific
 					autoCreateFromTerrain(fs.terrain, position);

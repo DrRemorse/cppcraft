@@ -40,7 +40,11 @@ namespace library
 	
 	Log& operator<<(Log& out, const Log::log_level_t level)
 	{
-		out.synch.lock();
+		if (out.autoLock == false)
+		{
+			out.autoLock = true;
+			out.synch.lock();
+		}
 		
 		if (level) // not ENDL
 		{
@@ -82,9 +86,13 @@ namespace library
 			out.file << out.log << endl;
 			// clear log string
 			out.log = "";
+			
+			if (out.autoLock)
+			{
+				out.synch.unlock();
+				out.autoLock = false;
+			}
 		}
-		
-		out.synch.unlock();
 		// outgoing = incoming Log, for chaining
 		return out;
 	}

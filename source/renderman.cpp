@@ -111,17 +111,13 @@ namespace cppcraft
 		
 		thesun.integrate(0.02 * dtime);
 		
-		// clear buffers
-		//glDepthMask(GL_TRUE);
-		//glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-		
 		switch (worldman.getState())
 		{
 		case worldman.GS_RUNNING:
 			// render scene
 			sceneRenderer->render(*this, worldman);
 			// post processing
-			screenspace.render(gamescr);
+			screenspace.render(gamescr, this->frametick);
 			// gui
 			rendergui.render(*this);
 			break;
@@ -137,7 +133,7 @@ namespace cppcraft
 		
 		if (ogl.checkError()) throw std::string("After frame");
 		
-		// flip burgers / buffers
+		// flip burgers
 		glfwSwapBuffers(gamescr.window());
 		
 		// disable stuff

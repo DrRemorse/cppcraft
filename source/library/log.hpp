@@ -24,6 +24,9 @@
  * To log an error:
  * logger << Log::ERR << "MyClass::myFunction(): Something bad happened: " << error_number << Log::ENDL;
  * 
+ * WARNING:
+ * Not using ENDL to finish a << stream will cause a mutex deadlock
+ * 
 **/
 
 namespace library
@@ -42,6 +45,7 @@ namespace library
 			void setOutputConsole(bool console);
 			
 		private:
+			bool autoLock;
 			std::mutex synch;
 			std::string log;
 			std::ofstream file;

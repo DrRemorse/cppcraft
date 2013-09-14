@@ -15,16 +15,15 @@ namespace cppcraft
 		
 		Column(int x, int z); // initialize column with position (x, z)
 		
-		bool renderable;    // true if ready to render
-		bool updated;       // true if up to date
-		bool hasdata;
+		bool renderable; // is renderable
+		bool updated;    // needs update
+		bool hasdata;    // has uploaded gpu data
 		
 		// used by: Seamless
 		inline void reset()
 		{
 			renderable = false;
 			updated = false;
-			//hasdata = false;
 		}
 		// used by: Compiler pipeline
 		void compile(int x, int y, int z);
@@ -63,9 +62,9 @@ namespace cppcraft
 		void init();
 		
 		// column index operator
-		Column& operator() (int x, int y, int z)
+		inline Column& operator() (int x, int y, int z)
 		{
-			return *manipulate(x, y, z);
+			return this->columns[COLUMN_MEMORY_LAYOUT][0];
 		}
 		
 		friend class Seamless;

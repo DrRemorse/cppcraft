@@ -79,7 +79,7 @@ namespace cppcraft
 		screenVAO.render(GL_QUADS);
 	}
 	
-	void FSRenderer::render(WindowClass& gamescr)
+	void FSRenderer::render(WindowClass& gamescr, double frameCounter)
 	{
 		glDisable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
@@ -95,6 +95,7 @@ namespace cppcraft
 		// postprocessing shader
 		Shader& shd = shaderman[Shaderman::POSTPROCESS];
 		shd.bind();
+		shd.sendFloat("frameCounter", frameCounter);
 		shd.sendInteger("submerged", plogic.FullySubmerged);
 		
 		// render fullscreen quad

@@ -19,6 +19,7 @@ uniform sampler2D texture;
 #ifdef LENSFLARE
 uniform sampler2D lensflare;
 #endif
+uniform float frameCounter;
 uniform int   submerged;
 
 in vec2 texCoord;
@@ -47,13 +48,30 @@ void main()
 	vec4 color = texture2D(texture, texCoord);
 	float depth = color.a;
 	
-	if (submerged == 1)
-	{	// submerged in water
-		color.rgb = mix(color.rgb, SUB_WATER, 0.25 + 0.75 * smoothstep(0.0, 0.1, depth));
-	}
-	else if (submerged == 2)
-	{	// submerged in lava
-		color.rgb = mix(color.rgb, SUB_LAVA, 0.6 + 0.4 * smoothstep(0.0, 0.1, depth));
+	if (submerged != 0)
+	{
+		// re-read waved texcoord
+		float speed = frameCounter * 0.01;
+		
+		// camera bobbing
+		vec2 waves = vec2(sin(speed), cos(speed)) * 0.01;
+		// screen waves
+		vec2 waveCoords = vec2(speed * 5) + texCoord.xy * 6.28 * 32;
+		float wavyDepth = smoothstep(0.0, 0.1, depth);
+		waves += vec2(cos(waveCoords.x), sin(waveCoords.y)) * wavyDepth * 0.005;
+		
+		color = texture2D(texture, texCoord + waves);
+		depth = color.a;
+		wavyDepth = smoothstep(0.0, 0.1, depth);
+		
+		if (submerged == 1)
+		{	// submerged in water
+			color.rgb = mix(color.rgb, SUB_WATER, 0.25 + 0.75 * wavyDepth);
+		}
+		else
+		{	// submerged in lava
+			color.rgb = mix(color.rgb, SUB_LAVA, 0.6 + 0.4 * wavyDepth);
+		}
 	}
 	
 	color.rgb = pow(color.rgb, vec3(2.2));
