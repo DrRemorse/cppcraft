@@ -74,9 +74,15 @@ namespace cppcraft
 			CONT_SAVEDATA
 		} sectorcontents_t;
 		
-		// returns true if the sector has been assigned a sectorblock
+		// creates a sector with location (x, y, z)
 		Sector(int x, int y, int z);
-		bool hasBlocks() const;
+		
+		// returns true if the sector has been assigned a sectorblock
+		inline bool hasBlocks() const
+		{
+			return (this->blockpt != nullptr);
+		}
+		
 		void createBlocks();
 		void smartAssignBlocks(bool needBlocks);
 		void clear();      // clears everything! and then some!

@@ -2,6 +2,7 @@
 
 #include "library/log.hpp"
 #include "library/timing/timer.hpp"
+#include "compilers.hpp"
 #include "generator.hpp"
 #include "precompq.hpp"
 #include "sectors.hpp"
@@ -16,14 +17,14 @@ namespace cppcraft
 	void WorldBuilder::init()
 	{
 		this->diagonal = 0;
+		this->nextDiagonal = 0;
 		this->lastPosition = 0;
-		this->mode = MODE_GENERATING;
+		// the world has already been generated upon start
+		this->mode = MODE_PRECOMPILE;
 	}
 	
 	void WorldBuilder::seamResponse()
 	{
-		int halfW = Sectors.getXZ() / 2;
-		
 		if (this->mode == MODE_GENERATING)
 		{
 			// already generating, reduce if we are generating on the edge
@@ -31,10 +32,18 @@ namespace cppcraft
 		}
 		else
 		{
+			int halfW = Sectors.getXZ() / 2;
+			
 			// not generating, just pick somewhere close to border
 			this->mode = MODE_GENERATING;
+			
+			if (diagonal)
+				this->nextDiagonal = diagonal - 1;
+			else
+				this->nextDiagonal = 0;
+			
 			// can not be smaller than 2
-			this->diagonal = halfW-3;
+			this->diagonal = halfW-2;
 		}
 		// reset spiral side (last position in WorldBuilder::run())
 		this->lastPosition = 0;
@@ -64,7 +73,7 @@ namespace cppcraft
 		}
 	}
 	
-	bool wrunGen(Sector& s, Timer& timer, double timeOut)
+	inline bool wrunGen(Sector& s, Timer& timer, double timeOut)
 	{
 		if (s.progress == Sector::PROG_NEEDGEN)
 		{
@@ -92,6 +101,11 @@ namespace cppcraft
 		///////////////////////////////////////////////////////
 		// ------------- GENERATE AND REBUILD -------------- //
 		///////////////////////////////////////////////////////
+		
+		//logger << "d=" << this->diagonal << " nd=" << this->nextDiagonal << " md=" << (int)this->mode << " cq=" << compilers.colqCount() << Log::ENDL;
+		
+		int diagonalsRun = 0;
+		const int maxDiagsRun = 8;
 		
 		int center_x = Sectors.getXZ() / 2;
 		#define center_z center_x
@@ -230,12 +244,16 @@ namespace cppcraft
 			if (this->diagonal > corner_rad)
 			{
 				// reset
-				this->diagonal = 0;
+				diagonal = nextDiagonal;
+				nextDiagonal = 0;
 				// next runtype
 				if (mode == MODE_GENERATING) mode = MODE_PRECOMPILE;
 				// exit
 				break;
 			}
+			
+			diagonalsRun++;
+			if (diagonalsRun == maxDiagsRun) break;
 		}
 		return false;
 		

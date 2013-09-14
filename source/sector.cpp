@@ -12,7 +12,7 @@ namespace cppcraft
 		this->y = y;
 		this->z = z;
 		// initialize sector to default empty-unknown state
-		this->blockpt = nullptr;
+		this->blockpt = new sectorblock_t;
 		this->vbodata = nullptr;
 		// this->special = nullptr;
 		
@@ -56,11 +56,6 @@ namespace cppcraft
 		}
 	}
 	
-	bool Sector::hasBlocks() const
-	{
-		return (this->blockpt != nullptr);
-	}
-	
 	int Sector::countLights()
 	{
 		if (hasBlocks() == false) throw std::string("Sector::countLights(): Sector had no blocks");
@@ -86,11 +81,17 @@ namespace cppcraft
 		int dy = ((y - sector.y) << 3) + (BLOCKS_Y  / 2 - by);
 		int dz = ((z - sector.z) << 4) + (BLOCKS_XZ / 2 - bz);
 		
-		return sqrtf(dx*dx + dy*dy + dz*dz) - (BLOCKS_XZ / 2) * sqrtf(2.0);
+		return sqrtf(dx*dx + dy*dy + dz*dz) - (BLOCKS_XZ / 2) * sqrtf(3.0);
 	}
 	
 	void Sector::clear()
 	{
+		render = false;
+		// and nullsectors are always "compiled"
+		progress = PROG_COMPILED;
+		// clearing a sector, means invalidating it
+		contents = CONT_NULLSECTOR;
+		
 		hardsolid = 0;    // we don't really know!
 		precomp   = 0;    // reset compilation stage
 		torchlight = 0;   // no more light
@@ -106,13 +107,11 @@ namespace cppcraft
 		//	special = nullptr;
 		}*/
 		
-		delete blockpt;
-		blockpt = nullptr;
+		//delete blockpt;
+		//blockpt = nullptr;
 		
-		// clearing a sector, means invalidating it
-		contents = CONT_NULLSECTOR;
-		// and nullsectors are always "compiled"
-		progress = PROG_COMPILED;
+		// NOTE: this is accessed in rendering thread, don't delete it
+		//delete vbodata; vbodata = nullptr;
 	}
 	
 	void Sector::invalidate()

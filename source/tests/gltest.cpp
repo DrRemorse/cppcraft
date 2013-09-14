@@ -11,25 +11,19 @@
 
 using namespace library;
 
-double accumulatedTime;
-
-bool blueScreen(WindowClass& wnd, double dtime)
+bool blueScreen(WindowClass& wnd, double dtime, double timeElapsed)
 {
-	accumulatedTime += dtime;
-	
 	glClearColor(0.3, 0.6, 1.0, 1.0);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	
 	// swap frontbuffer with backbuffer (frame change)
 	glfwSwapBuffers(wnd.window());
 	// close window after 2 seconds (2000ms)
-	return (accumulatedTime < 1);
+	return (timeElapsed < 1);
 }
 
-bool triangleScreen(WindowClass& wnd, double dtime)
+bool triangleScreen(WindowClass& wnd, double dtime, double timeElapsed)
 {
-	accumulatedTime += dtime;
-	
 	// (initial) depth settings
 	glClearDepth(1.0);
 	glDepthRange(0.0, 1.0);
@@ -57,12 +51,12 @@ bool triangleScreen(WindowClass& wnd, double dtime)
 	
 	// create rotation matrix, for rotating the "screen" around itself
 	Matrix matrot;
-	matrot.rotateZYX(0, 0, accumulatedTime * 2.5);
+	matrot.rotateZYX(0, 0, timeElapsed * 2.5);
 	
 	// modelview matrix
 	Matrix matview;
 	matview.translated(wnd.SW / 2, wnd.SH / 2, 0.0);
-	matview.scale(0.75 + 0.25 * sin(accumulatedTime * 5.0));
+	matview.scale(0.75 + 0.25 * sin(timeElapsed * 5.0));
 	matview = matview * matrot;
 	matview.translated(-wnd.SW / 2, -wnd.SH / 2, 0.0);
 	
@@ -111,7 +105,7 @@ bool triangleScreen(WindowClass& wnd, double dtime)
 	// swap frontbuffer with backbuffer (frame change)
 	glfwSwapBuffers(wnd.window());
 	// close window after 2 seconds (2000ms)
-	return (accumulatedTime < 4);
+	return (timeElapsed < 4);
 }
 
 void test_opengl_window()
@@ -122,7 +116,7 @@ void test_opengl_window()
 	wndconf.fullscreen = false;
 	wndconf.SW = 640;
 	wndconf.SH = 480;
-	wndconf.multisample = 0;
+	wndconf.multisample = 2;
 	
 	// open up OpenGL window
 	WindowClass bluescr;
@@ -139,7 +133,6 @@ void test_opengl_window()
 	// And finally, 1.0 means dtime is measured in (whole) seconds
 	const double timing_granularity = 1.0;
 	
-	accumulatedTime = 0;
 	bluescr.startRenderingLoop(blueScreen, timing_granularity);
 	
 	//////////////////////////////////////////////////////////////////
@@ -149,8 +142,6 @@ void test_opengl_window()
 	WindowClass triscr;
 	// open up another window
 	triscr.open(wndconf);
-	// reset timer
-	accumulatedTime = 0;
 	// start rendering using triangleScreen function
 	triscr.startRenderingLoop(triangleScreen, timing_granularity);
 	

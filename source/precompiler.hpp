@@ -27,12 +27,14 @@ namespace cppcraft
 		
 		unsigned short vertices    [RenderConst::MAX_UNIQUE_SHADERS];
 		unsigned short bufferoffset[RenderConst::MAX_UNIQUE_SHADERS];
+		
+		void complete();
 	};
 	
 	class Precompiler
 	{
 	public:
-		static const int MAX_PRECOMPQ = 64;
+		static const int MAX_PRECOMPQ = 256;
 		
 		Precomp& operator[] (unsigned int);
 		

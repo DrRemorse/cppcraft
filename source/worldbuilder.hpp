@@ -40,6 +40,7 @@ namespace cppcraft
 		
 	private:
 		int diagonal;      // diagonal of outward spiral
+		int nextDiagonal;
 		int lastPosition;  // last side of spiral
 		int mode;          // worldbuilder mode
 		

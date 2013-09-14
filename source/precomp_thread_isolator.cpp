@@ -57,12 +57,10 @@ namespace cppcraft
 			killPrecomp();
 			return false;
 		}
-		
-		// fix possible state error
-		if (sector.progress == Sector::PROG_NEEDRECOMP)
+		else if (sector.progress != Sector::PROG_RECOMP)
 		{
-			//logger << Log::WARN << "sector state changed from needrec to recomp in precompiler" << Log::ENDL;
-			sector.progress = Sector::PROG_RECOMP;
+			cancelPrecomp();
+			return false;
 		}
 		
 		// prepare testdata for determining visible faces

@@ -33,6 +33,8 @@ namespace cppcraft
 	
 	void PrecompThread::ambientOcclusion()
 	{
+		Sector& sector = *precomp->sector;
+		
 		// recount total vertices
 		int cnt = precomp->vertices[0];
 		for (int i = 1; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
@@ -40,14 +42,24 @@ namespace cppcraft
 			cnt += precomp->vertices[i];
 		}
 		
-		if (precomp->datadump == nullptr)
+		if (sector.precomp != 4)
+		{
+			logger << Log::ERR << "PrecompThread::ambientOcclusion(): invalid sector precomp state" << Log::ENDL;
+			cancelPrecomp();
+			return;
+		}
+		else if (sector.progress != Sector::PROG_RECOMP)
+		{
+			logger << Log::ERR << "PrecompThread::ambientOcclusion(): invalid sector progress state" << Log::ENDL;
+			cancelPrecomp();
+			return;
+		}
+		else if (precomp->datadump == nullptr)
 		{
 			logger << Log::ERR << "PrecompThread::ambientOcclusion(): datadump was null" << Log::ENDL;
 			cancelPrecomp();
 			return;
 		}
-		
-		Sector& sector = *precomp->sector;
 		
 		// ambient occlusion processing stage
 		#ifdef AMBIENT_OCCLUSION_GRADIENTS

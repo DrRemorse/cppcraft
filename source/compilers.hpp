@@ -31,6 +31,7 @@ namespace cppcraft
 		int colqCount();
 		columnqueue_t& get(int i);
 		void remove(int i);
+		void add(int x, int y, int z);
 		
 		inline void clear()
 		{
@@ -38,8 +39,6 @@ namespace cppcraft
 		}
 		
 	private:
-		void sectorCompiler(Sector& s, Precomp& pc);
-		
 		// simple column queue
 		std::vector<columnqueue_t> colq;
 	};

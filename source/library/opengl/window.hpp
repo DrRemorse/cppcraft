@@ -34,7 +34,7 @@ namespace library
 		
 	public:
 		// prototype for rendering function
-		typedef bool (*renderFunc)(WindowClass& wnd, double dtime);
+		typedef bool (*renderFunc)(WindowClass& wnd, double dtime, double timeElapsed);
 		
 		int SW, SH; // window size
 		float SA;   // window aspect

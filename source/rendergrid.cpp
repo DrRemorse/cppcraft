@@ -186,13 +186,18 @@ namespace cppcraft
 					
 				} // radial test
 			}
-			else if (cv.vao) // not renderable, but has VAO
+			else if (cv.hasdata) // not renderable, but has VAO
 			{
 				// DONT DISABLE THIS, GPU WILL RUN OUT OF MEMORY IN A HEARTBEAT!!!!!!!!
-				glDeleteVertexArrays(1, &cv.vao);
-				glDeleteBuffers(1, &cv.vbo);
-				glDeleteQueries(RenderConst::MAX_UNIQUE_SHADERS, cv.occlusion);
-				cv.vao = 0;
+				cv.hasdata = false;
+				glBindVertexArray(cv.vao);
+				glBindBuffer(GL_ARRAY_BUFFER_ARB, cv.vbo);
+				glBufferData(GL_ARRAY_BUFFER_ARB, 0, nullptr, GL_STATIC_DRAW_ARB);
+				
+				//glDeleteVertexArrays(1, &cv.vao);
+				//glDeleteBuffers(1, &cv.vbo);
+				//glDeleteQueries(RenderConst::MAX_UNIQUE_SHADERS, cv.occlusion);
+				//cv.vao = 0;
 				
 			} // render test
 			

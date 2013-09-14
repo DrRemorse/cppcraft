@@ -59,6 +59,7 @@ namespace cppcraft
 		// set initial flags
 		this->updated    = false;
 		this->renderable = false;
+		this->hasdata = false;
 	}
 	
 	void Column::compile(int x, int y, int z)
@@ -77,14 +78,6 @@ namespace cppcraft
 		
 		for (int sy = end_y - 1; sy >= start_y; sy--)
 		{
-			// first check if compiled!!
-			// to avoid compiling a column that is to be updated AGAIN soon!
-			// nullsectors and culled sectors are considered COMPILED
-			
-			if (Sectors(x, sy, z).progress != Sector::PROG_COMPILED)
-			{
-				ready = false;
-			}
 			if (Sectors(x, sy, z).render)
 			{
 				// get VBO data section
@@ -93,6 +86,8 @@ namespace cppcraft
 				// a renderable without VBO data, is not a renderable!
 				if (vboList[vboCount] == nullptr)
 				{
+					logger << "column: " << x << ", " << sy << ", " << z << ", renderable sector without vbodata" << Log::ENDL;
+					logger << "progress: " << (int)Sectors(x, sy, z).progress << Log::ENDL;
 					Sectors(x, sy, z).progress = Sector::PROG_NEEDRECOMP;
 					ready = false;
 				}
@@ -101,15 +96,15 @@ namespace cppcraft
 			}
 			
 		}
-		if (ready == false) return;
 		
-		// exit if this column isn't renderable
+		// exit if this column isn't renderable at all
 		if (vboCount == 0)
 		{
 			this->updated    = false;
 			this->renderable = false;
 			return;
 		}
+		if (ready == false) return;
 		
 		///////////////////////////////////////////////////////
 		// find offsets for each shader type, and total size //
@@ -218,7 +213,6 @@ namespace cppcraft
 		
 		// disable vao & vbo
 		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
 		
 		// disable vertex attributes
 		if (updateAttribs)
@@ -253,6 +247,8 @@ namespace cppcraft
 		this->renderable = true;
 		// and no longer needing update
 		this->updated    = false;
+		// and the vbo has data
+		this->hasdata = true;
 		
 		// remove extraneous data from sectors
 		for (int sy = start_y + Columns.COLUMNS_SIZE - 1; sy >= start_y; sy--)

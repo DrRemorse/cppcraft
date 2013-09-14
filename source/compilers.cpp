@@ -5,6 +5,7 @@
 #include "precompiler.hpp"
 #include "threading.hpp"
 #include "vertex_block.hpp"
+#include <mutex>
 
 using namespace library;
 
@@ -12,6 +13,7 @@ namespace cppcraft
 {
 	// instantiation of compilers
 	Compilers compilers;
+	std::mutex compilerMutex;
 	
 	// initialize compiler data buffers
 	void Compilers::initCompilers()
@@ -24,32 +26,11 @@ namespace cppcraft
 	// run compilers and try to clear queue, if theres enough time
 	void Compilers::compile()
 	{
-		// precompile queue
-		for (unsigned int i = 0; i < Precompiler::MAX_PRECOMPQ; i++)
-		{
-			Precomp& p = precompiler[i];
-			
-			// regular precomps
-			if (p.alive)
-			{
-				//mtx.precompiler.lock();
-				Sector* s = p.sector;
-				if (s->precomp == 5)
-				{
-					//mtx.precompiler.unlock();
-					sectorCompiler(*s, p);
-					//if (colq_count == max_colq) break;
-				}
-				//else mtx.precompiler.unlock();
-			}
-		}
-		
-		// no reason to continue if theres nothing in the queue
-		if (colq.size() == 0) return;
+		compilerMutex.lock();
 		
 		// column assemblage
 		// also, prune array removing dead columns
-		for (int i = colq.size()-1; i >= 0; i--)
+		for (int i = 0; i < colq.size(); i++)
 		{
 			Column& cv = Columns(colq[i].x, colq[i].y, colq[i].z);
 			
@@ -57,12 +38,11 @@ namespace cppcraft
 			{
 				cv.compile(colq[i].x, colq[i].y, colq[i].z);
 			}
-			if (cv.updated == false)
-			{	// remove columns from queue that no longer needs to be updated
-				colq.erase(colq.begin() + i);
-			}
 		}
-			
+		colq.clear();
+		
+		compilerMutex.unlock();
+		
 	} // handleCompilers
 	
 	int Compilers::colqCount()
@@ -75,66 +55,16 @@ namespace cppcraft
 		return colq[i];
 	}
 	
+	void Compilers::add(int x, int y, int z)
+	{
+		compilerMutex.lock();
+		colq.emplace_back( (columnqueue_t) { x, y, z } );
+		compilerMutex.unlock();
+	}
+	
 	void Compilers::remove(int i)
 	{
 		colq.erase(colq.begin() + i);
 	}
-	
-	// allocates VBO renderable structure
-	// copies pointers from precomp to vbo
-	// invalidates precomp, adds vbodata to column assembly queue
-	
-	void Compilers::sectorCompiler(Sector& s, Precomp& pc)
-	{
-		// allocate sector vertex data
-		if (s.vbodata == nullptr)
-		{
-			s.vbodata = new vbodata_t;
-			s.vbodata->pcdata = nullptr;
-		}
-		
-		// renderable VBO structure
-		vbodata_t* v = s.vbodata;
-		
-		// copy info from precomp to vbodata struct
-		for (int n = 0; n < RenderConst::MAX_UNIQUE_SHADERS; n++)
-		{
-			v->vertices[n]     = pc.vertices[n];
-			v->bufferoffset[n] = pc.bufferoffset[n];
-		}
-		
-		// ye olde switcharoo
-		delete v->pcdata;         // remove old data (if any)
-		v->pcdata = pc.datadump;  // set vbodata to become precomp data
-		pc.datadump = nullptr;    // unassign precomp data pointer
-		
-		// free precomp slot (as early as possible)
-		pc.alive  = false;
-		// reset sector state to unqueued
-		s.precomp = 0;
-		
-		// set renderable flag to sector
-		s.render = true;
-		// set progress to finished state
-		if (s.progress == Sector::PROG_NEEDCOMPILE)
-		{
-			s.progress = Sector::PROG_COMPILED;
-		}
-		
-		// check if this column may be complete (ready to be compiled)
-		int cy = s.y / Columns.COLUMNS_SIZE;
-		
-		Column& cv = Columns(s.x, cy, s.z);
-		// if the column wasn't previously updated
-		// and we (think we) are ready to compile
-		if (cv.updated == false)
-		{
-			// add to queue
-			colq.emplace_back( columnqueue_t {s.x, cy, s.z} );
-			// set as recently "updated"
-			cv.updated = true;
-		}
-		
-	} // sectorCompiler
 	
 }

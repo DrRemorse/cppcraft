@@ -17,7 +17,15 @@ namespace cppcraft
 		
 		bool renderable;    // true if ready to render
 		bool updated;       // true if up to date
+		bool hasdata;
 		
+		// used by: Seamless
+		inline void reset()
+		{
+			renderable = false;
+			updated = false;
+			hasdata = false;
+		}
 		// used by: Compiler pipeline
 		void compile(int x, int y, int z);
 		

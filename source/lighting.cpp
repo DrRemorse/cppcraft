@@ -20,9 +20,9 @@ namespace cppcraft
 	LightingClass Lighting;
 	
 	const float LightingClass::DARKNESS = 256 * 0.96;
-	static const float DARK_SHADOWS     = 256 * 0.70;
-	const float LightingClass::SHADOWS  = 256 * 0.62;
-	const float LightingClass::CORNERS  = 256 * 0.46;
+	static const float DARK_SHADOWS     = 256 * 0.62;
+	const float LightingClass::SHADOWS  = 256 * 0.56;
+	const float LightingClass::CORNERS  = 256 * 0.50;
 	
 	const float LightingClass::RAY_CRASH_CONSTANT = 16.0f;
 	const float LightingClass::LIGHT_FULL_DAMAGE  = 12.0f;
@@ -93,16 +93,18 @@ namespace cppcraft
 		}
 	}
 	
-	int rayStep(float angle, int vv, int maxv)
+	inline int rayStep(float angle, int vv, int maxv)
 	{
-		if (angle > 0.0001)
+		const double EPSILON = 0.0001;
+		
+		if (angle > EPSILON)
 		{
 			// find remaining
 			vv = maxv - (vv & maxv);
 			// calculate steps needed:
 			return  vv / angle + 1;
 		}
-		else if (angle < -0.0001)
+		else if (angle < -EPSILON)
 		{
 			// find remaining
 			vv = (vv & maxv);

@@ -106,19 +106,18 @@ namespace library
 	
 	void WindowClass::startRenderingLoop(renderFunc renderfunc, double granularity)
 	{
-		double dtime, t0, t1;
-		t0 = t1 = glfwGetTime();
+		double t0 = glfwGetTime();
 		
 		while (glfwWindowShouldClose(wndHandle) == 0)
 		{
+			double t1 = t0;
+			t0 = glfwGetTime();
 			// variable delta-frame timing
-			dtime = 1.0 + (t0 - (t1 + granularity)) / granularity;
+			double dtime = (t1 - t0) / granularity;
 			
 			// render function returns false if we should stop rendering
-			if (renderfunc(*this, dtime) == false) break;
+			if (renderfunc(*this, dtime, t0) == false) break;
 			
-			t1 = t0;
-			t0 = glfwGetTime();
 		}
 	}
 	

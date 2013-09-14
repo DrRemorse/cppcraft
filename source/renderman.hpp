@@ -15,9 +15,8 @@ namespace cppcraft
 		// OpenGL window
 		library::WindowClass gamescr;
 		
-		int framenumber;
-		double framerad, frametick;
-		double uptimed,  motiontimed;
+		// elapsed time
+		double frametick;
 		// this frames delta-time
 		double dtime;
 		

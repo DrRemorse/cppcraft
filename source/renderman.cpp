@@ -27,12 +27,9 @@ using namespace library;
 
 namespace cppcraft
 {
-	static const double PI = 4 * atan(1);
-	
 	Renderer::Renderer()
 	{
 		this->frametick = 0.0;
-		this->framerad  = 0.0;
 		this->dtime = 1.0;
 	}
 	
@@ -109,10 +106,7 @@ namespace cppcraft
 	{
 		this->dtime = time_d_factor;
 		
-		// increment frame counters
-		this->framerad += PI / 128.0 * dtime;
-		if (this->framerad >= 2 * PI) this->framerad -= 2 * PI;
-		
+		// increment framecounter
 		this->frametick += dtime;
 		
 		thesun.integrate(0.02 * dtime);
@@ -166,16 +160,16 @@ namespace cppcraft
 	void Renderer::renderloop(WorldManager& worldman)
 	{
 		const double render_granularity = 0.01; // 10ms granularity
-		double t0 = glfwGetTime();
+		double t1 = glfwGetTime();
 		
 		//float FPS = 0.0;
 		
 		while (glfwWindowShouldClose(gamescr.window()) == 0 && mtx.terminate == false)
 		{
 			// variable delta frame timing
-			double t1 = t0;
-			t0 = glfwGetTime();
-			dtime = 1.0 * (t0 - t1) / render_granularity;
+			double t0 = t1;
+			t1 = glfwGetTime();
+			dtime = (t1 - t0) / render_granularity;
 			
 			/// FPS COUNTER ///
 			/*

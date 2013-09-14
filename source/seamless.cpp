@@ -160,8 +160,7 @@ namespace cppcraft
 					}
 					
 					Columns.manipulate(0, y, z) = tc;
-					tc->renderable = false;
-					tc->updated = false;
+					tc->reset();
 				}
 				
 				// move flatlands backwards -x
@@ -255,9 +254,7 @@ namespace cppcraft
 					}
 					
 					Columns.manipulate(Sectors.getXZ()-1, y, z) = tc;
-					tc->renderable = false;
-					tc->updated = false;
-					
+					tc->reset();
 				} // columns
 				
 				// move flatlands forwards +x
@@ -344,8 +341,7 @@ namespace cppcraft
 					}
 					
 					Columns.manipulate(x, y, 0) = tc;
-					tc->renderable = false;
-					tc->updated = false;
+					tc->reset();
 					
 				} // columns
 				
@@ -430,8 +426,7 @@ namespace cppcraft
 					}
 					
 					Columns.manipulate(x, y, Sectors.getXZ() - 1) = tc;
-					tc->renderable = false;
-					tc->updated = false;
+					tc->reset();
 					
 				} // columns
 				

@@ -4,7 +4,10 @@
 #include "library/log.hpp"
 #include "vertex_block.hpp"
 #include "blockmodels.hpp"
+#include "columns.hpp"
+#include "compilers.hpp"
 #include "precomp_thread.hpp"
+#include "sectors.hpp"
 #include "torchlight.hpp"
 #include <initializer_list>
 #include <string>
@@ -73,6 +76,93 @@ namespace cppcraft
 	Precomp& Precompiler::operator [] (unsigned int i)
 	{
 		return this->queue[i];
+	}
+	
+	// tries to complete a precompilation job
+	void Precomp::complete()
+	{
+		Sector& sector = *this->sector;
+		
+		// allocate sector vertex data
+		if (sector.vbodata == nullptr)
+		{
+			sector.vbodata = new vbodata_t;
+			sector.vbodata->pcdata = nullptr;
+		}
+		
+		// renderable VBO structure
+		vbodata_t& v = *sector.vbodata;
+		
+		// copy info from precomp to vbodata struct
+		for (int n = 0; n < RenderConst::MAX_UNIQUE_SHADERS; n++)
+		{
+			v.vertices[n]     = this->vertices[n];
+			v.bufferoffset[n] = this->bufferoffset[n];
+		}
+		
+		// ye olde switcharoo
+		delete v.pcdata;           // remove old data (if any)
+		v.pcdata = this->datadump; // set vbodata to become precomp data
+		this->datadump = nullptr;  // unassign precomp data pointer
+		
+		// free precomp slot (as early as possible)
+		this->alive = false;
+		// reset sector state to unqueued
+		sector.precomp = 0;
+		
+		// set renderable flag to sector
+		sector.render = true;
+		// set progress to finished state (if possible)
+		if (sector.progress == Sector::PROG_NEEDCOMPILE)
+		{
+			sector.progress = Sector::PROG_COMPILED;
+		}
+		
+		/// validation stage ///
+		// validate that the column can be compiled, and if not, queue missing sectors
+		bool ready = true;
+		
+		// find start and end sectors for this column
+		int start_y = sector.y - (sector.y & (Columns.COLUMNS_SIZE-1));
+		int end_y   = start_y + Columns.COLUMNS_SIZE;
+		
+		for (int y = start_y; y < end_y; y++)
+		{
+			// first check if compiled!!
+			// to avoid compiling a column that is to be updated AGAIN soon!
+			// nullsectors and culled sectors are considered COMPILED
+			
+			Sector& s = Sectors(sector.x, y, sector.z);
+			
+			if (s.progress != Sector::PROG_COMPILED)
+			{
+				//logger << "column: " << sector.x << ", " << y << ", " << sector.z << ", unfinished sector prg=" << (int)s.progress << Log::ENDL;
+				ready = false;
+			}
+			else if (s.render)
+			{
+				// get VBO data section
+				vbodata_t* v = s.vbodata;
+				
+				// a renderable without VBO data, is not a renderable!
+				if (v == nullptr)
+				{
+					s.progress = Sector::PROG_NEEDRECOMP;
+					ready = false;
+				}
+			}
+			
+		}
+		if (ready == false) return;
+		
+		// the column is complete, add it to the column compiler queue
+		int cy = sector.y / Columns.COLUMNS_SIZE;
+		
+		Column& cv = Columns(sector.x, cy, sector.z);
+		cv.updated = true;
+		// add to queue
+		compilers.add(sector.x, cy, sector.z);
+		
 	}
 	
 }

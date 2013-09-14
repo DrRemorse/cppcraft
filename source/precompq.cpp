@@ -197,10 +197,13 @@ namespace cppcraft
 				}
 				// (precomp == 2 || precomp == 4) are being worked on by precompq threadpool
 				
-				//else if (precompiler[currentPrecomp].sector->precomp == 5)
-				//{
-				//	// sectorcompiler is working on this (hopefully)
-				//}
+				else if (precompiler[currentPrecomp].sector->precomp == 5)
+				{
+					// complete the transaction
+					// verify that this sector can be assembled into a column properly
+					precompiler[currentPrecomp].complete();
+					
+				}
 				else if (precompiler[currentPrecomp].sector->precomp == 0)
 				{
 					// this sector has been reset, probably by seamless()
