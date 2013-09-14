@@ -118,51 +118,13 @@ namespace cppcraft
 			sector.progress = Sector::PROG_COMPILED;
 		}
 		
-		/// validation stage ///
-		// validate that the column can be compiled, and if not, queue missing sectors
-		bool ready = true;
-		
-		// find start and end sectors for this column
-		int start_y = sector.y - (sector.y & (Columns.COLUMNS_SIZE-1));
-		int end_y   = start_y + Columns.COLUMNS_SIZE;
-		
-		for (int y = start_y; y < end_y; y++)
-		{
-			// first check if compiled!!
-			// to avoid compiling a column that is to be updated AGAIN soon!
-			// nullsectors and culled sectors are considered COMPILED
-			
-			Sector& s = Sectors(sector.x, y, sector.z);
-			
-			if (s.progress != Sector::PROG_COMPILED)
-			{
-				//logger << "column: " << sector.x << ", " << y << ", " << sector.z << ", unfinished sector prg=" << (int)s.progress << Log::ENDL;
-				ready = false;
-			}
-			else if (s.render)
-			{
-				// get VBO data section
-				vbodata_t* v = s.vbodata;
-				
-				// a renderable without VBO data, is not a renderable!
-				if (v == nullptr)
-				{
-					s.progress = Sector::PROG_NEEDRECOMP;
-					ready = false;
-				}
-			}
-			
-		}
-		if (ready == false) return;
-		
-		// the column is complete, add it to the column compiler queue
+		/// add to compiler queue ///
 		int cy = sector.y / Columns.COLUMNS_SIZE;
 		
 		Column& cv = Columns(sector.x, cy, sector.z);
 		cv.updated = true;
-		// add to queue
-		compilers.add(sector.x, cy, sector.z);
 		
+		// last: add to queue
+		compilers.add(sector.x, cy, sector.z);
 	}
-	
 }

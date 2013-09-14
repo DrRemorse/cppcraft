@@ -50,7 +50,10 @@ namespace cppcraft
 		if (block.getID() == id) return false;
 		
 		// if the previous block was air, then we need to increase the "block count"
-		if (block.getID() == _AIR) s->blockpt->blocks += 1;
+		if (block.getID() == _AIR)
+		{
+			s->blockpt->blocks += 1;
+		}
 		
 		// set new ID, facing & special
 		block.setID(id);
@@ -69,7 +72,9 @@ namespace cppcraft
 		if (immediate)
 		{
 			precompq.addTruckload(*s);
-		} else {
+		}
+		else
+		{
 			s->progress = Sector::PROG_NEEDRECOMP;
 		}
 		// write sector to disk
@@ -209,22 +214,24 @@ namespace cppcraft
 		// do natn (yet)
 	}
 	
+	inline void updateNeighboringSector(Sector& sector, bool immediate)
+	{
+		if (sector.contents != Sector::CONT_NULLSECTOR)
+		{
+			sector.progress = Sector::PROG_NEEDRECOMP;
+			sector.culled   = false;
+			if (immediate) precompq.addTruckload(sector);
+		}
+	}
+	
 	void Spiders::updateSurroundings(Sector& sector, int bx, int by, int bz, bool immediate)
 	{
-		#define updateSector(sector) \
-			if (sector.contents != Sector::CONT_NULLSECTOR) \
-			{												\
-				sector.progress = Sector::PROG_NEEDRECOMP;	\
-				sector.culled   = false;					\
-				if (immediate) precompq.addTruckload(sector); \
-			}
-		
 		if (bx == 0)
 		{
 			if (sector.x)
 			{
 				Sector& testsector = Sectors(sector.x-1, sector.y, sector.z);
-				updateSector(testsector);
+				updateNeighboringSector(testsector, immediate);
 			}
 		}
 		else if (bx == Sector::BLOCKS_XZ-1)
@@ -232,7 +239,7 @@ namespace cppcraft
 			if (sector.x+1 != Sectors.getXZ())
 			{
 				Sector& testsector = Sectors(sector.x+1, sector.y, sector.z);
-				updateSector(testsector);
+				updateNeighboringSector(testsector, immediate);
 			}
 		}
 		if (by == 0)
@@ -240,7 +247,7 @@ namespace cppcraft
 			if (sector.y)
 			{
 				Sector& testsector = Sectors(sector.x, sector.y-1, sector.z);
-				updateSector(testsector);
+				updateNeighboringSector(testsector, immediate);
 			}
 		}
 		else if (by == Sector::BLOCKS_Y-1)
@@ -248,7 +255,7 @@ namespace cppcraft
 			if (sector.y+1 != Sectors.getY())
 			{
 				Sector& testsector = Sectors(sector.x, sector.y+1, sector.z);
-				updateSector(testsector);
+				updateNeighboringSector(testsector, immediate);
 			}
 		}
 		if (bz == 0)
@@ -256,7 +263,7 @@ namespace cppcraft
 			if (sector.z)
 			{
 				Sector& testsector = Sectors(sector.x, sector.y, sector.z-1);
-				updateSector(testsector);
+				updateNeighboringSector(testsector, immediate);
 			}
 		}
 		else if (bz == Sector::BLOCKS_XZ-1)
@@ -264,7 +271,7 @@ namespace cppcraft
 			if (sector.z+1 != Sectors.getXZ())
 			{
 				Sector& testsector = Sectors(sector.x, sector.y, sector.z+1);
-				updateSector(testsector);
+				updateNeighboringSector(testsector, immediate);
 			}
 		}
 	}

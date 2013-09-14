@@ -69,6 +69,7 @@ namespace cppcraft
 		{
 			// reset spiral
 			this->diagonal = 0;
+			this->nextDiagonal = 0;
 			this->lastPosition = 0;
 		}
 	}
@@ -106,6 +107,8 @@ namespace cppcraft
 		
 		int diagonalsRun = 0;
 		const int maxDiagsRun = 8;
+		
+		double timeOut = localTime + WORLDBUILDER_MAX_TIME_SPENT;
 		
 		int center_x = Sectors.getXZ() / 2;
 		#define center_z center_x
@@ -160,13 +163,13 @@ namespace cppcraft
 				{
 					// load compressed sectors, flatlands, sector dumps
 					Sector& s = Sectors(xx, 0, zz);
-					if (wrunGen(s, timer, localTime + WORLDBUILDER_MAX_TIME_SPENT)) return true;
+					if (wrunGen(s, timer, timeOut)) return true;
 				}
 				else
 				{	// alternatively, adding to precompiler queue
 					if (wrunPrecomp(xx, zz)) return true;
 				}
-				if (timer.getDeltaTime() > localTime + WORLDBUILDER_MAX_TIME_SPENT) return true;
+				if (timer.getDeltaTime() > timeOut) return true;
 			}
 			
 			this->lastPosition = 1;
@@ -181,13 +184,13 @@ namespace cppcraft
 				{
 					// load compressed sectors, flatlands, sector dumps
 					Sector& s = Sectors(xx, 0, zz);
-					if (wrunGen(s, timer, localTime + WORLDBUILDER_MAX_TIME_SPENT)) return true;
+					if (wrunGen(s, timer, timeOut)) return true;
 				}
 				else
 				{	// alternatively, adding to precompiler queue
 					if (wrunPrecomp(xx, zz)) return true;
 				}
-				if (timer.getDeltaTime() > localTime + WORLDBUILDER_MAX_TIME_SPENT) return true;
+				if (timer.getDeltaTime() > timeOut) return true;
 			}
 			
 			this->lastPosition = 2;
@@ -202,13 +205,13 @@ namespace cppcraft
 				{
 					// load compressed sectors, flatlands, sector dumps
 					Sector& s = Sectors(xx, 0, zz);
-					if (wrunGen(s, timer, localTime + WORLDBUILDER_MAX_TIME_SPENT)) return true;
+					if (wrunGen(s, timer, timeOut)) return true;
 				}
 				else
 				{	// alternatively, adding to precompiler queue
 					if (wrunPrecomp(xx, zz)) return true;
 				}
-				if (timer.getDeltaTime() > localTime + WORLDBUILDER_MAX_TIME_SPENT) return true;
+				if (timer.getDeltaTime() > timeOut) return true;
 			}
 			
 			this->lastPosition = 3;
@@ -223,13 +226,13 @@ namespace cppcraft
 				{
 					// load compressed sectors, flatlands, sector dumps
 					Sector& s = Sectors(xx, 0, zz);
-					if (wrunGen(s, timer, localTime + WORLDBUILDER_MAX_TIME_SPENT)) return true;
+					if (wrunGen(s, timer, timeOut)) return true;
 				}
 				else
 				{	// alternatively, adding to precompiler queue
 					if (wrunPrecomp(xx, zz)) return true;
 				}
-				if (timer.getDeltaTime() > localTime + WORLDBUILDER_MAX_TIME_SPENT) return true;
+				if (timer.getDeltaTime() > timeOut) return true;
 			}
 			
 			// back to start

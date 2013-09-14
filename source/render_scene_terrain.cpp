@@ -365,6 +365,8 @@ namespace cppcraft
 									location, 
 									loc_vtrans, 
 									position);
+				// send player submerged status
+				shaderman[Shaderman::BLOCKS_WATER].sendInteger("playerSubmerged", plogic.FullySubmerged);
 				// update world offset
 				shaderman[Shaderman::BLOCKS_WATER].sendVec3("worldOffset", camera.getWorldOffset());
 				break;

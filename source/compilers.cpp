@@ -30,7 +30,7 @@ namespace cppcraft
 		
 		// column assemblage
 		// also, prune array removing dead columns
-		for (int i = 0; i < colq.size(); i++)
+		for (int i = colq.size()-1; i >= 0; i--)
 		{
 			Column& cv = Columns(colq[i].x, colq[i].y, colq[i].z);
 			
@@ -38,9 +38,12 @@ namespace cppcraft
 			{
 				cv.compile(colq[i].x, colq[i].y, colq[i].z);
 			}
+			if (cv.updated == false)
+			{
+				remove(i);
+			}
+			
 		}
-		colq.clear();
-		
 		compilerMutex.unlock();
 		
 	} // handleCompilers
@@ -60,11 +63,6 @@ namespace cppcraft
 		compilerMutex.lock();
 		colq.emplace_back( (columnqueue_t) { x, y, z } );
 		compilerMutex.unlock();
-	}
-	
-	void Compilers::remove(int i)
-	{
-		colq.erase(colq.begin() + i);
 	}
 	
 }

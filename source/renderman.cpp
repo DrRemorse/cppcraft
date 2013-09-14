@@ -165,6 +165,7 @@ namespace cppcraft
 			// variable delta frame timing
 			double t0 = t1;
 			t1 = glfwGetTime();
+			
 			dtime = (t1 - t0) / render_granularity;
 			
 			/// FPS COUNTER ///

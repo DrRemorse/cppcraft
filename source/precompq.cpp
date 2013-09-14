@@ -62,6 +62,9 @@ namespace cppcraft
 	
 	void PrecompQ::addTruckload(Sector& s)
 	{
+		// set sector recompilation flag immediately
+		s.progress = Sector::PROG_NEEDRECOMP;
+		
 		// adds all sectors in this sectors "column" to the queue
 		int start_y = s.y - (s.y & (Columns.COLUMNS_SIZE-1));
 		int end_y   = start_y + Columns.COLUMNS_SIZE;
@@ -71,8 +74,9 @@ namespace cppcraft
 		{
 			Sector& s2 = Sectors(s.x, y, s.z);
 			
-			// always add 's' but only s2 if it could be renderable
-			if ( (s2.contents == Sector::CONT_SAVEDATA && s2.vbodata == nullptr) || &s2 == &s )
+			// always add 's', only add s2 if it could be renderable or needs recompilation
+			if ( (s2.contents == Sector::CONT_SAVEDATA && s2.vbodata == nullptr) || 
+				&s2 == &s || s2.progress == Sector::PROG_NEEDRECOMP )
 			{
 				addPrecomp(s2);
 			}

@@ -78,24 +78,31 @@ namespace cppcraft
 		
 		for (int sy = end_y - 1; sy >= start_y; sy--)
 		{
-			if (Sectors(x, sy, z).render)
+			Sector& sector = Sectors(x, sy, z);
+			
+			if (sector.progress != Sector::PROG_COMPILED)
+			{
+				// avoid resetting the sector compiled status
+				ready = false;
+			}
+			else if (sector.render)
 			{
 				// get VBO data section
-				vboList[vboCount] = Sectors(x, sy, z).vbodata;
+				vboList[vboCount] = sector.vbodata;
 				
 				// a renderable without VBO data, is not a renderable!
 				if (vboList[vboCount] == nullptr)
 				{
-					logger << "column: " << x << ", " << sy << ", " << z << ", renderable sector without vbodata" << Log::ENDL;
-					logger << "progress: " << (int)Sectors(x, sy, z).progress << Log::ENDL;
-					Sectors(x, sy, z).progress = Sector::PROG_NEEDRECOMP;
+					sector.progress = Sector::PROG_NEEDRECOMP;
 					ready = false;
 				}
 				// renderable and consistent, add to queue
 				vboCount += 1;
 			}
-			
 		}
+		
+		// no ready? no continue
+		if (ready == false) return;
 		
 		// exit if this column isn't renderable at all
 		if (vboCount == 0)
@@ -104,7 +111,6 @@ namespace cppcraft
 			this->renderable = false;
 			return;
 		}
-		if (ready == false) return;
 		
 		///////////////////////////////////////////////////////
 		// find offsets for each shader type, and total size //
@@ -247,10 +253,12 @@ namespace cppcraft
 		this->renderable = true;
 		// and no longer needing update
 		this->updated    = false;
-		// and the vbo has data
+		// the vbo has data stored in gpu
 		this->hasdata = true;
 		
 		// remove extraneous data from sectors
+		// NOTE: this could crash any precompilation stage
+		/*
 		for (int sy = start_y + Columns.COLUMNS_SIZE - 1; sy >= start_y; sy--)
 		{
 			if (Sectors(x, sy, z).vbodata)
@@ -268,7 +276,7 @@ namespace cppcraft
 				// null deleted vbodata pointer
 				Sectors(x, sy, z).vbodata = nullptr;
 			}	
-		}
+		}*/
 		
 		// reset occluded state
 		for (size_t i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
