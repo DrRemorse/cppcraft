@@ -8,18 +8,20 @@ namespace cppcraft
 	{
 		int vertices = 0;
 		
-		if (model != 0 && (facing & 1) != 0)
+		if (model != 0 && model != 1)
 		{
-			vertices += blockmodels.slopedLeafs[model].copyTo(0, indic);
-			applyFaceLighting_PZ(bx, by, bz, 1);
-			indic += 4;
-		}
-		
-		if (model != 1 && (facing & 2) != 0)
-		{
-			vertices += blockmodels.slopedLeafs[model].copyTo(1, indic);
-			applyFaceLighting_NZ(bx, by, bz, 1);
-			indic += 4;
+			if ((facing & 1) != 0)
+			{
+				vertices += blockmodels.slopedLeafs[model].copyTo(0, indic);
+				applyFaceLighting_PZ(bx, by, bz, 1);
+				indic += 4;
+			}
+			if ((facing & 2) != 0)
+			{
+				vertices += blockmodels.slopedLeafs[model].copyTo(1, indic);
+				applyFaceLighting_NZ(bx, by, bz, 1);
+				indic += 4;
+			}
 		}
 		
 		vertices += blockmodels.slopedLeafs[model].copyTo(2, indic);
@@ -29,17 +31,20 @@ namespace cppcraft
 		applyFaceLighting_NY(bx, by, bz, 1);
 		indic += 4;
 		
-		if (model != 2 && (facing & 16) != 0)
+		if (model != 2 && model != 3)
 		{
-			vertices += blockmodels.slopedLeafs[model].copyTo(4, indic);
-			applyFaceLighting_PX(bx, by, bz, 1);
-			indic += 4;
-		}
-		if (model != 3 && (facing & 32) != 0)
-		{
-			vertices += blockmodels.slopedLeafs[model].copyTo(5, indic);
-			applyFaceLighting_NX(bx, by, bz, 1);
-			indic += 4;
+			if ((facing & 16) != 0)
+			{
+				vertices += blockmodels.slopedLeafs[model].copyTo(4, indic);
+				applyFaceLighting_PX(bx, by, bz, 1);
+				indic += 4;
+			}
+			if ((facing & 32) != 0)
+			{
+				vertices += blockmodels.slopedLeafs[model].copyTo(5, indic);
+				applyFaceLighting_NX(bx, by, bz, 1);
+				indic += 4;
+			}
 		}
 		
 		indic -= vertices; // go back to start

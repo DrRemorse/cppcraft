@@ -51,16 +51,16 @@ namespace cppcraft
 					switch (model)
 					{
 					case 0: // -z
-						if (z == 0 && y == 1) y = 0.125;
+						if (z == 0 && y == 1) y = 0.0;
 						break;
 					case 1: // +z
-						if (z == 1 && y == 1) y = 0.125;
+						if (z == 1 && y == 1) y = 0.0;
 						break;
 					case 2: // -x
-						if (x == 0 && y == 1) y = 0.125;
+						if (x == 0 && y == 1) y = 0.0;
 						break;
 					case 3: // +x
-						if (x == 1 && y == 1) y = 0.125;
+						if (x == 1 && y == 1) y = 0.0;
 						break;
 					}
 					
@@ -73,9 +73,41 @@ namespace cppcraft
 					bm[vert].v = cube_texcoords[face][vert * 2 + 1] * VERTEX_SCALE;
 					bm[vert].w = 0;
 					
-					bm[vert].nx = cube_normals[face][0]; // nx
-					bm[vert].ny = cube_normals[face][1]; // ny
-					bm[vert].nz = cube_normals[face][2]; // nz
+					// switch normals
+					if (face == 2)
+					{
+						if (model == 0) // -z
+						{
+							bm[vert].nx =   0;
+							bm[vert].ny =  90;
+							bm[vert].nz = -90;
+						}
+						else if (model == 1) // +z
+						{
+							bm[vert].nx =  0;
+							bm[vert].ny = 90;
+							bm[vert].nz = 90;
+						}
+						else if (model == 2) // -x
+						{
+							bm[vert].nx = -90;
+							bm[vert].ny =  90;
+							bm[vert].nz =   0;
+						}
+						else if (model == 3) // +x
+						{
+							bm[vert].nx = 90;
+							bm[vert].ny = 90;
+							bm[vert].nz =  0;
+						}
+					}
+					else
+					{
+						bm[vert].nx = cube_normals[face][0]; // nx
+						bm[vert].ny = cube_normals[face][1]; // ny
+						bm[vert].nz = cube_normals[face][2]; // nz
+					}
+					
 				}
 				// add face to sloped leaf model list
 				slopedLeafs[model].add(bm);
