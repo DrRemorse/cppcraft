@@ -24,7 +24,7 @@ namespace cppcraft
 		{
 			renderable = false;
 			updated = false;
-			hasdata = false;
+			//hasdata = false;
 		}
 		// used by: Compiler pipeline
 		void compile(int x, int y, int z);

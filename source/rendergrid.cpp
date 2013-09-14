@@ -194,11 +194,6 @@ namespace cppcraft
 				glBindBuffer(GL_ARRAY_BUFFER_ARB, cv.vbo);
 				glBufferData(GL_ARRAY_BUFFER_ARB, 0, nullptr, GL_STATIC_DRAW_ARB);
 				
-				//glDeleteVertexArrays(1, &cv.vao);
-				//glDeleteBuffers(1, &cv.vbo);
-				//glDeleteQueries(RenderConst::MAX_UNIQUE_SHADERS, cv.occlusion);
-				//cv.vao = 0;
-				
 			} // render test
 			
 			if (rg.majority < 2)
