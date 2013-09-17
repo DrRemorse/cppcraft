@@ -1,11 +1,14 @@
 #include "spiders.hpp"
 
+#include "library/log.hpp"
 #include "blocks.hpp"
 #include "chunks.hpp"
 #include "generator.hpp"
 #include "precompq.hpp"
 #include "sectors.hpp"
 #include "torchlight.hpp"
+
+using namespace library;
 
 namespace cppcraft
 {
@@ -82,11 +85,13 @@ namespace cppcraft
 		
 		if (isLight(id))
 		{
+			logger << "Adding light" << Log::ENDL;
 			// recount lights for sector (can't be bothered to manage this manually)
 			s->countLights();
 			// update nearby sectors due to change in light count
 			// also, the haslights flag will be RESET for all neighboring sectors to this
 			torchlight.lightSectorUpdates(*s, id, immediate);
+			logger << "Updated neighboring sectors" << Log::ENDL;
 		}
 		else
 		{

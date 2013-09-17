@@ -24,9 +24,9 @@ namespace cppcraft
 	const float LightingClass::SHADOWS  = 256 * 0.56;
 	const float LightingClass::CORNERS  = 256 * 0.50;
 	
-	const float LightingClass::RAY_CRASH_CONSTANT = 16.0f;
-	const float LightingClass::LIGHT_FULL_DAMAGE  = 12.0f;
-	const float LightingClass::LIGHT_MEDI_DAMAGE  =  8.0f;
+	static const float RAY_CRASH_CONSTANT = 16.0f;
+	static const float LIGHT_FULL_DAMAGE  = 12.0f;
+	static const float LIGHT_MEDI_DAMAGE  =  8.0f;
 	
 	void LightingClass::init()
 	{
@@ -40,18 +40,25 @@ namespace cppcraft
 		if (this->ray_count > 16) this->ray_count = 16;
 		
 		// crash factor based on distance and fixed crash constant
-		this->ray_crash_factor = this->RAY_CRASH_CONSTANT / this->ray_length;
+		this->ray_crash_factor = RAY_CRASH_CONSTANT / this->ray_length;
 	}
 	
-	float lightComp(block_t id)
+	bool damageRay(block_t id, float& ray, float& maxdmg, float& prediction, float distance_curve)
 	{
-		if (id < ALPHA_BARRIER) return Lighting.LIGHT_FULL_DAMAGE;
-		if (isCross(id) || id == _LANTERN || id == _LADDER) return 0.0;
-		return Lighting.LIGHT_MEDI_DAMAGE;
-	}
-	
-	bool raySurvivalTest(block_t id, float& ray, float maxdmg, float& prediction, float distance_curve)
-	{
+		if (id < ALPHA_BARRIER)
+		{
+			ray += LIGHT_FULL_DAMAGE;
+		}
+		else if (isCross(id) || (id == _LANTERN) || (id == _LADDER) || (id == _VINES))
+		{
+			// do nothing
+			return false;
+		}
+		else
+		{
+			ray += LIGHT_MEDI_DAMAGE;
+		}
+		// check as little as possible wether or not this ray can survive!
 		// add predicted damage
 		if (prediction)
 		{
@@ -63,34 +70,13 @@ namespace cppcraft
 			}
 			prediction = 0.0;
 		}
-		// exit if too much damage
+		// exit everything if too much damage
 		if (ray >= maxdmg)
 		{
 			ray = maxdmg;
 			return true;
 		}
 		return false;
-	}
-	
-	bool damageRay(block_t id, float& ray, float maxdmg, float& prediction, float distance_curve)
-	{
-		if (id < ALPHA_BARRIER)
-		{
-			ray += Lighting.LIGHT_FULL_DAMAGE; // * curve
-			// check as little as possible wether or not this ray can survive!
-			return raySurvivalTest(id, ray, maxdmg, prediction, distance_curve);
-		}
-		else if (isCross(id) || (id == _LANTERN) || (id == _LADDER) || (id == _VINES))
-		{
-			// do nothing
-			return false;
-		}
-		else
-		{
-			ray += Lighting.LIGHT_MEDI_DAMAGE; // * curve
-			// check as little as possible wether or not this ray can survive!
-			return raySurvivalTest(id, ray, maxdmg, prediction, distance_curve);
-		}
 	}
 	
 	inline int rayStep(float angle, int vv, int maxv)

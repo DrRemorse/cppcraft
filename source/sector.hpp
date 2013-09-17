@@ -83,6 +83,12 @@ namespace cppcraft
 			return (this->blockpt != nullptr);
 		}
 		
+		// returns true if there is a point in trying to recompile this sector
+		inline bool isUpdateable() const
+		{
+			return (contents == CONT_SAVEDATA && culled == false);
+		}
+		
 		void createBlocks();
 		void smartAssignBlocks(bool needBlocks);
 		void clear();      // clears everything! and then some!

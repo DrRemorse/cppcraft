@@ -54,9 +54,8 @@ namespace cppcraft
 			// not generated world
 			for (int y = 0; y < Sectors.getY(); y++)
 			{
-				// current sector
-				Sector& sector = Sectors(x, y, z);
-				sector.clear();
+				// clear all sectors in this (x, z)
+				Sectors(x, y, z).clear();
 			}
 			// exit early
 			return;
@@ -114,8 +113,6 @@ namespace cppcraft
 					sector.clear();
 				}
 				
-				// go to next sectorblock
-				//cpos += sizeof(Sector::sectorblock_t);
 				// go to next RLE compressed sector
 				cpos += rle.getSize();
 			}

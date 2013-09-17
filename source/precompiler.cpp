@@ -8,6 +8,7 @@
 #include "compilers.hpp"
 #include "precomp_thread.hpp"
 #include "sectors.hpp"
+#include "threading.hpp"
 #include "torchlight.hpp"
 #include <initializer_list>
 #include <string>
@@ -83,6 +84,8 @@ namespace cppcraft
 	{
 		Sector& sector = *this->sector;
 		
+		mtx.compiler.lock();
+		
 		// allocate sector vertex data
 		if (sector.vbodata == nullptr)
 		{
@@ -93,17 +96,17 @@ namespace cppcraft
 		// renderable VBO structure
 		vbodata_t& v = *sector.vbodata;
 		
+		// ye olde switcharoo
+		delete v.pcdata;           // remove old data (if any)
+		v.pcdata = this->datadump; // set vbodata to become precomp data
+		this->datadump = nullptr;  // unassign precomp data pointer
+		
 		// copy info from precomp to vbodata struct
 		for (int n = 0; n < RenderConst::MAX_UNIQUE_SHADERS; n++)
 		{
 			v.vertices[n]     = this->vertices[n];
 			v.bufferoffset[n] = this->bufferoffset[n];
 		}
-		
-		// ye olde switcharoo
-		delete v.pcdata;           // remove old data (if any)
-		v.pcdata = this->datadump; // set vbodata to become precomp data
-		this->datadump = nullptr;  // unassign precomp data pointer
 		
 		// free precomp slot (as early as possible)
 		this->alive = false;
@@ -118,6 +121,8 @@ namespace cppcraft
 			sector.progress = Sector::PROG_COMPILED;
 		}
 		
+		mtx.compiler.unlock();
+		
 		/// add to compiler queue ///
 		int cy = sector.y / Columns.COLUMNS_SIZE;
 		
@@ -126,5 +131,6 @@ namespace cppcraft
 		
 		// last: add to queue
 		compilers.add(sector.x, cy, sector.z);
+		
 	}
 }

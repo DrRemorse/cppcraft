@@ -25,10 +25,6 @@ namespace cppcraft
 		static const float SHADOWS;  // = 256 * 0.68;
 		static const float CORNERS;  // = 256 * 0.50;
 		
-		static const float RAY_CRASH_CONSTANT;  // = 16.0
-		static const float LIGHT_FULL_DAMAGE;   // = 12.0
-		static const float LIGHT_MEDI_DAMAGE;   // =  8.0
-		
 		int ray_length;     // ray length = 48
 		int ray_count;      // ray count  = 2
 		// crash factor is a combination of length, and screen depth

@@ -69,12 +69,9 @@ namespace cppcraft
 	
 	void Minimap::update()
 	{
-		if (camera.ref)
-		{
-			// minimap subpixel offset
-			this->ofsX = (player.X - (Sectors.getXZ() * Sector::BLOCKS_XZ / 2)) / Seamless::OFFSET * 2;
-			this->ofsY = (player.Z - (Sectors.getXZ() * Sector::BLOCKS_XZ / 2)) / Seamless::OFFSET * 2;
-		}
+		// minimap subpixel offset
+		this->ofsX = (player.X - (Sectors.getXZ() * Sector::BLOCKS_XZ / 2)) / Seamless::OFFSET * 2;
+		this->ofsY = (player.Z - (Sectors.getXZ() * Sector::BLOCKS_XZ / 2)) / Seamless::OFFSET * 2;
 		
 		// update synchronization
 		if (this->needs_update)

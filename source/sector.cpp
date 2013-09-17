@@ -1,6 +1,7 @@
 #include "sector.hpp"
 
 #include "generator.hpp"
+#include "vertex_block.hpp"
 #include <cstring>
 #include <cmath>
 
@@ -12,7 +13,7 @@ namespace cppcraft
 		this->y = y;
 		this->z = z;
 		// initialize sector to default empty-unknown state
-		this->blockpt = new sectorblock_t;
+		this->blockpt = nullptr;
 		this->vbodata = nullptr;
 		// this->special = nullptr;
 		
@@ -107,11 +108,11 @@ namespace cppcraft
 		//	special = nullptr;
 		}*/
 		
-		//delete blockpt;
-		//blockpt = nullptr;
-		
-		// NOTE: this is accessed in rendering thread, don't delete it
-		//delete vbodata; vbodata = nullptr;
+		if (blockpt)
+		{
+			delete blockpt;
+			blockpt = nullptr;
+		}
 	}
 	
 	void Sector::invalidate()

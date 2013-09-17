@@ -178,6 +178,13 @@ namespace library
 		
 		glTexParameteri(this->type, GL_TEXTURE_MAG_FILTER, maxfilter);
 		glTexParameteri(this->type, GL_TEXTURE_MIN_FILTER, minfilter);
+		
+		if (OpenGL::checkError())
+		{
+			logger << Log::ERR << "Texture::setInterpolation(): OpenGL state error" << Log::ENDL;
+			logger << Log::ERR << toString() << Log::ENDL;
+			throw std::string("Texture::setInterpolation(): OpenGL state error");
+		}
 	}
 	void Texture::setWrapMode(GLint wrapmode)
 	{

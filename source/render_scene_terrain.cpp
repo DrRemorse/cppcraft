@@ -265,11 +265,6 @@ namespace cppcraft
 		// bind skybox at slot 4
 		textureman.bind(4, Textureman::T_SKYBOX);
 		
-		// vector for attachments after removing water texture
-		//std::vector<int> dbuffer;
-		//dbuffer.emplace_back(GL_COLOR_ATTACHMENT0);
-		//dbuffer.emplace_back(GL_COLOR_ATTACHMENT2);
-		
 		// bind standard shader
 		handleSceneUniforms(renderer.frametick, 
 							shaderman[Shaderman::STD_BLOCKS], 
@@ -355,7 +350,7 @@ namespace cppcraft
 				// stop writing to underwatermap
 				sceneFBO.removeColor(1);
 				sceneFBO.drawBuffers();
-				//sceneFBO.drawBuffers(dbuffer);
+				
 				// bind underwater map for water rendering
 				textureman.bind(3, Textureman::T_UNDERWATERMAP);
 				

@@ -44,12 +44,6 @@ namespace cppcraft
 		sceneFBO.bind();
 		sceneFBO.createDepthRBO(renderer.gamescr.SW, renderer.gamescr.SH);
 		sceneFBO.unbind();
-		
-		// the FBO we perform fullscreen operations on
-		screenFBO.create();
-		screenFBO.bind();
-		screenFBO.attachColor(0, textureman.get(Textureman::T_FOGBUFFER));
-		screenFBO.unbind();
 	}
 	
 	// render normal scene
@@ -72,7 +66,7 @@ namespace cppcraft
 		sceneFBO.drawBuffers(dbuffers);
 		
 		glDepthMask(GL_TRUE);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_DEPTH_BUFFER_BIT);
 		
 		glDisable(GL_CULL_FACE); // because the lower half hemisphere is inverted
 		glDisable(GL_DEPTH_TEST);
@@ -196,25 +190,19 @@ namespace cppcraft
 		
 		
 		// remove skybuffer from rendering output
-		// and replace it with the normals texture
 		sceneFBO.removeColor(2);
-		//sceneFBO.attachColor(2, textureman.get(Textureman::T_FSNORMALS));
 		// update buffer list
 		dbuffers.clear();
 		dbuffers.emplace_back(GL_COLOR_ATTACHMENT0);
 		dbuffers.emplace_back(GL_COLOR_ATTACHMENT1);
 		sceneFBO.drawBuffers(dbuffers);
 		
-		
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		glDepthMask(GL_TRUE);
 		
 		glEnable(GL_CULL_FACE);
-		if (gameconf.multisampling)
-		{
-			glEnable(GL_MULTISAMPLE_ARB);
-		}
+		
 		/// render physical scene w/depth ///
 		
 		renderScene(renderer, sceneFBO);
@@ -224,23 +212,11 @@ namespace cppcraft
 		glDisable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
 		
-		if (gameconf.multisampling)
-		{
-			glDisable(GL_MULTISAMPLE_ARB);
-			
-			/// resolve multisampling to T_RENDERBUFFER ///
-			/*glBindFramebuffer(GL_READ_FRAMEBUFFER_EXT, sceneFBO.getHandle());
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER_EXT, screenFBO.getHandle());
-			
-			glBlitFramebuffer(0, 0, renderer.gamescr.SW, renderer.gamescr.SH, 0, 0, renderer.gamescr.SW, renderer.gamescr.SH, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-			*/
-		}
+		sceneFBO.unbind();
 		
 		/// create fog based on depth ///
 		textureman.bind(0, Textureman::T_FOGBUFFER);
 		textureman.bind(1, Textureman::T_SKYBUFFER);
-		//textureman.bind(2, Textureman::T_FSNORMALS);
-		//textureman.bind(3, Textureman::T_NOISE);
 		
 		screenspace.fog(renderer.gamescr);
 		

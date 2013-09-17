@@ -98,8 +98,6 @@ const float ZFAR
 const int TX_SOLID
 const int TX_CROSS
 
-#include "stdfog.glsl"
-
 void main(void)
 {
 	// independent texture reads using inbound variable directly

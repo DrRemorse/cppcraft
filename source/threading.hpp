@@ -20,7 +20,7 @@ namespace cppcraft
 		// mutexes
 		std::mutex sectorseam;
 		std::mutex playermove;
-		std::mutex precompiler;
+		std::mutex compiler;
 		std::mutex playerselection;
 		std::mutex objects;
 		std::mutex inetq;

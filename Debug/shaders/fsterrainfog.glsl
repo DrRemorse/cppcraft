@@ -36,16 +36,16 @@ void main()
 	#define depth  color.a
 	
 	// add fog & sunlight
-	float sundist = 1.0 - distance(texCoord, sunCoord) / 0.5;
+	float sunrad = 1.0 - distance(texCoord, sunCoord) / 0.5;
 	
-	const float FOG_MAX  = 0.5;
-	const float SUN_MULT = 1.1;
-	const vec3 fogBaseColor = vec3(0.75);
+	const float FOG_MAX  = 0.6;
+	const float SUN_MULT = 1.0;
+	const vec3 fogBaseColor = vec3(0.8);
 	const vec3 sunBaseColor = vec3(1.0, 0.9, 0.7);
 	
-	float sunAmount = 0.0; //max(0.0, sundist * SUN_MULT);
-	float fogAmount = pow(depth, 2.5) * FOG_MAX;
-	vec3  fogColor  = mix(fogBaseColor, sunBaseColor, pow(sunAmount, 8.0));
+	float sunAmount = max(0.0, sunrad * SUN_MULT);
+	float fogAmount = smoothstep(0.0, 1.0, depth) * FOG_MAX;
+	vec3  fogColor  = mix(fogBaseColor, sunBaseColor, sunAmount);
 	
 	float notSky = step(depth, 0.999);
 	

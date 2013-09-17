@@ -39,6 +39,7 @@ namespace cppcraft
 		renderPlayerhand(renderer.frametick);
 		
 		glEnable(GL_BLEND);
+		glDisable(GL_CULL_FACE);
 		
 		/// compass & minimap ///
 		renderMinimap(ortho);

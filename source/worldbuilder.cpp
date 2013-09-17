@@ -64,13 +64,14 @@ namespace cppcraft
 	
 	void WorldBuilder::reset()
 	{
-		// if precompiling, ...
+		// can only reset progress if recompiling
 		if (this->mode == MODE_PRECOMPILE)
 		{
 			// reset spiral
 			this->diagonal = 0;
 			this->nextDiagonal = 0;
 			this->lastPosition = 0;
+			logger << "Worldbuilder was reset, starting from 0:0" << Log::ENDL;
 		}
 	}
 	

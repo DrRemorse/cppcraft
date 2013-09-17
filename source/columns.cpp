@@ -4,6 +4,7 @@
 #include "library/opengl/opengl.hpp"
 #include "camera.hpp"
 #include "renderconst.hpp"
+#include "threading.hpp"
 #include "vertex_block.hpp"
 
 using namespace library;
@@ -74,7 +75,9 @@ namespace cppcraft
 		
 		int vboCount = 0;
 		bool ready = true;
-		vbodata_t* vboList[Columns.COLUMNS_SIZE] = {nullptr};
+		vbodata_t vboList[Columns.COLUMNS_SIZE];
+		
+		mtx.compiler.lock();
 		
 		for (int sy = end_y - 1; sy >= start_y; sy--)
 		{
@@ -87,19 +90,37 @@ namespace cppcraft
 			}
 			else if (sector.render)
 			{
-				// get VBO data section
-				vboList[vboCount] = sector.vbodata;
-				
 				// a renderable without VBO data, is not a renderable!
-				if (vboList[vboCount] == nullptr)
+				if (sector.vbodata == nullptr)
 				{
 					sector.progress = Sector::PROG_NEEDRECOMP;
 					ready = false;
 				}
-				// renderable and consistent, add to queue
-				vboCount += 1;
+				else
+				{
+					// create a copy of VBO data section
+					vboList[vboCount] = *sector.vbodata;
+					// renderable and consistent, add to queue
+					vboCount += 1;
+				}
 			}
 		}
+		
+		if (ready)
+		{
+			// remove extraneous data from all sectors
+			// NOTE: this could crash any precompilation stage
+			for (int sy = start_y; sy < end_y; sy++)
+			{
+				if (Sectors(x, sy, z).vbodata)
+				{
+					delete Sectors(x, sy, z).vbodata;
+					Sectors(x, sy, z).vbodata = nullptr;
+				}	
+			}
+		}
+		
+		mtx.compiler.unlock();
 		
 		// no ready? no continue
 		if (ready == false) return;
@@ -121,13 +142,13 @@ namespace cppcraft
 		// go through entire column and find entry points and total bytes
 		for (int vy = 0; vy < vboCount; vy++)
 		{
-			vbodata_t* v = vboList[vy];
+			vbodata_t& v = vboList[vy];
 			
 			// count vertices
 			for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 			{
 				// increase by vertices from each path
-				totalverts[i] += v->vertices[i];
+				totalverts[i] += v.vertices[i];
 			}
 		}
 		
@@ -154,23 +175,26 @@ namespace cppcraft
 		
 		for (int vindex = 0; vindex < vboCount; vindex++)
 		{
-			vbodata_t* v = vboList[vindex];
+			vbodata_t& v = vboList[vindex];
 			
 			// loop through all vertices in shader path
 			for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 			{
 				// find count for this shader type
-				if (v->vertices[i])
+				if (v.vertices[i])
 				{
 					// macro for (vertex*)[source] + number_of_vertices
-					#define m_sourcedata ((vertex_t*) v->pcdata) + v->bufferoffset[i]
+					#define m_sourcedata ((vertex_t*) v.pcdata) + v.bufferoffset[i]
 					
 					// to: column_dump + offset(i) from: pcdata + bufferoffset(i) in vertices
-					memcpy( vertoffset[i], m_sourcedata, v->vertices[i] * sizeof(vertex_t) );
+					memcpy( vertoffset[i], m_sourcedata, v.vertices[i] * sizeof(vertex_t) );
 					
-					vertoffset[i] += v->vertices[i];
+					vertoffset[i] += v.vertices[i];
 				}
 			} // shaders
+			
+			// remove vertex data permanently
+			delete v.pcdata;
 			
 		} // next vbo
 		
@@ -255,28 +279,6 @@ namespace cppcraft
 		this->updated    = false;
 		// the vbo has data stored in gpu
 		this->hasdata = true;
-		
-		// remove extraneous data from sectors
-		// NOTE: this could crash any precompilation stage
-		/*
-		for (int sy = start_y + Columns.COLUMNS_SIZE - 1; sy >= start_y; sy--)
-		{
-			if (Sectors(x, sy, z).vbodata)
-			{
-				vbodata_t* v = Sectors(x, sy, z).vbodata;
-				
-				// remove vertice data
-				if (v->pcdata)
-				{
-					free(v->pcdata);
-					v->pcdata = nullptr;
-				}
-				// remove container
-				delete v;
-				// null deleted vbodata pointer
-				Sectors(x, sy, z).vbodata = nullptr;
-			}	
-		}*/
 		
 		// reset occluded state
 		for (size_t i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)

@@ -56,11 +56,9 @@ namespace cppcraft
 			T_BLURBUFFER2,
 			
 			T_FOGBUFFER,
-			T_RENDERBUFFER,
 			T_SKYBUFFER,
-			
 			T_UNDERWATERMAP,
-			T_FSNORMALS,
+			T_RENDERBUFFER,
 			
 			NUM_TEXTURES
 			

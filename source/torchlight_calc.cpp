@@ -43,14 +43,11 @@ namespace cppcraft
 			// set lights flag: unknown number of gatherable lights
 			ss.hasLight = 0;
 			
-			if (ss.render)
+			if (ss.isUpdateable())
 			{
-				// as long as not already in precompiler queue (??)
-				if (ss.progress != Sector::PROG_RECOMP)
-				{
-					ss.progress = Sector::PROG_NEEDRECOMP;
-					if (instant) precompq.addTruckload(ss);
-				}
+				logger << "Updating sector: " << x << ", " << y << ", " << z << Log::ENDL;
+				ss.progress = Sector::PROG_NEEDRECOMP;
+				if (instant) precompq.addTruckload(ss);
 			}
 			
 			z += 1;

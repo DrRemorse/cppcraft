@@ -74,11 +74,12 @@ namespace cppcraft
 		{
 			Sector& s2 = Sectors(s.x, y, s.z);
 			
-			// always add 's', only add s2 if it could be renderable or needs recompilation
-			if ( (s2.contents == Sector::CONT_SAVEDATA && s2.vbodata == nullptr) || 
-				&s2 == &s || s2.progress == Sector::PROG_NEEDRECOMP )
+			s2.progress = Sector::PROG_NEEDRECOMP;
+			
+			// try to add all sectors that need recompilation, until queue is full
+			if (s2.progress == Sector::PROG_NEEDRECOMP)
 			{
-				addPrecomp(s2);
+				if (addPrecomp(s2) == false) return;
 			}
 			
 		} // y
@@ -206,7 +207,6 @@ namespace cppcraft
 					// complete the transaction
 					// verify that this sector can be assembled into a column properly
 					precompiler[currentPrecomp].complete();
-					
 				}
 				else if (precompiler[currentPrecomp].sector->precomp == 0)
 				{
