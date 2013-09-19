@@ -35,6 +35,10 @@ namespace cppcraft
 				// second stage: AO
 				pt.ambientOcclusion();
 			}
+			else
+			{
+				logger << "starting unknown job, stage = " << pt.precomp->sector->precomp << Log::ENDL;
+			}
 		}
 	};
 	std::vector<PrecompJob*> jobs;

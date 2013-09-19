@@ -96,6 +96,11 @@ namespace cppcraft
 					sector.progress = Sector::PROG_NEEDRECOMP;
 					ready = false;
 				}
+				else if (sector.vbodata->pcdata == nullptr)
+				{
+					logger << Log::ERR << "Column::compile(): vertex data was null" << Log::ENDL;
+					ready = false;
+				}
 				else
 				{
 					// create a copy of VBO data section

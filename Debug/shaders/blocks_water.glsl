@@ -40,7 +40,7 @@ void main(void)
 {
 	vec4 position = vec4(in_vertex / VERTEX_SCALE + vtrans, 1.0);
 	position = matview * position;
-	vertdist = length(position);
+	vertdist = length(position.xyz);
 	gl_Position = matproj * position;
 	
 	// light and eye direction in view space

@@ -161,8 +161,7 @@ namespace cppcraft
 		// don't render something with 0 blocks
 		if (s->blockpt->blocks == 0)
 		{
-			s->render = false;
-			s->contents = Sector::CONT_NULLSECTOR;
+			s->clear();
 			// we need to disable columns that have no blocks to render anymore
 			int FIXME_disable_columns_without_blocks;
 			//checkColumn(*s);

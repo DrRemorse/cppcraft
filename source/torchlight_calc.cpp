@@ -41,13 +41,16 @@ namespace cppcraft
 			Sector& ss = Sectors(x, y, z);
 			
 			// set lights flag: unknown number of gatherable lights
-			ss.hasLight = 0;
-			
-			if (ss.isUpdateable())
+			if (ss.contents == Sector::CONT_SAVEDATA)
 			{
-				logger << "Updating sector: " << x << ", " << y << ", " << z << Log::ENDL;
-				ss.progress = Sector::PROG_NEEDRECOMP;
-				if (instant) precompq.addTruckload(ss);
+				ss.hasLight = 0;
+				
+				if (ss.isUpdateable())
+				{
+					logger << "Updating sector: " << x << ", " << y << ", " << z << Log::ENDL;
+					ss.progress = Sector::PROG_NEEDRECOMP;
+					if (instant) precompq.addTruckload(ss);
+				}
 			}
 			
 			z += 1;

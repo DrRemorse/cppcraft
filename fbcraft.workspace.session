@@ -2,7 +2,14 @@
 <Session Name="C:\Projects\cppcraft\fbcraft.workspace">
   <int Value="0" Name="m_selectedTab"/>
   <wxString Value="C:\Projects\cppcraft\fbcraft.workspace" Name="m_workspaceName"/>
-  <TabInfoArray Name="TabInfoArray"/>
+  <TabInfoArray Name="TabInfoArray">
+    <TabInfo>
+      <wxString Value="C:\Projects\cppcraft\makefile" Name="FileName"/>
+      <int Value="9" Name="FirstVisibleLine"/>
+      <int Value="14" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+  </TabInfoArray>
   <SerializedObject Name="m_breakpoints">
     <long Value="0" Name="Count"/>
   </SerializedObject>
