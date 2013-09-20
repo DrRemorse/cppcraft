@@ -13,12 +13,10 @@ namespace cppcraft
 		inuse = new bool          [elements];
 		value = new vertex_color_t[elements];
 	}
-	
 	PrecompScratchTable::~PrecompScratchTable()
 	{
-		throw std::string("Early?");
-		delete[] (bool*) inuse;
-		delete[] (vertex_color_t*) value;
+		delete[] inuse;
+		delete[] value;
 	}
 	
 	void PrecompScratchTable::clear()

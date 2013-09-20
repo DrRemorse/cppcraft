@@ -16,6 +16,15 @@ namespace cppcraft
 {
 	const int PrecompThreadData::repeat_factor = RenderConst::VERTEX_SCALE / tiles.tilesPerBigtile;
 	
+	// free vertex arrays
+	PrecompThreadData::~PrecompThreadData()
+	{
+		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
+		{
+			delete[] this->databuffer[i];
+		}
+	}
+	
 	void PrecompThread::precompile()
 	{
 		Precomp& pc = precomp[0];
@@ -25,7 +34,7 @@ namespace cppcraft
 		pcg.ldata.gathered = false;
 		
 		// vertex data variables
-		pcg.indic     = nullptr;
+		pcg.indic = nullptr;
 		
 		// last blockid, starting with _AIR
 		pcg.lastid = _AIR;

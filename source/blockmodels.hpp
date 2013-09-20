@@ -29,36 +29,30 @@ namespace cppcraft
 		{
 			return vertices * vsize;
 		}
+		
+		void dispose();
 	};
 	
 	class SelectionMesh : public Mesh
 	{
 	public:
 		SelectionMesh(int verts);
-		~SelectionMesh();
 		
 		inline selection_vertex_t& operator[] (int i)
 		{
 			return ((selection_vertex_t*) meshdata)[i];
 		}
-		
-		// destroy data
-		void dispose()  { delete (selection_vertex_t*) meshdata; }
 	};
 	
 	class BlockMesh : public Mesh
 	{
 	public:
 		BlockMesh(int verts);
-		~BlockMesh();
 		
 		inline vertex_t& operator[] (int i)
 		{
 			return ((vertex_t*) meshdata)[i];
 		}
-		
-		// destroy data
-		void dispose()  { delete (vertex_t*) meshdata; }
 	};
 	
 	class MeshContainer
@@ -67,6 +61,8 @@ namespace cppcraft
 		std::vector<Mesh> meshes;
 		
 	public:
+		~MeshContainer();
+		
 		// main functions
 		void add(const Mesh& bm);
 		int copyTo(int meshid, void* dest) const;

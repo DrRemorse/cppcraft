@@ -47,32 +47,34 @@ namespace cppcraft
 		this->vertices = bm.vertices;
 		this->vsize = bm.vsize;
 	}
+	void Mesh::dispose()
+	{
+		if (meshdata) free (meshdata);
+	}
 	
 	BlockMesh::BlockMesh(int verts)
 	{
 		this->vertices = verts;
 		this->vsize = sizeof(vertex_t);
-		this->meshdata = new vertex_t[this->vertices];
-	}
-	BlockMesh::~BlockMesh()
-	{
-		delete[] (vertex_t*) meshdata;
+		this->meshdata = malloc(vertices * vsize);
 	}
 	
 	SelectionMesh::SelectionMesh(int verts)
 	{
 		this->vertices = verts;
 		this->vsize = sizeof(selection_vertex_t);
-		this->meshdata = new selection_vertex_t[this->vertices];
+		this->meshdata = malloc(vertices * vsize);
 	}
-	SelectionMesh::~SelectionMesh()
+	
+	MeshContainer::~MeshContainer()
 	{
-		delete[] (selection_vertex_t*) meshdata;
+		for (size_t i = 0; i < meshes.size(); i++)
+			meshes[i].dispose();
 	}
 	
 	void MeshContainer::add(const Mesh& bm)
 	{
-		meshes.push_back(bm);
+		meshes.emplace_back(bm);
 	}
 	
 	vertex_t& MeshContainer::get(int meshid, int vertex)

@@ -39,6 +39,8 @@ namespace cppcraft
 	public:
 		static const int MAX_PRECOMPQ = 256;
 		
+		~Precompiler();
+		
 		Precomp& operator[] (unsigned int);
 		
 		// initializes the precompiler pipeline stage
@@ -53,6 +55,10 @@ namespace cppcraft
 		
 	private:
 		Precomp queue[MAX_PRECOMPQ];
+		
+		// precompilation threads
+		PrecompThread* pcthreads;
+		int pcthread_count;
 		
 	};
 	extern Precompiler precompiler;
