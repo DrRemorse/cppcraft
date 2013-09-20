@@ -16,6 +16,9 @@ namespace cppcraft
 	class Precomp
 	{
 	public:
+		Precomp() {}
+		~Precomp();
+		
 		bool alive;
 		Sector* sector;
 		vertex_t* datadump;

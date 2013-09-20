@@ -38,10 +38,10 @@ namespace cppcraft
 			gui_vertex_t crosshairData[4] =
 			{
 			//    x      y    z    u  v  color
-				x-chs, y-chs, 0,   0, 0,   0,
-				x+chs, y-chs, 0,   1, 0,   0,
-				x+chs, y+chs, 0,   1, 1,   0,
-				x-chs, y+chs, 0,   0, 1,   0
+				{ x-chs, y-chs, 0,   0, 0,   0 },
+				{ x+chs, y-chs, 0,   1, 0,   0 },
+				{ x+chs, y+chs, 0,   1, 1,   0 },
+				{ x-chs, y+chs, 0,   0, 1,   0 }
 			};
 			
 			// create crosshair VAO

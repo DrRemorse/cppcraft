@@ -181,7 +181,7 @@ namespace cppcraft
 				vao.end();
 				
 				// cleanup
-				delete vertexData;
+				delete[] vertexData;
 			}
 		}
 		

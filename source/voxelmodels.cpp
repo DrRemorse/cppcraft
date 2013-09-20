@@ -7,7 +7,7 @@
 #include "blocks.hpp"
 #include "items.hpp"
 #include "tiles.hpp"
-#include <string>
+#include <cstring>
 
 using namespace library;
 

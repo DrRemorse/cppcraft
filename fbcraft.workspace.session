@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Session Name="C:\Projects\cppcraft\fbcraft.workspace">
+<Session Name="/home/gonzo/github/cppcraft/fbcraft.workspace">
   <int Value="0" Name="m_selectedTab"/>
-  <wxString Value="C:\Projects\cppcraft\fbcraft.workspace" Name="m_workspaceName"/>
+  <wxString Value="/home/gonzo/github/cppcraft/fbcraft.workspace" Name="m_workspaceName"/>
   <TabInfoArray Name="TabInfoArray">
     <TabInfo>
-      <wxString Value="C:\Projects\cppcraft\makefile" Name="FileName"/>
-      <int Value="9" Name="FirstVisibleLine"/>
-      <int Value="14" Name="CurrentLine"/>
+      <wxString Value="/home/gonzo/github/cppcraft/makefile" Name="FileName"/>
+      <int Value="24" Name="FirstVisibleLine"/>
+      <int Value="30" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
   </TabInfoArray>

@@ -6,6 +6,7 @@
 #include "renderconst.hpp"
 #include "threading.hpp"
 #include "vertex_block.hpp"
+#include <cstring>
 
 using namespace library;
 
@@ -199,7 +200,7 @@ namespace cppcraft
 			} // shaders
 			
 			// remove vertex data permanently
-			delete v.pcdata;
+			delete[] v.pcdata;
 			
 		} // next vbo
 		

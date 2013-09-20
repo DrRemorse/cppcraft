@@ -31,7 +31,7 @@ namespace library
 	}
 	Bitmap::~Bitmap()
 	{
-		delete buffer;
+		delete[] buffer;
 	}
 	
 	bool Bitmap::load(const std::string file, Bitmap::bitmap_type btype)
@@ -95,7 +95,7 @@ namespace library
 		int pixels = width * height;
 		
 		// delete any previous buffer
-		delete buffer;
+		delete[] buffer;
 		// allocate 32-bits * w * h pixels
 		buffer = new rgba8_t[pixels];
 		
@@ -185,7 +185,7 @@ namespace library
 		this->width  = w;
 		this->height = h;
 		
-		delete this->buffer;
+		delete[] this->buffer;
 		this->buffer = new rgba8_t[w * h];
 		if (this->buffer == nullptr)
 		{
@@ -243,7 +243,7 @@ namespace library
 		} // (x, y)
 		
 		// replace with new buffer
-		delete this->buffer;
+		delete[] this->buffer;
 		this->buffer = newBuffer;
 		// use members for texture_2d_array data
 		this->tilesX = maxx / tw;
@@ -283,7 +283,7 @@ namespace library
 		} // (x, y)
 		
 		// replace with new buffer
-		delete this->buffer;
+		delete[] this->buffer;
 		this->buffer = newBuffer;
 		// use members for texture_2d_array data
 		this->tilesX = maxx / tw;

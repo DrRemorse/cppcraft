@@ -1,6 +1,11 @@
 #ifndef HOSTINFO_HPP
 #define HOSTINFO_HPP
 
+#ifdef __linux__
+	#include <netdb.h>
+	extern int h_errno;
+#endif
+
 #include <string>
 
 struct hostent;

@@ -1,6 +1,6 @@
 #include "hostaddr.hpp"
 
-#ifdef UNIX
+#ifdef __linux__
     #include <arpa/inet.h>
     #include <netdb.h>
     #include <netinet/in.h>
@@ -14,7 +14,7 @@ namespace library
 	
 	HostInfo::HostInfo()
 	{
-		#ifdef UNIX
+		#ifdef __linux__
 			openHostDb();
 		#else
 			char sName[HOST_NAME_LENGTH + 1];

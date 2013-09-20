@@ -8,6 +8,7 @@
 #include "flatlands.hpp"
 #include "tiles.hpp"
 #include "threading.hpp"
+#include <cstring>
 
 using namespace library;
 

@@ -51,7 +51,7 @@ namespace cppcraft
 		for (int t = 0; t < NUM_PCTHREADS; t++)
 		{
 			// create precomiler thread objects
-			pcthreads.emplace_back(PrecompThread());
+			pcthreads.emplace_back();
 			// set initial shaderline sizes
 			std::copy(init.begin(), init.end(), pcthreads[t].pcg.pipelineSize);
 			// initialize each shaderline
@@ -72,6 +72,11 @@ namespace cppcraft
 	PrecompThread& Precompiler::getThread(int t)
 	{
 		return pcthreads[t];
+	}
+	
+	Precomp::~Precomp()
+	{
+		delete[] this->datadump;
 	}
 	
 	Precomp& Precompiler::operator [] (unsigned int i)
@@ -97,7 +102,7 @@ namespace cppcraft
 		vbodata_t& v = *sector.vbodata;
 		
 		// ye olde switcharoo
-		delete v.pcdata;           // remove old data (if any)
+		delete[] v.pcdata;         // remove old data (if any)
 		v.pcdata = this->datadump; // set vbodata to become precomp data
 		this->datadump = nullptr;  // unassign precomp data pointer
 		

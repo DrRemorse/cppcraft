@@ -10,7 +10,7 @@ namespace cppcraft
 	void ThreadingClass::initThreading(WorldManager& worldman)
 	{
 		// start world manager thread
-		mtx.worldman = std::thread(&WorldManager::main, worldman);
+		mtx.worldman = std::thread(&WorldManager::main, &worldman);
 	}
 	
 	void ThreadingClass::cleanupThreading()

@@ -21,6 +21,7 @@ namespace library
 		
 		XModel();
 		XModel(XModel& mod);
+		~XModel();
 		
 		xvertex_t* data();
 		int        vertices();

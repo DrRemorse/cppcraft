@@ -190,7 +190,6 @@
     <File Name="source/items.hpp"/>
     <File Name="source/lighting.cpp"/>
     <File Name="source/lighting.hpp"/>
-    <File Name="source/lighttable.cpp"/>
     <File Name="source/lighttable.hpp"/>
     <File Name="source/main.cpp"/>
     <File Name="source/menu.hpp"/>
@@ -320,6 +319,7 @@
     <File Name="source/compressor_rle.cpp"/>
     <File Name="source/blocks_vfaces.cpp"/>
     <File Name="source/precomp_thread_isolator.cpp"/>
+    <File Name="source/lighttable.cpp"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>
@@ -328,6 +328,8 @@
     <File Name="Debug/config.ini"/>
     <File Name="res/cppcraft.rc"/>
   </VirtualDirectory>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="" C_Options="">
@@ -364,11 +366,11 @@
       <PreBuild/>
       <PostBuild/>
       <CustomBuild Enabled="yes">
-        <RebuildCommand>mingw32-make rebuild</RebuildCommand>
-        <CleanCommand>mingw32-make clean</CleanCommand>
-        <BuildCommand>mingw32-make -j8</BuildCommand>
+        <RebuildCommand>make rebuild</RebuildCommand>
+        <CleanCommand>make clean</CleanCommand>
+        <BuildCommand>make -j8</BuildCommand>
         <PreprocessFileCommand/>
-        <SingleFileCommand>mingw32-make $(currentFile)</SingleFileCommand>
+        <SingleFileCommand>make $(currentFile)</SingleFileCommand>
         <MakefileGenerationCommand/>
         <ThirdPartyToolName>None</ThirdPartyToolName>
         <WorkingDirectory/>
@@ -423,6 +425,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug"/>
-  <Dependencies Name="Release"/>
 </CodeLite_Project>

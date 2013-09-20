@@ -5,10 +5,13 @@
     #include <unistd.h>
     #include <fcntl.h>
     #include <errno.h>
-    #include <iostream.h>
+    #include <iostream>
     #include <sys/types.h>
     #include <stropts.h>
-    #include <sys/filio.h>
+    //#include <sys/filio.h>
+	#define INVALID_SOCKET 0
+	#define SOCKET_ERROR  -1
+	#include <cstring>
 #else
     #include <winsock2.h>
 #endif
@@ -22,14 +25,18 @@ namespace library
 	{
 		if (init == false)
 		{
-			WORD wversion = MAKEWORD(2, 2);
-			WSADATA wsaData;
-			
-			if(WSAStartup(wversion, &wsaData) != 0)
-			{
-				handleErrors(STAGE_INIT, false);
-				return;
-			}
+			#ifdef __linux__
+				
+			#else
+				WORD wversion = MAKEWORD(2, 2);
+				WSADATA wsaData;
+				
+				if(WSAStartup(wversion, &wsaData) != 0)
+				{
+					handleErrors(STAGE_INIT, false);
+					return;
+				}
+			#endif
 			init = true;
 		}
 		
@@ -101,9 +108,9 @@ namespace library
 				return false;
 			}
 		#else
-			if (ioctl(socketId, FIONBIO, (char*) &blocking) == SOCKET_ERROR)
+			if (ioctl(socketId, O_NONBLOCK, (char*) &blocking) == SOCKET_ERROR)
 			{
-				handleErrors(STAGE_OPTION);
+				handleErrors(STAGE_OPTION, false);
 				return false;
 			}
 		#endif
@@ -118,8 +125,8 @@ namespace library
 	
 	int Socket::getReuseAddr()
 	{
-		int myOption;        
-		int myOptionLen = sizeof(myOption);
+		socklen_t myOption;        
+		socklen_t myOptionLen = sizeof(myOption);
 
 		if (getsockopt(socketId, SOL_SOCKET, SO_REUSEADDR, (char*) &myOption, &myOptionLen) == SOCKET_ERROR)
 		{
@@ -131,8 +138,8 @@ namespace library
 
 	int Socket::getKeepAlive()
 	{
-		int myOption;        
-		int myOptionLen = sizeof(myOption);
+		socklen_t myOption;        
+		socklen_t myOptionLen = sizeof(myOption);
 
 		if (getsockopt(socketId, SOL_SOCKET, SO_KEEPALIVE, (char*) &myOption, &myOptionLen) == SOCKET_ERROR)
 		{
@@ -144,8 +151,8 @@ namespace library
 	
 	int Socket::getSendBufSize()
 	{
-		int sendBuf;
-		int myOptionLen = sizeof(sendBuf);
+		socklen_t sendBuf;
+		socklen_t myOptionLen = sizeof(sendBuf);
 
 		if (getsockopt(socketId, SOL_SOCKET, SO_SNDBUF, (char*) &sendBuf, &myOptionLen) == SOCKET_ERROR)
 		{
@@ -157,8 +164,8 @@ namespace library
 
 	int Socket::getReceiveBufSize()
 	{
-		int rcvBuf;
-		int myOptionLen = sizeof(rcvBuf);
+		socklen_t rcvBuf;
+		socklen_t myOptionLen = sizeof(rcvBuf);
 		
 		if (getsockopt(socketId, SOL_SOCKET, SO_RCVBUF, (char*) &rcvBuf, &myOptionLen) == SOCKET_ERROR)
 		{

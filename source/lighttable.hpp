@@ -14,12 +14,13 @@ namespace cppcraft
 		
 		int elements;
 		// bool for setting "slot is used" flag
-		bool           * inuse;
+		bool* inuse;
 		// complex color, containing shadow + fake AO + emissive color (8 channels)
-		vertex_color_t * value;
+		vertex_color_t* value;
 		
 	public:
 		PrecompScratchTable();
+		~PrecompScratchTable();
 		
 		void clear();
 		inline int element(int, int, int) const;
@@ -31,10 +32,10 @@ namespace cppcraft
 	
 	struct blocklight_t
 	{
-		// light location, used in calculating distance
+		// light location, used for calculating distances
 		Sector* s;
 		short bx, by, bz;
-		// light id (referring to global light list)
+		// light id (referring to an index in the global light list)
 		short id;
 	};
 	
@@ -43,8 +44,9 @@ namespace cppcraft
 	public:
 		std::vector<blocklight_t> lights;
 		PrecompScratchTable table;
-		// true if lights has been gathered into the lights list
-		// is set to false when the precompiler starts
+		
+		// calculates lighting for the given position
+		// calculations are cached and re-used upon accessing the same position over again
 		vertex_color_t tableLight(Sector& sector, int x, int y, int z);
 		
 		bool gathered;

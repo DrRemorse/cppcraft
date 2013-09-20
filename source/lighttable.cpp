@@ -14,6 +14,13 @@ namespace cppcraft
 		value = new vertex_color_t[elements];
 	}
 	
+	PrecompScratchTable::~PrecompScratchTable()
+	{
+		throw std::string("Early?");
+		delete[] (bool*) inuse;
+		delete[] (vertex_color_t*) value;
+	}
+	
 	void PrecompScratchTable::clear()
 	{
 		// clear inuse array, but NOT value array

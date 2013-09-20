@@ -39,6 +39,10 @@ namespace library
 		this->vdata = nullptr;
 		this->verts = 0;
 	}
+	XModel::~XModel()
+	{
+		delete[] this->vdata;
+	}
 	
 	// copy of existing model
 	XModel::XModel(XModel& mod)
@@ -241,7 +245,7 @@ namespace library
 		// allocate vertices, using xv_dump as base
 		this->verts = numfaces * 4;
 		
-		this->vdata = (xvertex_t*) malloc(this->verts * sizeof(xvertex_t));
+		this->vdata = new xvertex_t[this->verts];
 		memcpy(this->vdata, this->xv_dump, this->verts * sizeof(xvertex_t));
 		
 	}

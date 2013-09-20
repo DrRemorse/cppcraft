@@ -22,8 +22,8 @@ namespace cppcraft
 	{
 		// set owning window
 		this->gamescr  = &gamescr;
-		this->speed    = 0.5;
-		this->sensitivity = 5;
+		this->speed    = 0.15;
+		this->sensitivity = 8;
 		this->lastmx   = gamescr.SW / 2;
 		this->lastmy   = gamescr.SH / 2;
 		// default rotation

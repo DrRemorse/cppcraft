@@ -1,7 +1,7 @@
 #include "blockmodels.hpp"
 
 #include "library/log.hpp"
-#include <string>
+#include <cstring>
 
 using namespace library;
 
@@ -54,12 +54,20 @@ namespace cppcraft
 		this->vsize = sizeof(vertex_t);
 		this->meshdata = new vertex_t[this->vertices];
 	}
+	BlockMesh::~BlockMesh()
+	{
+		delete[] (vertex_t*) meshdata;
+	}
 	
 	SelectionMesh::SelectionMesh(int verts)
 	{
 		this->vertices = verts;
 		this->vsize = sizeof(selection_vertex_t);
 		this->meshdata = new selection_vertex_t[this->vertices];
+	}
+	SelectionMesh::~SelectionMesh()
+	{
+		delete[] (selection_vertex_t*) meshdata;
 	}
 	
 	void MeshContainer::add(const Mesh& bm)

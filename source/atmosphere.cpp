@@ -223,6 +223,6 @@ namespace cppcraft
 		scatter.vao.end();
 		scatter.vao.unbind();
 		// cleanup
-		delete vertices;
+		delete[] vertices;
 	}
 }

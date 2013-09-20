@@ -5,15 +5,20 @@
     #include <unistd.h>
     #include <fcntl.h>
     #include <errno.h>
-    #include <iostream.h>
+    #include <iostream>
     #include <sys/types.h>
     #include <stropts.h>
-    #include <sys/filio.h>
+    #include <arpa/inet.h>
+	//#include <sys/filio.h>
+	#define INVALID_SOCKET 0
+	#define SOCKET_ERROR  -1
+	#define SD_SEND SHUT_WR
 #else
     #include <winsock2.h>
 #endif
 
 #include "hostaddr.hpp"
+#include <cstring>
 
 namespace library
 {
@@ -108,10 +113,10 @@ namespace library
 	{
 		// address of the client that connected
 		struct sockaddr_in clientAddress;
-		int clientAddressLen = sizeof(struct sockaddr_in);
+		socklen_t clientAddressLen = sizeof(struct sockaddr_in);
 		
 		// accept new client connection, returned as socket fd
-		SOCKET newSocket = ::accept(socketId, (struct sockaddr*) &clientAddress, &clientAddressLen);
+		int newSocket = ::accept(socketId, (struct sockaddr*) &clientAddress, &clientAddressLen);
 		if (newSocket == SOCKET_ERROR)
 		{
 			handleErrors(STAGE_ACCEPT, false);
@@ -273,7 +278,11 @@ namespace library
 			#endif
 			{
 				// close socket, which destroys file descriptor
-				int result = closesocket(this->socketId);
+				#ifdef __linux__
+					int result = close(this->socketId);
+				#else
+					int result = closesocket(this->socketId);
+				#endif
 				if (result == SOCKET_ERROR)
 				{
 					handleErrors(STAGE_DISCONNECT, false);

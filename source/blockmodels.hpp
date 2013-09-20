@@ -17,7 +17,6 @@ namespace cppcraft
 		Mesh();
 		Mesh(const Mesh&);
 		
-		
 		inline void* getData() const
 		{
 			return meshdata;
@@ -36,6 +35,7 @@ namespace cppcraft
 	{
 	public:
 		SelectionMesh(int verts);
+		~SelectionMesh();
 		
 		inline selection_vertex_t& operator[] (int i)
 		{
@@ -50,6 +50,7 @@ namespace cppcraft
 	{
 	public:
 		BlockMesh(int verts);
+		~BlockMesh();
 		
 		inline vertex_t& operator[] (int i)
 		{

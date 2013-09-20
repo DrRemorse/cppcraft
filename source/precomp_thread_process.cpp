@@ -420,7 +420,7 @@ namespace cppcraft
 				this->databuffer[shaderLine] = new vertex_t[pipelineSize[shaderLine]];
 				// copy old data, by exact count, to the new buffer
 				memcpy (this->databuffer[shaderLine], old, this->vertices[shaderLine] * sizeof(vertex_t));
-				delete old;
+				delete[] old;
 				// set new vertex position
 				indic = this->databuffer[shaderLine] + this->vertices[shaderLine];
 			}
