@@ -33,17 +33,14 @@ namespace cppcraft
 		// raycaster method
 		this->ray_length = config.get("light.ray_length", 48);
 		// clamp to some minimum value
-		if (this->ray_length < 16) this->ray_length = 16;
+		if (this->ray_length < 40) this->ray_length = 40;
 		
 		this->ray_count  = config.get("light.ray_count", 3);
 		if (this->ray_count <  0) this->ray_count =  0;
 		if (this->ray_count > 16) this->ray_count = 16;
-		
-		// crash factor based on distance and fixed crash constant
-		this->ray_crash_factor = RAY_CRASH_CONSTANT / this->ray_length;
 	}
 	
-	bool damageRay(block_t id, float& ray, float& maxdmg, float& prediction, float distance_curve)
+	bool damageRay(block_t id, float& ray, float& maxdmg, bool& prediction, float distance_curve)
 	{
 		if (id < ALPHA_BARRIER)
 		{
@@ -66,9 +63,9 @@ namespace cppcraft
 			if (id < BLEND_BARRIER)
 			{
 				// deal some dmg
-				ray += prediction * distance_curve;
+				ray += RAY_CRASH_CONSTANT * distance_curve * distance_curve;
 			}
-			prediction = 0.0;
+			prediction = false;
 		}
 		// exit everything if too much damage
 		if (ray >= maxdmg)
@@ -117,7 +114,7 @@ namespace cppcraft
 		block_t id;
 		float inv_reach = 1.0 / Lighting.ray_length;
 		float distance_curve = 1.0;
-		float prediction = Lighting.ray_crash_factor * Lighting.ray_length;
+		bool prediction = true;
 		
 		int bxx, byy, bzz;
 		
@@ -217,7 +214,7 @@ namespace cppcraft
 		block_t id;
 		float inv_reach = 1.0 / Lighting.ray_length;
 		float distance_curve = 1.0;
-		float prediction = Lighting.ray_crash_factor * Lighting.ray_length;
+		bool prediction = true;
 		
 		int bxx, byy;
 		int bzz = (int)position.z;
@@ -306,7 +303,7 @@ namespace cppcraft
 		block_t id;
 		float inv_reach = 1.0 / Lighting.ray_length;
 		float distance_curve = 1.0;
-		float prediction = Lighting.ray_crash_factor * Lighting.ray_length;
+		bool prediction = true;
 		
 		int sectorx = (int) position.x;
 		int bxx = sectorx & (Sector::BLOCKS_XZ-1);

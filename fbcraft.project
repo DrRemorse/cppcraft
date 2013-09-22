@@ -320,6 +320,16 @@
     <File Name="source/blocks_vfaces.cpp"/>
     <File Name="source/precomp_thread_isolator.cpp"/>
     <File Name="source/lighttable.cpp"/>
+    <File Name="source/network.hpp"/>
+    <File Name="source/network.cpp"/>
+    <VirtualDirectory Name="network">
+      <File Name="source/network/lattice_config.h"/>
+      <File Name="source/network/coordinates.h"/>
+      <File Name="source/network/globals.h"/>
+      <File Name="source/network/serversocket.h"/>
+      <File Name="source/network/liblattice.h"/>
+      <File Name="source/network/struct.h"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>

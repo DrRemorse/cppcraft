@@ -191,10 +191,10 @@ void main(void)
 	// sun / specular
 	const vec3  SUNCOLOR = vec3(1.0, 0.7, 0.5);
 	const float SUNSPEC  = 0.7; // specular
-	const float SUNSHINE = 3.0; // shininess
+	const float SUNSHINE = 2.0; // shininess
 	
-	float shine = max(0.0, dot(viewNormal, normalize(v_half)) );
-	float spec = max(0.0, dot(reflect(-vLight, viewNormal), vEye));
+	float shine = abs(dot(viewNormal, normalize(v_half)) );
+	float spec = abs(dot(reflect(-vLight, viewNormal), vEye));
 	
 	vec3 specular = SUNCOLOR * SUNSPEC * pow(spec, 16.0) + pow(spec, 4.0) * 0.3;
 	color.rgb += specular * pow(shine, SUNSHINE) * daylight * shadow * shadow;

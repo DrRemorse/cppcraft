@@ -14,7 +14,7 @@ endif
 
 # build options
 # -Ofast -msse4.1 -ffast-math -mfpmath=both
-BUILDOPT = -g
+BUILDOPT = -Ofast -msse4.1 -ffast-math -mfpmath=both
 # output file
 OUTPUT   = ./Debug/cppcraft
 
@@ -26,9 +26,9 @@ CC = g++ $(BUILDOPT) -std=c++11
 CCFLAGS = -c -Wall -Wno-write-strings -Iinc
 # linker flags
 ifeq ($(OS),Windows_NT)
-	LFLAGS  = -Llib -static -lpthread -lbassdll -lglfw3 -lgdi32 -lopengl32 -llzo2 -lws2_32
+	LFLAGS  = -Llib -static -lpthread -lbassdll -llattice -lglfw3 -lgdi32 -lopengl32 -llzo2 -lws2_32
 else
-	LFLAGS  = -Llib -lpthread -lbass -llzo2 -lGL -lGLU -lglfw3 -lX11 -lXxf86vm -lXrandr -lXi
+	LFLAGS  = -Llib -static-libgcc -lpthread -lbass -llzo2 -llattice -lGL -lGLU -lglfw3 -lX11 -lXxf86vm -lXrandr -lXi
 endif
 # resource builder
 RES = windres

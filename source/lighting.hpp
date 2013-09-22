@@ -27,8 +27,6 @@ namespace cppcraft
 		
 		int ray_length;     // ray length = 48
 		int ray_count;      // ray count  = 2
-		// crash factor is a combination of length, and screen depth
-		float ray_crash_factor;
 		
 		void init();
 		
