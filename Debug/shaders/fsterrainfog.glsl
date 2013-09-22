@@ -38,9 +38,9 @@ void main()
 	// add fog & sunlight
 	float sunrad = 1.0 - distance(texCoord, sunCoord) / 0.5;
 	
-	const float FOG_MAX  = 0.6;
+	const float FOG_MAX  = 0.5;
 	const float SUN_MULT = 1.0;
-	const vec3 fogBaseColor = vec3(0.8);
+	const vec3 fogBaseColor = vec3(0.75, 0.75, 0.8);
 	const vec3 sunBaseColor = vec3(1.0, 0.9, 0.7);
 	
 	float sunAmount = max(0.0, sunrad * SUN_MULT);

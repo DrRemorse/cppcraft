@@ -25,7 +25,7 @@ namespace cppcraft
 		//blur.sendVec2("sigma2", vec2(sigma * sigma, 1 / (sqrt(2 * PI) * sigma)));
 		
 		// regular blur:
-		const int BLUR_LEVEL = 1;
+		const int BLUR_LEVEL = 2;
 		blur.sendInteger("Width", BLUR_LEVEL);
 		
 		// blur horizontally

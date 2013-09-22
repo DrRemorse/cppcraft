@@ -49,6 +49,29 @@
       <File Name="Debug/shaders/sunproj.glsl"/>
       <File Name="Debug/shaders/worldlight.glsl"/>
       <File Name="Debug/shaders/worldlight_frag.glsl"/>
+      <File Name="Debug/shaders/actor.frag"/>
+      <File Name="Debug/shaders/actor.vertex"/>
+      <File Name="Debug/shaders/blurGaussian.glsl"/>
+      <File Name="Debug/shaders/chat.frag"/>
+      <File Name="Debug/shaders/chat.vertex"/>
+      <File Name="Debug/shaders/crepuscular.frag"/>
+      <File Name="Debug/shaders/crepuscular.vertex"/>
+      <File Name="Debug/shaders/font.frag"/>
+      <File Name="Debug/shaders/font.vertex"/>
+      <File Name="Debug/shaders/fsterrain.glsl"/>
+      <File Name="Debug/shaders/fsterrainfog.glsl"/>
+      <File Name="Debug/shaders/gui_item.glsl"/>
+      <File Name="Debug/shaders/objects.frag"/>
+      <File Name="Debug/shaders/objects.vertex"/>
+      <File Name="Debug/shaders/playerhand.glsl"/>
+      <File Name="Debug/shaders/playerhand_helditem.glsl"/>
+      <File Name="Debug/shaders/playerhand_voxel.glsl"/>
+      <File Name="Debug/shaders/playermodels.frag"/>
+      <File Name="Debug/shaders/playermodels.vertex"/>
+      <File Name="Debug/shaders/selection_mine.glsl"/>
+      <File Name="Debug/shaders/ssao.glsl"/>
+      <File Name="Debug/shaders/voxelobject.frag"/>
+      <File Name="Debug/shaders/voxelobject.vertex"/>
     </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="source">
