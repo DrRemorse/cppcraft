@@ -54,6 +54,9 @@ namespace library
 		// back to normal (default = attachment 0)
 		static void drawBuffers();
 		
+		// blit from one framebuffer to another
+		void blitTo(FBO& dest_fbo, int w, int h, int mask, int filter);
+		
 		// returns true if the framebuffer is OK, and can be used
 		// returns false if the framebuffer is incomplete, and thus cannot be used yet
 		static bool isComplete();

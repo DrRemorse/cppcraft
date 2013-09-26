@@ -23,8 +23,8 @@ namespace cppcraft
 		screenVAO.createScreenspaceVAO();
 		
 		// set texture sizes
-		this->blurTxW = gamescr.SW;
-		this->blurTxH = gamescr.SH;
+		this->blurTxW = gamescr.SW / 2;
+		this->blurTxH = gamescr.SH / 2;
 		
 		this->flareTxW = gamescr.SW / 2;
 		this->flareTxH = gamescr.SH / 2;
@@ -41,7 +41,7 @@ namespace cppcraft
 		// downsize to blur-texture size
 		glViewport(0, 0, blurTxW, blurTxH);
 		// create blurred image from scene (current backbuffer image)
-		renderBlur();
+		renderBlur(gamescr.SW, gamescr.SH);
 		// upsize to regular screen size
 		glViewport(0, 0, gamescr.SW, gamescr.SH);
 	}

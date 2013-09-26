@@ -15,6 +15,7 @@
 	#define SD_SEND SHUT_WR
 #else
     #include <winsock2.h>
+	typedef int socklen_t;
 #endif
 
 #include "hostaddr.hpp"

@@ -151,6 +151,8 @@
         <File Name="source/library/opengl/fbo.hpp"/>
         <File Name="source/library/opengl/fbo.cpp"/>
         <File Name="source/library/opengl/vao.cpp"/>
+        <File Name="source/library/opengl/camera.hpp"/>
+        <File Name="source/library/opengl/camera.cpp"/>
       </VirtualDirectory>
       <VirtualDirectory Name="sound">
         <File Name="source/library/sound/sound.cpp"/>
@@ -229,8 +231,6 @@
     <File Name="source/precomp_thread_process.cpp"/>
     <File Name="source/precomp_vemitter.cpp"/>
     <File Name="source/renderconst.hpp"/>
-    <File Name="source/rendergrid.cpp"/>
-    <File Name="source/rendergrid.hpp"/>
     <File Name="source/renderman.cpp"/>
     <File Name="source/renderman.hpp"/>
     <File Name="source/seamless.cpp"/>
@@ -353,6 +353,7 @@
       <File Name="source/network/liblattice.h"/>
       <File Name="source/network/struct.h"/>
     </VirtualDirectory>
+    <File Name="source/drawq_rendergrid.cpp"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>

@@ -8,10 +8,8 @@
 #include "camera.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
-#include "rendergrid.hpp"
 #include "renderman.hpp"
 #include "render_fs.hpp"
-#include "render_player_selection.hpp"
 #include "sectors.hpp"
 #include "shaderman.hpp"
 #include "sun.hpp"
@@ -23,10 +21,12 @@ using namespace library;
 
 namespace cppcraft
 {
+	static const double PI = 4 * atan(1);
+	
 	void SceneRenderer::initTerrain()
 	{
 		// initialize column drawing queue
-		DrawQueue::init();
+		drawq.init();
 	}
 	
 	void SceneRenderer::recalculateFrustum()
@@ -35,13 +35,29 @@ namespace cppcraft
 		// view matrix (rotation + translation)
 		camera.setTranslation(-playerX, -playerY, -playerZ);
 		
+		recalculateFrustum(camera, drawq);
+		
+		// set reflection camera view
+		Matrix matref = camera.getViewMatrix();
+		matref.translated(0, RenderConst::WATER_LEVEL*2, 0);
+		matref *= Matrix(1.0, -1.0, 1.0);
+		
+		reflectionCamera.setRotationMatrix(matref.rotation());
+		reflectionCamera.setViewMatrix(matref);
+		
+		recalculateFrustum(reflectionCamera, reflectionq);
+	}
+	
+	void SceneRenderer::recalculateFrustum(Camera& camera, DrawQueue& drawq)
+	{
 		// recalculate camera frustum
 		camera.calculateFrustum();
 		
-		const vec3 look = player.getLookVector();
+		//const vec3 position = camera.getViewMatrix().transVector();
+		const vec3 look = camera.getViewMatrix().lookVector();
 		
 		static const int safety_border = 2;
-		static const int visibility_border = RenderGrid::visibility_border;
+		#define visibility_border  DrawQueue::visibility_border
 		
 		static const float half_fov = 0.65; // sin(30 * degToRad) = +/- 0.5
 		
@@ -130,17 +146,19 @@ namespace cppcraft
 			majority = 3; // -z
 		
 		// reset drawqing queue
-		DrawQueue::reset();
+		drawq.reset();
 		
-		RenderGrid::rendergrid_t rv;
+		// set frustum culling settings
+		DrawQueue::rendergrid_t rv;
 		rv.xstp = xstp;
 		rv.ystp = ystp;
 		rv.zstp = zstp;
 		rv.majority = majority;
 		rv.playerY  = playerY;
+		rv.frustum = &camera.getFrustum();
 		
 		// start at roomsize 1, avoiding "everything"
-		RenderGrid::uniformGrid(rv, x0, x1, z0, z1, 1);
+		drawq.uniformGrid(rv, x0, x1, z0, z1, 1);
 	}
 	
 	void SceneRenderer::compressRenderingQueue()
@@ -229,7 +247,8 @@ namespace cppcraft
 			Shader& shd, 
 			GLint& location, 
 			GLint& loc_vtrans, 
-			vec3& position
+			vec3& position,
+			const Matrix& matview
 		)
 	{
 		// bind appropriate shader
@@ -239,7 +258,7 @@ namespace cppcraft
 		if (camera.ref)
 		{
 			// modelview matrix
-			shd.sendMatrix("matview", camera.getViewMatrix());
+			shd.sendMatrix("matview", matview);
 		}
 		
 		// translation
@@ -257,7 +276,7 @@ namespace cppcraft
 		location = shd.getUniform("texrange");
 	}
 	
-	void SceneRenderer::renderScene(Renderer& renderer, FBO& sceneFBO)
+	void SceneRenderer::renderScene(Renderer& renderer, library::Camera& renderCam)
 	{
 		GLint loc_vtrans, location;
 		vec3  position(-1);
@@ -270,7 +289,7 @@ namespace cppcraft
 							shaderman[Shaderman::STD_BLOCKS], 
 							location, 
 							loc_vtrans, 
-							position);
+							position, renderCam.getViewMatrix());
 		// check for errors
 		if (OpenGL::checkError())
 		{
@@ -278,7 +297,10 @@ namespace cppcraft
 			throw std::string("Renderer::renderScene(): OpenGL state error");
 		}
 		
-		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
+		// render all nonwater shaders
+		int nonwaterShaders = (int) RenderConst::MAX_UNIQUE_SHADERS - 1;
+		
+		for (int i = 0; i < nonwaterShaders; i++)
 		{
 			switch (i)
 			{
@@ -305,7 +327,7 @@ namespace cppcraft
 									shaderman[Shaderman::CULLED_BLOCKS], 
 									location, 
 									loc_vtrans, 
-									position);
+									position, renderCam.getViewMatrix());
 				break;
 				
 			case RenderConst::TX_2SIDED: // 2-sided faces (torches, vines etc.)
@@ -318,7 +340,7 @@ namespace cppcraft
 									shaderman[Shaderman::ALPHA_BLOCKS], 
 									location, 
 									loc_vtrans, 
-									position);
+									position, renderCam.getViewMatrix());
 				// safe to increase step from this -->
 				if (drawq[i].count() == 0)
 				{
@@ -335,35 +357,6 @@ namespace cppcraft
 				// set new texrange
 				glUniform1i(location, i);
 				
-				break;
-			case RenderConst::TX_WATER:
-				
-				// render player selection
-				renderPlayerSelection();
-				
-				if (plogic.FullySubmerged == plogic.PS_None)
-					glEnable(GL_CULL_FACE);
-				glDisable(GL_BLEND);
-				
-				position = vec3(-1);
-				
-				// stop writing to underwatermap
-				sceneFBO.removeColor(1);
-				sceneFBO.drawBuffers();
-				
-				// bind underwater map for water rendering
-				textureman.bind(3, Textureman::T_UNDERWATERMAP);
-				
-				// change shader-set
-				handleSceneUniforms(renderer.frametick, 
-									shaderman[Shaderman::BLOCKS_WATER], 
-									location, 
-									loc_vtrans, 
-									position);
-				// send player submerged status
-				shaderman[Shaderman::BLOCKS_WATER].sendInteger("playerSubmerged", plogic.FullySubmerged);
-				// update world offset
-				shaderman[Shaderman::BLOCKS_WATER].sendVec3("worldOffset", camera.getWorldOffset());
 				break;
 			}
 			
@@ -399,4 +392,132 @@ namespace cppcraft
 		} // next shaderline
 		
 	}
+	
+	void SceneRenderer::renderReflectedScene(Renderer& renderer, library::Camera& renderCam)
+	{
+		GLint loc_vtrans, location;
+		vec3  position(-1);
+		
+		// bind standard shader
+		handleSceneUniforms(renderer.frametick, 
+							shaderman[Shaderman::STD_REFLECT], 
+							location, 
+							loc_vtrans, 
+							position, renderCam.getViewMatrix());
+		
+		// check for errors
+		if (OpenGL::checkError())
+		{
+			logger << Log::ERR << "Renderer::renderReflectedScene(): OpenGL error. Line: " << __LINE__ << Log::ENDL;
+			throw std::string("Renderer::renderReflectedScene(): OpenGL state error");
+		}
+		
+		// render all nonwater shaders
+		int nonwaterShaders = (int) RenderConst::MAX_UNIQUE_SHADERS - 1;
+		
+		for (int i = 0; i < nonwaterShaders; i++)
+		{
+			switch (i)
+			{
+			case RenderConst::TX_REPEAT: // repeatable solids (most terrain)
+				
+				glDisable(GL_CULL_FACE);
+				// change to repeatable textures
+				textureman.bind(0, Textureman::T_BIG_DIFF);
+				textureman.bind(1, Textureman::T_BIG_TONE);
+				break;
+				
+			case RenderConst::TX_SOLID: // solid stuff (most blocks)
+				
+				// change to clamped textures
+				textureman.bind(0, Textureman::T_DIFFUSE);
+				textureman.bind(1, Textureman::T_TONEMAP);
+				break;
+				
+			case RenderConst::TX_2SIDED: // 2-sided faces (torches, vines etc.)
+				
+				// disable face culling (for 2-sidedness)
+				glDisable(GL_CULL_FACE);
+				break;
+				
+			}
+			
+			// direct render
+			for (int j = 0; j < reflectionq[i].count(); j++)
+			{
+				Column* cv = reflectionq[i].get(j);
+				if (cv->aboveWater)
+				{
+					renderColumn(cv, i, position, loc_vtrans, renderer.dtime);
+				}
+			}
+			
+		} // next shaderline
+		
+	}
+	
+	void SceneRenderer::renderSceneWater(Renderer& renderer)
+	{
+		GLint loc_vtrans, location;
+		vec3  position(-1);
+		
+		// bind underwater scene
+		textureman.bind(0, Textureman::T_UNDERWATERMAP);
+		// bind world-reflection
+		textureman.bind(1, Textureman::T_REFLECTION);
+		// bind skybox at slot 2
+		textureman.bind(2, Textureman::T_SKYBOX);
+		
+		// water shader
+		int i = RenderConst::TX_WATER;
+		
+		// change shader-set
+		handleSceneUniforms(renderer.frametick, 
+							shaderman[Shaderman::BLOCKS_WATER], 
+							location, 
+							loc_vtrans, 
+							position, camera.getViewMatrix());
+		// send player submerged status
+		shaderman[Shaderman::BLOCKS_WATER].sendInteger("playerSubmerged", plogic.FullySubmerged);
+		// update world offset
+		shaderman[Shaderman::BLOCKS_WATER].sendVec3("worldOffset", camera.getWorldOffset());
+		
+		// check for errors
+		if (OpenGL::checkError())
+		{
+			logger << Log::ERR << "Renderer::renderSceneWater(): OpenGL error. Line: " << __LINE__ << Log::ENDL;
+			throw std::string("Renderer::renderSceneWater(): OpenGL state error");
+		}
+		
+		if (camera.needsupd == 1)
+		{
+			// render and count visible samples
+			for (int j = 0; j < drawq[i].count(); j++)
+			{
+				Column* cv = drawq[i].get(j);
+				
+				// start counting samples passed
+				glBeginQuery(GL_ANY_SAMPLES_PASSED, cv->occlusion[i]);
+				
+				renderColumn(cv, i, position, loc_vtrans, renderer.dtime);
+				
+				// end counting
+				glEndQuery(GL_ANY_SAMPLES_PASSED);
+				
+				// set this as having been sampled
+				cv->occluded[i] = 1;
+			}
+		}
+		else
+		{
+			// direct render
+			for (int j = 0; j < drawq[i].count(); j++)
+			{
+				Column* cv = drawq[i].get(j);
+				renderColumn(cv, i, position, loc_vtrans, renderer.dtime);
+			}
+		}
+		
+	} // renderSceneWater
+	
 }

@@ -59,6 +59,7 @@ namespace cppcraft
 			T_SKYBUFFER,
 			T_UNDERWATERMAP,
 			T_RENDERBUFFER,
+			T_REFLECTION,
 			
 			NUM_TEXTURES
 			

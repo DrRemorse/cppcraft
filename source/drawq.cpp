@@ -8,7 +8,8 @@ using namespace library;
 
 namespace cppcraft
 {
-	DrawQueue drawq[RenderConst::MAX_UNIQUE_SHADERS];
+	DrawQueue drawq;
+	DrawQueue reflectionq;
 	
 	// create all queue shaderlines
 	void DrawQueue::init()
@@ -16,7 +17,7 @@ namespace cppcraft
 		logger << Log::INFO << "* Initializing rendering queue" << Log::ENDL;
 		
 		// initialize each queue
-		DrawQueue::reset();
+		reset();
 	}
 	
 	// reset all shaderlines
@@ -24,7 +25,7 @@ namespace cppcraft
 	{
 		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 		{
-			drawq[i].clear();
+			this[0][i].clear();
 		}
 	}
 	

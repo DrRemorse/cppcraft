@@ -38,7 +38,7 @@ namespace library
 		this->outputConsole = conout;
 	}
 	
-	Log& operator<<(Log& out, const Log::log_level_t level)
+	Log& operator<<(Log& out, const Log::LogLevel level)
 	{
 		if (out.autoLock == false)
 		{
@@ -97,7 +97,7 @@ namespace library
 		return out;
 	}
 	
-	bool Log::write(Log::log_level_t level, std::string text)
+	bool Log::write(LogLevel level, std::string text)
 	{
 		if (this->file.is_open() == false) return false;
 		

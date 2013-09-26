@@ -21,7 +21,7 @@ namespace cppcraft
 		unsigned int blurFBO;
 		
 		void renderLensflare(library::WindowClass& gamescr);
-		void renderBlur();
+		void renderBlur(int w, int h);
 		
 	public:
 		void init(library::WindowClass& gamescr);

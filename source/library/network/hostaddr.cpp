@@ -75,7 +75,7 @@ namespace library
 		return hostPtr->h_name;
 	}
 	
-#ifdef UNIX
+#ifdef __linux__
 	char HostInfo::getNextHost()
 	{
 		// winLog<<"UNIX getNextHost() is called...\n";

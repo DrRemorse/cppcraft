@@ -164,6 +164,17 @@ namespace library
 		}
 	}
 	
+	void FBO::blitTo(FBO& dest_fbo, int w, int h, int mask, int filter)
+	{
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, this->fbo);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dest_fbo.getHandle());
+		
+		glBlitFramebuffer(0, 0, w, h, 0, 0, w, h, mask, filter);
+		
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	}
+	
 	bool FBO::isComplete()
 	{
 		GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);

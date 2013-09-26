@@ -82,6 +82,13 @@ namespace library
 		
 		void batch(void* first, int stride, int count);
 		
+		// returns the transformed vector from this_matrix * vec4(0, 0, 0, 1)
+		// essentially returning translation and hom.coord: (tx, ty, tz, w)
+		vec3 transVector() const;
+		vec3 lookVector() const;
+		
+		Matrix rotation() const;
+		
 		static const int AXES     = 4;
 		static const int ELEMENTS = AXES * AXES;
 		

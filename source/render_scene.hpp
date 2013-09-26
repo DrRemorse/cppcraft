@@ -1,11 +1,14 @@
+#include "camera.hpp"
 
 namespace library
 {
-	class FBO;
+	class Camera;
 }
 
 namespace cppcraft
 {
+	class Camera;
+	class DrawQueue;
 	class Renderer;
 	class SkyRenderer;
 	class WorldManager;
@@ -30,12 +33,17 @@ namespace cppcraft
 		// camera bobbing computatron
 		bool cameraDeviation(double frameCounter, double dtime);
 		
+		cppcraft::Camera reflectionCamera;
+		
 		// juggernauts
 		void initTerrain();
 		void recalculateFrustum();
+		void recalculateFrustum(Camera& camera, DrawQueue& drawq);
 		void compressRenderingQueue();
 		// main scene rendering function
-		void renderScene(Renderer& renderer, library::FBO& sceneFBO);
+		void renderScene(Renderer& renderer, library::Camera& camera);
+		void renderReflectedScene(Renderer& renderer, library::Camera& camera);
+		void renderSceneWater(Renderer& renderer);
 		
 		friend class SkyRenderer;
 	};

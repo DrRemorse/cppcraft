@@ -14,6 +14,7 @@
 	#include <cstring>
 #else
     #include <winsock2.h>
+	typedef int socklen_t;
 #endif
 
 namespace library

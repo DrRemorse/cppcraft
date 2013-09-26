@@ -54,8 +54,6 @@ namespace cppcraft
 	
 	Column::Column(int x, int z)
 	{
-		this->wx = x;
-		this->wz = z;
 		// initialize VAO to 0, signifying a column without valid GL resources
 		this->vao = 0;
 		// set initial flags
@@ -80,7 +78,7 @@ namespace cppcraft
 		
 		mtx.compiler.lock();
 		
-		for (int sy = end_y - 1; sy >= start_y; sy--)
+		for (int sy = end_y-1; sy >= start_y; sy--)
 		{
 			Sector& sector = Sectors(x, sy, z);
 			
@@ -285,6 +283,8 @@ namespace cppcraft
 		this->updated    = false;
 		// the vbo has data stored in gpu
 		this->hasdata = true;
+		// the column is above water if the first sector is >= water level
+		this->aboveWater = (start_y * Sector::BLOCKS_Y >= RenderConst::WATER_LEVEL);
 		
 		// reset occluded state
 		for (size_t i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)

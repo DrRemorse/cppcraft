@@ -4,11 +4,16 @@
 #include "renderconst.hpp"
 #include <vector>
 
+namespace library
+{
+	class Frustum;
+}
+
 namespace cppcraft
 {
 	class Column;
 	
-	class DrawQueue
+	class DrawQueueShaderline
 	{
 	private:
 		// queue
@@ -16,11 +21,6 @@ namespace cppcraft
 		unsigned int items;
 		
 	public:
-		// initialize drawing queue
-		static void init();
-		// reset drawing queue (all shaderlines)
-		static void reset();
-		
 		// adds a column to this draw queue
 		inline void add(Column* cv)
 		{
@@ -38,6 +38,7 @@ namespace cppcraft
 		{
 			return this->items;
 		}
+		
 		// "clears" the drawing queue
 		inline void clear()
 		{
@@ -51,7 +52,42 @@ namespace cppcraft
 		}
 		
 	};
-	extern DrawQueue drawq[RenderConst::MAX_UNIQUE_SHADERS];
+	
+	class DrawQueue
+	{
+	private:
+		DrawQueueShaderline lines[RenderConst::MAX_UNIQUE_SHADERS];
+		
+	public:
+		// initialize drawing queue
+		void init();
+		// reset drawing queue (all shaderlines)
+		void reset();
+		
+		inline DrawQueueShaderline& operator[] (int shader)
+		{
+			return lines[shader];
+		}
+		
+		/// octtree-like frustum culling ///
+		// building a new draw queue, but ignoring columns that are too far out
+		// the draw queue deals only with columns
+		static const int visibility_border = 2;
+		
+		struct rendergrid_t
+		{
+			int xstp, ystp, zstp;
+			int majority;
+			int minGrid, maxGrid;
+			float playerY;
+			const library::Frustum* frustum;
+		};
+		
+		void uniformGrid(rendergrid_t& rg, int x0, int x1, int z0, int z1, int quant);
+		void gridTesting(rendergrid_t& rg, int x, int z, int axis);
+	};
+	extern DrawQueue drawq;
+	extern DrawQueue reflectionq;
 }
 
 #endif

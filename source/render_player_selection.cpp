@@ -218,7 +218,7 @@ namespace cppcraft
 			shd->bind();
 		}
 		
-		shd->sendMatrix("matmvp", camera.getMVP_Matrix());
+		shd->sendMatrix("matmvp", camera.getMVP());
 		// position in space
 		shd->sendVec3("vtrans", vec3(vx, vy, vz));
 		

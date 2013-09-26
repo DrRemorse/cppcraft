@@ -3,7 +3,6 @@
 #include "library/opengl/opengl.hpp"
 #include "library/opengl/vao.hpp"
 #include "camera.hpp"
-#include "render_scene.hpp"
 #include "renderconst.hpp"
 #include "sectors.hpp"
 #include "shaderman.hpp"
@@ -79,7 +78,7 @@ namespace cppcraft
 		clouds.vao.end();
 	}
 	
-	void SkyRenderer::renderClouds(SceneRenderer& scene, double frameCounter)
+	void SkyRenderer::renderClouds(float dy, Camera& camera, double frameCounter)
 	{
 		// bind cloud shader
 		Shader& shd = shaderman[Shaderman::CLOUDS];
@@ -90,20 +89,11 @@ namespace cppcraft
 		shd.sendVec3 ("lightVector",  thesun.getRealtimeAngle());
 		shd.sendFloat("daylight",     thesun.getRealtimeDaylight());
 		
-		if (camera.ref)
-		{
-			Matrix matclouds = camera.getRotationMatrix();
-			matclouds.translated(0.0, -scene.playerY, 0.0);
-			
-			// view matrix
-			shd.sendMatrix("matview", matclouds);
-			
-			if (camera.rotated)
-			{
-				// rotation matrix
-				shd.sendMatrix("matrot", camera.getRotationMatrix());
-			}
-		}
+		Matrix matclouds = camera.getRotationMatrix();
+		matclouds.translated(0.0, dy, 0.0);
+		
+		// view matrix
+		shd.sendMatrix("matview", matclouds);
 		
 		// clouds texture
 		textureman.bind(0, Textureman::T_CLOUDS);

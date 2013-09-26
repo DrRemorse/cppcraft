@@ -8,7 +8,6 @@
 #ifdef VERTEX_PROGRAM
 uniform mat4 matproj;
 uniform mat4 matview;
-uniform mat4 matrot;
 
 uniform float frameCounter;
 uniform vec3  worldOffset;
@@ -30,6 +29,7 @@ void main()
 {
 	vec4 position = matview * vec4(in_vertex, 1.0);
 	
+	mat4 matrot = mat4(mat3(matview));
 	vec4 lpos = position * matrot;
 	vertdist = length(lpos.xz);
 	
@@ -40,7 +40,7 @@ void main()
 	// new position
 	position = matrot * lpos;
 	
-	v_ldir = mat3(matrot) * lightVector;
+	v_ldir = mat3(matview) * lightVector;
 	v_eye = normalize(-position.xyz);
 	
 	#ifdef NOISE_CLOUDS
@@ -63,7 +63,7 @@ uniform sampler2D texture;
 uniform float frameCounter;
 uniform float daylight; // multiplier
 
-uniform mat4 matrot;
+uniform mat4 matview;
 
 in vec2 texCoord;
 in float vertdist;
@@ -126,7 +126,7 @@ void main(void)
 	
 	const mat3 tbn = mat3(in_tangent, binormal, in_normal);
 	
-	normal = mat3(matrot) * normalize(normal * tbn);
+	normal = mat3(matview) * normalize(normal * tbn);
 	
 	// convert to white + alpha
 	vec4 color = vec4(vec3(1.0 - noise.a), 1.5 * noise.a);
@@ -171,3 +171,4 @@ void main(void)
 }
 
 #endif
+

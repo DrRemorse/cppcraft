@@ -42,55 +42,9 @@ namespace cppcraft
 		
 	}
 	
-	void Camera::calculateFrustum()
-	{
-		frustum.calculate(matviewproj);
-	}
-	
-	void Camera::setRotation(float rx, float ry, float rz)
-	{
-		matrot.rotateZYX(rx, ry, rz);
-	}
-	
-	void Camera::setTranslation(float tx, float ty, float tz)
-	{
-		// view matrix = rotation & translation
-		matview = matrot;
-		matview.translated(tx, ty, tz);
-		
-		// modelview projection matrix
-		matviewproj = matproj * matview;
-	}
-	
-	const Matrix& Camera::getProjection() const
-	{
-		return matproj;
-	}
 	const Matrix& Camera::getProjectionLong() const
 	{
 		return matproj_long;
-	}
-	const Matrix& Camera::getViewMatrix() const
-	{
-		return matview;
-	}
-	const Matrix& Camera::getRotationMatrix() const
-	{
-		return matrot;
-	}
-	const Matrix& Camera::getMVP_Matrix() const
-	{
-		return matviewproj;
-	}
-	
-	const Frustum& Camera::getFrustum() const
-	{
-		return this->frustum;
-	}
-	
-	const vec3& Camera::getWorldOffset() const
-	{
-		return this->worldOffset;
 	}
 	
 	void Camera::setWorldOffset(double posX, double posZ)

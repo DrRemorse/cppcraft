@@ -34,13 +34,16 @@ namespace library
 	class Log
 	{
 		public:
-			typedef enum{ ENDL, INFO, WARN, ERR } log_level_t;
+			enum LogLevel
+			{
+				ENDL, INFO, WARN, ERR
+			};
 			
 			Log();
 			Log(std::string);
 			~Log();
 			void open(std::string);
-			bool write(log_level_t, std::string);
+			bool write(LogLevel, std::string);
 			
 			void setOutputConsole(bool console);
 			
@@ -52,7 +55,7 @@ namespace library
 			
 			bool outputConsole;
 			
-			friend Log& operator<< (Log& out, const log_level_t level);
+			friend Log& operator<< (Log& out, const LogLevel level);
 			template <class T>
 			friend Log& operator<< (Log& out, const T t);
 	};

@@ -13,7 +13,7 @@ namespace cppcraft
 {
 	extern VAO screenVAO;
 	
-	void FSRenderer::renderBlur()
+	void FSRenderer::renderBlur(int blurw, int blurh)
 	{
 		Shader& blur = shaderman[Shaderman::BLUR];
 		blur.bind();
@@ -32,7 +32,7 @@ namespace cppcraft
 		glBindFramebuffer(GL_FRAMEBUFFER, blurFBO);
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_BLURBUFFER1), 0);
 		
-		blur.sendVec2("dir", vec2(1.0 / blurTxW, 0.0));
+		blur.sendVec2("dir", vec2(1.0 / blurw, 0.0));
 		
 		// render
 		screenVAO.render(GL_QUADS);
@@ -42,7 +42,7 @@ namespace cppcraft
 		
 		textureman.bind(0, Textureman::T_BLURBUFFER1);
 		
-		blur.sendVec2("dir", vec2(0.0, 1.0 / blurTxH));
+		blur.sendVec2("dir", vec2(0.0, 1.0 / blurh));
 		
 		// render
 		screenVAO.render(GL_QUADS);

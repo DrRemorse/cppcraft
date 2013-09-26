@@ -6,7 +6,6 @@
 #include "atmosphere.hpp"
 #include "camera.hpp"
 #include "renderconst.hpp"
-#include "render_scene.hpp"
 #include "renderman.hpp"
 #include "sectors.hpp"
 #include "shaderman.hpp"
@@ -47,13 +46,13 @@ namespace cppcraft
 		satteliteVAO.end();
 	}
 	
-	void SkyRenderer::render(SceneRenderer& scene, bool underwater)
+	void SkyRenderer::render(Camera& camera, bool underwater)
 	{
 		// render background / atmosphere, sun and moon
 		glDisable(GL_BLEND);
 		
 		// render sky dome
-		Atmosphere::render(scene.playerY);
+		Atmosphere::render(-camera.getViewMatrix().transVector().y);
 		
 		glEnable(GL_BLEND);
 		glColorMask(1, 1, 1, 0);
@@ -65,7 +64,7 @@ namespace cppcraft
 		}
 		
 		// render moon texture
-		renderMoon();
+		renderMoon(camera);
 		
 		glDisable(GL_BLEND);
 		glColorMask(1, 1, 1, 1);
@@ -111,7 +110,7 @@ namespace cppcraft
 		return matsun;
 	}
 
-	void SkyRenderer::renderMoon()
+	void SkyRenderer::renderMoon(Camera& camera)
 	{
 		//if ogl.lastsun(2) > 0.2 then return
 		

@@ -271,6 +271,11 @@ namespace cppcraft
 		textures[T_RENDERBUFFER].create(false, 0, gamescr.SW, gamescr.SH);
 		textures[T_RENDERBUFFER].setInterpolation(true);
 		
+		// world reflection buffer
+		textures[T_REFLECTION] = Texture(GL_TEXTURE_2D);
+		textures[T_REFLECTION].create(false, 0, gamescr.SW / 2, gamescr.SH / 2);
+		textures[T_REFLECTION].setInterpolation(true);
+		
 	}
 	
 	void Textureman::bind(int unit, named_textures_t tx)

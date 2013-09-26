@@ -5,19 +5,19 @@
 
 namespace cppcraft
 {
-	class SceneRenderer;
+	class Camera;
 	
 	class SkyRenderer
 	{
 	private:
 		void createClouds();
 		void renderSun();
-		void renderMoon();
+		void renderMoon(Camera& camera);
 		
 	public:
 		void init();
-		void render(SceneRenderer& scene, bool underwater);
-		void renderClouds(SceneRenderer& scene, double frameCounter);
+		void render(Camera& camera, bool underwater);
+		void renderClouds(float dy, Camera& camera, double frameCounter);
 		
 		library::Matrix renderSunProj();
 		

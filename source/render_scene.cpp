@@ -5,8 +5,8 @@
 #include "library/opengl/fbo.hpp"
 #include "library/opengl/opengl.hpp"
 #include "library/opengl/window.hpp"
+#include "library/opengl/camera.hpp"
 
-#include "camera.hpp"
 #include "gameconf.hpp"
 #include "minimap.hpp"
 #include "particles.hpp"
@@ -14,7 +14,9 @@
 #include "player_logic.hpp"
 #include "renderman.hpp"
 #include "render_fs.hpp"
+#include "render_player_selection.hpp"
 #include "render_sky.hpp"
+#include "renderconst.hpp"
 #include "shaderman.hpp"
 #include "textureman.hpp"
 #include "threading.hpp"
@@ -26,6 +28,7 @@ using namespace library;
 namespace cppcraft
 {
 	FBO sceneFBO;
+	FBO reflectionFBO;
 	FBO screenFBO;
 	
 	void SceneRenderer::init(Renderer& renderer)
@@ -43,7 +46,17 @@ namespace cppcraft
 		sceneFBO.create();
 		sceneFBO.bind();
 		sceneFBO.createDepthRBO(renderer.gamescr.SW, renderer.gamescr.SH);
-		sceneFBO.unbind();
+		
+		// the FBO we render reflection to
+		reflectionFBO.create();
+		reflectionFBO.bind();
+		reflectionFBO.attachColor(0, textureman.get(Textureman::T_REFLECTION));
+		reflectionFBO.createDepthRBO(renderer.gamescr.SW, renderer.gamescr.SH);
+		reflectionFBO.unbind();
+		
+		// initialize reflection camera to be the same as regular camera,
+		// except it will be mirrored on Y-axis from water-plane level
+		reflectionCamera.init(renderer.gamescr);
 	}
 	
 	// render normal scene
@@ -54,15 +67,12 @@ namespace cppcraft
 		// bind the FBO that we are rendering the entire scene into
 		sceneFBO.bind();
 		sceneFBO.attachColor(0, textureman.get(Textureman::T_FOGBUFFER));
-		sceneFBO.attachColor(1, textureman.get(Textureman::T_UNDERWATERMAP));
-		sceneFBO.attachColor(2, textureman.get(Textureman::T_SKYBUFFER));
+		sceneFBO.attachColor(1, textureman.get(Textureman::T_SKYBUFFER));
 		
 		// add all attachments to rendering output
 		std::vector<int> dbuffers;
 		dbuffers.emplace_back(GL_COLOR_ATTACHMENT0);
 		dbuffers.emplace_back(GL_COLOR_ATTACHMENT1);
-		dbuffers.emplace_back(GL_COLOR_ATTACHMENT2);
-		
 		sceneFBO.drawBuffers(dbuffers);
 		
 		glDepthMask(GL_TRUE);
@@ -81,7 +91,7 @@ namespace cppcraft
 		/////////////////////////////////////////
 		///   render atmosphere, moon, etc.   ///
 		/////////////////////////////////////////
-		skyrenderer.render(*this, underwater);
+		skyrenderer.render(camera, underwater);
 		
 		// render clouds before terrain if we are submerged in water
 		if (underwater)
@@ -90,7 +100,7 @@ namespace cppcraft
 			glColorMask(1, 1, 1, 0);
 			
 			// render clouds
-			skyrenderer.renderClouds(*this, renderer.frametick);
+			skyrenderer.renderClouds(-playerY, camera, renderer.frametick);
 			
 			glDisable(GL_BLEND);
 			glColorMask(1, 1, 1, 1);
@@ -127,6 +137,7 @@ namespace cppcraft
 			{
 				/// update matview matrix using player snapshot ///
 				camera.setWorldOffset(playerX, playerZ);
+				reflectionCamera.setWorldOffset(playerX, playerZ);
 			}
 			
 			/// world coordinate snapshots ///
@@ -188,14 +199,71 @@ namespace cppcraft
 			compressRenderingQueue();
 		}
 		
+		const bool renderconfReflection = true;
 		
-		// remove skybuffer from rendering output
-		sceneFBO.removeColor(2);
-		// update buffer list
-		dbuffers.clear();
-		dbuffers.emplace_back(GL_COLOR_ATTACHMENT0);
-		dbuffers.emplace_back(GL_COLOR_ATTACHMENT1);
-		sceneFBO.drawBuffers(dbuffers);
+		if (underwater == false)
+		{
+			if (renderconfReflection)
+			{
+				reflectionCamera.ref = camera.ref;
+				reflectionCamera.rotated = camera.rotated;
+				
+				// render to reflection texture
+				reflectionFBO.bind();
+				reflectionFBO.attachColor(0, textureman.get(Textureman::T_REFLECTION));
+				// render at half size
+				glViewport(0, 0, renderer.gamescr.SW / 2, renderer.gamescr.SH / 2);
+				
+				glDepthMask(GL_TRUE);
+				glClear(GL_DEPTH_BUFFER_BIT);
+				
+				glDisable(GL_DEPTH_TEST);
+				glDepthMask(GL_FALSE);
+				glDisable(GL_CULL_FACE);
+				
+				skyrenderer.render(reflectionCamera, false);
+				
+				glEnable(GL_DEPTH_TEST);
+				glDepthFunc(GL_LEQUAL);
+				glDepthMask(GL_TRUE);
+				glEnable(GL_CULL_FACE);
+				
+				renderReflectedScene(renderer, reflectionCamera);
+				
+				// render clouds to be reflected after terrain
+				if (true)
+				{
+					glDisable(GL_CULL_FACE);
+					glEnable(GL_BLEND);
+					glColorMask(1, 1, 1, 0);
+					
+					// render clouds
+					float dy = playerY - RenderConst::WATER_LEVEL;
+					skyrenderer.renderClouds(dy, reflectionCamera, renderer.frametick);
+					
+					glDisable(GL_BLEND);
+					glColorMask(1, 1, 1, 1);
+				}
+				
+				reflectionFBO.unbind();
+				glViewport(0, 0, renderer.gamescr.SW, renderer.gamescr.SH);
+				
+			}
+		}
+		else
+		{
+			// we are underwater, blit sky instead of reflection
+			reflectionFBO.bind();
+			reflectionFBO.attachColor(0, textureman.get(Textureman::T_UNDERWATERMAP));
+			
+			sceneFBO.blitTo(reflectionFBO, renderer.gamescr.SW, renderer.gamescr.SH, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		}
+		
+		sceneFBO.bind();
+		// replace skybuffer with underwater buffer
+		sceneFBO.attachColor(1, textureman.get(Textureman::T_UNDERWATERMAP));
+		
+		/// render physical scene w/depth ///
 		
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
@@ -203,9 +271,25 @@ namespace cppcraft
 		
 		glEnable(GL_CULL_FACE);
 		
-		/// render physical scene w/depth ///
+		// scene
+		renderScene(renderer, camera);
 		
-		renderScene(renderer, sceneFBO);
+		// render player selection
+		renderPlayerSelection();
+		
+		// stop writing to underwatermap
+		sceneFBO.removeColor(1);
+		sceneFBO.drawBuffers();
+		
+		// cull water faces if player is not (fully) submerged in water
+		if (plogic.FullySubmerged == plogic.PS_None)
+		{
+			glEnable(GL_CULL_FACE);
+		}
+		glDisable(GL_BLEND);
+		
+		// then water
+		renderSceneWater(renderer);
 		
 		glDisable(GL_CULL_FACE);
 		
@@ -246,7 +330,7 @@ namespace cppcraft
 		if (underwater == false)
 		{
 			// render clouds
-			skyrenderer.renderClouds(*this, renderer.frametick);
+			skyrenderer.renderClouds(-playerY, camera, renderer.frametick);
 		}
 		
 		// render particles

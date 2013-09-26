@@ -18,6 +18,7 @@ namespace cppcraft
 		bool renderable; // is renderable
 		bool updated;    // needs update
 		bool hasdata;    // has uploaded gpu data
+		bool aboveWater; // is above the waterline (reflectable)
 		
 		// used by: Seamless
 		inline void reset()
@@ -31,9 +32,7 @@ namespace cppcraft
 	//private:
 		unsigned int vao;
 		unsigned int vbo;  // opengl renderable objects
-		int wx, wz;        // world position
 		library::vec3 pos; // rendering position
-		//int indices  		   [RenderConst::MAX_UNIQUE_SHADERS];
 		int	       bufferoffset[RenderConst::MAX_UNIQUE_SHADERS];
 		int           vertices [RenderConst::MAX_UNIQUE_SHADERS];
 		unsigned int  occlusion[RenderConst::MAX_UNIQUE_SHADERS];

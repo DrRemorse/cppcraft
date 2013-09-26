@@ -74,11 +74,12 @@ void main(void)
 precision highp float;
 
 uniform sampler2D underwatermap;
+uniform sampler2D reflectionmap;
 uniform samplerCube skymap;
 
 uniform mat4 matview;
+uniform vec3 screendata;
 
-uniform vec3  screendata;
 uniform float daylight;
 uniform vec4  playerLight;
 uniform float modulation;
@@ -118,7 +119,7 @@ void main(void)
 	Normal.y += 1.00001; // make sure its positively pointing upwards
 	Normal = normalize(Normal);
 	
-	vec3 vNormal = mat3(matview) * Normal;
+	vec3 vNormal = normalize(mat3(matview) * Normal);
 	vec3 viewNormal = normalize(v_normal + vNormal * 0.1);
 	
 	vec3 vReflect   = l_reflect + Normal * 0.125;
@@ -132,20 +133,20 @@ void main(void)
 	//----- fresnel term -----
 	
 	float fresnel = dot(vEye, viewNormal);
-	fresnel = pow(1.0 - abs(fresnel), 5.0);
+	fresnel = 0.02 + 0.97 * pow(1.0 - fresnel, 3.0);
 	
 	//----- REFRACTION -----
 	
-	// underwatermap coordinates
+	// screenspace tex coordinates
+	vec2 texCoord = gl_FragCoord.xy / screendata.xy;
 	
 	// start with underwater texture
-	vec2 refcoord = gl_FragCoord.xy / screendata.xy;
 	float wdepth = vertdist / ZFAR;
 	
 	// fake refraction
 	//refcoord.y -= viewNormal.z * 0.25 * wdepth;
 	// wave modulation
-	refcoord.xy += Normal.xz * 0.025 * wdepth;
+	vec2 refcoord = texCoord + Normal.xz * 0.008 * (0.2 + 0.8 * wdepth);
 	
 	// read refracted ray
 	vec4 color = texture2D(underwatermap, refcoord);
@@ -167,17 +168,25 @@ void main(void)
 	{
 		dep = 1.0 - color.a;
 	}
-	dep *= dep;
+	dep *= dep * dep;
 	
 	vec3 waterColor = mix(deepwater, shallowwater, dep);
 	color.rgb = mix(waterColor, color.rgb, dep * dep);
 	
-	
 	//----- REFLECTIONS -----
 	
-	// mix in sky reflection
-	vec3 reflection = textureCube(skymap, vReflect).rgb * daylight;
-	color.rgb = mix(color.rgb, reflection, 0.1 + 0.6 * fresnel);
+	if (playerSubmerged == 0)
+	{
+		// sky reflection
+		//vec3 reflection = textureCube(skymap, vReflect).rgb * daylight;
+		//color.rgb = mix(color.rgb, reflection, 0.3 * fresnel);
+		
+		// world/terrain reflection
+		vec4 wreflection = texture2D(reflectionmap, refcoord);
+		float woref = 0.6 * wreflection.a;
+		
+		color.rgb = mix(color.rgb, wreflection.rgb, fresnel * woref);
+	}
 	
 	// fake waves
 	color.rgb *= 1.0 + dot(Normal, l_normal) * 0.05;
