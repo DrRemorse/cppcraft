@@ -61,7 +61,11 @@ void main(void)
 	float timer = frameCounter / 35.0;
 	
 	waves.xy  = w_vertex.xz * vec2(0.10, 0.02) + timer * vec2(0.2, 0.0);
+	//waves.xy = vec2(cos(waves.x), sin(waves.x));
 	waves.zw  = w_vertex.xz * vec2(0.25, 0.05) + timer * vec2(0.25, 0.05);
+	//waves.zw = vec2(cos(waves.y), sin(waves.y));
+	//waves.xy  = w_vertex.xz * vec2(0.10, 0.02) + timer * vec2(0.2, 0.0);
+	//waves.zw  = w_vertex.xz * vec2(0.25, 0.05) + timer * vec2(0.25, 0.05);
 	
 	lightdata   = in_color;
 	torchlight  = in_color2;
@@ -80,6 +84,7 @@ uniform samplerCube skymap;
 uniform mat4 matview;
 uniform vec3 screendata;
 
+uniform float frameCounter;
 uniform float daylight;
 uniform vec4  playerLight;
 uniform float modulation;
@@ -110,17 +115,18 @@ void main(void)
 	srdnoise(waves.zw, 0.0, grad2);
 	
 	// final x/z values
-	grad = grad * 0.7 + grad2 * 0.3; // + grad3 * 0.3;
+	grad = grad * 0.7 + grad2 * 0.3;
 	
 	vec3 tx = vec3(0.0, 1.0, grad.x);
 	vec3 ty = vec3(1.0, 0.0, grad.y);
 	
-	vec3 Normal = cross(tx, ty);
-	Normal.y += 1.00001; // make sure its positively pointing upwards
+	vec3 Normal = vec3(grad.x, grad.y, 0.0);
+	Normal.y += 32; // make sure its extremely positive
 	Normal = normalize(Normal);
 	
-	vec3 vNormal = normalize(mat3(matview) * Normal);
-	vec3 viewNormal = normalize(v_normal + vNormal * 0.1);
+	vec3 vNormal = mat3(matview) * Normal;
+	#define viewNormal vNormal
+	#define fNormal    vNormal
 	
 	vec3 vReflect   = l_reflect + Normal * 0.125;
 	
@@ -132,8 +138,8 @@ void main(void)
 	
 	//----- fresnel term -----
 	
-	float fresnel = dot(vEye, viewNormal);
-	fresnel = 0.02 + 0.97 * pow(1.0 - fresnel, 3.0);
+	float fresnel = dot(vEye, fNormal);
+	fresnel = 0.02 + 0.97 * pow(1.0 - fresnel, 5.0);
 	
 	//----- REFRACTION -----
 	
@@ -146,35 +152,14 @@ void main(void)
 	// fake refraction
 	//refcoord.y -= viewNormal.z * 0.25 * wdepth;
 	// wave modulation
-	vec2 refcoord = texCoord + Normal.xz * 0.008 * (0.2 + 0.8 * wdepth);
+	vec2 refcoord = texCoord + Normal.xz * 0.01 * (0.25 + 0.75 * wdepth);
 	
-	// read refracted ray
-	vec4 color = texture2D(underwatermap, refcoord);
-	
-	// apply gamma ramp
-	color.rgb = pow(color.rgb, vec3(2.2));
-	
-	// mix in seacolor based on 'depth'
-	const vec3 deepwater = vec3(0.02, 0.10, 0.20);
-	const vec3 shallowwater = vec3(0.2, 0.3, 0.2);
-	
-	float dep;
-	// if player is underwater, we need to see the sky properly:
-	if (playerSubmerged != 0)
-	{
-		dep = 1.0 - step(color.a, 0.995) * color.a;
-	}
-	else
-	{
-		dep = 1.0 - color.a;
-	}
-	dep *= dep * dep;
-	
-	vec3 waterColor = mix(deepwater, shallowwater, dep);
-	color.rgb = mix(waterColor, color.rgb, dep * dep);
+	// read underwater, use as base color
+	vec4 underw = texture2D(underwatermap, refcoord);
 	
 	//----- REFLECTIONS -----
 	
+	vec4 wreflection = vec4(0.0);
 	if (playerSubmerged == 0)
 	{
 		// sky reflection
@@ -182,28 +167,50 @@ void main(void)
 		//color.rgb = mix(color.rgb, reflection, 0.3 * fresnel);
 		
 		// world/terrain reflection
-		vec4 wreflection = texture2D(reflectionmap, refcoord);
-		float woref = 0.6 * step(1.0 - wreflection.a, 0.997);
-		
-		color.rgb = mix(color.rgb, wreflection.rgb, fresnel * woref);
+		wreflection = texture2D(reflectionmap, refcoord);
+		wreflection.rgb = mix(wreflection.rgb, vec3(0.7), 0.25);
 	}
 	
-	// fake waves
-	color.rgb *= 1.0 + dot(Normal, l_normal) * 0.05;
+	//----- SEACOLOR -----
 	
-	// degamma
-	color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
+	const vec3 deepwater    = vec3(0.26, 0.42, 0.50);
+	const vec3 shallowwater = vec3(0.35, 0.55, 0.60);
+	
+	float dep = vertdist / ZFAR;
+	// if player is underwater, we need to see the sky properly:
+	dep = underw.a - dep;
+	
+	// minimum depth: 0.05, grows very quickly
+	if (playerSubmerged == 0)
+	dep = min(0.85, 1.0 - smoothstep(0.0, 0.06, dep)) * (1.0 - fresnel);
+	
+	// create water "color"
+	vec3 waterColor = mix(deepwater, shallowwater, dep) * daylight;
+	// mix water color and underwater / reflection
+	waterColor = mix(waterColor, underw.rgb, dep) * daylight;
+	// create final color value
+	vec4 color = vec4(waterColor, 1.0);
+	
+	// add reflections
+	if (playerSubmerged == 0)
+	{
+		float reflevel = min(1.0, 0.7 * fresnel + (0.5 - daylight * 0.5));
+		color.rgb = mix(color.rgb, wreflection.rgb, reflevel);
+	}
 	
 	//- lighting (we need shadow later) -//
 	#include "lightw.glsl"
 	
+	// fake waves
+	//color.rgb *= 0.6 + pow(dot(Normal, l_normal), 2.0) * 0.5 * daylight;
+	
 	// sun / specular
-	const vec3  SUNCOLOR = vec3(1.0, 0.7, 0.5);
-	const float SUNSPEC  = 0.7; // specular
+	const vec3  SUNCOLOR = vec3(1.0, 0.58, 0.23);
+	const float SUNSPEC  = 0.55; // specular
 	const float SUNSHINE = 2.0; // shininess
 	
-	float shine = abs(dot(viewNormal, normalize(v_half)) );
-	float spec = abs(dot(reflect(-vLight, viewNormal), vEye));
+	float shine = max(0.0, dot(fNormal, normalize(v_half)) );
+	float spec  = max(0.0, dot(reflect(-vLight, fNormal), vEye) );
 	
 	vec3 specular = SUNCOLOR * SUNSPEC * pow(spec, 16.0) + pow(spec, 4.0) * 0.3;
 	color.rgb += specular * pow(shine, SUNSHINE) * daylight * shadow * shadow;

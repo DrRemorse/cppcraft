@@ -35,7 +35,7 @@ namespace cppcraft
 		float m_fWavelength4[3];
 		
 		void init();
-		void render(float playerY);
+		void render(Camera& camera);
 	};
 	Scatterer scatter;
 	
@@ -48,9 +48,9 @@ namespace cppcraft
 	{
 		scatter.init();
 	}
-	void Atmosphere::render(float playerY)
+	void Atmosphere::render(Camera& camera)
 	{
-		scatter.render(playerY);
+		scatter.render(camera);
 	}
 	
 	// scatterer implementation
@@ -122,7 +122,7 @@ namespace cppcraft
 		shd.sendFloat("fCameraHeight", m_fInnerRadius);
 	}
 
-	void Scatterer::render(float playerY)
+	void Scatterer::render(Camera& camera)
 	{
 		Shader& shd = shaderman[Shaderman::ATMOSPHERE];
 		shd.bind();

@@ -3,6 +3,7 @@
 namespace library
 {
 	class Camera;
+	class vec3;
 }
 
 namespace cppcraft
@@ -38,7 +39,7 @@ namespace cppcraft
 		// juggernauts
 		void initTerrain();
 		void recalculateFrustum();
-		void recalculateFrustum(Camera& camera, DrawQueue& drawq);
+		void recalculateFrustum(Camera& camera, DrawQueue& drawq, const library::vec3& look);
 		void compressRenderingQueue();
 		// main scene rendering function
 		void renderScene(Renderer& renderer, library::Camera& camera);

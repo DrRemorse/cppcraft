@@ -31,11 +31,13 @@ namespace cppcraft
 	
 	void SceneRenderer::recalculateFrustum()
 	{
+		vec3 look = player.getLookVector();
+		
 		// recalculate view & mvp matrix
 		// view matrix (rotation + translation)
 		camera.setTranslation(-playerX, -playerY, -playerZ);
 		
-		recalculateFrustum(camera, drawq);
+		recalculateFrustum(camera, drawq, look);
 		
 		// set reflection camera view
 		Matrix matref = camera.getViewMatrix();
@@ -45,16 +47,15 @@ namespace cppcraft
 		reflectionCamera.setRotationMatrix(matref.rotation());
 		reflectionCamera.setViewMatrix(matref);
 		
-		recalculateFrustum(reflectionCamera, reflectionq);
+		look.y = -look.y;
+		
+		recalculateFrustum(reflectionCamera, reflectionq, look);
 	}
 	
-	void SceneRenderer::recalculateFrustum(Camera& camera, DrawQueue& drawq)
+	void SceneRenderer::recalculateFrustum(Camera& camera, DrawQueue& drawq, const vec3& look)
 	{
 		// recalculate camera frustum
 		camera.calculateFrustum();
-		
-		//const vec3 position = camera.getViewMatrix().transVector();
-		const vec3 look = camera.getViewMatrix().lookVector();
 		
 		static const int safety_border = 2;
 		#define visibility_border  DrawQueue::visibility_border

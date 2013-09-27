@@ -250,14 +250,12 @@ namespace cppcraft
 				
 			}
 		}
-		else
-		{
-			// we are underwater, blit sky instead of reflection
-			reflectionFBO.bind();
-			reflectionFBO.attachColor(0, textureman.get(Textureman::T_UNDERWATERMAP));
-			
-			sceneFBO.blitTo(reflectionFBO, renderer.gamescr.SW, renderer.gamescr.SH, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-		}
+		
+		// we are underwater, blit sky instead of reflection
+		reflectionFBO.bind();
+		reflectionFBO.attachColor(0, textureman.get(Textureman::T_UNDERWATERMAP));
+		
+		sceneFBO.blitTo(reflectionFBO, renderer.gamescr.SW, renderer.gamescr.SH, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 		
 		sceneFBO.bind();
 		// replace skybuffer with underwater buffer

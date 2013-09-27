@@ -52,7 +52,7 @@ namespace cppcraft
 		glDisable(GL_BLEND);
 		
 		// render sky dome
-		Atmosphere::render(-camera.getViewMatrix().transVector().y);
+		Atmosphere::render(camera);
 		
 		glEnable(GL_BLEND);
 		glColorMask(1, 1, 1, 0);
