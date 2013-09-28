@@ -9,11 +9,11 @@ using namespace library;
 
 extern "C"
 {
+	#include <liblattice/lattice_config.h>
 	#include <arpa/inet.h>
-	#include "network/lattice_config.h"
-	#include "network/struct.h"
-	#include "network/globals.h"
-	#include "network/liblattice.h"
+	#include <liblattice/struct.h>
+	#include <liblattice/globals.h>
+	#include <liblattice/liblattice.h>
 }
 
 namespace cppcraft
@@ -28,7 +28,44 @@ namespace cppcraft
 	
 	void Network::init()
 	{
-		lattice_init(-1, (void(*)(void*)) dummy);
+		this->running = true;
+		this->networkThread = std::thread(&Network::mainLoop, this);
+	}
+	
+	void Network::stop()
+	{
+		if (this->running)
+		{
+			this->running = false;
+			this->networkThread.join();
+		}
+	}
+	
+	void Network::mainLoop()
+	{
+		logger << Log::INFO << "Connecting to lattice" << Log::ENDL;
+		lattice_init(-1, dummy);
+		
+		if (connect() == false)
+		{
+			throw std::string("Connection failed");
+		}
+		logger << Log::INFO << "Connected to network" << Log::ENDL;
+		
+		lattice_flush();
+		
+		timeval waitTime;
+		waitTime.tv_sec  = 0;
+		waitTime.tv_usec = 3000;
+		
+		while (this->running)
+		{
+			lattice_select(&waitTime);
+			
+			lattice_process();
+			
+			lattice_flush();
+		}
 	}
 	
 	w_coord getPlayerWC()
@@ -39,10 +76,9 @@ namespace cppcraft
 			(int)player.Y >> 3,
 			world.getWZ()
 		};
-		
 	}
 	
-	void Network::connect()
+	bool Network::connect()
 	{
 		lattice_player.userid = 12345;
 		lattice_player.model = 5;
@@ -66,21 +102,8 @@ namespace cppcraft
 		lattice_player.centeredon.y = 0;
 		lattice_player.centeredon.z = 524288;
 		
-		struct in_addr server_ip;
-		server_ip.s_addr = inet_addr("68.61.97.144");
-		
-		if (lattice_connect(server_ip, 8805) < 0) return;
-		lattice_flush();
-		
-		while (true)
-		{
-			lattice_select(nullptr);
-			
-			lattice_process();
-			
-			lattice_flush();
-		}
-		
+		if (lattice_connect("98.243.47.31", 8805) < 0) return false;
+		return true;
 	}
 	
 }

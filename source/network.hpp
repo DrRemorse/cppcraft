@@ -1,6 +1,8 @@
 #ifndef NETWORK_HPP
 #define NETWORK_HPP
 
+#include <thread>
+
 namespace cppcraft
 {
 	
@@ -8,11 +10,14 @@ namespace cppcraft
 	{
 	public:
 		void init();
-		
-		void start();
+		void stop();
 		
 	private:
-		void connect();
+		void mainLoop();
+		bool connect();
+		
+		bool running;
+		std::thread networkThread;
 		
 	};
 	extern Network network;

@@ -1,5 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="fbcraft" InternalType="Console">
+  <VirtualDirectory Name="inc">
+    <VirtualDirectory Name="liblattice">
+      <File Name="inc/liblattice/socket.h"/>
+      <File Name="inc/liblattice/macros.h"/>
+      <File Name="inc/liblattice/send.h"/>
+      <File Name="inc/liblattice/lattice_config.h"/>
+      <File Name="inc/liblattice/coordinates.h"/>
+      <File Name="inc/liblattice/server_commands.h"/>
+      <File Name="inc/liblattice/neighbors.h"/>
+      <File Name="inc/liblattice/globals.h"/>
+      <File Name="inc/liblattice/serversocket.h"/>
+      <File Name="inc/liblattice/liblattice.h"/>
+      <File Name="inc/liblattice/client_commands.h"/>
+      <File Name="inc/liblattice/struct.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="lzo">
+      <File Name="inc/lzo/lzo1c.h"/>
+      <File Name="inc/lzo/lzo1z.h"/>
+      <File Name="inc/lzo/lzo1f.h"/>
+      <File Name="inc/lzo/lzo1x.h"/>
+      <File Name="inc/lzo/lzo1.h"/>
+      <File Name="inc/lzo/lzoutil.h"/>
+      <File Name="inc/lzo/lzodefs.h"/>
+      <File Name="inc/lzo/lzo1y.h"/>
+      <File Name="inc/lzo/lzoconf.h"/>
+      <File Name="inc/lzo/lzo1a.h"/>
+      <File Name="inc/lzo/lzo2a.h"/>
+      <File Name="inc/lzo/lzo_asm.h"/>
+      <File Name="inc/lzo/lzo1b.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="GL">
+      <File Name="inc/GL/glext.h"/>
+      <File Name="inc/GL/glfw3native.h"/>
+      <File Name="inc/GL/glfw3.h"/>
+    </VirtualDirectory>
+    <File Name="inc/bass.h"/>
+  </VirtualDirectory>
   <Plugins>
     <Plugin Name="qmake">
       <![CDATA[00010001N0005Debug000000000000]]>
@@ -345,14 +382,6 @@
     <File Name="source/lighttable.cpp"/>
     <File Name="source/network.hpp"/>
     <File Name="source/network.cpp"/>
-    <VirtualDirectory Name="network">
-      <File Name="source/network/lattice_config.h"/>
-      <File Name="source/network/coordinates.h"/>
-      <File Name="source/network/globals.h"/>
-      <File Name="source/network/serversocket.h"/>
-      <File Name="source/network/liblattice.h"/>
-      <File Name="source/network/struct.h"/>
-    </VirtualDirectory>
     <File Name="source/drawq_rendergrid.cpp"/>
   </VirtualDirectory>
   <Description/>

@@ -180,9 +180,9 @@ void main(void)
 	// if player is underwater, we need to see the sky properly:
 	dep = underw.a - dep;
 	
-	// minimum depth: 0.05, grows very quickly
+	// minimum depth: 0.06, grows very quickly
 	if (playerSubmerged == 0)
-	dep = min(0.85, 1.0 - smoothstep(0.0, 0.06, dep)) * (1.0 - fresnel);
+	dep = 1.0 - smoothstep(0.0, 0.06, dep) * (1.0 - fresnel);
 	
 	// create water "color"
 	vec3 waterColor = mix(deepwater, shallowwater, dep) * daylight;
@@ -194,7 +194,7 @@ void main(void)
 	// add reflections
 	if (playerSubmerged == 0)
 	{
-		float reflevel = min(1.0, 0.7 * fresnel + (0.5 - daylight * 0.5));
+		float reflevel = min(1.0, 0.7 * fresnel + underw.a * 0.3);
 		color.rgb = mix(color.rgb, wreflection.rgb, reflevel);
 	}
 	

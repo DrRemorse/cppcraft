@@ -14,7 +14,7 @@ endif
 
 # build options
 # -Ofast -msse4.1 -ffast-math -mfpmath=both
-BUILDOPT = -Ofast -msse4.1 -ffast-math -mfpmath=both
+BUILDOPT = -ggdb3
 # output file
 OUTPUT   = ./Debug/cppcraft
 

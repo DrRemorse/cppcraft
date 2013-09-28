@@ -3,6 +3,7 @@
 #include "library/log.hpp"
 #include "library/timing/timer.hpp"
 #include "chunks.hpp"
+#include "network.hpp"
 #include "particles.hpp"
 #include "player.hpp"
 #include "precompq.hpp"
@@ -21,6 +22,9 @@ namespace cppcraft
 	
 	void WorldManager::main()
 	{
+		// start me some networking
+		network.init();
+		
 		// integral delta timing
 		Timer timer;
 		double _localtime = timer.getDeltaTime();
@@ -116,15 +120,14 @@ namespace cppcraft
 		// flush if queue still exists
 		chunks.flushChunks();
 		
+		// save our stuff!
+		world.save();
+		
 		// stop precompq
 		precompq.stop();
 		
-		// disconnect if still connected
-		#ifdef USE_INET
-			networkDisconnect();
-		#endif
+		// stop & wait for network thread
+		network.stop();
 		
-		// save our stuff!
-		world.save();
 	}
 }
