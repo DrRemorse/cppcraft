@@ -394,6 +394,20 @@ namespace cppcraft
 		
 	}
 	
+	void renderReflectedColumn(Column* cv, int i, vec3& position, GLint loc_vtrans)
+	{
+		if (position.x != cv->pos.x || 
+			position.z != cv->pos.z)
+		{
+			// remember position
+			position = vec3(cv->pos.x, 0, cv->pos.z);
+			// translate to new position
+			glUniform3fv(loc_vtrans, 1, &position.x);
+		}
+		glBindVertexArray(cv->vao);
+		glDrawArrays(GL_QUADS, cv->bufferoffset[i], cv->vertices[i]);
+	}
+	
 	void SceneRenderer::renderReflectedScene(Renderer& renderer, library::Camera& renderCam)
 	{
 		GLint loc_vtrans, location;
@@ -447,12 +461,8 @@ namespace cppcraft
 			for (int j = 0; j < reflectionq[i].count(); j++)
 			{
 				Column* cv = reflectionq[i].get(j);
-				if (cv->aboveWater)
-				{
-					renderColumn(cv, i, position, loc_vtrans, renderer.dtime);
-				}
+				renderReflectedColumn(cv, i, position, loc_vtrans);
 			}
-			
 		} // next shaderline
 		
 	}

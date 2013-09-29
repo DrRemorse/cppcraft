@@ -2,6 +2,7 @@
 #define LIGHTTABLE_HPP
 
 #include <vector>
+#include "library/storage/bitarray.hpp"
 
 namespace cppcraft
 {
@@ -14,7 +15,7 @@ namespace cppcraft
 		
 		int elements;
 		// bool for setting "slot is used" flag
-		bool* inuse;
+		library::BitArray inuse;
 		// complex color, containing shadow + fake AO + emissive color (8 channels)
 		vertex_color_t* value;
 		
@@ -23,7 +24,6 @@ namespace cppcraft
 		~PrecompScratchTable();
 		
 		void clear();
-		inline int element(int, int, int) const;
 		void set(int, int, int, vertex_color_t);
 		bool           isset(int, int, int) const;
 		vertex_color_t color(int, int, int) const;

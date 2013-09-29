@@ -13,7 +13,9 @@ namespace cppcraft
 		// position below Y-position when column first appearing in world
 		static const float COLUMN_DEPRESSION;
 		
-		Column(int x, int z); // initialize column with position (x, z)
+		// initialize column with position (x, z)
+		// position y is used to determine if the column is above the waterline
+		Column(int x, int y, int z);
 		
 		bool renderable; // is renderable
 		bool updated;    // needs update

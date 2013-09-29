@@ -224,6 +224,10 @@
       <File Name="source/library/config.hpp"/>
       <File Name="source/library/log.cpp"/>
       <File Name="source/library/log.hpp"/>
+      <VirtualDirectory Name="storage">
+        <File Name="source/library/storage/bitarray.cpp"/>
+        <File Name="source/library/storage/bitarray.hpp"/>
+      </VirtualDirectory>
     </VirtualDirectory>
     <File Name="source/atmosphere.cpp"/>
     <File Name="source/atmosphere.hpp"/>

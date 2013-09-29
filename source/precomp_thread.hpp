@@ -108,13 +108,14 @@ namespace cppcraft
 		void applyFaceLightingAll(int bx, int by, int bz);
 	};
 	
-	struct ao_struct;
+	class AmbientOcclusion;
 	
 	class PrecompThread
 	{
 	public:
 		Precomp* precomp;
 		PrecompThreadData pcg;
+		AmbientOcclusion* occ = nullptr;
 		
 		// stage 1, gathering info
 		bool isolator();
@@ -127,7 +128,7 @@ namespace cppcraft
 		void cancelPrecomp();
 		
 		// ao gradient program, adding corner shadows to a completed mesh
-		void ambientOcclusionGradients(vertex_t* datadump, int vertexCount);
+		void ambientOcclusionGradients(AmbientOcclusion* ambocc, vertex_t* datadump, int vertexCount);
 	};
 	
 }

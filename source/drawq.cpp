@@ -8,8 +8,8 @@ using namespace library;
 
 namespace cppcraft
 {
-	DrawQueue drawq;
-	DrawQueue reflectionq;
+	DrawQueue drawq(false);
+	DrawQueue reflectionq(true);
 	
 	// create all queue shaderlines
 	void DrawQueue::init()

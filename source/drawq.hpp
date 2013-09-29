@@ -57,8 +57,11 @@ namespace cppcraft
 	{
 	private:
 		DrawQueueShaderline lines[RenderConst::MAX_UNIQUE_SHADERS];
+		bool above;
 		
 	public:
+		DrawQueue(bool aboveWaterOnly) : above(aboveWaterOnly) {}
+		
 		// initialize drawing queue
 		void init();
 		// reset drawing queue (all shaderlines)

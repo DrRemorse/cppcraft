@@ -1,8 +1,11 @@
 #include "lighttable.hpp"
 
+#include "library/log.hpp"
 #include "lighting.hpp"
 #include "sector.hpp"
 #include <cstring>
+
+using namespace library;
 
 namespace cppcraft
 {
@@ -10,38 +13,37 @@ namespace cppcraft
 	{
 		this->elements = (Sector::BLOCKS_XZ + 2) * (Sector::BLOCKS_Y + 2) * (Sector::BLOCKS_XZ + 2);
 		
-		inuse = new bool          [elements];
+		inuse = BitArray(elements);
 		value = new vertex_color_t[elements];
 	}
 	PrecompScratchTable::~PrecompScratchTable()
 	{
-		delete[] inuse;
 		delete[] value;
 	}
 	
 	void PrecompScratchTable::clear()
 	{
 		// clear inuse array, but NOT value array
-		memset (this->inuse, 0, elements * sizeof(this->inuse[0]));
+		inuse.clear();
 	}
 	
-	inline int PrecompScratchTable::element(int x, int y, int z) const
+	inline int element(int x, int y, int z)
 	{
 		return ((x + 1) * (Sector::BLOCKS_Y + 2) + (y + 1)) * (Sector::BLOCKS_XZ + 2) + (z + 1);
 	}
 	
 	void PrecompScratchTable::set(int x, int y, int z, vertex_color_t vcolor)
 	{
-		// set the isset value to true
 		int index = element(x, y, z);
-		this->inuse[index] = true;
+		// set the inuse value (bit) to true
+		inuse.set(index);
 		// and set vertex color
 		this->value[index] = vcolor;
 	}
 	
 	bool PrecompScratchTable::isset(int x, int y, int z) const
 	{
-		return this->inuse[element(x, y, z)];
+		return inuse[element(x, y, z)];
 	}
 	
 	vertex_color_t PrecompScratchTable::color(int x, int y, int z) const
@@ -59,7 +61,7 @@ namespace cppcraft
 		}
 		// otherwise, calculate new complex color
 		vertex_color_t vcolor = Lighting.lightCheck(*this, sector, x, y, z, Lighting.ray_count);
-		// set value
+		// set (remember) value
 		table.set(x, y, z, vcolor);
 		// return value
 		return vcolor;

@@ -1,6 +1,7 @@
 #include "precomp_thread.hpp"
 
 #include "library/log.hpp"
+#include "library/storage/bitarray.hpp"
 
 #include "blockmodels.hpp"
 #include "lighting.hpp"
@@ -8,27 +9,56 @@
 #include "sector.hpp"
 #include "spiders.hpp"
 #include "renderconst.hpp"
+#include <cstring>
 
 using namespace library;
 
 namespace cppcraft
 {
-	struct ao_struct
+	class AmbientOcclusion
 	{
+	public:
 		static const int CRASH_MAX_POINTS = 2400;
+		static const int POINT_ELEMENTS = CRASH_MAX_POINTS * 8 * 6;
 		
-		int count = 0;
+		// number of corner points set (must be cleared)
+		int count;
 		
-		// lookup table
+		// lookup table (must be cleared)
 		short t_lookup[Sector::BLOCKS_XZ+1]
 					  [Sector::BLOCKS_Y +1]
-					  [Sector::BLOCKS_XZ+1] = {{{0}}};
-		// counters for how many vertices are added to each face
-		bool t_count[CRASH_MAX_POINTS][8][6] = {{{false}}};
-		// corner shadow value
+					  [Sector::BLOCKS_XZ+1];
+		// bit array for defining which faces are connected to each point (must be cleared)
+		BitArray pointData;
+		// corner shadow value (does not need to be cleared)
 		unsigned char t_corner[CRASH_MAX_POINTS];
-		// test data
+		// test data (does not need to be cleared)
 		visiblefaces_t testdata;
+		
+		AmbientOcclusion()
+		{
+			pointData = BitArray(POINT_ELEMENTS);
+		}
+		
+		// get/set point bits
+		void setPoint(int index, int corner, int face)
+		{
+			pointData.set((index * 8 + corner) * 6 + face);
+		}
+		bool getPoint(int index, int corner, int face) const
+		{
+			return pointData[(index * 8 + corner) * 6 + face];
+		}
+		
+		void clear()
+		{
+			count = 0;
+			// clear point bitarray
+			pointData.clear();
+			// clear lookup table
+			memset(t_lookup, 0, sizeof(t_lookup));
+		}
+		
 	};
 	
 	void PrecompThread::ambientOcclusion()
@@ -63,7 +93,11 @@ namespace cppcraft
 		
 		// ambient occlusion processing stage
 		#ifdef AMBIENT_OCCLUSION_GRADIENTS
-			ambientOcclusionGradients(precomp->datadump, cnt);
+			if (this->occ == nullptr)
+			{
+				this->occ = new AmbientOcclusion();
+			}
+			ambientOcclusionGradients(this->occ, precomp->datadump, cnt);
 		#endif
 		
 		// optimize mesh
@@ -93,7 +127,7 @@ namespace cppcraft
 		sector.precomp = 5; // flag as ready for compiler
 	}
 	
-	short addCornerShadowVertex(ao_struct& ao, vertex_t* vt, short x, short y, short z)
+	short addCornerShadowVertex(AmbientOcclusion& ao, vertex_t* vt, short x, short y, short z)
 	{
 		short corner = vt->face >> 3;
 		corner =(corner & 1) + // 0 if left,  1 if right
@@ -116,11 +150,11 @@ namespace cppcraft
 		}
 		
 		// add this vertex information
-		ao.t_count[index][corner][face] = true;
+		ao.setPoint(index, corner, face);
 		return index;
 	}
 	
-	void runCornerShadowTest(ao_struct& ao, int facing, short baseX, short baseY, short baseZ)
+	void runCornerShadowTest(AmbientOcclusion& ao, int facing, short baseX, short baseY, short baseZ)
 	{
 		// this block was visible
 		for (int i = 0; i < 6; i++) // iterate faces
@@ -155,11 +189,13 @@ namespace cppcraft
 		return (id > AIR_END && id < CROSS_START && id != _LANTERN && id != _VINES);
 	}
 	
-	void PrecompThread::ambientOcclusionGradients(vertex_t* datadump, int vertexCount)
+	void PrecompThread::ambientOcclusionGradients(AmbientOcclusion* ambocc, vertex_t* datadump, int vertexCount)
 	{
 		// ambient occlusion structure
-		ao_struct ao;
-		ao.count = 0;
+		AmbientOcclusion& ao = *ambocc;
+		// clear/reset any previous data
+		ao.clear();
+		
 		// sector belonging to precomp
 		Sector& sector = precomp->sector[0];
 		
@@ -240,7 +276,7 @@ namespace cppcraft
 		for (int n = 1; n <= ao.count; n++)
 		{
 			// calculate final look of vertex x,y,z
-			#define gets(vertex, face) ao.t_count[n][vertex][face]
+			#define gets(vertex, face) ao.getPoint(n, vertex, face)
 			
 			// 1 0 0 = { 1 + 0 + 0 } = 1
 			// 0 1 0 = { 0 + 2 + 0 } = 2

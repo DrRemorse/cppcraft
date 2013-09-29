@@ -7,6 +7,7 @@
 #include "library/opengl/window.hpp"
 #include "library/opengl/camera.hpp"
 
+#include "drawq.hpp"
 #include "gameconf.hpp"
 #include "minimap.hpp"
 #include "particles.hpp"
@@ -94,7 +95,7 @@ namespace cppcraft
 		skyrenderer.render(camera, underwater);
 		
 		// render clouds before terrain if we are submerged in water
-		if (underwater)
+		if (true) //underwater)
 		{
 			glEnable(GL_BLEND);
 			glColorMask(1, 1, 1, 0);
@@ -200,8 +201,9 @@ namespace cppcraft
 		}
 		
 		const bool renderconfReflection = true;
+		const bool renderconfReflectTerrain = true;
 		
-		if (underwater == false)
+		if (underwater == false && drawq[(int)RenderConst::MAX_UNIQUE_SHADERS-1].count() != 0)
 		{
 			if (renderconfReflection)
 			{
@@ -223,12 +225,15 @@ namespace cppcraft
 				
 				skyrenderer.render(reflectionCamera, false);
 				
-				glEnable(GL_DEPTH_TEST);
-				glDepthFunc(GL_LEQUAL);
-				glDepthMask(GL_TRUE);
-				glEnable(GL_CULL_FACE);
-				
-				renderReflectedScene(renderer, reflectionCamera);
+				if (renderconfReflectTerrain)
+				{
+					glEnable(GL_DEPTH_TEST);
+					glDepthFunc(GL_LEQUAL);
+					glDepthMask(GL_TRUE);
+					glEnable(GL_CULL_FACE);
+					
+					renderReflectedScene(renderer, reflectionCamera);
+				}
 				
 				// render clouds to be reflected after terrain
 				if (true)
@@ -325,7 +330,7 @@ namespace cppcraft
 		
 		glColorMask(1, 1, 1, 0);
 		
-		if (underwater == false)
+		if (false) //underwater == false)
 		{
 			// render clouds
 			skyrenderer.renderClouds(-playerY, camera, renderer.frametick);

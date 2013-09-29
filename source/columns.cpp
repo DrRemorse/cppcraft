@@ -36,7 +36,7 @@ namespace cppcraft
 		for (int z = 0; z < Sectors.getXZ(); z++)
 		for (int y = 0; y < COLUMNS_Y; y++)
 		{
-			this->columns[i++] = new Column(x, z);
+			this->columns[i++] = new Column(x, y, z);
 		}
 		
 		////////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ namespace cppcraft
 		
 	}
 	
-	Column::Column(int x, int z)
+	Column::Column(int x, int y, int z)
 	{
 		// initialize VAO to 0, signifying a column without valid GL resources
 		this->vao = 0;
@@ -60,6 +60,8 @@ namespace cppcraft
 		this->updated    = false;
 		this->renderable = false;
 		this->hasdata = false;
+		// the column is above water if the first sector is >= water level
+		this->aboveWater = (y * Columns.COLUMNS_SIZE * Sector::BLOCKS_Y >= RenderConst::WATER_LEVEL);
 	}
 	
 	void Column::compile(int x, int y, int z)
@@ -283,8 +285,6 @@ namespace cppcraft
 		this->updated    = false;
 		// the vbo has data stored in gpu
 		this->hasdata = true;
-		// the column is above water if the first sector is >= water level
-		this->aboveWater = (start_y * Sector::BLOCKS_Y >= RenderConst::WATER_LEVEL);
 		
 		// reset occluded state
 		for (size_t i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)

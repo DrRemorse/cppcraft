@@ -165,14 +165,8 @@ namespace cppcraft
 						
 						for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 						{
-							if (cv.vertices[i])
+							if (cv.vertices[i] != 0 && (this->above == false || cv.aboveWater == true))
 							{
-								// as long as not currently testing:
-								if (false) //cv.occluded[i] != 1)
-								{
-									// as long as not contested or was not rendered last frame
-									cv.occluded[i] = 3;
-								}
 								cv.occluded[i] = 0;
 								// add to draw queue
 								this[0][i].add(&cv);

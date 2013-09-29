@@ -7,14 +7,14 @@ SOURCE_DIR  = source
 SOURCE_DIRS = . tests
 LIBRARY_DIRS = library library/bitmap library/compression library/math     \
 				library/network library/noise library/opengl library/sound \
-				library/threading library/timing library/voxels
+				library/storage library/threading library/timing library/voxels
 ifeq ($(OS),Windows_NT)
 RESOURCES = res/cppcraft.rc
 endif
 
 # build options
 # -Ofast -msse4.1 -ffast-math -mfpmath=both
-BUILDOPT = -ggdb3
+BUILDOPT = -Ofast -msse4.1 -ffast-math -mfpmath=both
 # output file
 OUTPUT   = ./Debug/cppcraft
 
