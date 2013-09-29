@@ -3,13 +3,19 @@
 
 #include "bass.h"
 #include <string>
+#include <memory>
 
 namespace library
 {
+	class SoundHandle;
+	
 	class Stream
 	{
 	private:
-		HSTREAM handle;
+		typedef std::shared_ptr<SoundHandle> soundHandle;
+		
+		soundHandle handle;
+		
 		// crossfade related
 		float  volume;
 		double startTime;
@@ -20,8 +26,7 @@ namespace library
 		Stream();
 		Stream(std::string);
 		
-		void load( std::string );
-		bool destroy();
+		void load(std::string filename);
 		
 		bool play();
 		void stop();

@@ -2,6 +2,8 @@
 
 #include "../log.hpp"
 #include "../math/toolbox.hpp"
+#include "soundhandle.hpp"
+#include "soundsystem.hpp"
 
 namespace library
 {
@@ -9,46 +11,50 @@ namespace library
 	const float Sound::MAX_PAN_DIST = 100.0f;
 	const float Sound::MAX_VOL_DIST = 25.0f;
 	
-	Sound::Sound()
+	Sound::Sound(std::string filename)
 	{
-		handle = 0;
+		load(filename, 1);
+	}
+	Sound::Sound(std::string filename, int samples)
+	{
+		load(filename, samples);
 	}
 	
-	Sound::Sound(std::string s): handle(0)
+	Sound& Sound::operator= (const Sound& sound)
 	{
-		load(s, 1);
-	}
-	Sound::Sound(std::string s, int samples): handle(0)
-	{
-		load(s, samples);
+		this->handle = sound.handle;
+		return *this;
 	}
 	
-	void Sound::load(std::string s, int samples)
+	void Sound::load(std::string filename, int samples)
 	{
-		this->handle = BASS_SampleLoad(FALSE, s.c_str(), 0, 0, samples, BASS_SAMPLE_OVER_VOL);
+		// a sound is going to be added to the system, increase reference counter
+		SoundSystem::increase();
+		
+		// create sample handle, decode file
+		HSAMPLE sample = BASS_SampleLoad(FALSE, filename.c_str(), 0, 0, samples, BASS_SAMPLE_OVER_VOL);
 		
 		if (BASS_ErrorGetCode())
 		{
 			logger << Log::ERR << "Sound::load(): BASS_SampleLoad error: " << BASS_ErrorGetCode() << Log::ENDL;
-			throw std::string("Sound::load(): BASS sample file: " + s);
+			throw std::string("Sound::load(): BASS sample file: " + filename);
 		}
 		
-		if (this->handle == 0)
-			throw std::string("Sound::load(): Invalid handle from BASS_SampleLoad");
+		if (sample == 0)
+		{
+			logger << Log::ERR << "Sound::load(): Invalid handle from BASS_SampleLoad" << Log::ENDL;
+			throw std::string("Sound::load(): Invalid sample handle for: " + filename);
+		}
 		
-		HCHANNEL ch = BASS_SampleGetChannel( this->handle, FALSE );
-		if (ch == 0) throw std::string("Sound::load(): Invalid channel handle for " + s);
-	}
-	
-	bool Sound::destroy()
-	{
-		if (handle) return BASS_SampleFree(handle);
-		return false;
+		this->handle = soundHandle(new SoundHandle(sample, SoundHandle::SAMPLE));
+		
+		HCHANNEL ch = BASS_SampleGetChannel(sample, FALSE);
+		if (ch == 0) throw std::string("Sound::load(): Invalid channel handle for: " + filename);
 	}
 	
 	void Sound::play()
 	{
-		HCHANNEL ch = BASS_SampleGetChannel(this->handle, FALSE);
+		HCHANNEL ch = BASS_SampleGetChannel(*handle, FALSE);
 		if (ch == 0) throw std::string("Sound::play(): Invalid handle from BASS_SampleGetChannel");
 		
 		BASS_ChannelSetAttribute(ch, BASS_ATTRIB_VOL, masterVolume);
@@ -63,7 +69,7 @@ namespace library
 		float pan = v.x * toolbox::min(1.0, L / MAX_PAN_DIST);
 		float vol = toolbox::clamp(0.0, 1.0, L / MAX_VOL_DIST);
 		
-		HCHANNEL ch = BASS_SampleGetChannel(handle, FALSE);
+		HCHANNEL ch = BASS_SampleGetChannel(*handle, FALSE);
 		BASS_ChannelSetAttribute(ch, BASS_ATTRIB_VOL, vol * masterVolume);
 		BASS_ChannelSetAttribute(ch, BASS_ATTRIB_PAN, pan);
 

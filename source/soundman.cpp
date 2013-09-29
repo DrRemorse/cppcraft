@@ -28,9 +28,6 @@ namespace cppcraft
 	{
 		logger << Log::INFO << "* Initializing sound system" << Log::ENDL;
 		
-		if (BASS_Init(-1, 44100, 0, 0, nullptr) == 0)
-			throw std::string("Soundman(): Error initializing BASS library");
-		
 		// load sounds
 		soundPlaylist();
 		// load music & ambience
@@ -42,11 +39,6 @@ namespace cppcraft
 		underwaterPlayer = StreamChannel(0.01, 0.5);
 		
 		logger << Log::INFO << "* Sound system initialized" << Log::ENDL;
-	}
-	
-	Soundman::~Soundman()
-	{
-		BASS_Free();
 	}
 	
 	void Soundman::playSound(named_sound_t s, vec3 v)

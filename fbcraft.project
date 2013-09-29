@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="fbcraft" InternalType="Console">
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00010001N0005Debug000000000000]]>
+    </Plugin>
+  </Plugins>
   <VirtualDirectory Name="inc">
     <VirtualDirectory Name="liblattice">
       <File Name="inc/liblattice/socket.h"/>
@@ -37,11 +42,6 @@
     </VirtualDirectory>
     <File Name="inc/bass.h"/>
   </VirtualDirectory>
-  <Plugins>
-    <Plugin Name="qmake">
-      <![CDATA[00010001N0005Debug000000000000]]>
-    </Plugin>
-  </Plugins>
   <Reconciliation>
     <Regexes/>
     <Excludepaths/>
@@ -198,6 +198,9 @@
         <File Name="source/library/sound/stream_channel.hpp"/>
         <File Name="source/library/sound/stream.cpp"/>
         <File Name="source/library/sound/stream.hpp"/>
+        <File Name="source/soundsystem.hpp"/>
+        <File Name="source/library/sound/soundsystem.cpp"/>
+        <File Name="source/library/sound/soundhandle.hpp"/>
       </VirtualDirectory>
       <VirtualDirectory Name="threading">
         <File Name="source/library/threading/TThread.cpp"/>

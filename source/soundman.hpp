@@ -11,7 +11,6 @@ namespace cppcraft
 	class Soundman
 	{
 	public:
-		~Soundman();
 		void init();
 		
 		typedef enum

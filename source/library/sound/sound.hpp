@@ -2,30 +2,38 @@
 #define SOUND_HPP
 
 #include "../math/vector.hpp"
-#include "bass.h"
+#include <bass.h>
+#include <memory>
 #include <string>
 
 namespace library
 {
+	class SoundHandle;
+	
 	class Sound
 	{
 	private:
-		HSAMPLE handle;
+		typedef std::shared_ptr<SoundHandle> soundHandle;
+		
+		soundHandle handle;
+		
+		// initialization of sound library
+		static int   initialized;
 		// master volume for samples [0..1]
 		static float masterVolume;
 		
 	public:
-		Sound();
+		Sound() {}
 		Sound(std::string fname);
 		Sound(std::string fname, int samples);
+		
+		Sound& operator= (const Sound& sound);
 		
 		void load(std::string filename, int samples);
 		void setVolume(float vol);
 		
 		void play(vec3);
 		void play();
-		
-		bool destroy();
 		
 		static void setMasterVolume(float vol);
 		

@@ -524,9 +524,9 @@ namespace cppcraft
 		// if no shadows were set, return immediately
 		if (weSetSomething == false) return;
 		
-		// set iterators
-		lastCorner = (lastCorner + 1) - firstCorner;
-		// first vertex
+		// calculate total elements
+		lastCorner += 1 - firstCorner;
+		// find first vertex
 		vt = datadump + firstCorner;
 		
 		// set corner shadow for each corner found

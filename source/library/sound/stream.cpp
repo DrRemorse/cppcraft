@@ -2,56 +2,66 @@
 
 #include "../math/toolbox.hpp"
 #include "../log.hpp"
+#include "soundhandle.hpp"
+#include "soundsystem.hpp"
 
 namespace library
 {
 	float Stream::masterVolume = 1.0;
 	Stream::Stream() {}
 	
-	Stream::Stream(std::string s): handle(0)
+	Stream::Stream(std::string filename)
 	{
-		load(s);
+		load(filename);
 	}
 	
-	void Stream::load (std::string s)
+	void Stream::load (std::string filename)
 	{
-		this->handle = BASS_StreamCreateFile(FALSE, s.c_str(), 0, 0, BASS_SAMPLE_LOOP);
+		// increase sound system reference counter
+		SoundSystem::increase();
+		
+		// create (dormant) stream by decoding file
+		HSTREAM stream = BASS_StreamCreateFile(FALSE, filename.c_str(), 0, 0, BASS_SAMPLE_LOOP);
 		
 		if (BASS_ErrorGetCode())
 		{
-			throw std::string("Stream::load(): BASS failed to load stream: " + s);
+			logger << Log::ERR << "Stream::load(): BASS error: " << BASS_ErrorGetCode() << Log::ENDL;
+			throw std::string("Stream::load(): BASS failed to load stream: " + filename);
 		}
-	}
-	
-	bool Stream::destroy()
-	{
-		if (handle) return BASS_StreamFree(handle);
-		return false;
+		
+		if (stream == 0)
+		{
+			throw std::string("Stream::load(): BASS invalid stream handle for: " + filename);
+		}
+		
+		this->handle = soundHandle(new SoundHandle(stream, SoundHandle::STREAM));
 	}
 	
 	bool Stream::play()
 	{
-		if (!handle) 
-			throw std::string("Stream::play(): Failed to play stream");
+		if (*handle == 0)
+		{
+			throw std::string("Stream::play(): Failed to play stream (invalid stream handle)");
+		}
 		
-		return BASS_ChannelPlay(handle, TRUE) != 0;
+		return BASS_ChannelPlay(*handle, TRUE) != 0;
 	}
 	
 	bool Stream::isPlaying() const noexcept
 	{
-		if (!handle) return false;
-		return BASS_ChannelIsActive(handle) == BASS_ACTIVE_PLAYING;
+		if (*handle == 0) return false;
+		return BASS_ChannelIsActive(*handle) == BASS_ACTIVE_PLAYING;
 	}
 	
 	void Stream::stop()
 	{
-		BASS_ChannelStop(handle);
+		BASS_ChannelStop(*handle);
 	}
 	
 	void Stream::setVolume(float vol)
 	{
 		vol = toolbox::clamp(0.0, 1.0, vol);
-		BASS_ChannelSetAttribute(handle, BASS_ATTRIB_VOL, vol * masterVolume);
+		BASS_ChannelSetAttribute(*handle, BASS_ATTRIB_VOL, vol * masterVolume);
 		
 		if (BASS_ErrorGetCode())
 		{
