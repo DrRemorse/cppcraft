@@ -163,7 +163,7 @@ namespace cppcraft
 			
 			// frustum.ref: run occlusion tests
 			// - is never automatically disabled
-			// frustum.needsupd = gather occlusion data
+			// frustum.needsupd = occlusion data gathering & processing
 			// - once an update has happened, it is disabled
 			
 			if (frustumRecalc)
@@ -200,12 +200,9 @@ namespace cppcraft
 			compressRenderingQueue();
 		}
 		
-		const bool renderconfReflection = true;
-		const bool renderconfReflectTerrain = true;
-		
 		if (underwater == false && drawq[(int)RenderConst::MAX_UNIQUE_SHADERS-1].count() != 0)
 		{
-			if (renderconfReflection)
+			if (gameconf.reflections)
 			{
 				reflectionCamera.ref = camera.ref;
 				reflectionCamera.rotated = camera.rotated;
@@ -225,7 +222,7 @@ namespace cppcraft
 				
 				skyrenderer.render(reflectionCamera, false);
 				
-				if (renderconfReflectTerrain)
+				if (gameconf.reflectTerrain)
 				{
 					glEnable(GL_DEPTH_TEST);
 					glDepthFunc(GL_LEQUAL);
@@ -260,7 +257,14 @@ namespace cppcraft
 		reflectionFBO.bind();
 		reflectionFBO.attachColor(0, textureman.get(Textureman::T_UNDERWATERMAP));
 		
-		sceneFBO.blitTo(reflectionFBO, renderer.gamescr.SW, renderer.gamescr.SH, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		if (underwater)
+		{
+			sceneFBO.blitTo(reflectionFBO, renderer.gamescr.SW, renderer.gamescr.SH, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		}
+		else
+		{
+			glClear(GL_COLOR_BUFFER_BIT);
+		}
 		
 		sceneFBO.bind();
 		// replace skybuffer with underwater buffer
@@ -281,11 +285,11 @@ namespace cppcraft
 		renderPlayerSelection();
 		
 		// stop writing to underwatermap
-		sceneFBO.removeColor(1);
+		//sceneFBO.removeColor(1);
 		sceneFBO.drawBuffers();
 		
 		// cull water faces if player is not (fully) submerged in water
-		if (plogic.FullySubmerged == plogic.PS_None)
+		if (underwater == false)
 		{
 			glEnable(GL_CULL_FACE);
 		}

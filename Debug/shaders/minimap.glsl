@@ -26,7 +26,7 @@ uniform sampler2D texture;
 in vec2 vertex;
 in vec2 texCoord;
 
-uniform float visibility;
+const float visibility = 0.85;
 
 void main(void)
 {
@@ -38,7 +38,7 @@ void main(void)
 	// edge around minimap
 	color.a *= smoothstep(0.0, 0.1, dist);
 	// visibility setting
-	//color.a *= visibility;
+	color.a *= visibility;
 	
 	gl_FragColor = color;
 }

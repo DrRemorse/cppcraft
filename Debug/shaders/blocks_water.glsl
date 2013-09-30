@@ -115,18 +115,17 @@ void main(void)
 	srdnoise(waves.zw, 0.0, grad2);
 	
 	// final x/z values
-	grad = grad * 0.7 + grad2 * 0.3;
+	grad = grad * 0.8 + grad2 * 0.2;
 	
-	vec3 tx = vec3(0.0, 1.0, grad.x);
-	vec3 ty = vec3(1.0, 0.0, grad.y);
+	vec3 tx = vec3(1.0, 0.0, grad.x);
+	vec3 ty = vec3(0.0, 1.0, grad.y);
 	
-	vec3 Normal = vec3(grad.x, grad.y, 0.0);
-	Normal.y += 32; // make sure its extremely positive
+	vec3 Normal = cross(ty, tx); //vec3(grad.x, grad.y, 0.0);
+	Normal.y += 1.0; // make sure its extremely positive
 	Normal = normalize(Normal);
 	
 	vec3 vNormal = mat3(matview) * Normal;
-	#define viewNormal vNormal
-	#define fNormal    vNormal
+	vec3 viewNormal = v_normal;
 	
 	vec3 vReflect   = l_reflect + Normal * 0.125;
 	
@@ -138,8 +137,8 @@ void main(void)
 	
 	//----- fresnel term -----
 	
-	float fresnel = dot(vEye, fNormal);
-	fresnel = 0.02 + 0.97 * pow(1.0 - fresnel, 5.0);
+	float fresnel = dot(vEye, v_normal);
+	fresnel = 0.97 - max(0.0, pow(fresnel, 3.0));
 	
 	//----- REFRACTION -----
 	
@@ -149,8 +148,6 @@ void main(void)
 	// start with underwater texture
 	float wdepth = vertdist / ZFAR;
 	
-	// fake refraction
-	//refcoord.y -= viewNormal.z * 0.25 * wdepth;
 	// wave modulation
 	vec2 refcoord = texCoord + Normal.xz * 0.01 * (0.25 + 0.75 * wdepth);
 	
@@ -168,7 +165,7 @@ void main(void)
 		
 		// world/terrain reflection
 		wreflection = texture2D(reflectionmap, refcoord);
-		wreflection.rgb = mix(wreflection.rgb, vec3(0.7), 0.25);
+		wreflection.rgb = mix(wreflection.rgb, vec3(0.75), 0.2);
 	}
 	
 	//----- SEACOLOR -----
@@ -176,17 +173,26 @@ void main(void)
 	const vec3 deepwater    = vec3(0.26, 0.42, 0.50);
 	const vec3 shallowwater = vec3(0.35, 0.55, 0.60);
 	
-	float dep = vertdist / ZFAR;
-	// if player is underwater, we need to see the sky properly:
-	dep = underw.a - dep;
-	
-	// minimum depth: 0.06, grows very quickly
+	float dist = vertdist / ZFAR;
+	float dep;
+	// if player is underwater, we need to see the sky properly
+	// however, above water we want the sky to appear as 100% seafloor
 	if (playerSubmerged == 0)
-	dep = 1.0 - smoothstep(0.0, 0.06, dep) * (1.0 - fresnel);
+	{
+		dep = max(0.0, underw.a - dist);
+		// we also want the water to always be less than 100% see-through
+		const float SEETHROUGH = 0.6;
+		// minimum depth: 0.06, grows very quickly
+		dep = SEETHROUGH * (1.0 - smoothstep(0.0, 0.04, dist) * fresnel);
+	}
+	else
+	{
+		dep = max(0.0, underw.a - dist);
+	}
 	
 	// create water "color"
 	vec3 waterColor = mix(deepwater, shallowwater, dep) * daylight;
-	// mix water color and underwater / reflection
+	// mix water color and other-side
 	waterColor = mix(waterColor, underw.rgb, dep) * daylight;
 	// create final color value
 	vec4 color = vec4(waterColor, 1.0);
@@ -194,23 +200,24 @@ void main(void)
 	// add reflections
 	if (playerSubmerged == 0)
 	{
-		float reflevel = min(1.0, 0.7 * fresnel + underw.a * 0.3);
+		float reflevel = fresnel * dist;
 		color.rgb = mix(color.rgb, wreflection.rgb, reflevel);
 	}
+	
+	// fake waves
+	float wavereflect = dot(reflect(-vLight, vNormal), vEye);
+	color.rgb *= 1.0 + wavereflect * 0.1 * daylight;
 	
 	//- lighting (we need shadow later) -//
 	#include "lightw.glsl"
 	
-	// fake waves
-	//color.rgb *= 0.6 + pow(dot(Normal, l_normal), 2.0) * 0.5 * daylight;
-	
 	// sun / specular
-	const vec3  SUNCOLOR = vec3(1.0, 0.56, 0.23);
+	const vec3  SUNCOLOR = vec3(1.0, 0.57, 0.23);
 	const float SUNSPEC  = 0.55; // specular
 	const float SUNSHINE = 2.0; // shininess
 	
-	float shine = max(0.0, dot(fNormal, normalize(v_half)) );
-	float spec  = max(0.0, dot(reflect(-vLight, fNormal), vEye) );
+	float shine = max(0.0, dot(viewNormal, normalize(v_half)) );
+	float spec  = max(0.0, dot(reflect(-vLight, viewNormal), vEye));
 	
 	vec3 specular = SUNCOLOR * SUNSPEC * pow(spec, 16.0) + pow(spec, 4.0) * 0.3;
 	color.rgb += specular * pow(shine, SUNSHINE) * daylight * shadow * shadow;

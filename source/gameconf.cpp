@@ -12,12 +12,15 @@ namespace cppcraft
 	void GameConfig::init()
 	{
 		// rendering
-		multisampling = config.get("multisampling", 0);
-		anisotropy    = config.get("anisotropy", 2.0f);
+		multisampling = config.get("render.multisampling", 0);
+		anisotropy    = config.get("render.anisotropy", 1.0f);
 		
-		postprocess   = config.get("postprocess", true);
-		highq_blur    = config.get("highq_blur", true);
-		lensflare     = config.get("lensflare", true);
+		postprocess   = config.get("render.postprocess", true);
+		highq_blur    = config.get("render.highq_blur",  false);
+		lensflare     = config.get("render.lensflare",   true);
+		
+		reflections   = config.get("render.reflections", true);
+		reflectTerrain= config.get("render.reflect_terrain", false);
 		
 		playerlight   = config.get("playerlight", true);
 		playerhand    = config.get("playerhand", true);

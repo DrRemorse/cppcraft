@@ -1,11 +1,11 @@
 #ifndef VOXELIZER_HPP
 #define VOXELIZER_HPP
 
-#include "../math/vector.hpp"
-
 namespace library
 {
 	class Bitmap;
+	class vec3;
+	
 	class XModel
 	{
 	public:

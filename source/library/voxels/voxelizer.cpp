@@ -2,6 +2,7 @@
 
 #include "../bitmap/bitmap.hpp"
 #include "../bitmap/colortools.hpp"
+#include "../math/vector.hpp"
 #include <cstring>
 
 namespace library

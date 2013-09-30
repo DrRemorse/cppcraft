@@ -19,6 +19,8 @@ namespace cppcraft
 		bool postprocess;
 		bool highq_blur;
 		bool lensflare;
+		bool reflections;
+		bool reflectTerrain;
 		
 		bool playerlight;
 		bool fog;

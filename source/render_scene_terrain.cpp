@@ -6,6 +6,7 @@
 #include "columns.hpp"
 #include "drawq.hpp"
 #include "camera.hpp"
+#include "gameconf.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
 #include "renderman.hpp"
@@ -39,17 +40,22 @@ namespace cppcraft
 		
 		recalculateFrustum(camera, drawq, look);
 		
-		// set reflection camera view
-		Matrix matref = camera.getViewMatrix();
-		matref.translated(0, RenderConst::WATER_LEVEL*2, 0);
-		matref *= Matrix(1.0, -1.0, 1.0);
-		
-		reflectionCamera.setRotationMatrix(matref.rotation());
-		reflectionCamera.setViewMatrix(matref);
-		
-		look.y = -look.y;
-		
-		recalculateFrustum(reflectionCamera, reflectionq, look);
+		if (gameconf.reflections)
+		{
+			// set reflection camera view
+			Matrix matref = camera.getViewMatrix();
+			matref.translated(0, RenderConst::WATER_LEVEL*2, 0);
+			matref *= Matrix(1.0, -1.0, 1.0);
+			
+			reflectionCamera.setRotationMatrix(matref.rotation());
+			reflectionCamera.setViewMatrix(matref);
+			
+			if (gameconf.reflectTerrain)
+			{
+				look.y = -look.y;
+				recalculateFrustum(reflectionCamera, reflectionq, look);
+			}
+		}
 	}
 	
 	void SceneRenderer::recalculateFrustum(Camera& camera, DrawQueue& drawq, const vec3& look)

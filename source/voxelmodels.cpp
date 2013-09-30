@@ -1,9 +1,10 @@
 #include "voxelmodels.hpp"
 
 #include "library/bitmap/bitmap.hpp"
+#include "library/math/vector.hpp"
+#include "library/opengl/opengl.hpp"
 #include "library/voxels/voxelizer.hpp"
 #include "library/voxels/voxelmodel.hpp"
-#include "library/opengl/opengl.hpp"
 #include "blocks.hpp"
 #include "items.hpp"
 #include "tiles.hpp"

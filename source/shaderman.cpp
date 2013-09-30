@@ -229,8 +229,6 @@ namespace cppcraft
 		// minimap shader
 		shaders[MINIMAP] = Shader("shaders/minimap.glsl", tokenizer, linkstage);
 		shaders[MINIMAP].sendInteger("texture", 0);
-		// visibility
-		shaders[MINIMAP].sendFloat("visibility", 0.8);
 		
 		// Player hand shader
 		linkstage.clear();
