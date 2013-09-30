@@ -53,7 +53,7 @@ namespace cppcraft
 				sector.progress = Sector::PROG_NEEDRECOMP;
 			}
 			// update sector neighbors, if there are emissive lights on this sector
-			if (sector.torchlight)
+			if (sector.blockpt->lights)
 			{
 				// worst-case emissive block reach (_TORCH)
 				torchlight.lightSectorUpdates(sector, _TORCH, false);

@@ -203,9 +203,6 @@ namespace cppcraft
 			return;
 		}
 		
-		sector.hardsolid  = sector.blockpt->hardsolid;
-		sector.torchlight = sector.blockpt->lights;
-		
 		if (sector.blockpt->blocks == 0)
 		{
 			logger << Log::WARN << "*** Recorrection to nullsector - buggy chunk file" << Log::ENDL;

@@ -44,19 +44,17 @@ namespace cppcraft
 		//specialptr special;
 		
 		// grid position
-		int x, y, z;
+		short x, y, z;
 		
 		// flags
 		bool render;   // renderable
 		char progress; // progress_t
 		char contents; // sectorcontents_t
 		char precomp;  // precompilation stage
-		bool culled;
+		bool culled;   // surrounded by solids
 		bool hasWork;
 		// 0 = unknown (not computed), 1 = found no lights, 2 = found light(s)
 		char hasLight;
-		unsigned char hardsolid;
-		short torchlight; // number of lights (if any)
 		
 		typedef enum
 		{

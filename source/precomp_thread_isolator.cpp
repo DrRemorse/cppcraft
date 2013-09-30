@@ -68,29 +68,27 @@ namespace cppcraft
 		
 		if (sector.x) // -x
 		{
-			Sector* testsector = &Sectors(sector.x-1, sector.y, sector.z);
-			pcg.testdata.test_x_m = (testsector->hardsolid & 1) == 0;
+			Sector& testsector = Sectors(sector.x-1, sector.y, sector.z);
 			
-			if (pcg.testdata.test_x_m)
+			if (testsector.contents == Sector::CONT_NULLSECTOR)
 			{
-				if (testsector->contents == Sector::CONT_NULLSECTOR)
-				{
-					pcg.testdata.test_x_m = 1; // air  (always)
-				}
-				else if (testsector->contents == Sector::CONT_UNKNOWN)
-				{
-					// unfinished sector, cancel precompilation
-					cancelPrecomp();
-					return false;
-				}
-				else
+				pcg.testdata.test_x_m = 1; // air  (always)
+			}
+			else if (testsector.contents == Sector::CONT_UNKNOWN)
+			{
+				// unfinished sector, cancel precompilation
+				cancelPrecomp();
+				return false;
+			}
+			else // sector must have blocks (WARNING assumption)
+			{
+				pcg.testdata.test_x_m = (testsector.blockpt->hardsolid & 1) == 0;
+				if (pcg.testdata.test_x_m)
 				{
 					pcg.testdata.test_x_m = 2; // read (compare)
-					pcg.testdata.sb_x_m = testsector;
+					pcg.testdata.sb_x_m = &testsector;
 				}
-				
 			}
-			
 		}
 		else
 		{
@@ -99,24 +97,25 @@ namespace cppcraft
 		
 		if (sector.x != Sectors.getXZ()-1) // test +x
 		{
-			Sector* testsector = &Sectors(sector.x+1, sector.y, sector.z);
-			pcg.testdata.test_x_p = (testsector->hardsolid & 2) == 0;
+			Sector& testsector = Sectors(sector.x+1, sector.y, sector.z);
 			
-			if (pcg.testdata.test_x_p)
+			if (testsector.contents == Sector::CONT_NULLSECTOR)
 			{
-				if (testsector->contents == Sector::CONT_NULLSECTOR)
-				{
-					pcg.testdata.test_x_p = 1; // nullsector
-				}
-				else if (testsector->contents == Sector::CONT_UNKNOWN)
-				{
-					cancelPrecomp();
-					return false;
-				}
-				else
+				pcg.testdata.test_x_p = 1; // nullsector
+			}
+			else if (testsector.contents == Sector::CONT_UNKNOWN)
+			{
+				cancelPrecomp();
+				return false;
+			}
+			else // sector must have blocks (WARNING assumption)
+			{
+				pcg.testdata.test_x_p = (testsector.blockpt->hardsolid & 2) == 0;
+				
+				if (pcg.testdata.test_x_p)
 				{
 					pcg.testdata.test_x_p = 2; // contains data
-					pcg.testdata.sb_x_p   = testsector;
+					pcg.testdata.sb_x_p   = &testsector;
 				}
 			}
 		}
@@ -127,27 +126,27 @@ namespace cppcraft
 		
 		if (sector.y) // test -y
 		{
-			Sector* testsector = &Sectors(sector.x, sector.y-1, sector.z);
-			pcg.testdata.test_y_m = (testsector->hardsolid & 4) == 0;
+			Sector& testsector = Sectors(sector.x, sector.y-1, sector.z);
 			
-			if (pcg.testdata.test_y_m)
+			if (testsector.contents == Sector::CONT_NULLSECTOR)
 			{
-				if (testsector->contents == Sector::CONT_NULLSECTOR)
-				{
-					pcg.testdata.test_y_m = 1; // nullsector
-				}
-				else if (testsector->contents == Sector::CONT_UNKNOWN)
-				{
-					cancelPrecomp();
-					return false;
-				}
-				else
+				pcg.testdata.test_y_m = 1; // nullsector
+			}
+			else if (testsector.contents == Sector::CONT_UNKNOWN)
+			{
+				cancelPrecomp();
+				return false;
+			}
+			else // sector must have blocks (WARNING assumption)
+			{
+				pcg.testdata.test_y_m = (testsector.blockpt->hardsolid & 4) == 0;
+				
+				if (pcg.testdata.test_y_m)
 				{
 					pcg.testdata.test_y_m = 2; // contains data
-					pcg.testdata.sb_y_m   = testsector;
+					pcg.testdata.sb_y_m   = &testsector;
 				}
 			}
-			
 		}
 		else
 		{
@@ -156,24 +155,24 @@ namespace cppcraft
 		
 		if (sector.y != Sectors.getY()-1) // test +y
 		{
-			Sector* testsector = &Sectors(sector.x, sector.y+1, sector.z);
+			Sector& testsector = Sectors(sector.x, sector.y+1, sector.z);
 			
-			pcg.testdata.test_y_p = (testsector->hardsolid & 8) == 0;
-			if (pcg.testdata.test_y_p)
+			if (testsector.contents == Sector::CONT_NULLSECTOR)
 			{
-				if (testsector->contents == Sector::CONT_NULLSECTOR)
-				{
-					pcg.testdata.test_y_p = 1; // nullsector
-				}
-				else if (testsector->contents == Sector::CONT_UNKNOWN)
-				{
-					cancelPrecomp();
-					return false;
-				}
-				else
+				pcg.testdata.test_y_p = 1; // nullsector
+			}
+			else if (testsector.contents == Sector::CONT_UNKNOWN)
+			{
+				cancelPrecomp();
+				return false;
+			}
+			else // sector must have blocks (WARNING assumption)
+			{
+				pcg.testdata.test_y_p = (testsector.blockpt->hardsolid & 8) == 0;
+				if (pcg.testdata.test_y_p)
 				{
 					pcg.testdata.test_y_p = 2; // contains data
-					pcg.testdata.sb_y_p   = testsector;
+					pcg.testdata.sb_y_p   = &testsector;
 				}
 			}
 		}
@@ -184,24 +183,25 @@ namespace cppcraft
 		
 		if (sector.z) // test -z
 		{
-			Sector* testsector = &Sectors(sector.x, sector.y, sector.z-1);
-			pcg.testdata.test_z_m = (testsector->hardsolid & 16) == 0;
+			Sector& testsector = Sectors(sector.x, sector.y, sector.z-1);
 			
-			if (pcg.testdata.test_z_m)
+			if (testsector.contents == Sector::CONT_NULLSECTOR)
 			{
-				if (testsector->contents == Sector::CONT_NULLSECTOR)
-				{
-					pcg.testdata.test_z_m = 1; // nullsector
-				}
-				else if (testsector->contents == Sector::CONT_UNKNOWN)
-				{
-					cancelPrecomp();
-					return false;
-				}
-				else
+				pcg.testdata.test_z_m = 1; // nullsector
+			}
+			else if (testsector.contents == Sector::CONT_UNKNOWN)
+			{
+				cancelPrecomp();
+				return false;
+			}
+			else // sector must have blocks (WARNING assumption)
+			{
+				pcg.testdata.test_z_m = (testsector.blockpt->hardsolid & 16) == 0;
+				
+				if (pcg.testdata.test_z_m)
 				{
 					pcg.testdata.test_z_m = 2; // data
-					pcg.testdata.sb_z_m   = testsector;
+					pcg.testdata.sb_z_m   = &testsector;
 				}
 			}
 		}
@@ -213,20 +213,21 @@ namespace cppcraft
 		if (sector.z != Sectors.getXZ()-1) // test +z
 		{
 			Sector& testsector = Sectors(sector.x, sector.y, sector.z+1);
-			pcg.testdata.test_z_p = (testsector.hardsolid & 32) == 0;
 			
-			if (pcg.testdata.test_z_p)
+			if (testsector.contents == Sector::CONT_NULLSECTOR)
 			{
-				if (testsector.contents == Sector::CONT_NULLSECTOR)
-				{
-					pcg.testdata.test_z_p = 1; // nullsector
-				}
-				else if (testsector.contents == Sector::CONT_UNKNOWN)
-				{
-					cancelPrecomp();
-					return false;
-				}
-				else
+				pcg.testdata.test_z_p = 1; // nullsector
+			}
+			else if (testsector.contents == Sector::CONT_UNKNOWN)
+			{
+				cancelPrecomp();
+				return false;
+			}
+			else // sector must have blocks (WARNING assumption)
+			{
+				pcg.testdata.test_z_p = (testsector.blockpt->hardsolid & 32) == 0;
+				
+				if (pcg.testdata.test_z_p)
 				{
 					pcg.testdata.test_z_p = 2; // contains data
 					pcg.testdata.sb_z_p   = &testsector;

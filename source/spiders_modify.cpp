@@ -190,7 +190,6 @@ namespace cppcraft
 		*/
 		
 		s->blockpt->hardsolid = 0; // mui importante! must optimize later
-		s->hardsolid = 0;          // needs optimization
 		s->culled = false;         // remove culled flag!
 		
 		// update neighboring sectors (depending on edges)

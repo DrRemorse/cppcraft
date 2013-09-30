@@ -158,17 +158,20 @@ namespace cppcraft
 		{
 			Sector& s2 = Sectors(x, y, z);
 			
-			if (s2.torchlight != 0 && s2.hasLight != 1 && s2.contents == Sector::CONT_SAVEDATA)
+			if (s2.hasLight != 1 && s2.contents == Sector::CONT_SAVEDATA)
+			if (s2.blockpt->lights != 0)
 			{
 				// backwards counter used for early exiting
-				short total = s2.torchlight;
+				short total = s2.blockpt->lights;
+				bool maxsolid = s2.blockpt->hardsolid == Sector::MAX_HARDSOLID;
+				
 				// iterate all blocks in sector
 				for (int bx = 0; bx < Sector::BLOCKS_XZ; bx++)
 				for (int by = 0; by < Sector::BLOCKS_Y;  by++)
 				for (int bz = 0; bz < Sector::BLOCKS_XZ; bz++)
 				{
 					// if sector is totally encompassed by solid blocks
-					if (s2.hardsolid == Sector::MAX_HARDSOLID)
+					if (maxsolid)
 					{
 						// iterate only edges
 						if ((bx == 0 || bx == Sector::BLOCKS_XZ-1 ||

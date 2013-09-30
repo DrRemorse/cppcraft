@@ -25,8 +25,6 @@ namespace cppcraft
 		this->culled  = false; // not culled / covered by other sectors
 		this->hasWork = false; // no work
 		this->hasLight = 0;  // unknown: we don't know if its exposed to any lights
-		this->hardsolid = 0; // hardsolid bitmask
-		
 	}
 	
 	void Sector::createBlocks()
@@ -71,7 +69,6 @@ namespace cppcraft
 		}
 		
 		blockpt->lights = lights;
-		this->torchlight = lights;
 		return lights;
 	}
 	
@@ -93,9 +90,7 @@ namespace cppcraft
 		// clearing a sector, means invalidating it
 		contents = CONT_NULLSECTOR;
 		
-		hardsolid = 0;    // we don't really know!
 		precomp   = 0;    // reset compilation stage
-		torchlight = 0;   // no more light
 		// clear many flags, just because... bite me
 		culled = false;
 		hasWork = false;
@@ -121,7 +116,6 @@ namespace cppcraft
 		precomp  = 0;
 		contents = CONT_UNKNOWN;
 		render   = false;
-		hardsolid = 0;
 		culled   = false;
 	}
 	
