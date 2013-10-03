@@ -119,8 +119,6 @@ namespace cppcraft
 		
 		// free precomp slot (as early as possible)
 		this->alive = false;
-		// reset sector state to unqueued
-		sector.precomp = 0;
 		
 		// set renderable flag to sector
 		sector.render = true;
@@ -129,8 +127,6 @@ namespace cppcraft
 		{
 			sector.progress = Sector::PROG_COMPILED;
 		}
-		
-		mtx.compiler.unlock();
 		
 		/// add to compiler queue ///
 		int cy = sector.y / Columns.COLUMNS_SIZE;
@@ -141,5 +137,6 @@ namespace cppcraft
 		// last: add to queue
 		compilers.add(sector.x, cy, sector.z);
 		
+		mtx.compiler.unlock();
 	}
 }

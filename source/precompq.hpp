@@ -24,7 +24,7 @@ namespace cppcraft
 		// initializes threading pool
 		void init();
 		// starting a job is actually a little complicated
-		bool startJob(int& t_mod, int job);
+		bool startJob(int& t_mod, int job, int stage);
 		// finish any remaining queue
 		void finish();
 		// stop threading pool

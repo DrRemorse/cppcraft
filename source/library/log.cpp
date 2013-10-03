@@ -40,14 +40,10 @@ namespace library
 	
 	Log& operator<<(Log& out, const Log::LogLevel level)
 	{
-		if (out.autoLock == false)
-		{
-			out.autoLock = true;
-			out.synch.lock();
-		}
-		
 		if (level) // not ENDL
 		{
+			out.synch.lock();
+			
 			stringstream ss;
 			
 			// add timestamp to log
@@ -87,11 +83,7 @@ namespace library
 			// clear log string
 			out.log = "";
 			
-			if (out.autoLock)
-			{
-				out.synch.unlock();
-				out.autoLock = false;
-			}
+			out.synch.unlock();
 		}
 		// outgoing = incoming Log, for chaining
 		return out;

@@ -14,7 +14,6 @@ namespace cppcraft
 	{
 		// kill this precompilation run
 		Sector* s   = precomp->sector;
-		s->precomp  = 0;
 		s->progress = Sector::PROG_COMPILED;
 		precomp->alive = false;
 	}
@@ -25,7 +24,6 @@ namespace cppcraft
 	{
 		// kill this precompilation run
 		Sector* s   = precomp->sector;
-		s->precomp  = 0;
 		s->progress = Sector::PROG_NEEDRECOMP;
 		precomp->alive = false;
 	}
@@ -57,7 +55,7 @@ namespace cppcraft
 			killPrecomp();
 			return false;
 		}
-		else if (sector.progress != Sector::PROG_RECOMP)
+		else if (sector.progress != Sector::PROG_RECOMPILE)
 		{
 			cancelPrecomp();
 			return false;
@@ -248,11 +246,12 @@ namespace cppcraft
 			sector.render = false;
 			// a culled sector.. is compiled!
 			sector.progress = Sector::PROG_COMPILED;
-			sector.precomp = 0;
 			pc.alive = false; // nothing to compile...
 			return false;
 		}
 		
+		// mesh generation stage
+		sector.progress = Sector::PROG_RECOMPILING;
 		// continue to stage 2 - generate mesh
 		return true;
 	}

@@ -200,7 +200,9 @@ namespace cppcraft
 			compressRenderingQueue();
 		}
 		
-		if (underwater == false && drawq[(int)RenderConst::MAX_UNIQUE_SHADERS-1].count() != 0)
+		// reflections only happen on the exact water-plane anyways, 
+		// so we just disable them completely when the player is below it
+		if (playerY >= RenderConst::WATER_LEVEL && drawq[(int)RenderConst::MAX_UNIQUE_SHADERS-1].count() != 0)
 		{
 			if (gameconf.reflections)
 			{

@@ -130,7 +130,6 @@ namespace cppcraft
 			sector.render = false;
 			sector.progress = Sector::PROG_COMPILED;
 			sector.culled = true;
-			sector.precomp = 0;
 			precomp->alive = false; // nothing to compile...
 			return;
 		}
@@ -171,6 +170,6 @@ namespace cppcraft
 		
 		// this stage has ended
 		// go to next stage: ambient occlusion gradients
-		sector.precomp = 3;
+		sector.progress = Sector::PROG_NEEDAO;
 	}
 }

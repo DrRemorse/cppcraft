@@ -181,11 +181,7 @@ namespace cppcraft
 		#ifdef DEBUG
 			try
 			{
-				if (mtx.sectorseam.try_lock())
-				{
-					compilers.compile();
-					mtx.sectorseam.unlock();
-				}
+				compilers.compile();
 			}
 			catch (std::string errorstring)
 			{

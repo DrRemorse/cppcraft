@@ -8,17 +8,17 @@ namespace cppcraft
 {
 	struct vertex_t;
 	
-	typedef struct
+	struct vbodata_t
 	{
-		unsigned short  bufferoffset[RenderConst::MAX_UNIQUE_SHADERS];
-		unsigned short  vertices	[RenderConst::MAX_UNIQUE_SHADERS];
 		vertex_t* pcdata;
-	} vbodata_t;
+		unsigned short bufferoffset[RenderConst::MAX_UNIQUE_SHADERS];
+		unsigned short vertices	[RenderConst::MAX_UNIQUE_SHADERS];
+	};
 	
 	class Sector
 	{
 	public:
-		// static sector size constants
+		// static sector(block) size constants
 		static const int BLOCKS_XZ = 16;
 		static const int BLOCKS_Y  =  8;
 		
@@ -50,27 +50,29 @@ namespace cppcraft
 		bool render;   // renderable
 		char progress; // progress_t
 		char contents; // sectorcontents_t
-		char precomp;  // precompilation stage
 		bool culled;   // surrounded by solids
 		bool hasWork;
 		// 0 = unknown (not computed), 1 = found no lights, 2 = found light(s)
 		char hasLight;
 		
-		typedef enum
+		enum progress_t
 		{
 			PROG_NEEDGEN,
 			PROG_NEEDRECOMP,
-			PROG_RECOMP,
+			PROG_RECOMPILE,
+			PROG_RECOMPILING,
+			PROG_NEEDAO,
+			PROG_AO,
 			PROG_NEEDCOMPILE,
 			PROG_COMPILED
-		} progress_t;
+		};
 		
-		typedef enum
+		enum sectorcontents_t
 		{
 			CONT_NULLSECTOR,
 			CONT_UNKNOWN,
 			CONT_SAVEDATA
-		} sectorcontents_t;
+		};
 		
 		// creates a sector with location (x, y, z)
 		Sector(int x, int y, int z);

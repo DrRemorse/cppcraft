@@ -72,15 +72,10 @@ namespace cppcraft
 			cnt += precomp->vertices[i];
 		}
 		
-		if (sector.precomp != 4)
-		{
-			logger << Log::ERR << "PrecompThread::ambientOcclusion(): invalid sector precomp state" << Log::ENDL;
-			cancelPrecomp();
-			return;
-		}
-		else if (sector.progress != Sector::PROG_RECOMP)
+		if (sector.progress != Sector::PROG_AO)
 		{
 			logger << Log::ERR << "PrecompThread::ambientOcclusion(): invalid sector progress state" << Log::ENDL;
+			logger << Log::ERR << "PrecompThread::ambientOcclusion(): state: " << (int) sector.progress << Log::ENDL;
 			cancelPrecomp();
 			return;
 		}
@@ -124,7 +119,6 @@ namespace cppcraft
 		
 		sector.progress = Sector::PROG_NEEDCOMPILE;
 		sector.culled  = false;
-		sector.precomp = 5; // flag as ready for compiler
 	}
 	
 	short addCornerShadowVertex(AmbientOcclusion& ao, vertex_t* vt, short x, short y, short z)

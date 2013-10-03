@@ -13,7 +13,6 @@ namespace cppcraft
 {
 	// instantiation of compilers
 	Compilers compilers;
-	std::mutex compilerMutex;
 	
 	// initialize compiler data buffers
 	void Compilers::initCompilers()
@@ -26,7 +25,7 @@ namespace cppcraft
 	// run compilers and try to clear queue, if theres enough time
 	void Compilers::compile()
 	{
-		compilerMutex.lock();
+		mtx.compiler.lock();
 		
 		// column assemblage
 		// also, prune array removing dead columns
@@ -44,7 +43,8 @@ namespace cppcraft
 			}
 			
 		}
-		compilerMutex.unlock();
+		
+		mtx.compiler.unlock();
 		
 	} // handleCompilers
 	
@@ -60,9 +60,7 @@ namespace cppcraft
 	
 	void Compilers::add(int x, int y, int z)
 	{
-		compilerMutex.lock();
 		colq.emplace_back( (columnqueue_t) { x, y, z } );
-		compilerMutex.unlock();
 	}
 	
 }

@@ -78,8 +78,6 @@ namespace cppcraft
 		bool ready = true;
 		vbodata_t vboList[Columns.COLUMNS_SIZE];
 		
-		mtx.compiler.lock();
-		
 		for (int sy = end_y-1; sy >= start_y; sy--)
 		{
 			Sector& sector = Sectors(x, sy, z);
@@ -125,8 +123,6 @@ namespace cppcraft
 				}	
 			}
 		}
-		
-		mtx.compiler.unlock();
 		
 		// no ready? no continue
 		if (ready == false) return;

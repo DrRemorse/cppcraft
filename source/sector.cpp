@@ -20,7 +20,6 @@ namespace cppcraft
 		this->render = 0;              // not renderable
 		this->progress = PROG_NEEDGEN; // needs to be generated
 		this->contents = CONT_UNKNOWN; // unknown content
-		this->precomp  = 0;            // no precompilation stage
 		
 		this->culled  = false; // not culled / covered by other sectors
 		this->hasWork = false; // no work
@@ -90,7 +89,6 @@ namespace cppcraft
 		// clearing a sector, means invalidating it
 		contents = CONT_NULLSECTOR;
 		
-		precomp   = 0;    // reset compilation stage
 		// clear many flags, just because... bite me
 		culled = false;
 		hasWork = false;
@@ -113,7 +111,6 @@ namespace cppcraft
 	void Sector::invalidate()
 	{
 		progress = PROG_NEEDGEN;
-		precomp  = 0;
 		contents = CONT_UNKNOWN;
 		render   = false;
 		culled   = false;
