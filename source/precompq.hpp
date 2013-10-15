@@ -24,7 +24,7 @@ namespace cppcraft
 		// initializes threading pool
 		void init();
 		// starting a job is actually a little complicated
-		bool startJob(int& t_mod, int job, int stage);
+		bool startJob(int& t_mod, int job);
 		// finish any remaining queue
 		void finish();
 		// stop threading pool
@@ -33,6 +33,8 @@ namespace cppcraft
 		// executes one round of precompilation
 		// very time consuming, running N threads in parallell and waits for them to finish
 		bool run(library::Timer& timer, double localTime);
+		
+		int precompIndex(Sector& sector) const;
 		
 	private:
 		// the number of precomps that was added to queue

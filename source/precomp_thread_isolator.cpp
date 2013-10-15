@@ -39,13 +39,13 @@ namespace cppcraft
 		// sector could have been in queue, and been reduced to nullsector
 		if (sector.contents == Sector::CONT_NULLSECTOR)
 		{
-			logger << Log::WARN << "nullsector in precompiler" << Log::ENDL;
+			logger << Log::ERR << "nullsector in precompiler" << Log::ENDL;
 			killPrecomp();
 			return false;
 		}
 		else if (sector.hasBlocks() == false)
 		{
-			logger << Log::WARN << "sector without blocks in precompiler" << Log::ENDL;
+			logger << Log::ERR << "sector without blocks in precompiler" << Log::ENDL;
 			killPrecomp();
 			return false;
 		}
@@ -55,8 +55,9 @@ namespace cppcraft
 			killPrecomp();
 			return false;
 		}
-		else if (sector.progress != Sector::PROG_RECOMPILE)
+		else if (sector.progress != Sector::PROG_RECOMPILING)
 		{
+			logger << Log::ERR << "sector with progress mismatch in isolator" << Log::ENDL;
 			cancelPrecomp();
 			return false;
 		}
@@ -250,8 +251,6 @@ namespace cppcraft
 			return false;
 		}
 		
-		// mesh generation stage
-		sector.progress = Sector::PROG_RECOMPILING;
 		// continue to stage 2 - generate mesh
 		return true;
 	}

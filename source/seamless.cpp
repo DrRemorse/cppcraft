@@ -70,8 +70,8 @@ namespace cppcraft
 	{
 		// sectors are on the heap, nonetheless returning as reference
 		Sector& s = Sectors(x, y, z);
-		// if this sector is modified / dirty
-		if (s.render)
+		// if this sector is beyond needing generation
+		if (s.contents == Sector::CONT_SAVEDATA)
 		{
 			// newly introduced sectors can have additional torchlight
 			// this sector has NEW exposure to lights it didn't have before

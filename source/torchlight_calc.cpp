@@ -19,17 +19,11 @@ namespace cppcraft
 	{
 		#define L_G_R  LIGHT_GATHER_REACH
 		
-		int ysize = L_G_R;
-		if (getEmitter(getEmitterId(id)).reach > Sector::BLOCKS_Y)
-		{
-			ysize *= 2;
-		}
-		
 		// create boundries
 		int x0 = (s.x - L_G_R < 0) ? 0 : s.x - L_G_R;
 		int x1 = (s.x + L_G_R >= Sectors.getXZ()) ? Sectors.getXZ()-1 : s.x + L_G_R;
-		int y0 = (s.y - ysize < 0) ? 0 : s.y - ysize;
-		int y1 = (s.y + ysize >= Sectors.getY()) ? Sectors.getY()-1 : s.y + ysize;
+		int y0 = (s.y - L_G_R < 0) ? 0 : s.y - L_G_R;
+		int y1 = (s.y + L_G_R >= Sectors.getY()) ? Sectors.getY()-1 : s.y + L_G_R;
 		int z0 = (s.z - L_G_R < 0) ? 0 : s.z - L_G_R;
 		int z1 = (s.z + L_G_R >= Sectors.getXZ()) ? Sectors.getXZ()-1 : s.z + L_G_R;
 		
@@ -47,7 +41,6 @@ namespace cppcraft
 				
 				if (ss.isUpdateable())
 				{
-					logger << "Updating sector: " << x << ", " << y << ", " << z << Log::ENDL;
 					ss.progress = Sector::PROG_NEEDRECOMP;
 					if (instant) precompq.addTruckload(ss);
 				}

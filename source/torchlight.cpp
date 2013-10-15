@@ -27,7 +27,7 @@ namespace cppcraft
 		
 		p = &torchlights[L_TORCH];
 		// torch (_TORCH)
-		p->reach = 12;
+		p->reach = 8;
 		p->curve = 1.2;
 		p->cap   = 1.0;
 		

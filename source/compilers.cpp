@@ -60,6 +60,12 @@ namespace cppcraft
 	
 	void Compilers::add(int x, int y, int z)
 	{
+		// ignore duplicates
+		for (int i = 0; i < colq.size(); i++)
+		{
+			if (colq[i].x == x && colq[i].y == y && colq[i].z == z) return;
+		}
+		// add to queue
 		colq.emplace_back( (columnqueue_t) { x, y, z } );
 	}
 	

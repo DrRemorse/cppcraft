@@ -71,15 +71,14 @@ namespace cppcraft
 			this->diagonal = 0;
 			this->nextDiagonal = 0;
 			this->lastPosition = 0;
-			logger << "Worldbuilder was reset, starting from 0:0" << Log::ENDL;
 		}
 	}
 	
-	inline bool wrunGen(Sector& s, Timer& timer, double timeOut)
+	inline bool wrunGen(Sector& sector, Timer& timer, double timeOut)
 	{
-		if (s.progress == Sector::PROG_NEEDGEN)
+		if (sector.progress == Sector::PROG_NEEDGEN)
 		{
-			if (Generator::generate(s, &timer, timeOut)) return true;
+			if (Generator::generate(sector, &timer, timeOut)) return true;
 		}
 		return false;
 	}

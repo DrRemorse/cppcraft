@@ -12,6 +12,8 @@
 #include "torchlight.hpp"
 #include <string>
 
+#include "precompq.hpp"
+
 using namespace library;
 
 namespace cppcraft
@@ -93,8 +95,6 @@ namespace cppcraft
 	{
 		Sector& sector = *this->sector;
 		
-		mtx.compiler.lock();
-		
 		// allocate sector vertex data
 		if (sector.vbodata == nullptr)
 		{
@@ -120,22 +120,59 @@ namespace cppcraft
 		// free precomp slot (as early as possible)
 		this->alive = false;
 		
+		// set progress to finished state
+		sector.progress = Sector::PROG_COMPILED;
 		// set renderable flag to sector
 		sector.render = true;
-		// set progress to finished state (if possible)
-		if (sector.progress == Sector::PROG_NEEDCOMPILE)
+		
+		// determine readiness of column before sending to compiler
+		// first sector & end iterator in column
+		int start_y = sector.y - (sector.y & (Columns.COLUMNS_SIZE-1));
+		int end_y   = start_y + Columns.COLUMNS_SIZE;
+		//bool ready = true;
+		
+		for (int y = start_y; y < end_y; y++)
 		{
-			sector.progress = Sector::PROG_COMPILED;
+			Sector& s2 = Sectors(sector.x, y, sector.z);
+			
+			if (s2.progress != Sector::PROG_COMPILED)
+			{
+				// avoid resetting the sector compiled status
+				//ready = false;
+			}
+			else if (s2.render)
+			{
+				// a renderable sector without VBO data, is not renderable!
+				if (s2.vbodata == nullptr)
+				{
+					//logger << Log::WARN << "Precomp::complete(): rescheduling renderable" << Log::ENDL;
+					s2.progress = Sector::PROG_NEEDRECOMP;
+					//ready = false;
+				}
+				else if (s2.vbodata->pcdata == nullptr)
+				{
+					logger << Log::ERR << "Precomp::complete(): vertex data was null" << Log::ENDL;
+					//ready = false;
+				}
+			}
 		}
 		
+		// only add sector to column / compiler queue when ready
+		//if (ready == false) return;
+		
 		/// add to compiler queue ///
+		mtx.compiler.lock();
+		
 		int cy = sector.y / Columns.COLUMNS_SIZE;
 		
 		Column& cv = Columns(sector.x, cy, sector.z);
-		cv.updated = true;
-		
-		// last: add to queue
-		compilers.add(sector.x, cy, sector.z);
+		if (cv.updated == false)
+		{
+			cv.updated = true;
+			
+			// last: add to queue
+			compilers.add(sector.x, cy, sector.z);
+		}
 		
 		mtx.compiler.unlock();
 	}

@@ -85,13 +85,11 @@ namespace cppcraft
 		
 		if (isLight(id))
 		{
-			logger << "Adding light" << Log::ENDL;
 			// recount lights for sector (can't be bothered to manage this manually)
 			s->countLights();
 			// update nearby sectors due to change in light count
 			// also, the haslights flag will be RESET for all neighboring sectors to this
 			torchlight.lightSectorUpdates(*s, id, immediate);
-			logger << "Updated neighboring sectors" << Log::ENDL;
 		}
 		else
 		{
@@ -133,6 +131,7 @@ namespace cppcraft
 	Block Spiders::removeBlock(int bx, int by, int bz, bool immediate)
 	{
 		Sector* s = spiderwrap(bx, by, bz);
+		// if the given position is outside the local area, null will be returned
 		if (s == nullptr) return air_block;
 		
 		// if the sector is a known nullsector, do absolutely nothing
@@ -143,7 +142,7 @@ namespace cppcraft
 			// if the sector needed gen, generate immediately
 			Generator::generate(*s, nullptr, 0);
 			
-			// AGAIN, if the *new* sector is a nullsector ...
+			// AGAIN, if the *new* generated sector is a nullsector ...
 			if (s->contents == Sector::CONT_NULLSECTOR) return air_block; // do nada
 		}
 		
@@ -155,22 +154,23 @@ namespace cppcraft
 		
 		// set the block to _AIR
 		s[0](bx, by, bz).setID(_AIR);
-		// we removed a valid block, so decrease counter
+		// we removed a non-air block, so decrease block counter
 		s->blockpt->blocks -= 1;
 		
 		// don't render something with 0 blocks
 		if (s->blockpt->blocks == 0)
 		{
 			s->clear();
-			// we need to disable columns that have no blocks to render anymore
+			// we need to disable rendering columns that have no blocks anymore
 			int FIXME_disable_columns_without_blocks;
 			//checkColumn(*s);
 		}
-		else
+		else // sector still has blocks
 		{
-			// otherwise, just re-render this sector
+			// re-render this sector
 			if (immediate)
 			{
+				// add all sectors in column to queue, speeding up recreation
 				precompq.addTruckload(*s);
 			}
 			else s->progress = Sector::PROG_NEEDRECOMP;

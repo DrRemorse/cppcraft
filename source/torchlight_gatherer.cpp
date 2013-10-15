@@ -139,7 +139,7 @@ namespace cppcraft
 	void Torchlight::lightGatherer(Sector& sector, LightList& list)
 	{
 		#define L_G_R  LIGHT_GATHER_REACH
-		const int ysize = 2;
+		const int ysize = LIGHT_GATHER_REACH;
 		
 		// create boundries
 		int x0 = (sector.x - L_G_R < 0) ? 0 : sector.x - L_G_R;

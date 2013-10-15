@@ -82,17 +82,14 @@ namespace cppcraft
 		{
 			Sector& sector = Sectors(x, sy, z);
 			
-			if (sector.progress != Sector::PROG_COMPILED)
-			{
-				// avoid resetting the sector compiled status
-				ready = false;
-			}
-			else if (sector.render)
+			if (sector.render)
 			{
 				// a renderable without VBO data, is not a renderable!
 				if (sector.vbodata == nullptr)
 				{
-					sector.progress = Sector::PROG_NEEDRECOMP;
+					//logger << Log::WARN << "Column::compile(): sector no vbodata" << Log::ENDL;
+					if (sector.progress == Sector::PROG_COMPILED)
+						sector.progress = Sector::PROG_NEEDRECOMP;
 					ready = false;
 				}
 				else if (sector.vbodata->pcdata == nullptr)
@@ -100,9 +97,9 @@ namespace cppcraft
 					logger << Log::ERR << "Column::compile(): vertex data was null" << Log::ENDL;
 					ready = false;
 				}
-				else
+				else if (ready) // we only care about VBOs if we are still ready
 				{
-					// create a copy of VBO data section
+					// COPY the VBO data section
 					vboList[vboCount] = *sector.vbodata;
 					// renderable and consistent, add to queue
 					vboCount += 1;
@@ -116,16 +113,19 @@ namespace cppcraft
 			// NOTE: this could crash any precompilation stage
 			for (int sy = start_y; sy < end_y; sy++)
 			{
-				if (Sectors(x, sy, z).vbodata)
+				Sector& sector = Sectors(x, sy, z);
+				
+				if (sector.vbodata)
 				{
-					delete Sectors(x, sy, z).vbodata;
-					Sectors(x, sy, z).vbodata = nullptr;
+					delete sector.vbodata;
+					sector.vbodata = nullptr;
 				}	
 			}
 		}
-		
-		// no ready? no continue
-		if (ready == false) return;
+		else // no ready? no continue
+		{
+			return;
+		}
 		
 		// exit if this column isn't renderable at all
 		if (vboCount == 0)

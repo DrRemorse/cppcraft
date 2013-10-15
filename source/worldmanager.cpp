@@ -22,8 +22,15 @@ namespace cppcraft
 	
 	void WorldManager::main()
 	{
-		// start me some networking
-		network.init();
+		try
+		{
+			// start me some networking
+			network.init();
+		}
+		catch (std::string exc)
+		{
+			logger << Log::ERR << "Network::init(): " << exc << Log::ENDL;
+		}
 		
 		// integral delta timing
 		Timer timer;
@@ -36,31 +43,55 @@ namespace cppcraft
 			// fixed timestep
 			_localtime = timer.getDeltaTime();
 			
-			// handle player inputs, just once
-			player.handleInputs();
-			
-			// integrator
-			while (_localtime >= _ticktimer + TIMING_TICKTIMER)
+			try
 			{
-				//----------------------------------//
-				//       PLAYER RELATED STUFF       //
-				//----------------------------------//
-				player.handlePlayerTicks();
-				
-				// handle actors & particles & objects
-				particleSystem.handle();
-				
-				// handle sound, music & ambience
-				soundman.handleSounds(player.getTerrain());
-				
-				_ticktimer += TIMING_TICKTIMER;
-				
-				// fixed timestep
-				_localtime = timer.getDeltaTime();
+				// handle player inputs, just once
+				player.handleInputs();
+			}
+			catch (std::string exc)
+			{
+				logger << Log::ERR << "Error from player.handleInputs(): " << exc << Log::ENDL;
+				break;
 			}
 			
-			// if the player moved, or is doing stuff we will be doing it here
-			player.handleActions(_localtime);
+			// integrator
+			try
+			{
+				while (_localtime >= _ticktimer + TIMING_TICKTIMER)
+				{
+					//----------------------------------//
+					//       PLAYER RELATED STUFF       //
+					//----------------------------------//
+					player.handlePlayerTicks();
+					
+					// handle actors & particles & objects
+					particleSystem.handle();
+					
+					// handle sound, music & ambience
+					soundman.handleSounds(player.getTerrain());
+					
+					_ticktimer += TIMING_TICKTIMER;
+					
+					// fixed timestep
+					_localtime = timer.getDeltaTime();
+				}
+			}
+			catch (std::string exc)
+			{
+				logger << Log::ERR << "Error from worldmanager ticker: " << exc << Log::ENDL;
+				break;
+			}
+			
+			try
+			{
+				// if the player moved, or is doing stuff we will be doing it here
+				player.handleActions(_localtime);
+			}
+			catch (std::string exc)
+			{
+				logger << Log::ERR << "Error from player.handleActions(): " << exc << Log::ENDL;
+				break;
+			}
 			
 			bool timeout = false;
 			
@@ -78,17 +109,25 @@ namespace cppcraft
 			if (worldbuilder.getMode() != worldbuilder.MODE_GENERATING)
 			{
 				//double t0 = timer.getDeltaTime();
-				double t0 = _localtime;
+				//double t0 = _localtime;
 				
-				// as long as not currently 'generating' world:
-				// start precompiling sectors
-				if (precompq.run(timer, _localtime)) timeout = true;
-				
-				double t1 = timer.getDeltaTime() - t0;
-				if (t1 > 0.020)
+				try
 				{
-					//logger << "Precomp delta: " << t1 * 1000 << Log::ENDL;
+					// as long as not currently 'generating' world:
+					// start precompiling sectors
+					if (precompq.run(timer, _localtime)) timeout = true;
 				}
+				catch (std::string exc)
+				{
+					logger << Log::ERR << "PrecompQ: " << exc << Log::ENDL;
+					break;
+				}
+				
+				//double t1 = timer.getDeltaTime() - t0;
+				//if (t1 > 0.020)
+				//{
+				//	logger << "Precomp delta: " << t1 * 1000 << Log::ENDL;
+				//}
 				
 				//double t1 = timer.getDeltaTime();
 				//logger << "pcq time: " << t1 - t0 << Log::ENDL;
@@ -98,15 +137,23 @@ namespace cppcraft
 			if (timeout == false)
 			{
 				//double t0 = timer.getDeltaTime();
-				double t0 = _localtime;
+				//double t0 = _localtime;
 				
-				worldbuilder.run(timer, _localtime);
-				
-				double t1 = timer.getDeltaTime() - t0;
-				if (t1 > 0.020)
+				try
 				{
-					//logger << "Worldbuilder delta: " << t1 * 1000 << Log::ENDL;
+					worldbuilder.run(timer, _localtime);
 				}
+				catch (std::string exc)
+				{
+					logger << Log::ERR << "Worldbuilder: " << exc << Log::ENDL;
+					break;
+				}
+				
+				//double t1 = timer.getDeltaTime() - t0;
+				//if (t1 > 0.020)
+				//{
+				//	logger << "Worldbuilder delta: " << t1 * 1000 << Log::ENDL;
+				//}
 				
 				//double t1 = timer.getDeltaTime();
 				//logger << "WB time: " << t1 - t0 << Log::ENDL;

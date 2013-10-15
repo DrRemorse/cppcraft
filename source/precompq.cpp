@@ -28,18 +28,31 @@ namespace cppcraft
 			
 			if (sector.progress == Sector::PROG_RECOMPILING)
 			{
-				// first precompiler stage: mesh generation
-				pt.precompile();
+				try
+				{
+					// first precompiler stage: mesh generation
+					pt.precompile();
+				}
+				catch (std::string exc)
+				{
+					logger << Log::ERR << "pt.precompile(): " << exc << Log::ENDL;
+				}
 			}
-			else if (sector.progress == Sector::PROG_NEEDAO)
+			else if (sector.progress == Sector::PROG_AO)
 			{
-				// second stage: AO
-				sector.progress = Sector::PROG_AO;
-				pt.ambientOcclusion();
+				try
+				{
+					// second stage: AO
+					pt.ambientOcclusion();
+				}
+				catch (std::string exc)
+				{
+					logger << Log::ERR << "pt.ambientOcclusion(): " << exc << Log::ENDL;
+				}
 			}
 			else
 			{
-				logger << "starting unknown job, stage = " << (int) sector.progress << Log::ENDL;
+				logger << "PrecompJob(): Unknown job: " << (int) sector.progress << Log::ENDL;
 			}
 		}
 	};
@@ -66,6 +79,23 @@ namespace cppcraft
 		delete threadpool;
 	}
 	
+	// must return index, because it could be less than the queue counter
+	// which could make the precompq indexifier go mad MAD I SAY MADDDDDD
+	int PrecompQ::precompIndex(Sector& sector) const
+	{
+		for (int i = 0; i < Precompiler::MAX_PRECOMPQ; i++)
+		{
+			if (precompiler[i].alive)
+			{
+				if (precompiler[i].sector == &sector)
+				{
+					return i;
+				}
+			}
+		}
+		return -1;
+	}
+	
 	void PrecompQ::addTruckload(Sector& s)
 	{
 		// set sector recompilation flag immediately
@@ -80,72 +110,69 @@ namespace cppcraft
 		{
 			Sector& s2 = Sectors(s.x, y, s.z);
 			
-			s2.progress = Sector::PROG_NEEDRECOMP;
-			
 			// try to add all sectors that need recompilation, until queue is full
-			if (s2.progress == Sector::PROG_NEEDRECOMP)
+			if (s2.contents == Sector::CONT_SAVEDATA && s2.culled == false)
 			{
-				if (addPrecomp(s2) == false) return;
+				// we don't want to add sectors that are about to be precompiled
+				if (s2.progress != Sector::PROG_RECOMPILE)
+				{
+					s2.progress = Sector::PROG_NEEDRECOMP;
+					addPrecomp(s2);
+				}
 			}
 			
 		} // y
 		
 		// tell worldbuilder to immediately start over, UNLESS its generating
+		// the sectors closest to the player will be rebuilt sooner, rather than later
 		worldbuilder.reset();
 		
 	} // addTruckload
 	
 	bool PrecompQ::addPrecomp(Sector& s)
 	{
-		// check if this sector is in some pipeline stage
-		if (s.progress > Sector::PROG_NEEDRECOMP && s.progress != Sector::PROG_COMPILED)
-		{
-			// just flag it for (later) recompilation
-			s.progress = Sector::PROG_NEEDRECOMP;
-			// NOTE: returning false here can make the queue become clogged up
-			return true;
-		}
-		
 		// check if sector needs to be generated
 		if (s.progress == Sector::PROG_NEEDGEN)
 		{
-			logger << Log::WARN << "PrecompQ::addPrecomp(): Sector needed generation" << Log::ENDL;
+			logger << Log::ERR << "PrecompQ::addPrecomp(): Sector needed generation" << Log::ENDL;
+			// not much to do, so exit
+			return true;
+		}
+		
+		// check if sector is about to be precompiled
+		if (s.progress == Sector::PROG_RECOMPILE)
+		{
+			//logger << Log::WARN << "PrecompQ::addPrecomp(): Sector already about to be precompiled" << Log::ENDL;
 			// not much to do, so exit
 			return true;
 		}
 		
 		// check that the sector isn't already in the queue
-		for (int i = 0; i < Precompiler::MAX_PRECOMPQ; i++)
+		int index = precompIndex(s);
+		if (index != -1)
 		{
-			if (precompiler[i].alive)
-			{
-				if (precompiler[i].sector == &s)
-				{
-					//logger << Log::WARN << "Sector was in (live) pc queue already" << Log::ENDL;
-					
-					// if the sector was already in the queue, just start precompiling right this instant!
-					s.progress = Sector::PROG_RECOMPILE;
-					return false;
-					
-				}
-			}
+			//logger << Log::INFO << "PrecompQ::addPrecomp(): Already existed " << s.x << ", " << s.y << ", " << s.z << Log::ENDL;
+			//logger << Log::INFO << "progress: " << (int) s.progress << Log::ENDL;
+			
+			// if the sector was already in the queue, just start precompiling right this instant!
+			s.progress = Sector::PROG_RECOMPILE;
+			return true;
 		}
 		
 		// because of addTruckload() dependency, some precomps could be alive still
 		while (true)
 		{
+			// if the queue is full, return immediately
 			if (queueCount >= Precompiler::MAX_PRECOMPQ)
-			{
-				s.progress = Sector::PROG_NEEDRECOMP;
 				return false;
-			}
-			// is the current queueing precomp alive?
+			
+			// is the current precomp queue index not in use?
 			if (precompiler[queueCount].alive == false)
 			{
-				// if not, break out of loop
+				// if its not, break out of loop
 				break;
 			}
-			// otherwise, since it's alive, go to the next precomp in queue
+			// otherwise, since it's alive, go to the next index in queue
 			queueCount += 1;
 		}
 		
@@ -159,15 +186,16 @@ namespace cppcraft
 		return (queueCount < Precompiler::MAX_PRECOMPQ);
 	}
 	
-	bool PrecompQ::startJob(int& t_mod, int job, int stage)
+	bool PrecompQ::startJob(int& t_mod, int job)
 	{
 		// set thread job info
 		PrecompThread& pt = precompiler.getThread(t_mod);
 		pt.precomp = &precompiler[job];
+		int stage = ++pt.precomp->sector->progress;
 		
 		bool cont = true;
 		
-		if (stage == Sector::PROG_RECOMPILE)
+		if (stage == Sector::PROG_RECOMPILING)
 		{
 			// before starting precompiler we need to isolate all data properly
 			// then check if the precomp can actually be run
@@ -195,70 +223,93 @@ namespace cppcraft
 	
 	bool PrecompQ::run(Timer& timer, double localTime)
 	{
-		// nothing to do, if nothing was added to queue this round
-		if (queueCount == 0) return false;
 		// current thread id
 		int t_mod = 0;
 		
 		// ------------ PRECOMPILER -------------- //
 		
-		// reset if out of bounds
-		if (currentPrecomp >= Precompiler::MAX_PRECOMPQ)
-			currentPrecomp = 0;
-		
-		while (currentPrecomp < Precompiler::MAX_PRECOMPQ)
+		int i;
+		for (i = 0; i < Precompiler::MAX_PRECOMPQ; i++)
 		{
-			if (precompiler[currentPrecomp].alive)
+			if (precompiler[i].alive)
 			{
-				Sector* sector = precompiler[currentPrecomp].sector;
+				Sector& sector = *precompiler[i].sector;
 				
-				if (sector->progress == Sector::PROG_RECOMPILE || sector->progress == Sector::PROG_NEEDAO)
+				if (sector.progress == Sector::PROG_RECOMPILE || sector.progress == Sector::PROG_NEEDAO)
 				{
-					if (startJob(t_mod, currentPrecomp, sector->progress))
+					if (startJob(t_mod, i))
 					{
 						finish();
 						
-						// increase count so we can get out now
-						currentPrecomp += 1;
-						// exit for
-						break;
+						// always check if time is out
+						if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT)
+						{
+							i++;
+							// exit for
+							break;
+						}
 					}
 				}
-				else if (sector->progress == Sector::PROG_RECOMPILING || sector->progress == Sector::PROG_AO)
+				else if (sector.progress == Sector::PROG_RECOMPILING || sector.progress == Sector::PROG_AO)
 				{
 					// being worked on by precompiler / ao
 				}
-				else if (sector->progress == Sector::PROG_NEEDCOMPILE)
+				else if (sector.progress == Sector::PROG_NEEDCOMPILE)
 				{
-					// complete the transaction
-					// verify that this sector can be assembled into a column properly
-					precompiler[currentPrecomp].complete();
+					// ready for completion
 				}
 				else  // if (precompiler[currentPrecomp].sector->precomp == 0)
 				{
 					// this sector has been reset, probably by seamless()
 					// so, just disable it
-					precompiler[currentPrecomp].alive = false;
+					precompiler[i].alive = false;
 				}
 				
 			} // if precomp is alive
 			
-			// count until current max is hit, then exit (and reset)
-			currentPrecomp += 1;
+		} // for each precomp
+		
+		if (t_mod)
+		{
+			// finish jobs & clear queue
+			finish();
+		}
+		
+		// always check if time is out
+		if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT) return true;
+		
+		bool everythingDead = true;
+		
+		for (i = 0; i < Precompiler::MAX_PRECOMPQ; i++)
+		{
+			if (precompiler[i].alive)
+			{
+				Sector& sector = *precompiler[i].sector;
+				
+				if (sector.progress == Sector::PROG_NEEDCOMPILE)
+				{
+					// complete the transaction
+					// verify that this sector can be assembled into a column properly
+					try
+					{
+						precompiler[i].complete();
+					}
+					catch (std::string exc)
+					{
+						logger << Log::ERR << "Precomp::complete(): " << exc << Log::ENDL;
+					}
+				}
+				
+				if (precompiler[i].alive) everythingDead = false;
+				
+			} // if precomp is alive
 			
 		} // for each precomp
 		
-		if (currentPrecomp >= Precompiler::MAX_PRECOMPQ)
+		if (everythingDead)
 		{
 			// reset counters
 			queueCount = 0;
-			currentPrecomp = 0;
-			
-			if (t_mod)
-			{
-				// finish jobs & clear queue
-				finish();
-			}
 		}
 		
 		// always check if time is out

@@ -48,7 +48,8 @@ namespace cppcraft
 		
 		if (connect() == false)
 		{
-			throw std::string("Connection failed");
+			logger << Log::ERR << "Network::mainLoop(): Connection failed" << Log::ENDL;
+			return;
 		}
 		logger << Log::INFO << "Connected to network" << Log::ENDL;
 		

@@ -26,7 +26,7 @@ uniform sampler2D texture;
 in vec2 vertex;
 in vec2 texCoord;
 
-const float visibility = 0.85;
+const float visibility = 0.9;
 
 void main(void)
 {

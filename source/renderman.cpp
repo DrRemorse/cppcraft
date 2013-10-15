@@ -20,8 +20,7 @@
 #include <cmath>
 #include <sstream>
 
-//#define DEBUG
-#include "input.hpp"
+#define DEBUG
 
 using namespace library;
 
@@ -181,7 +180,11 @@ namespace cppcraft
 		#ifdef DEBUG
 			try
 			{
-				compilers.compile();
+				if (mtx.sectorseam.try_lock())
+				{
+					compilers.compile();
+					mtx.sectorseam.unlock();
+				}
 			}
 			catch (std::string errorstring)
 			{
@@ -214,9 +217,8 @@ namespace cppcraft
 			// poll for events
 			glfwPollEvents();
 			
-			// handle rotation
+			// handle player rotation
 			player.handleRotation();
-			
 		}
 		
 		// close main window

@@ -390,6 +390,10 @@
     <File Name="source/network.hpp"/>
     <File Name="source/network.cpp"/>
     <File Name="source/drawq_rendergrid.cpp"/>
+    <File Name="source/netplayers.hpp"/>
+    <File Name="source/netplayers.cpp"/>
+    <File Name="source/netplayer.hpp"/>
+    <File Name="source/netplayer.cpp"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>
