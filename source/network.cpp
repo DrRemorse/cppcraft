@@ -10,7 +10,11 @@ using namespace library;
 extern "C"
 {
 	#include <liblattice/lattice_config.h>
-	#include <arpa/inet.h>
+	#ifdef _WIN32
+		#include <windows.h>
+	#else
+		#include <arpa/inet.h>
+	#endif
 	#include <liblattice/struct.h>
 	#include <liblattice/globals.h>
 	#include <liblattice/liblattice.h>
