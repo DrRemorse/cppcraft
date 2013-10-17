@@ -1,6 +1,7 @@
 #include "network.hpp"
 
 #include "library/log.hpp"
+#include "library/config.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
 #include "world.hpp"
@@ -10,7 +11,11 @@ using namespace library;
 extern "C"
 {
 	#include <liblattice/lattice_config.h>
-	#include <arpa/inet.h>
+	#ifdef _WIN32
+		#include <windows.h>
+	#else
+		#include <arpa/inet.h>
+	#endif
 	#include <liblattice/struct.h>
 	#include <liblattice/globals.h>
 	#include <liblattice/liblattice.h>
@@ -103,7 +108,10 @@ namespace cppcraft
 		lattice_player.centeredon.y = 0;
 		lattice_player.centeredon.z = 524288;
 		
-		if (lattice_connect("98.243.47.31", 8805) < 0) return false;
+		std::string  hostn = config.get("net.host", "127.0.0.1");
+		unsigned int port  = config.get("net.port", 8805);
+		
+		if (lattice_connect((char*) hostn.c_str(), port) < 0) return false;
 		return true;
 	}
 	
