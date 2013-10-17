@@ -9,7 +9,6 @@
 
 #include "seamless.hpp"
 
-#include "compilers.hpp"
 #include "columns.hpp"
 #include "flatlands.hpp"
 #include "camera.hpp"
@@ -175,14 +174,6 @@ namespace cppcraft
 				
 			} // sectors z
 			
-			// move the column queue position, and kill out-of-range
-			for (x = 0; x < compilers.colqCount(); x++)
-			{
-				Compilers::columnqueue_t& cq = compilers.get(x);
-				if (cq.x != Sectors.getXZ()-1) cq.x += 1;
-				//else compilers.remove(x); // NOTE invalidates counter x
-			}
-			
 			// minimap rollover +x
 			minimap.roll(-1, 0);
 			
@@ -267,14 +258,6 @@ namespace cppcraft
 				
 			} // sectors z
 			
-			// move the column queue position, and kill out-of-range
-			for (z = 0; z < compilers.colqCount(); z++)
-			{
-				Compilers::columnqueue_t& cq = compilers.get(z);
-				if (cq.x != 0) cq.x -= 1;
-				// else compilers.remove(z); // NOTE invalidates counter z
-			}
-			
 			// minimap rollover -x
 			minimap.roll(1, 0);
 			
@@ -356,14 +339,6 @@ namespace cppcraft
 				
 			} // sectors x
 			
-			// move the column queue position, and kill out-of-range
-			for (x = 0; x < compilers.colqCount(); x++)
-			{
-				Compilers::columnqueue_t& cq = compilers.get(x);
-				if (cq.z != Sectors.getXZ()-1) cq.z += 1;
-				//else compilers.remove(x);
-			}
-			
 			// minimap rollover +z
 			minimap.roll(0, -1);
 			
@@ -440,14 +415,6 @@ namespace cppcraft
 				Flatlands.manipulate(x, Sectors.getXZ()-1) = flatl;
 				
 			} // sectors x
-			
-			// move the column queue position, and kill out-of-range
-			for (x = 0; x < compilers.colqCount(); x++)
-			{
-				Compilers::columnqueue_t& cq = compilers.get(x);
-				if (cq.z != 0) cq.z -= 1;
-				//else compilers.remove(x);
-			}
 			
 			// minimap rollover -z
 			minimap.roll(0, 1);

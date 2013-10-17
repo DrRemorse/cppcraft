@@ -394,6 +394,8 @@
     <File Name="source/netplayers.cpp"/>
     <File Name="source/netplayer.hpp"/>
     <File Name="source/netplayer.cpp"/>
+    <File Name="source/precompq_schedule.cpp"/>
+    <File Name="source/precompq_schedule.hpp"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>

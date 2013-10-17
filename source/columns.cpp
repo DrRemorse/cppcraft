@@ -87,9 +87,7 @@ namespace cppcraft
 				// a renderable without VBO data, is not a renderable!
 				if (sector.vbodata == nullptr)
 				{
-					//logger << Log::WARN << "Column::compile(): sector no vbodata" << Log::ENDL;
-					if (sector.progress == Sector::PROG_COMPILED)
-						sector.progress = Sector::PROG_NEEDRECOMP;
+					logger << Log::WARN << "Column::compile(): sector no vbodata" << Log::ENDL;
 					ready = false;
 				}
 				else if (sector.vbodata->pcdata == nullptr)

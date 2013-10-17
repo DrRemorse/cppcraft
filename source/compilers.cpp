@@ -31,11 +31,12 @@ namespace cppcraft
 		// also, prune array removing dead columns
 		for (int i = colq.size()-1; i >= 0; i--)
 		{
-			Column& cv = Columns(colq[i].x, colq[i].y, colq[i].z);
+			int cy = colq[i]->y / Columns.COLUMNS_SIZE;
+			Column& cv = Columns(colq[i]->x, cy, colq[i]->z);
 			
 			if (cv.updated == true)
 			{
-				cv.compile(colq[i].x, colq[i].y, colq[i].z);
+				cv.compile(colq[i]->x, cy, colq[i]->z);
 			}
 			if (cv.updated == false)
 			{
@@ -47,26 +48,5 @@ namespace cppcraft
 		mtx.compiler.unlock();
 		
 	} // handleCompilers
-	
-	int Compilers::colqCount()
-	{
-		return colq.size();
-	}
-	
-	Compilers::columnqueue_t& Compilers::get(int i)
-	{
-		return colq[i];
-	}
-	
-	void Compilers::add(int x, int y, int z)
-	{
-		// ignore duplicates
-		for (int i = 0; i < colq.size(); i++)
-		{
-			if (colq[i].x == x && colq[i].y == y && colq[i].z == z) return;
-		}
-		// add to queue
-		colq.emplace_back( (columnqueue_t) { x, y, z } );
-	}
 	
 }

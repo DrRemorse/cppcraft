@@ -2,17 +2,12 @@
 
 #include "library/config.hpp"
 #include "library/log.hpp"
-#include "vertex_block.hpp"
 #include "blockmodels.hpp"
-#include "columns.hpp"
-#include "compilers.hpp"
 #include "precomp_thread.hpp"
+#include "precompq_schedule.hpp"
 #include "sectors.hpp"
-#include "threading.hpp"
 #include "torchlight.hpp"
 #include <string>
-
-#include "precompq.hpp"
 
 using namespace library;
 
@@ -125,55 +120,6 @@ namespace cppcraft
 		// set renderable flag to sector
 		sector.render = true;
 		
-		// determine readiness of column before sending to compiler
-		// first sector & end iterator in column
-		int start_y = sector.y - (sector.y & (Columns.COLUMNS_SIZE-1));
-		int end_y   = start_y + Columns.COLUMNS_SIZE;
-		//bool ready = true;
-		
-		for (int y = start_y; y < end_y; y++)
-		{
-			Sector& s2 = Sectors(sector.x, y, sector.z);
-			
-			if (s2.progress != Sector::PROG_COMPILED)
-			{
-				// avoid resetting the sector compiled status
-				//ready = false;
-			}
-			else if (s2.render)
-			{
-				// a renderable sector without VBO data, is not renderable!
-				if (s2.vbodata == nullptr)
-				{
-					//logger << Log::WARN << "Precomp::complete(): rescheduling renderable" << Log::ENDL;
-					s2.progress = Sector::PROG_NEEDRECOMP;
-					//ready = false;
-				}
-				else if (s2.vbodata->pcdata == nullptr)
-				{
-					logger << Log::ERR << "Precomp::complete(): vertex data was null" << Log::ENDL;
-					//ready = false;
-				}
-			}
-		}
-		
-		// only add sector to column / compiler queue when ready
-		//if (ready == false) return;
-		
-		/// add to compiler queue ///
-		mtx.compiler.lock();
-		
-		int cy = sector.y / Columns.COLUMNS_SIZE;
-		
-		Column& cv = Columns(sector.x, cy, sector.z);
-		if (cv.updated == false)
-		{
-			cv.updated = true;
-			
-			// last: add to queue
-			compilers.add(sector.x, cy, sector.z);
-		}
-		
-		mtx.compiler.unlock();
+		PrecompScheduler::add(sector);
 	}
 }

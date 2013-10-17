@@ -6,6 +6,7 @@
 #include "columns.hpp"
 #include "precompiler.hpp"
 #include "precomp_thread.hpp"
+#include "precompq_schedule.hpp"
 #include "sectors.hpp"
 #include "worldbuilder.hpp"
 
@@ -208,7 +209,7 @@ namespace cppcraft
 			threadpool->run(jobs[t_mod], &pt, false);
 			
 			// go to next thread
-			t_mod = (t_mod + 1) % precompiler.getThreads();
+			t_mod = (t_mod + 1) % this->threads;
 			
 			// if we are back at the start, we may just be exiting
 			if (t_mod == 0) return true;
@@ -228,6 +229,7 @@ namespace cppcraft
 		
 		// ------------ PRECOMPILER -------------- //
 		
+		bool everythingDead = true;
 		int i;
 		for (i = 0; i < Precompiler::MAX_PRECOMPQ; i++)
 		{
@@ -244,6 +246,8 @@ namespace cppcraft
 						// always check if time is out
 						if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT)
 						{
+							everythingDead = false;
+							
 							i++;
 							// exit for
 							break;
@@ -257,6 +261,15 @@ namespace cppcraft
 				else if (sector.progress == Sector::PROG_NEEDCOMPILE)
 				{
 					// ready for completion
+					// verify that this sector can be assembled into a column properly
+					try
+					{
+						precompiler[i].complete();
+					}
+					catch (std::string exc)
+					{
+						logger << Log::ERR << "Precomp::complete(): " << exc << Log::ENDL;
+					}
 				}
 				else  // if (precompiler[currentPrecomp].sector->precomp == 0)
 				{
@@ -264,6 +277,8 @@ namespace cppcraft
 					// so, just disable it
 					precompiler[i].alive = false;
 				}
+				
+				if (precompiler[i].alive) everythingDead = false;
 				
 			} // if precomp is alive
 			
@@ -275,42 +290,16 @@ namespace cppcraft
 			finish();
 		}
 		
-		// always check if time is out
-		if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT) return true;
-		
-		bool everythingDead = true;
-		
-		for (i = 0; i < Precompiler::MAX_PRECOMPQ; i++)
-		{
-			if (precompiler[i].alive)
-			{
-				Sector& sector = *precompiler[i].sector;
-				
-				if (sector.progress == Sector::PROG_NEEDCOMPILE)
-				{
-					// complete the transaction
-					// verify that this sector can be assembled into a column properly
-					try
-					{
-						precompiler[i].complete();
-					}
-					catch (std::string exc)
-					{
-						logger << Log::ERR << "Precomp::complete(): " << exc << Log::ENDL;
-					}
-				}
-				
-				if (precompiler[i].alive) everythingDead = false;
-				
-			} // if precomp is alive
-			
-		} // for each precomp
-		
 		if (everythingDead)
 		{
 			// reset counters
 			queueCount = 0;
 		}
+		
+		// handle transition from this thread to rendering thread
+		// from precomp scheduler to compiler scheduler
+		// also re-creates missing content making sure things aren't put on the backburner
+		PrecompScheduler::scheduling();
 		
 		// always check if time is out
 		if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT) return true;

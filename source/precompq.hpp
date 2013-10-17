@@ -23,6 +23,11 @@ namespace cppcraft
 		
 		// initializes threading pool
 		void init();
+		// returns true if we must add stuff to precompq
+		inline bool ready()
+		{
+			return queueCount == 0;
+		}
 		// starting a job is actually a little complicated
 		bool startJob(int& t_mod, int job);
 		// finish any remaining queue
@@ -38,9 +43,7 @@ namespace cppcraft
 		
 	private:
 		// the number of precomps that was added to queue
-		int queueCount   = 0;
-		// the current (or last) precomp being precompiled
-		int currentPrecomp = 0;
+		int queueCount = 0;
 		// number of parallell threads
 		int threads;
 	};

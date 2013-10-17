@@ -103,6 +103,8 @@ namespace cppcraft
 		// ------------- GENERATE AND REBUILD -------------- //
 		///////////////////////////////////////////////////////
 		
+		if (mode == MODE_PRECOMPILE && precompq.ready() == false) return false;
+		
 		//logger << "d=" << this->diagonal << " nd=" << this->nextDiagonal << " md=" << (int)this->mode << " cq=" << compilers.colqCount() << Log::ENDL;
 		
 		int diagonalsRun = 0;
