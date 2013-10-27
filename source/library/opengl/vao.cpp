@@ -14,12 +14,15 @@ namespace library
 		vbo = 0;
 		isCreating = false;
 	}
-	VAO::VAO(std::string description) : VAO()
+	
+	// static drawing
+	void VAO::begin(GLuint vertexSize, GLsizei vertices, GLvoid* data)
 	{
-		this->desc = description;
+		begin(vertexSize, vertices, data, GL_STATIC_DRAW);
 	}
 	
-	void VAO::begin(GLuint vertexSize, GLsizei vertices, GLvoid* data)
+	// custom drawing
+	void VAO::begin(GLuint vertexSize, GLsizei vertices, GLvoid* data, GLenum usage)
 	{
 		this->isCreating = true;
 		
@@ -40,7 +43,7 @@ namespace library
 		if (ogl.checkError())
 		{
 			logger << Log::ERR << "VAO::beginCreate(): OpenGL error for vao = " << vao << ", vbo = " << vbo << Log::ENDL;
-			throw std::string("VAO::beginCreate(): OpenGL error (desc = " + desc + ")");
+			throw std::string("VAO::beginCreate(): OpenGL error");
 		}
 	}
 	
@@ -54,13 +57,8 @@ namespace library
 		{
 			logger << Log::ERR << "VAO::attrib(): OpenGL error for vao = " << vao << ", vbo = " << vbo << Log::ENDL;
 			logger << Log::ERR << "VAO::attrib(): Attrib = { index = " << index << ", size = " << size << ", type = " << type << ", normalize = " << normalize << ", offset = " << offset << " }" << Log::ENDL;
-			throw std::string("VAO::attrib(): OpenGL error (desc = " + desc + ")");
+			throw std::string("VAO::attrib(): OpenGL error");
 		}
-	}
-	
-	void VAO::end()
-	{
-		this->isCreating = false;
 	}
 	
 	void VAO::createScreenspaceVAO()
@@ -104,7 +102,7 @@ namespace library
 		{
 			logger << Log::ERR << "VAO::render(): OpenGL error for vao = " << vao << Log::ENDL;
 			logger << Log::ERR << "VAO::render(): render = { mode = " << mode << ", first = " << first << ", count = " << count << " }" << Log::ENDL;
-			throw std::string("VAO::render(): OpenGL error (desc = " + desc + ")");
+			throw std::string("VAO::render(): OpenGL error");
 		}
 	}
 	void VAO::render(GLenum mode)
