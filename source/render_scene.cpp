@@ -58,6 +58,8 @@ namespace cppcraft
 		// initialize reflection camera to be the same as regular camera,
 		// except it will be mirrored on Y-axis from water-plane level
 		reflectionCamera.init(renderer.gamescr);
+		
+		lastTime = 0.0;
 	}
 	
 	// render normal scene
@@ -119,9 +121,25 @@ namespace cppcraft
 				//------------------------------------//
 				//          player snapshot           //
 				//------------------------------------//
-				this->playerX = player.snapX;
-				this->playerY = player.snapY;
-				this->playerZ = player.snapZ;
+				
+				const double WEIGHT = 0.7;
+				//logger << Log::INFO << WEIGHT << " <-- " << renderer.dtime << " / " << 0.0125 << Log::ENDL;
+				
+				// (cheap) movement interpolation
+				playerY = playerY * (1.0 - WEIGHT) + player.snapY * WEIGHT;
+				
+				int dx = snapWX - world.getWX();
+				int dz = snapWZ - world.getWZ();
+				if (abs(dx) + abs(dz) < 2)
+				{
+					playerX = (playerX + dx * 16) * (1.0 - WEIGHT) + player.snapX * WEIGHT;
+					playerZ = (playerZ + dz * 16) * (1.0 - WEIGHT) + player.snapZ * WEIGHT;
+				}
+				else
+				{
+					playerX = player.snapX;
+					playerZ = player.snapZ;
+				}
 				this->playerMoved = player.JustMoved;
 				
 				this->playerSectorX = playerX / 16; //Sector::BLOCKS_XZ;

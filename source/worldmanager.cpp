@@ -18,7 +18,7 @@ using namespace library;
 namespace cppcraft
 {
 	const double TIMING_TICKTIMER = 0.0125;
-	const double MAX_TIMING_WAIT  = 0.01;
+	const double MAX_TIMING_WAIT  = 0.012;
 	
 	void WorldManager::main()
 	{
