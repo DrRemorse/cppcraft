@@ -21,6 +21,8 @@ namespace cppcraft
 		void render(Renderer& renderer, WorldManager& worldman);
 		
 	private:
+		double lastTime;
+		
 		// snapshots
 		double playerX, playerY, playerZ;
 		bool playerMoved, underwater;

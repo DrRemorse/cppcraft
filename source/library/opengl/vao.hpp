@@ -20,23 +20,22 @@ namespace library
 		static GLuint lastVAO;
 		bool   isCreating;
 		
-		std::string desc;
-		
 	public:
 		VAO();
-		// description is used to inform the programmer about what the purpose
-		// of this VAO is (or simply its name), which is used in error reports
-		VAO(std::string description);
 		
 		inline bool isGood() const
 		{
 			return (vao != 0 && vbo != 0 && isCreating == false);
 		}
 		
-		// create VAO
+		// send data to VAO
 		void begin(GLuint vertexSize, GLsizei vertices, GLvoid* data);
+		void begin(GLuint vertexSize, GLsizei vertices, GLvoid* data, GLenum usage);
 		void attrib(GLuint index, GLsizei size, GLenum type, bool normalize, int offset);
-		void end();
+		inline void end()
+		{
+			this->isCreating = false;
+		}
 		
 		// pre-made VAOs
 		void createScreenspaceVAO();

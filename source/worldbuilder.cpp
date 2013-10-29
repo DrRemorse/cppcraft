@@ -11,7 +11,7 @@ using namespace library;
 
 namespace cppcraft
 {
-	const double WORLDBUILDER_MAX_TIME_SPENT = 0.01;
+	const double WORLDBUILDER_MAX_TIME_SPENT = 0.012;
 	WorldBuilder worldbuilder;
 	
 	void WorldBuilder::init()

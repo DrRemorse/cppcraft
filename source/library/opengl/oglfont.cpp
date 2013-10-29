@@ -8,7 +8,6 @@ namespace library
 	OglFont::OglFont(int size)
 	{
 		this->size = size;
-		this->vbo  = 0;
 	}
 	
 	bool OglFont::load(std::string filename)
@@ -85,28 +84,23 @@ namespace library
 			vertex++;
 		}
 		
-		// create VBO
-		if (vbo == 0)
-		{
-			glGenBuffers(1, &vbo);
-		}
-		// bind vbo
-		glBindBuffer(GL_ARRAY_BUFFER_ARB, vbo);
-		// upload data
-		glBufferData(GL_ARRAY_BUFFER_ARB, vertices * sizeof(font_vertex_t), vdata, GL_STREAM_DRAW_ARB);
-		
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
-		
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(font_vertex_t), (GLvoid*) offsetof(font_vertex_t, x));
-		glVertexAttribPointer(1, 4, GL_SHORT, GL_FALSE, sizeof(font_vertex_t), (GLvoid*) offsetof(font_vertex_t, s));
+		// upload data to vao
+		vao.begin(sizeof(font_vertex_t), vertices, vdata, GL_STREAM_DRAW);
+		vao.attrib(0, 3, GL_FLOAT, GL_FALSE, offsetof(font_vertex_t, x));
+		vao.attrib(1, 4, GL_SHORT, GL_FALSE, offsetof(font_vertex_t, s));
+		vao.end();
 		
 		// render
 		glDrawArrays(GL_QUADS, 0, vertices);
-		
-		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+	}
+	
+	vec2 OglFont::measure(std::string text) const
+	{
+		return vec2(this->size * text.length(), this->size);
+	}
+	int OglFont::getSize() const
+	{
+		return this->size;
 	}
 	
 }

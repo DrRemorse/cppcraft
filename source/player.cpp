@@ -121,7 +121,7 @@ namespace cppcraft
 				camera.recalc = true;
 				
 				// this needs to be a "better" test, ie. if someone added lights nearby
-				if (true) //(int)snapX != (int)X || (int)snapY != (int)Y || (int)snapZ != (int)Z)
+				if ((int)snapX != (int)X || (int)snapY != (int)Y || (int)snapZ != (int)Z)
 				{
 					// get player shadows & torchlight
 					// a VERY costly operation, needs to be avoided at all costs

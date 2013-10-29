@@ -59,7 +59,7 @@ namespace cppcraft
 	};
 	std::vector<PrecompJob*> jobs;
 	
-	const double PRECOMPQ_MAX_THREADWAIT = 0.0125;
+	const double PRECOMPQ_MAX_THREADWAIT = 0.012;
 	
 	void PrecompQ::init()
 	{

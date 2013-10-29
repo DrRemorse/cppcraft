@@ -60,11 +60,11 @@ namespace cppcraft
 		lattice_flush();
 		
 		timeval waitTime;
-		waitTime.tv_sec  = 0;
-		waitTime.tv_usec = 3000;
 		
 		while (this->running)
 		{
+			waitTime.tv_sec  = 0;
+			waitTime.tv_usec = 5000;
 			lattice_select(&waitTime);
 			
 			lattice_process();
