@@ -149,16 +149,16 @@ namespace cppcraft
 		}
 		
 		// check that the sector isn't already in the queue
-		int index = precompIndex(s);
+		/*int index = precompIndex(s);
 		if (index != -1)
 		{
-			//logger << Log::INFO << "PrecompQ::addPrecomp(): Already existed " << s.x << ", " << s.y << ", " << s.z << Log::ENDL;
+			logger << Log::INFO << "PrecompQ::addPrecomp(): Already existed " << s.x << ", " << s.y << ", " << s.z << Log::ENDL;
 			//logger << Log::INFO << "progress: " << (int) s.progress << Log::ENDL;
 			
 			// if the sector was already in the queue, just start precompiling right this instant!
 			s.progress = Sector::PROG_RECOMPILE;
 			return true;
-		}
+		}*/
 		
 		// because of addTruckload() dependency, some precomps could be alive still
 		while (true)

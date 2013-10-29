@@ -48,7 +48,6 @@ namespace cppcraft
 	
 	void Network::mainLoop()
 	{
-		logger << Log::INFO << "Connecting to lattice" << Log::ENDL;
 		lattice_init(-1, dummy);
 		
 		if (connect() == false)
@@ -86,10 +85,17 @@ namespace cppcraft
 	
 	bool Network::connect()
 	{
+		std::string  hostn = config.get("net.host", "127.0.0.1");
+		unsigned int port  = config.get("net.port", 8805);
+		
+		std::string uname  = config.get("net.user", "guest");
+		std::string upass  = config.get("net.pass", "guest");
+		
 		lattice_player.userid = 12345;
+		lattice_player.nickname = (char*) uname.c_str();
 		lattice_player.model = 5;
+		
 		lattice_player.color = plogic.shadowColor;
-		lattice_player.nickname = "gonzo";
 		lattice_player.burstdist = 16;
 		lattice_player.wpos.x = world.getWX();
 		lattice_player.wpos.y = 20;
@@ -108,8 +114,7 @@ namespace cppcraft
 		lattice_player.centeredon.y = 0;
 		lattice_player.centeredon.z = 524288;
 		
-		std::string  hostn = config.get("net.host", "127.0.0.1");
-		unsigned int port  = config.get("net.port", 8805);
+		logger << Log::INFO << "Connecting to " << hostn << ":" << port << Log::ENDL;
 		
 		if (lattice_connect((char*) hostn.c_str(), port) < 0) return false;
 		return true;

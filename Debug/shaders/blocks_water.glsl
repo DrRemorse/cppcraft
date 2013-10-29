@@ -170,7 +170,7 @@ void main(void)
 	
 	//----- SEACOLOR -----
 	
-	const vec3 deepwater    = vec3(0.26, 0.42, 0.50);
+	const vec3 deepwater    = vec3(0.26, 0.44, 0.53);
 	const vec3 shallowwater = vec3(0.35, 0.55, 0.60);
 	
 	float dist = vertdist / ZFAR;
