@@ -2,8 +2,8 @@
 
 #include "library/log.hpp"
 #include "library/math/vector.hpp"
+#include "library/opengl/input.hpp"
 #include "camera.hpp"
-#include "input.hpp"
 #include "player_actions.hpp"
 #include "player_logic.hpp"
 #include "player_physics.hpp"

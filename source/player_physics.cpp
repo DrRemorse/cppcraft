@@ -2,7 +2,7 @@
 
 #include "library/log.hpp"
 #include "library/math/toolbox.hpp"
-#include "input.hpp"
+#include "library/opengl/input.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
 #include "player_inputs.hpp"

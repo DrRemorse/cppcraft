@@ -2,8 +2,8 @@
 
 #include "library/log.hpp"
 #include "library/math/toolbox.hpp"
+#include "library/opengl/input.hpp"
 #include "flatlands.hpp"
-#include "input.hpp"
 #include "player.hpp"
 #include "player_inputs.hpp"
 #include "player_physics.hpp"

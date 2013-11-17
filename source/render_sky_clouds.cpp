@@ -22,7 +22,7 @@ namespace cppcraft
 		};
 		
 		static const int SkyPattern = 32;
-		static const int CloudVertices = SkyPattern * SkyPattern * 4;
+		static const int CloudVertices = (SkyPattern + 1) * (SkyPattern + 1);
 		
 		VAO vao;
 	};
@@ -38,42 +38,41 @@ namespace cppcraft
 		Clouds::cloudvertex_t  cdata[clouds.CloudVertices];
 		Clouds::cloudvertex_t* cd = cdata;
 		
-		for (int skyX = 0; skyX < clouds.SkyPattern; skyX++)
+		GLushort  elements[clouds.SkyPattern * clouds.SkyPattern * 4];
+		GLushort* ed = elements;
+		
+		for (int skyX = 0; skyX <= clouds.SkyPattern; skyX++)
 		{
 			float x = skyDelta * skyX - skySize;
 			
-			for (int skyZ = 0; skyZ < clouds.SkyPattern; skyZ++)
+			for (int skyZ = 0; skyZ <= clouds.SkyPattern; skyZ++)
 			{
 				float z = skyDelta * skyZ - skySize;
 				
-				// v0
+				// vertex
 				cd->x = x;
 				cd->y = skyLevel;
 				cd->z = z;
 				cd += 1;
-				
-				// v1
-				cd->x = x + skyDelta;
-				cd->y = skyLevel;
-				cd->z = z;
-				cd += 1;
-				
-				// v2
-				cd->x = x + skyDelta;
-				cd->y = skyLevel;
-				cd->z = z + skyDelta;
-				cd += 1;
-				
-				// v3
-				cd->x = x;
-				cd->y = skyLevel;
-				cd->z = z + skyDelta;
-				cd += 1;
+			}
+		}
+		
+		for (int skyX = 0; skyX < clouds.SkyPattern; skyX++)
+		{
+			for (int skyZ = 0; skyZ < clouds.SkyPattern; skyZ++)
+			{
+				// indices
+				ed[0] = skyX * clouds.SkyPattern + skyZ;
+				ed[1] = skyX * clouds.SkyPattern + skyZ + 1;
+				ed[2] = (skyX + 1) * clouds.SkyPattern + skyZ + 1;
+				ed[3] = (skyX + 1) * clouds.SkyPattern + skyZ;
+				ed += 4;
 			}
 		}
 		
 		// make vertex array object
 		clouds.vao.begin(sizeof(Clouds::cloudvertex_t), clouds.CloudVertices, cdata);
+		clouds.vao.indexes(elements, clouds.SkyPattern * clouds.SkyPattern * 4);
 		clouds.vao.attrib(0, 3, GL_FLOAT, GL_FALSE, 0);
 		clouds.vao.end();
 	}
@@ -99,7 +98,7 @@ namespace cppcraft
 		textureman.bind(0, Textureman::T_CLOUDS);
 		
 		// render
-		clouds.vao.render(GL_QUADS);
+		clouds.vao.renderIndexed(GL_QUADS);
 		
 	} // render
 }

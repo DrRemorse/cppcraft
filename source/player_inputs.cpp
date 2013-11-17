@@ -2,7 +2,7 @@
 
 #include "library/config.hpp"
 #include "library/log.hpp"
-#include "input.hpp"
+#include "library/opengl/input.hpp"
 #include "menu.hpp"
 #include "player_inputs.hpp"
 #include "sectors.hpp"

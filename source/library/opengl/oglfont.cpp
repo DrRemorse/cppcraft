@@ -1,17 +1,33 @@
 #include "oglfont.hpp"
 
 #include "../bitmap/bitmap.hpp"
+#include "../math/matrix.hpp"
 #include "opengl.hpp"
 
 namespace library
 {
-	OglFont::OglFont(int size)
+	OglFont::OglFont()
 	{
-		this->size = size;
+		this->size = 0;
+		this->lastUnit = -1;
+	}
+	OglFont::OglFont(std::string filename, int size) : OglFont()
+	{
+		if (load(filename, size) == false)
+			throw "Error: Could not load font image";
 	}
 	
-	bool OglFont::load(std::string filename)
+	bool OglFont::load(std::string filename, int size)
 	{
+		// create shader, if it doesn't exist
+		if (shader.getShader() == 0)
+		{
+			this->createShader();
+		}
+		
+		if (size <= 0) return false;
+		this->size = size;
+		
 		Bitmap fontImage(filename, Bitmap::PNG);
 		if (fontImage.data() == nullptr) return false;
 		
@@ -24,9 +40,26 @@ namespace library
 		return true;
 	}
 	
-	void OglFont::print(std::string text, int charset)
+	void OglFont::bind(GLenum unit)
+	{
+		// bind font shader
+		shader.bind();
+		if (this->lastUnit != unit)
+		{
+			this->lastUnit = unit;
+			// resend texture slot to shader
+			shader.sendInteger("texture", unit);
+		}
+		// bind texture
+		font.bind(unit);
+	}
+	
+	void OglFont::print(const vec3& location, const vec2& size, std::string text)
 	{
 		if (text.length() == 0) return;
+		
+		// bind texture
+		font.bind(0);
 		
 		// convert text to font array index positions
 		char converted[text.length()];
@@ -51,35 +84,35 @@ namespace library
 		// emit vertices as quads
 		for (size_t i = 0; i < text.length(); i++)
 		{
-			vertex->x = 0.0 + i;
-			vertex->y = 0.0;
-			vertex->z = 0.0;
+			vertex->x = location.x + (0 + i) * size.x;
+			vertex->y = location.y + 0.0;
+			vertex->z = location.z + 0.0;
 			vertex->s = 0;
-			vertex->t = 0;
+			vertex->t = 1;
 			vertex->p = converted[i];
 			vertex++;
 			
-			vertex->x = 1.0 + i;
-			vertex->y = 0.0;
-			vertex->z = 0.0;
-			vertex->s = 1;
-			vertex->t = 0;
-			vertex->p = converted[i];
-			vertex++;
-			
-			vertex->x = 1.0 + i;
-			vertex->y = 1.0;
-			vertex->z = 0.0;
+			vertex->x = location.x + (1 + i) * size.x;
+			vertex->y = location.y + 0.0;
+			vertex->z = location.z + 0.0;
 			vertex->s = 1;
 			vertex->t = 1;
 			vertex->p = converted[i];
 			vertex++;
 			
-			vertex->x = 0.0 + i;
-			vertex->y = 1.0;
-			vertex->z = 0.0;
+			vertex->x = location.x + (1 + i) * size.x;
+			vertex->y = location.y + size.y;
+			vertex->z = location.z + 0.0;
+			vertex->s = 1;
+			vertex->t = 0;
+			vertex->p = converted[i];
+			vertex++;
+			
+			vertex->x = location.x + (0 + i) * size.x;
+			vertex->y = location.y + size.y;
+			vertex->z = location.z + 0.0;
 			vertex->s = 0;
-			vertex->t = 1;
+			vertex->t = 0;
 			vertex->p = converted[i];
 			vertex++;
 		}
@@ -101,6 +134,20 @@ namespace library
 	int OglFont::getSize() const
 	{
 		return this->size;
+	}
+	
+	void OglFont::sendMatrix(Matrix& matrix)
+	{
+		shader.sendMatrix("mvp", matrix);
+	}
+	
+	void OglFont::setBackColor(const vec4& color)
+	{
+		shader.sendVec4("bgcolor", color);
+	}
+	void OglFont::setColor(const vec4& color)
+	{
+		shader.sendVec4("fcolor", color);
 	}
 	
 }

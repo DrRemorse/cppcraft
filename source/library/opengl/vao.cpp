@@ -10,8 +10,7 @@ namespace library
 	
 	VAO::VAO()
 	{
-		vao = 0;
-		vbo = 0;
+		vao = vbo = ibo = 0;
 		isCreating = false;
 	}
 	
@@ -27,10 +26,16 @@ namespace library
 		this->isCreating = true;
 		
 		// create & bind VAO
-		if (vao == 0) glGenVertexArrays(1, &vao);
+		if (vao == 0)
+		{
+			glGenVertexArrays(1, &vao);
+		}
 		bind();
 		// create & bind VBO
-		if (vbo == 0) glGenBuffers(1, &vbo);
+		if (vbo == 0)
+		{
+			glGenBuffers(1, &vbo);
+		}
 		glBindBuffer(GL_ARRAY_BUFFER_ARB, vbo);
 		
 		this->vertexSize = vertexSize;
@@ -47,10 +52,28 @@ namespace library
 		}
 	}
 	
+	void VAO::indexes(GLvoid* data, GLsizei count)
+	{
+		this->indices = count;
+		
+		if (ibo == 0)
+		{
+			glGenBuffers(1, &ibo);
+		}
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, ibo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER_ARB, count * sizeof(GLushort), data, GL_STATIC_DRAW_ARB);
+		
+		if (ogl.checkError())
+		{
+			logger << Log::ERR << "VAO::indexes(): OpenGL error for vao = " << vao << ", ibo = " << ibo << Log::ENDL;
+			throw std::string("VAO::indexes(): OpenGL error");
+		}
+	}
+	
 	void VAO::attrib(GLuint index, GLsizei size, GLenum type, bool normalize, int offset)
 	{
 		glEnableVertexAttribArray(index);
-		intptr_t dataPointer = offset; // convert offset to the pointer size of this build target
+		intptr_t dataPointer = offset; // convert offset to the pointer size of build target
 		glVertexAttribPointer(index, size, type, (normalize) ? GL_TRUE : GL_FALSE, vertexSize, (GLvoid*) dataPointer);
 		
 		if (ogl.checkError())
@@ -105,9 +128,27 @@ namespace library
 			throw std::string("VAO::render(): OpenGL error");
 		}
 	}
-	void VAO::render(GLenum mode)
-	{
-		render(mode, 0, this->vertices);
-	}
 	
+	void VAO::renderIndexed(GLenum mode, GLuint first, GLint count)
+	{
+		bind();
+		glDrawRangeElements(mode, first, first + count, count, GL_UNSIGNED_SHORT, 0);
+		
+		if (ogl.checkError())
+		{
+			logger << Log::ERR << "VAO::renderIndexed(3): OpenGL error for vao = " << vao << Log::ENDL;
+			throw std::string("VAO::renderIndexed(3): OpenGL error");
+		}
+	}
+	void VAO::renderIndexed(GLenum mode)
+	{
+		bind();
+		glDrawElements(mode, this->indices, GL_UNSIGNED_SHORT, 0);
+		
+		if (ogl.checkError())
+		{
+			logger << Log::ERR << "VAO::renderIndexed(1): OpenGL error for vao = " << vao << Log::ENDL;
+			throw std::string("VAO::renderIndexed(1): OpenGL error");
+		}
+	}
 }

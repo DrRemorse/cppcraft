@@ -1,7 +1,9 @@
 #include "player_actions.hpp"
 
-#include "input.hpp"
+#include "library/opengl/input.hpp"
 #include <GL/glfw3.h>
+
+using namespace library;
 
 namespace cppcraft
 {

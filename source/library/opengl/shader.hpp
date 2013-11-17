@@ -15,9 +15,13 @@ namespace library
 	public:
 		typedef std::string (*processFunc)(std::string text);
 		
-		Shader() {};
-		Shader(std::string filename, std::vector<std::string>& linkstage);
-		Shader(std::string filename, processFunc tokenizer, std::vector<std::string>& linkstage);
+		// initializes empty shader object
+		Shader() { this->shader = 0; };
+		// creates shader from external file
+		Shader(std::string filename, std::vector<std::string>& attributes);
+		Shader(std::string filename, processFunc tokenizer, std::vector<std::string>& attributes);
+		// create shader from string (as shader code)
+		Shader(const std::string& vertex, const std::string& frag, const std::string& title, std::vector<std::string>& attributes);
 		
 		// binds/activates this shader
 		void bind();
@@ -50,6 +54,9 @@ namespace library
 	private:
 		GLuint shader;
 		std::map<std::string, GLint> uniforms;
+		
+		// internal function for uploading shader code, creating and compiling the shader program
+		void createShader(std::string vertshader, std::string fragshader, std::string source, processFunc tokenizer, std::vector<std::string>& attributes);
 		
 		// get errors/warnings from OpenGL context
 		void printShaderStatus(GLuint shader, bool linkstage);

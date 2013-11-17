@@ -3,7 +3,9 @@
 #include "library/math/matrix.hpp"
 #include "library/opengl/opengl.hpp"
 #include "library/opengl/window.hpp"
+#include "library/opengl/oglfont.hpp"
 #include "renderman.hpp"
+#include "shaderman.hpp"
 #include <cmath>
 
 using namespace library;
@@ -14,6 +16,8 @@ namespace cppcraft
 	const double PI = 4 * atan(1);
 	// the GUIs orthographic projection matrix
 	Matrix ortho;
+	// A wild Font appears!
+	OglFont font;
 	
 	void GUIRenderer::init(Renderer& renderer)
 	{
@@ -24,6 +28,25 @@ namespace cppcraft
 		ortho.ortho(width, height, 0, 2);
 		
 		initInventoryRenderer();
+		
+		// initialize our font renderer
+		font.load("bitmap/default/gui/font.png", 16);
+		
+		font.bind(0);
+		font.sendMatrix(ortho);
+		
+		font.setColor(vec4(0.8, 0.8, 1.0, 1.0));
+		font.setBackColor(vec4(0.0, 0.5));
+	}
+	
+	inline void guiPrinter(const vec3& position, const vec2& size, std::string text)
+	{
+		glEnable(GL_BLEND);
+		
+		font.bind(0);
+		font.print(position, size, text);
+		
+		glDisable(GL_BLEND);
 	}
 	
 	void GUIRenderer::render(Renderer& renderer)
@@ -54,6 +77,9 @@ namespace cppcraft
 		
 		/// quickbar items ///
 		renderQuickbarItems(ortho, renderer.frametick);
+		
+		/// test text ///
+		guiPrinter(vec3(0.01, 0.01, 0.0), vec2(0.01), "cppcraft v0.1");
 		
 	}
 	

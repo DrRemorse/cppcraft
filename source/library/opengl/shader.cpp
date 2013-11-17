@@ -143,15 +143,28 @@ namespace library
 	}
 	
 	Shader::Shader(std::string filename, std::vector<std::string>& linkstage) :
-		Shader(filename, nullptr, linkstage)
-	{ }
+		Shader(filename, nullptr, linkstage) { }
 	
-	Shader::Shader(std::string filename, processFunc tokenizer, std::vector<std::string>& linkstage)
+	// shader from external file
+	Shader::Shader(std::string filename, processFunc tokenizer, std::vector<std::string>& attributes)
 	{
 		// recursively process text from files and #includes
 		std::string vertshader = shaderProcessor(filename, tokenizer, true );
 		std::string fragshader = shaderProcessor(filename, tokenizer, false);
 		
+		// use the separated vertex and fragment code to create the shader
+		createShader(vertshader, fragshader, filename, tokenizer, attributes);
+	}
+	
+	// shader from source code
+	Shader::Shader(const std::string& vertex, const std::string& frag, const std::string& title, std::vector<std::string>& attributes)
+	{
+		createShader(vertex, frag, title, nullptr, attributes);
+	}
+	
+	// internal function for uploading shader code, creating and compiling the shader program
+	void Shader::createShader(std::string vertshader, std::string fragshader, std::string source, processFunc tokenizer, std::vector<std::string>& attributes)
+	{
 		// char arrays for GL call
 		char* source_v[1] = { const_cast<char*>(vertshader.c_str()) };
 		char* source_f[1] = { const_cast<char*>(fragshader.c_str()) };
@@ -174,7 +187,7 @@ namespace library
 		if (!status)
 		{
 			printShaderStatus(shader_v, false);
-			logger << Log::ERR << "*** Shader filename: " << filename << Log::ENDL;
+			logger << Log::ERR << "*** Shader source: " << source << Log::ENDL;
 			throw std::string("Shader::load(): Shader compilation error");
 		}
 		// fragment status
@@ -182,7 +195,7 @@ namespace library
 		if (!status)
 		{
 			printShaderStatus(shader_f, false);
-			logger << Log::ERR << "*** Shader filename: " << filename << Log::ENDL;
+			logger << Log::ERR << "*** Shader source: " << source << Log::ENDL;
 			throw std::string("Shader::load(): Shader compilation error");
 		}
 		
@@ -192,9 +205,9 @@ namespace library
 		glAttachShader(this->shader, shader_f);
 		
 		// common attributes
-		for (size_t i = 0; i < linkstage.size(); i++)
+		for (size_t i = 0; i < attributes.size(); i++)
 		{
-			glBindAttribLocation(this->shader, i, (GLchar*) linkstage[i].c_str());
+			glBindAttribLocation(this->shader, i, (GLchar*) attributes[i].c_str());
 		}
 		
 		// link program
@@ -207,16 +220,16 @@ namespace library
 		glGetProgramiv(this->shader, GL_LINK_STATUS, &status);
 		if (!status)
 		{
-			logger << Log::INFO << "Offending file: " << filename << Log::ENDL;
+			logger << Log::INFO << "Offending source: " << source << Log::ENDL;
 			printShaderStatus(this->shader, true);
-			throw std::string("Shader::load() failed to link shader " + filename);
+			throw std::string("Shader::load() failed to link shader " + source);
 		}
 		
 		// check for errors
 		if (OpenGL::checkError())
 		{
-			logger << Log::ERR << "Shader::load(): OpenGL error for file: " << filename << Log::ENDL;
-			throw std::string("Shader::load(): OpenGL error for file: " + filename);
+			logger << Log::ERR << "Shader::load(): OpenGL error for: " << source << Log::ENDL;
+			throw std::string("Shader::load(): OpenGL error for: " + source);
 		}
 	}
 	

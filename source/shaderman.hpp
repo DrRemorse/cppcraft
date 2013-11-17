@@ -54,7 +54,6 @@ namespace cppcraft
 			
 			COMPASS,
 			MINIMAP,
-			FONT,
 			GUI,
 			MENUITEM,
 			CHAT,

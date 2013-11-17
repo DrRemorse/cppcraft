@@ -190,6 +190,9 @@
         <File Name="source/library/opengl/vao.cpp"/>
         <File Name="source/library/opengl/camera.hpp"/>
         <File Name="source/library/opengl/camera.cpp"/>
+        <File Name="source/library/opengl/input.cpp"/>
+        <File Name="source/library/opengl/input.hpp"/>
+        <File Name="source/library/opengl/oglfont_shader.cpp"/>
       </VirtualDirectory>
       <VirtualDirectory Name="sound">
         <File Name="source/library/sound/sound.cpp"/>
@@ -309,8 +312,6 @@
     <File Name="source/worldmanager.hpp"/>
     <File Name="source/render_scene.cpp"/>
     <File Name="source/render_sky.cpp"/>
-    <File Name="source/input.cpp"/>
-    <File Name="source/input.hpp"/>
     <File Name="source/render_scene.hpp"/>
     <File Name="source/render_sky.hpp"/>
     <File Name="source/render_sky_clouds.cpp"/>

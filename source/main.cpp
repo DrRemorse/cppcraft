@@ -9,16 +9,14 @@
 #include "library/config.hpp"
 #include "library/log.hpp"
 #include "library/math/vector.hpp"
+#include "library/opengl/input.hpp"
 
 #include "gameconf.hpp"
 #include "generator.hpp"
-#include "input.hpp"
 #include "player.hpp"
 #include "renderman.hpp"
 #include "threading.hpp"
 #include "worldmanager.hpp"
-
-#include "vertex_block.hpp"
 
 #include <string>
 
