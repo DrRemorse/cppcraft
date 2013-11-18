@@ -187,11 +187,11 @@ void main(void)
 	}
 	else
 	{
-		dep = max(0.0, underw.a - dist);
+		dep = 1.0 - pow(dist, 3.0);
 	}
 	
 	// create water "color"
-	vec3 waterColor = mix(deepwater, shallowwater, dep) * daylight;
+	vec3 waterColor = mix(deepwater, shallowwater, dep);
 	// mix water color and other-side
 	waterColor = mix(waterColor, underw.rgb, dep) * daylight;
 	// create final color value
