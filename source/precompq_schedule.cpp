@@ -74,7 +74,9 @@ namespace cppcraft
 				}
 				else if (s2.vbodata->pcdata == nullptr)
 				{
-					logger << Log::ERR << "PrecompSchedule::schedule(): vertex data was null" << Log::ENDL;
+					//logger << Log::ERR << "PrecompSchedule::schedule(): vertex data was null" << Log::ENDL;
+					// FIXME this is a bug, somewhere
+					s2.progress = Sector::PROG_NEEDRECOMP;
 					ready = false;
 				}
 			}
