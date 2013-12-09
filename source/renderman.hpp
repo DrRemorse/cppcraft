@@ -19,6 +19,8 @@ namespace cppcraft
 		double frametick;
 		// this frames delta-time
 		double dtime;
+		// average FPS
+		double FPS;
 		
 		// renders a scene
 		void render(double dtime, WorldManager&);

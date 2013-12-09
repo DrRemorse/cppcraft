@@ -1,4 +1,4 @@
-#version 130
+#version 330
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
 
@@ -61,11 +61,7 @@ void main(void)
 	float timer = frameCounter / 35.0;
 	
 	waves.xy  = w_vertex.xz * vec2(0.10, 0.02) + timer * vec2(0.2, 0.0);
-	//waves.xy = vec2(cos(waves.x), sin(waves.x));
-	waves.zw  = w_vertex.xz * vec2(0.25, 0.05) + timer * vec2(0.25, 0.05);
-	//waves.zw = vec2(cos(waves.y), sin(waves.y));
-	//waves.xy  = w_vertex.xz * vec2(0.10, 0.02) + timer * vec2(0.2, 0.0);
-	//waves.zw  = w_vertex.xz * vec2(0.25, 0.05) + timer * vec2(0.25, 0.05);
+	waves.zw  = w_vertex.xz * vec2(0.25, 0.05) + timer * vec2(0.2, 0.0);
 	
 	lightdata   = in_color;
 	torchlight  = in_color2;
@@ -115,7 +111,7 @@ void main(void)
 	srdnoise(waves.zw, 0.0, grad2);
 	
 	// final x/z values
-	grad = grad * 0.8 + grad2 * 0.2;
+	grad = grad * 0.5 + grad2 * 0.5;
 	
 	vec3 tx = vec3(1.0, 0.0, grad.x);
 	vec3 ty = vec3(0.0, 1.0, grad.y);

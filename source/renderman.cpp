@@ -18,7 +18,6 @@
 #include "threading.hpp"
 #include "worldmanager.hpp"
 #include <cmath>
-#include <sstream>
 
 #define DEBUG
 
@@ -157,24 +156,18 @@ namespace cppcraft
 		const double render_granularity = 0.01; // 10ms granularity
 		double t1 = glfwGetTime();
 		
-		//float FPS = 0.0;
+		this->FPS = 0.0;
 		
 		while (glfwWindowShouldClose(gamescr.window()) == 0 && mtx.terminate == false)
 		{
-			// variable delta frame timing
+			/// variable delta frame timing ///
 			double t0 = t1;
 			t1 = glfwGetTime();
 			
 			dtime = (t1 - t0) / render_granularity;
 			
 			/// FPS COUNTER ///
-			/*
-			FPS = FPS * 0.9 + (1.0 / (t0 - t1)) * 0.1;
-			
-			std::stringstream ss;
-			ss << FPS;
-			glfwSetWindowTitle(gamescr.window(), ss.str().c_str());
-			*/
+			this->FPS = this->FPS * 0.9 + (1.0 / (t1 - t0)) * 0.1;
 			
 			// compiling columns
 		#ifdef DEBUG

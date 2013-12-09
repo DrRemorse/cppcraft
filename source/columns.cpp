@@ -247,8 +247,8 @@ namespace cppcraft
 		// disable vertex attributes
 		if (updateAttribs)
 		{
-			for (int i = 0; i < 6; i++)
-				glDisableVertexAttribArray(i);
+			//for (int i = 0; i < 6; i++)
+			//	glDisableVertexAttribArray(i);
 		}
 		
 		if (ogl.checkError())

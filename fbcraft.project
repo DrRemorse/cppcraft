@@ -231,6 +231,10 @@
         <File Name="source/library/storage/bitarray.cpp"/>
         <File Name="source/library/storage/bitarray.hpp"/>
       </VirtualDirectory>
+      <VirtualDirectory Name="script">
+        <File Name="source/library/script/script.hpp"/>
+        <File Name="source/library/script/script.cpp"/>
+      </VirtualDirectory>
     </VirtualDirectory>
     <File Name="source/atmosphere.cpp"/>
     <File Name="source/atmosphere.hpp"/>

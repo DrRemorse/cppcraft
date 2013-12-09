@@ -16,6 +16,7 @@
 #include "sun.hpp"
 #include "textureman.hpp"
 #include "torchlight.hpp"
+#include "vertex_block.hpp"
 #include <cmath>
 
 using namespace library;

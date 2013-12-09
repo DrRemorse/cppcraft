@@ -7,6 +7,7 @@
 #include "renderman.hpp"
 #include "shaderman.hpp"
 #include <cmath>
+#include <sstream>
 
 using namespace library;
 
@@ -80,6 +81,10 @@ namespace cppcraft
 		
 		/// test text ///
 		guiPrinter(vec3(0.01, 0.01, 0.0), vec2(0.01), "cppcraft v0.1");
+		
+		std::stringstream ss;
+		ss << "fps: " << renderer.FPS;
+		guiPrinter(vec3(0.01, 0.02, 0.0), vec2(0.01), ss.str());
 		
 	}
 	

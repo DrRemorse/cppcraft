@@ -30,6 +30,7 @@ namespace cppcraft
 {
 	FBO sceneFBO;
 	FBO reflectionFBO;
+	FBO underwaterFBO;
 	FBO screenFBO;
 	
 	void SceneRenderer::init(Renderer& renderer)
@@ -53,7 +54,15 @@ namespace cppcraft
 		reflectionFBO.bind();
 		reflectionFBO.attachColor(0, textureman.get(Textureman::T_REFLECTION));
 		reflectionFBO.createDepthRBO(renderer.gamescr.SW, renderer.gamescr.SH);
-		reflectionFBO.unbind();
+		
+		underwaterFBO.create();
+		underwaterFBO.bind();
+		underwaterFBO.attachColor(0, textureman.get(Textureman::T_UNDERWATERMAP));
+		
+		screenFBO.create();
+		screenFBO.bind();
+		screenFBO.attachColor(0, textureman.get(Textureman::T_FOGBUFFER));
+		screenFBO.attachDepthRBO(sceneFBO);
 		
 		// initialize reflection camera to be the same as regular camera,
 		// except it will be mirrored on Y-axis from water-plane level
@@ -229,7 +238,7 @@ namespace cppcraft
 				
 				// render to reflection texture
 				reflectionFBO.bind();
-				reflectionFBO.attachColor(0, textureman.get(Textureman::T_REFLECTION));
+				
 				// render at half size
 				glViewport(0, 0, renderer.gamescr.SW / 2, renderer.gamescr.SH / 2);
 				
@@ -274,15 +283,13 @@ namespace cppcraft
 		}
 		
 		// we are underwater, blit sky instead of reflection
-		reflectionFBO.bind();
-		reflectionFBO.attachColor(0, textureman.get(Textureman::T_UNDERWATERMAP));
-		
 		if (underwater)
 		{
-			sceneFBO.blitTo(reflectionFBO, renderer.gamescr.SW, renderer.gamescr.SH, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+			sceneFBO.blitTo(underwaterFBO, renderer.gamescr.SW, renderer.gamescr.SH, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 		}
 		else
 		{
+			underwaterFBO.bind();
 			glClear(GL_COLOR_BUFFER_BIT);
 		}
 		
@@ -305,7 +312,6 @@ namespace cppcraft
 		renderPlayerSelection();
 		
 		// stop writing to underwatermap
-		//sceneFBO.removeColor(1);
 		sceneFBO.drawBuffers();
 		
 		// cull water faces if player is not (fully) submerged in water
@@ -337,8 +343,7 @@ namespace cppcraft
 		
 		// without affecting depth, use screenspace renderer to render blurred terrain
 		// and also blend terrain against sky background
-		sceneFBO.bind();
-		sceneFBO.attachColor(0, textureman.get(Textureman::T_FOGBUFFER));
+		screenFBO.bind();
 		
 		textureman.bind(0, Textureman::T_RENDERBUFFER);
 		textureman.bind(1, Textureman::T_BLURBUFFER2);
@@ -366,7 +371,7 @@ namespace cppcraft
 		glColorMask(1, 1, 1, 1);
 		glDisable(GL_BLEND);
 		
-		sceneFBO.unbind();
+		screenFBO.unbind();
 		
 	} // render scene
 	

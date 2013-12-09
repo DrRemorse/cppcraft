@@ -58,7 +58,7 @@ namespace cppcraft
 		int fclid, lastclid;
 		// resulting vertex biome colors
 		unsigned int fbiome[4];
-		// cheap CRC, to prevent calculating the same color twice
+		// cheap CRC, to prevent calculating the same color position twice
 		int fbicrc;
 		
 		// processes a Block, outputs a mesh w/lighting

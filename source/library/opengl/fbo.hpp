@@ -15,6 +15,7 @@ namespace library
 	class FBO
 	{
 		GLuint fbo;
+		GLuint rbo;
 		
 		static GLuint lastFBO;
 		
@@ -39,6 +40,7 @@ namespace library
 		
 		// create depth renderbuffer
 		void createDepthRBO(int width, int height);
+		void attachDepthRBO(const FBO&);
 		// create multisampling renderbuffer
 		void createMsaaRBO(int width, int height, int samples);
 		void createDepthMsaaRBO(int width, int height, int samples);

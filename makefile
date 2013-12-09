@@ -6,15 +6,17 @@
 SOURCE_DIR  = source
 SOURCE_DIRS = . tests
 LIBRARY_DIRS = library library/bitmap library/compression library/math     \
-				library/network library/noise library/opengl library/sound \
-				library/storage library/threading library/timing library/voxels
+				library/network library/noise library/opengl library/script \
+				library/sound library/storage library/threading library/timing \
+				library/voxels
 ifeq ($(OS),Windows_NT)
 RESOURCES = res/cppcraft.rc
 endif
 
 # build options
-# -Ofast -msse4.1 -ffast-math -mfpmath=both
-BUILDOPT = -Ofast -msse4.1 -ffast-math -mfpmath=both
+# -Ofast -msse4.1 -ffast-math -mfpmath=both -march=native -flto -fwhole-program
+# -Ofast -msse4.1 -ffast-math -mfpmath=both -march=native
+BUILDOPT = -Ofast -msse4.1 -ffast-math -mfpmath=both -march=native
 # output file
 OUTPUT   = ./Debug/cppcraft
 
@@ -26,9 +28,9 @@ CC = g++ $(BUILDOPT) -std=c++11
 CCFLAGS = -c -Wall -Wno-write-strings -Iinc
 # linker flags
 ifeq ($(OS),Windows_NT)
-	LFLAGS  = -Llib -static -lpthread -lbassdll -llattice -lglfw3 -lgdi32 -lopengl32 -llzo2 -lws2_32
+	LFLAGS  = -Llib -static -lpthread -lbassdll -llattice -lglfw3 -lgdi32 -lopengl32 -llzo2 -lws2_32 -ltcc
 else
-	LFLAGS  = -Llib -static-libgcc -lpthread -lbass -llzo2 -llattice -lGL -lGLU -lglfw3 -lX11 -lXxf86vm -lXrandr -lXi
+	LFLAGS  = -Llib -lpthread -lbass -llzo2 -llattice -lGL -lGLU -lglfw3 -lX11 -lXxf86vm -lXrandr -lXi -ltcc -ldl
 endif
 # resource builder
 RES = windres
