@@ -24,11 +24,14 @@ using namespace library;
 namespace cppcraft
 {
 	static const double PI = 4 * atan(1);
+	GLuint renderVAO;
 	
 	void SceneRenderer::initTerrain()
 	{
 		// initialize column drawing queue
 		drawq.init();
+		
+		glGenVertexArrays(1, &renderVAO);
 	}
 	
 	void SceneRenderer::recalculateFrustum()

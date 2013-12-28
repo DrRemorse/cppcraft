@@ -132,7 +132,7 @@ namespace library
 	void VAO::renderIndexed(GLenum mode, GLuint first, GLint count)
 	{
 		bind();
-		glDrawRangeElements(mode, first, first + count, count, GL_UNSIGNED_SHORT, 0);
+		//glDrawRangeElements(mode, first, first + count, count, GL_UNSIGNED_SHORT, nullptr);
 		
 		if (ogl.checkError())
 		{

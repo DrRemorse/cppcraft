@@ -14,6 +14,7 @@ namespace library
 		Script();
 		~Script();
 		
+		void addsymb(const std::string& symb, const void* func);
 		void compile(const std::string& program);
 		
 		int execute(const std::string& function);

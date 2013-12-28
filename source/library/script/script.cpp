@@ -2,6 +2,8 @@
 
 #include <libtcc.h>
 
+#define TCC_ERROR -1
+
 namespace library
 {
 	Script::Script()
@@ -28,25 +30,37 @@ namespace library
 		tcc_set_error_func(this->state, nullptr, errfunc);
 	}
 	
+	void Script::addsymb(const std::string& symb, const void* func)
+	{
+		tcc_add_symbol(this->state, symb.c_str(), func);
+	}
+	
 	void Script::compile(const std::string& program)
 	{
 		// memory output
 		tcc_set_output_type(this->state, TCC_OUTPUT_MEMORY);
-		tcc_compile_string(this->state, program.c_str());
 		
-		// resize/alloc memory to fit program
-		if (this->memory == nullptr)
-			this->memory = malloc(tcc_relocate(this->state, nullptr));
-		else
-			this->memory = realloc(this->memory, tcc_relocate(this->state, nullptr));
+		// compile
+		if (tcc_compile_string(this->state, program.c_str()) == TCC_ERROR)
+		{
+			throw std::string("Compile error");
+		}
 		
-		// advertise location
-		tcc_relocate(this->state, this->memory);
+		// allocate
+		this->memory = malloc(tcc_relocate(this->state, nullptr));
+		
+		// relocate to executable memory
+		if (tcc_relocate(this->state, this->memory) == TCC_ERROR)
+		{
+			throw std::string("Link error");
+		}
 	}
+	
+	// all execute() variants returns -1 upon failure of execution (for now)
 	
 	int Script::execute(const std::string& function)
 	{
-		typedef int (*intfunc) ();
+		typedef int (*intfunc) (void);
 		intfunc func = (intfunc) tcc_get_symbol(this->state, function.c_str());
 		
 		if (func)
@@ -67,4 +81,3 @@ namespace library
 	}
 	
 }
-

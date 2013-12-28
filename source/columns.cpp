@@ -244,13 +244,6 @@ namespace cppcraft
 		// disable vao & vbo
 		glBindVertexArray(0);
 		
-		// disable vertex attributes
-		if (updateAttribs)
-		{
-			//for (int i = 0; i < 6; i++)
-			//	glDisableVertexAttribArray(i);
-		}
-		
 		if (ogl.checkError())
 		{
 			throw std::string("Column::compile(): OpenGL error after ending compiler");

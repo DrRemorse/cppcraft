@@ -70,7 +70,7 @@ namespace cppcraft
 	library::vec3 PlayerClass::getLookVector() const
 	{
 		float dx =  sinf(player.yrotrad) * cosf(player.xrotrad);
-		float dy = 		                  -sinf(player.xrotrad);
+		float dy = 		                -sinf(player.xrotrad);
 		float dz = -cosf(player.yrotrad) * cosf(player.xrotrad);
 		
 		return vec3(dx, dy, dz);

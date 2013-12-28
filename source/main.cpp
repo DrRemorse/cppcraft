@@ -26,12 +26,45 @@ const std::string logFile    = "cppcraft.log";
 using namespace library;
 using namespace cppcraft;
 
+#include "library/script/script.hpp"
+
+extern "C"
+{
+	void myfunc()
+	{
+		logger << Log::INFO << "My func executed!" << Log::ENDL;
+	}
+}
+
 int main(int argc, char* argv[])
 {
 	logger.open(logFile);
 	
 	// start logging
 	logger << Log::INFO << "Starting up..." << Log::ENDL;
+	
+	library::Script script;
+	script.addsymb("myfunc", (void*) &myfunc);
+	
+	std::string prog = 
+	R"(
+		// symbol decltype
+		void myfunc();
+		
+		int main(void)
+		{
+			myfunc();
+			
+			return 1;
+		}
+	)";
+	
+	script.compile(prog);
+	
+	int code = script.execute("main");
+	logger << Log::INFO << "Return code: " << code << Log::ENDL;
+	
+	return 0;
 	
 	std::string wfolder = "";
 	if (argc > 1)

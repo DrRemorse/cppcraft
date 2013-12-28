@@ -5,10 +5,11 @@
 # code folders
 SOURCE_DIR  = source
 SOURCE_DIRS = . tests
-LIBRARY_DIRS = library library/bitmap library/compression library/math     \
-				library/network library/noise library/opengl library/script \
+LIBRARY_DIRS = library library/bitmap library/compression library/math      \
+				library/network library/noise library/opengl library/script    \
 				library/sound library/storage library/threading library/timing \
 				library/voxels
+
 ifeq ($(OS),Windows_NT)
 RESOURCES = res/cppcraft.rc
 endif
@@ -16,7 +17,7 @@ endif
 # build options
 # -Ofast -msse4.1 -ffast-math -mfpmath=both -march=native -flto -fwhole-program
 # -Ofast -msse4.1 -ffast-math -mfpmath=both -march=native
-BUILDOPT = -Ofast -msse4.1 -ffast-math -mfpmath=both -march=native
+BUILDOPT = -g
 # output file
 OUTPUT   = ./Debug/cppcraft
 
