@@ -14,7 +14,7 @@ namespace cppcraft
 {
 	VAO quickbarVAO;
 	
-	void GUIRenderer::renderQuickbar(Matrix& ortho, double frameCounter)
+	void GUIRenderer::renderQuickbar(mat4& ortho, double frameCounter)
 	{
 		if (quickbarVAO.isGood() == false)
 		{

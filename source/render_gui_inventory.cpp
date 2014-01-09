@@ -1,9 +1,9 @@
 #include "render_gui_inventory.hpp"
 
-#include "library/log.hpp"
-#include "library/bitmap/colortools.hpp"
-#include "library/math/matrix.hpp"
-#include "library/opengl/opengl.hpp"
+#include <library/log.hpp>
+#include <library/bitmap/colortools.hpp>
+#include <library/math/matrix.hpp>
+#include <library/opengl/opengl.hpp>
 #include "blocks.hpp"
 #include "shaderman.hpp"
 #include "textureman.hpp"
@@ -29,8 +29,8 @@ namespace cppcraft
 		};
 		
 		// rotate cube and invert the Y-axis
-		Matrix matrot, scale(1, -1, 1);
-		matrot.rotateZYX(PI / 4, -PI / 4, 0);
+		mat4 scale(1, -1, 1);
+		mat4 matrot = rotationMatrix(PI / 4, -PI / 4, 0);
 		// turn the cube upside down because this coordinate system
 		// has the positive Y-axis pointing downwards
 		matrot = scale * matrot;
@@ -69,7 +69,7 @@ namespace cppcraft
 		
 	}
 	
-	void GUIRenderer::renderQuickbarItems(library::Matrix& ortho, double frameCounter)
+	void GUIRenderer::renderQuickbarItems(library::mat4& ortho, double frameCounter)
 	{
 		float width = this->width * 0.4;
 		float height = width / 8;
@@ -214,7 +214,7 @@ namespace cppcraft
 		}
 	}
 	
-	void GUIInventory::render(Matrix& ortho)
+	void GUIInventory::render(mat4& ortho)
 	{
 		int total  = itemTiles.size();
 		

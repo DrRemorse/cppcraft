@@ -3,7 +3,7 @@
 
 namespace library
 {
-	class Matrix;
+	class mat4;
 }
 
 namespace cppcraft
@@ -30,10 +30,10 @@ namespace cppcraft
 		void initInventoryRenderer();
 		
 		void renderPlayerhand(double frameCounter);
-		void renderMinimap(library::Matrix& ortho);
-		void renderCrosshair(library::Matrix& ortho);
-		void renderQuickbar(library::Matrix& ortho, double frameCounter);
-		void renderQuickbarItems(library::Matrix& ortho, double frameCounter);
+		void renderMinimap(library::mat4& ortho);
+		void renderCrosshair(library::mat4& ortho);
+		void renderQuickbar(library::mat4& ortho, double frameCounter);
+		void renderQuickbarItems(library::mat4& ortho, double frameCounter);
 	};
 	extern GUIRenderer rendergui;
 }

@@ -1,10 +1,10 @@
 #include "render_gui.hpp"
 
-#include "library/log.hpp"
-#include "library/math/matrix.hpp"
-#include "library/math/vector.hpp"
-#include "library/opengl/opengl.hpp"
-#include "library/opengl/vao.hpp"
+#include <library/log.hpp>
+#include <library/math/matrix.hpp>
+#include <library/math/vector.hpp>
+#include <library/opengl/opengl.hpp>
+#include <library/opengl/vao.hpp>
 #include "camera.hpp"
 #include "minimap.hpp"
 #include "player.hpp"
@@ -18,11 +18,11 @@ using namespace library;
 
 namespace cppcraft
 {
-	library::Matrix minimapMVP;
-	library::Matrix compassMVP;
+	library::mat4 minimapMVP;
+	library::mat4 compassMVP;
 	library::VAO compassVAO;
 	
-	void GUIRenderer::renderMinimap(Matrix& ortho)
+	void GUIRenderer::renderMinimap(mat4& ortho)
 	{
 		float compx = this->width * 0.86;
 		float compy = this->height * 0.24;
@@ -34,12 +34,11 @@ namespace cppcraft
 		if (camera.rotated)
 		{
 			// move to position
-			Matrix matview(ortho);
+			mat4 matview(ortho);
 			matview.translate_xy(compx, compy);
 			
 			// rotate properly
-			Matrix mattemp;
-			mattemp.rotateZYX(0.0, 0.0, -player.yrotrad);
+			mat4 mattemp = rotationMatrix(0.0, 0.0, -player.yrotrad);
 			matview *= mattemp;
 			
 			// scale down to proper size
@@ -99,7 +98,6 @@ namespace cppcraft
 		
 		// render compass
 		compassVAO.render(GL_QUADS);
-		
 	}
 	
 }

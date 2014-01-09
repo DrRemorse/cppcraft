@@ -60,7 +60,9 @@ namespace cppcraft
 		{
 			// determine best-guess facing value for cube & halfblock
 			
-			vec3::vector_t minv = fracs.min();
+			vec3::vector_t minv = fracs.x;
+			if (minv > fracs.y) minv = fracs.y;
+			if (minv > fracs.z) minv = fracs.z;
 			
 			if (fracs.x == minv)
 			{
@@ -77,7 +79,10 @@ namespace cppcraft
 				if (fracs.z <= stepSize)
 					return 1; // backside of cube
 			}
-			vec3::vector_t maxv = fracs.max();
+			
+			vec3::vector_t maxv = fracs.x;
+			if (maxv < fracs.y) maxv = fracs.y;
+			if (maxv < fracs.z) maxv = fracs.z;
 			
 			if (fracs.x == maxv)
 			{

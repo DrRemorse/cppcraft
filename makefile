@@ -3,12 +3,8 @@
 #######################
 
 # code folders
-SOURCE_DIR  = source
-SOURCE_DIRS = . tests
-LIBRARY_DIRS = library library/bitmap library/compression library/math      \
-				library/network library/noise library/opengl library/script    \
-				library/sound library/storage library/threading library/timing \
-				library/voxels
+SOURCE_DIR = source
+SOURCE = .
 
 ifeq ($(OS),Windows_NT)
 RESOURCES = res/cppcraft.rc
@@ -31,7 +27,7 @@ CCFLAGS = -c -Wall -Wno-write-strings -Iinc
 ifeq ($(OS),Windows_NT)
 	LFLAGS  = -Llib -static -lpthread -lbassdll -llattice -lglfw3 -lgdi32 -lopengl32 -llzo2 -lws2_32 -ltcc
 else
-	LFLAGS  = -Llib -lpthread -lbass -llzo2 -llattice -lGL -lGLU -lglfw3 -lX11 -lXxf86vm -lXrandr -lXi -ltcc -ldl
+	LFLAGS  = -Llib -llibrary -lpthread -lbass -llzo2 -llattice -lGL -lGLU -lglfw3 -lX11 -lXxf86vm -lXrandr -lXi -ltcc -ldl
 endif
 # resource builder
 RES = windres
@@ -41,7 +37,7 @@ RFLAGS = -O coff
 ##############################################################
 
 # make pipeline
-DIRECTORIES = $(LIBRARY_DIRS) $(SOURCE_DIRS)
+DIRECTORIES = $(SOURCE)
 CCDIRS  = $(foreach dir, $(DIRECTORIES), $(SOURCE_DIR)/$(dir)/*.c)
 CCMODS  = $(wildcard $(CCDIRS))
 CXXDIRS = $(foreach dir, $(DIRECTORIES), $(SOURCE_DIR)/$(dir)/*.cpp)

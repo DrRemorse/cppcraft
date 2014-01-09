@@ -86,7 +86,7 @@ namespace cppcraft
 		}
 	}
 	
-	void Minimap::render(Matrix& mvp)
+	void Minimap::render(mat4& mvp)
 	{
 		Shader& shd = shaderman[Shaderman::MINIMAP];
 		

@@ -16,7 +16,7 @@ namespace cppcraft
 	GUIRenderer rendergui;
 	const double PI = 4 * atan(1);
 	// the GUIs orthographic projection matrix
-	Matrix ortho;
+	mat4 ortho;
 	// A wild Font appears!
 	OglFont font;
 	
@@ -26,7 +26,7 @@ namespace cppcraft
 		height = 1.0 / renderer.gamescr.SA;
 		
 		// orthographic projection
-		ortho.ortho(width, height, 0, 2);
+		ortho = orthoMatrix(width, height, 0, 2);
 		
 		initInventoryRenderer();
 		

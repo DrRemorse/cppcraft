@@ -17,14 +17,14 @@ using namespace library;
 namespace cppcraft
 {
 	extern VAO screenVAO;
-	Matrix lensMatrix;
+	mat4 lensMatrix;
 	
 	void FSRenderer::initFlare()
 	{
-		lensMatrix = Matrix().bias() * camera.getProjection();
+		lensMatrix = mat4().bias() * camera.getProjection();
 	}
 	
-	vec2 FSRenderer::getSunVector(const Matrix& matsun)
+	vec2 FSRenderer::getSunVector(const mat4& matsun)
 	{
 		// create sun coordinate 2-vector
 		vec4 sunproj = lensMatrix * matsun * vec4(0.0, 0.0, 0.0, 1.0);
@@ -46,7 +46,7 @@ namespace cppcraft
 		glClear(GL_COLOR_BUFFER_BIT);
 		
 		//  render sun (again) to texture 0
-		Matrix matsun = skyrenderer.renderSunProj();
+		mat4 matsun = skyrenderer.renderSunProj();
 		vec2 sunproj = getSunVector(matsun);
 		
 		// check that the sun is in fact in the camera

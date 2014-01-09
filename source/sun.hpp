@@ -5,7 +5,7 @@
 
 namespace library
 {
-	class Matrix;
+	class mat4;
 }
 
 namespace cppcraft
@@ -51,7 +51,7 @@ namespace cppcraft
 		float getRealtimeRadianAngle() const;
 		float getRealtimeDaylight() const;
 		
-		library::Matrix getSunMatrix() const;
+		library::mat4 getSunMatrix() const;
 		
 		// sky renderer uses this class extensively
 		friend class SkyRenderer;

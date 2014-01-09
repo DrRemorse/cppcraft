@@ -5,7 +5,7 @@ namespace library
 {
 	class Bitmap;
 	class Texture;
-	class Matrix;
+	class mat4;
 }
 
 namespace cppcraft
@@ -18,7 +18,7 @@ namespace cppcraft
 		Minimap();
 		void init();
 		void update();
-		void render(library::Matrix& mvp);
+		void render(library::mat4& mvp);
 		
 		void addSector(Sector& s);
 		void roll(int x, int z);

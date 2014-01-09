@@ -88,8 +88,8 @@ namespace cppcraft
 		shd.sendVec3 ("lightVector",  thesun.getRealtimeAngle());
 		shd.sendFloat("daylight",     thesun.getRealtimeDaylight());
 		
-		Matrix matclouds = camera.getRotationMatrix();
-		matclouds.translated(0.0, dy, 0.0);
+		mat4 matclouds = camera.getRotationMatrix();
+		matclouds.translate_xy(0.0, dy);
 		
 		// view matrix
 		shd.sendMatrix("matview", matclouds);

@@ -131,7 +131,7 @@ void main (void)
 	
 	//final = pow(final, vec3(1.0 / 2.2)) * 1.05;
 	final = vec3(1.0) - exp(final * -exposure);
-	gl_FragData[0] = vec4(final, 1.0);
+	gl_FragColor = vec4(final, 1.0);
 }
 
 #endif

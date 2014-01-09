@@ -1,7 +1,7 @@
 #ifndef CAMERA_FRUSTUM_HPP
 #define CAMERA_FRUSTUM_HPP
 
-#include "library/opengl/camera.hpp"
+#include <library/opengl/camera.hpp>
 
 namespace cppcraft
 {
@@ -14,7 +14,7 @@ namespace cppcraft
 		library::Frustum frustum;
 		
 		// camera matrices
-		library::Matrix matproj_long; // PL
+		library::mat4 matproj_long; // PL
 		
 		// in-sector offset (from seamless transition)
 		library::vec3 worldOffset;
@@ -29,7 +29,7 @@ namespace cppcraft
 		void init(library::WindowClass& wnd);
 		
 		int getGridsize() const { return this->gridsize; }
-		const library::Matrix& getProjectionLong() const;
+		const library::mat4& getProjectionLong() const;
 		
 		inline const library::vec3& getWorldOffset() const
 		{

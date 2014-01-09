@@ -161,7 +161,7 @@ void main(void)
 		
 		// world/terrain reflection
 		wreflection = texture2D(reflectionmap, refcoord);
-		wreflection.rgb = mix(wreflection.rgb, vec3(0.75), 0.2);
+		//wreflection.rgb = mix(wreflection.rgb, vec3(0.75), 0.2);
 	}
 	
 	//----- SEACOLOR -----
@@ -197,7 +197,7 @@ void main(void)
 	if (playerSubmerged == 0)
 	{
 		float reflevel = fresnel * dist;
-		color.rgb = mix(color.rgb, wreflection.rgb, reflevel);
+		color.rgb = mix(color.rgb, wreflection.rgb, 1.0);
 	}
 	
 	// fake waves

@@ -6,6 +6,82 @@
     </Plugin>
   </Plugins>
   <VirtualDirectory Name="inc">
+    <VirtualDirectory Name="library">
+      <VirtualDirectory Name="math">
+        <VirtualDirectory Name="kine">
+          <File Name="inc/library/math/kine/bone.hpp"/>
+        </VirtualDirectory>
+        <File Name="inc/library/math/frustum.hpp"/>
+        <File Name="inc/library/math/toolbox.hpp"/>
+        <File Name="inc/library/math/vector.hpp"/>
+        <File Name="inc/library/math/voronoi.hpp"/>
+        <File Name="inc/library/math/baseconv.hpp"/>
+        <File Name="inc/library/math/matrix.hpp"/>
+        <File Name="inc/library/math/quaternion.hpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="bitmap">
+        <File Name="inc/library/bitmap/colortools.hpp"/>
+        <File Name="inc/library/bitmap/bitmap.hpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="compression">
+        <File Name="inc/library/compression/lzo.hpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="threading">
+        <File Name="inc/library/threading/TThreadPool.hpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="noise">
+        <File Name="inc/library/noise/multifractal.h"/>
+        <File Name="inc/library/noise/simplex1234.h"/>
+        <File Name="inc/library/noise/cosnoise.hpp"/>
+        <File Name="inc/library/noise/sdnoise1234.h"/>
+        <File Name="inc/library/noise/worley.h"/>
+        <File Name="inc/library/noise/srdnoise23.h"/>
+        <File Name="inc/library/noise/torusnoise.h"/>
+        <File Name="inc/library/noise/noise1234.h"/>
+        <File Name="inc/library/noise/gabor.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="sound">
+        <File Name="inc/library/sound/stream.hpp"/>
+        <File Name="inc/library/sound/stream_channel.hpp"/>
+        <File Name="inc/library/sound/soundsystem.hpp"/>
+        <File Name="inc/library/sound/soundhandle.hpp"/>
+        <File Name="inc/library/sound/sound.hpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="timing">
+        <File Name="inc/library/timing/timer.hpp"/>
+        <File Name="inc/library/timing/highperf.hpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="network">
+        <File Name="inc/library/network/tcpsocket.hpp"/>
+        <File Name="inc/library/network/tcpsocket_thread.hpp"/>
+        <File Name="inc/library/network/hostaddr.hpp"/>
+        <File Name="inc/library/network/socket.hpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="opengl">
+        <File Name="inc/library/opengl/vao.hpp"/>
+        <File Name="inc/library/opengl/opengl.hpp"/>
+        <File Name="inc/library/opengl/input.hpp"/>
+        <File Name="inc/library/opengl/texture.hpp"/>
+        <File Name="inc/library/opengl/window.hpp"/>
+        <File Name="inc/library/opengl/shader.hpp"/>
+        <File Name="inc/library/opengl/oglfont.hpp"/>
+        <File Name="inc/library/opengl/fbo.hpp"/>
+        <File Name="inc/library/opengl/camera.hpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="voxels">
+        <File Name="inc/library/voxels/voxelmodel.hpp"/>
+        <File Name="inc/library/voxels/voxelizer.hpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="storage">
+        <File Name="inc/library/storage/bitarray.hpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="script">
+        <File Name="inc/library/script/script.hpp"/>
+      </VirtualDirectory>
+      <File Name="inc/library/log.hpp"/>
+      <File Name="inc/library/sleep.hpp"/>
+      <File Name="inc/library/config.hpp"/>
+    </VirtualDirectory>
     <VirtualDirectory Name="liblattice">
       <File Name="inc/liblattice/socket.h"/>
       <File Name="inc/liblattice/macros.h"/>
@@ -40,6 +116,7 @@
       <File Name="inc/GL/glfw3native.h"/>
       <File Name="inc/GL/glfw3.h"/>
     </VirtualDirectory>
+    <File Name="inc/libtcc.h"/>
     <File Name="inc/bass.h"/>
   </VirtualDirectory>
   <Reconciliation>
@@ -112,130 +189,6 @@
     </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="source">
-    <VirtualDirectory Name="library">
-      <VirtualDirectory Name="bitmap">
-        <File Name="source/library/bitmap/bitmap.cpp"/>
-        <File Name="source/library/bitmap/bitmap.hpp"/>
-        <File Name="source/library/bitmap/colortools.cpp"/>
-        <File Name="source/library/bitmap/colortools.hpp"/>
-        <File Name="source/library/bitmap/lodepng.cpp"/>
-        <File Name="source/library/bitmap/lodepng.h"/>
-      </VirtualDirectory>
-      <VirtualDirectory Name="compression">
-        <File Name="source/library/compression/lzo.cpp"/>
-        <File Name="source/library/compression/lzo.hpp"/>
-      </VirtualDirectory>
-      <VirtualDirectory Name="math">
-        <File Name="source/library/math/baseconv.cpp"/>
-        <File Name="source/library/math/baseconv.hpp"/>
-        <File Name="source/library/math/frustum.cpp"/>
-        <File Name="source/library/math/frustum.hpp"/>
-        <File Name="source/library/math/matrix.cpp"/>
-        <File Name="source/library/math/matrix.hpp"/>
-        <File Name="source/library/math/quaternion.cpp"/>
-        <File Name="source/library/math/quaternion.hpp"/>
-        <File Name="source/library/math/toolbox.hpp"/>
-        <File Name="source/library/math/vector.cpp"/>
-        <File Name="source/library/math/vector.hpp"/>
-        <File Name="source/library/math/voronoi.cpp"/>
-        <File Name="source/library/math/voronoi.hpp"/>
-        <File Name="source/library/math/vec3.cpp"/>
-        <File Name="source/library/math/vec4.cpp"/>
-      </VirtualDirectory>
-      <VirtualDirectory Name="network">
-        <File Name="source/library/network/hostaddr.cpp"/>
-        <File Name="source/library/network/hostaddr.hpp"/>
-        <File Name="source/library/network/socket.cpp"/>
-        <File Name="source/library/network/socket.hpp"/>
-        <File Name="source/library/network/tcpsocket.cpp"/>
-        <File Name="source/library/network/tcpsocket.hpp"/>
-        <File Name="source/library/network/tcpsocket_thread.hpp"/>
-      </VirtualDirectory>
-      <VirtualDirectory Name="noise">
-        <File Name="source/library/noise/cosnoise.cpp"/>
-        <File Name="source/library/noise/cosnoise.hpp"/>
-        <File Name="source/library/noise/gabor.c"/>
-        <File Name="source/library/noise/gabor.h"/>
-        <File Name="source/library/noise/multifractal.c"/>
-        <File Name="source/library/noise/multifractal.h"/>
-        <File Name="source/library/noise/noise1234.c"/>
-        <File Name="source/library/noise/noise1234.h"/>
-        <File Name="source/library/noise/sdnoise1234.c"/>
-        <File Name="source/library/noise/sdnoise1234.h"/>
-        <File Name="source/library/noise/simplex1234.c"/>
-        <File Name="source/library/noise/simplex1234.h"/>
-        <File Name="source/library/noise/srdnoise23.c"/>
-        <File Name="source/library/noise/srdnoise23.h"/>
-        <File Name="source/library/noise/torusnoise.c"/>
-        <File Name="source/library/noise/torusnoise.h"/>
-        <File Name="source/library/noise/turbulence.c"/>
-        <File Name="source/library/noise/worley.c"/>
-        <File Name="source/library/noise/worley.h"/>
-      </VirtualDirectory>
-      <VirtualDirectory Name="opengl">
-        <File Name="source/library/opengl/oglfont.cpp"/>
-        <File Name="source/library/opengl/oglfont.hpp"/>
-        <File Name="source/library/opengl/opengl.cpp"/>
-        <File Name="source/library/opengl/opengl.hpp"/>
-        <File Name="source/library/opengl/openglext.cpp"/>
-        <File Name="source/library/opengl/shader.cpp"/>
-        <File Name="source/library/opengl/shader.hpp"/>
-        <File Name="source/library/opengl/texture.cpp"/>
-        <File Name="source/library/opengl/texture.hpp"/>
-        <File Name="source/library/opengl/window.cpp"/>
-        <File Name="source/library/opengl/window.hpp"/>
-        <File Name="source/library/opengl/vao.hpp"/>
-        <File Name="source/library/opengl/fbo.hpp"/>
-        <File Name="source/library/opengl/fbo.cpp"/>
-        <File Name="source/library/opengl/vao.cpp"/>
-        <File Name="source/library/opengl/camera.hpp"/>
-        <File Name="source/library/opengl/camera.cpp"/>
-        <File Name="source/library/opengl/input.cpp"/>
-        <File Name="source/library/opengl/input.hpp"/>
-        <File Name="source/library/opengl/oglfont_shader.cpp"/>
-      </VirtualDirectory>
-      <VirtualDirectory Name="sound">
-        <File Name="source/library/sound/sound.cpp"/>
-        <File Name="source/library/sound/sound.hpp"/>
-        <File Name="source/library/sound/stream_channel.cpp"/>
-        <File Name="source/library/sound/stream_channel.hpp"/>
-        <File Name="source/library/sound/stream.cpp"/>
-        <File Name="source/library/sound/stream.hpp"/>
-        <File Name="source/soundsystem.hpp"/>
-        <File Name="source/library/sound/soundsystem.cpp"/>
-        <File Name="source/library/sound/soundhandle.hpp"/>
-      </VirtualDirectory>
-      <VirtualDirectory Name="threading">
-        <File Name="source/library/threading/TThread.cpp"/>
-        <File Name="source/library/threading/TThread.hh"/>
-        <File Name="source/library/threading/TThreadPool.cpp"/>
-        <File Name="source/library/threading/TThreadPool.hpp"/>
-      </VirtualDirectory>
-      <VirtualDirectory Name="timing">
-        <File Name="source/library/timing/highperf.cpp"/>
-        <File Name="source/library/timing/highperf.hpp"/>
-        <File Name="source/library/timing/timer.hpp"/>
-        <File Name="source/library/timing/timer.cpp"/>
-      </VirtualDirectory>
-      <VirtualDirectory Name="voxels">
-        <File Name="source/library/voxels/voxelizer.cpp"/>
-        <File Name="source/library/voxels/voxelizer.hpp"/>
-        <File Name="source/library/voxels/voxelmodel.cpp"/>
-        <File Name="source/library/voxels/voxelmodel.hpp"/>
-      </VirtualDirectory>
-      <File Name="source/library/config.cpp"/>
-      <File Name="source/library/config.hpp"/>
-      <File Name="source/library/log.cpp"/>
-      <File Name="source/library/log.hpp"/>
-      <VirtualDirectory Name="storage">
-        <File Name="source/library/storage/bitarray.cpp"/>
-        <File Name="source/library/storage/bitarray.hpp"/>
-      </VirtualDirectory>
-      <VirtualDirectory Name="script">
-        <File Name="source/library/script/script.hpp"/>
-        <File Name="source/library/script/script.cpp"/>
-      </VirtualDirectory>
-    </VirtualDirectory>
     <File Name="source/atmosphere.cpp"/>
     <File Name="source/atmosphere.hpp"/>
     <File Name="source/biome.cpp"/>
@@ -333,14 +286,6 @@
     <File Name="source/particles.hpp"/>
     <File Name="source/particles_render.cpp"/>
     <File Name="source/player_translate.cpp"/>
-    <VirtualDirectory Name="tests">
-      <File Name="source/tests/gltest.cpp"/>
-      <File Name="source/tests/sleep.hpp"/>
-      <File Name="source/tests/socktest.cpp"/>
-      <File Name="source/tests/testmain.cpp"/>
-      <File Name="source/tests/threadtest.cpp"/>
-      <File Name="source/tests/timetest.cpp"/>
-    </VirtualDirectory>
     <File Name="source/player_inputs.hpp"/>
     <File Name="source/render_scene_camera.cpp"/>
     <File Name="source/player_actions.cpp"/>

@@ -131,13 +131,12 @@ namespace cppcraft
 		return realAmbience;
 	}
 	
-	Matrix SunClass::getSunMatrix() const
+	mat4 SunClass::getSunMatrix() const
 	{
-		Matrix matsun, mattemp;
-		mattemp.rotateZYX(0.0, -PI / 2, 0.0);
-		matsun.rotateZYX(thesun.getRealtimeRadianAngle(), 0.0, 0.0);
+		mat4 mattemp = rotationMatrix(0.0, -PI / 2, 0.0);
+		mat4 matsun = rotationMatrix(thesun.getRealtimeRadianAngle(), 0.0, 0.0);
 		mattemp *= matsun;
-		mattemp.translated(0.0, 0.0, -thesun.renderDist);
+		mattemp.translate(0.0, 0.0, -thesun.renderDist);
 		
 		return camera.getRotationMatrix() * mattemp;
 	}

@@ -5,7 +5,7 @@ namespace library
 {
 	class WindowClass;
 	class vec2;
-	class Matrix;
+	class mat4;
 }
 
 namespace cppcraft
@@ -32,7 +32,7 @@ namespace cppcraft
 		
 		void render(library::WindowClass& gamescr, double frameCounter);
 		
-		library::vec2 getSunVector(const library::Matrix& matsun);
+		library::vec2 getSunVector(const library::mat4& matsun);
 		
 		friend class Textureman;
 	};

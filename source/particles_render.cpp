@@ -80,7 +80,7 @@ namespace cppcraft
 			float tx = (this->snapWX - snapWX) * Sector::BLOCKS_XZ;
 			float tz = (this->snapWZ - snapWZ) * Sector::BLOCKS_XZ;
 			
-			Matrix matview = camera.getViewMatrix();
+			mat4 matview = camera.getViewMatrix();
 			matview.translate_xz(tx, tz);
 			
 			// send view matrix

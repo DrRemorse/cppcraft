@@ -47,9 +47,9 @@ namespace cppcraft
 		if (gameconf.reflections)
 		{
 			// set reflection camera view
-			Matrix matref = camera.getViewMatrix();
-			matref.translated(0, RenderConst::WATER_LEVEL*2, 0);
-			matref *= Matrix(1.0, -1.0, 1.0);
+			mat4 matref = camera.getViewMatrix();
+			matref.translate(0, RenderConst::WATER_LEVEL*2, 0);
+			matref *= mat4(1.0, -1.0, 1.0);
 			
 			reflectionCamera.setRotationMatrix(matref.rotation());
 			reflectionCamera.setViewMatrix(matref);
@@ -259,7 +259,7 @@ namespace cppcraft
 			GLint& location, 
 			GLint& loc_vtrans, 
 			vec3& position,
-			const Matrix& matview
+			const mat4& matview
 		)
 	{
 		// bind appropriate shader

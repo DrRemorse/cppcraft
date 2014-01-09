@@ -58,7 +58,7 @@ namespace cppcraft
 		};
 		
 		// hand scale matrix
-		Matrix handScale;
+		mat4 handScale;
 		
 	public:
 		PlayerHand();
@@ -77,7 +77,7 @@ namespace cppcraft
 	{
 		lastMode = -1;
 		lastTime = 0.0;
-		handScale = Matrix(0.4, 0.3, 2.0);
+		handScale = mat4(0.4, 0.3, 2.0);
 	}
 	
 	void PlayerHand::render(double frameCounter)
@@ -227,9 +227,8 @@ namespace cppcraft
 			shd.sendMatrix("matrot", camera.getRotationMatrix());
 		}
 		
-		// view matrix
-		Matrix matview(1.0);
-		matview.translate(lastHand.x, lastHand.y, lastHand.z);
+		// view translation-matrix
+		mat4 matview = mat4(vec3(lastHand.x, lastHand.y, lastHand.z));
 		
 		shd.sendMatrix("matview", matview * handScale);
 		
@@ -272,12 +271,12 @@ namespace cppcraft
 			// torchlight modulation
 			shd.sendFloat("modulation", modulation);
 			// view matrix
-			Matrix matview(1.0);
-			Matrix matrot;
+			mat4 matview(1.0);
+			mat4 matrot;
 			if (helditem.isToolItem())
 			{
 				matview.translate(lastHand.x, lastHand.y - 0.1, lastHand.z + 0.1);
-				matrot.rotateZYX(0, PI / 2, PI/4);
+				matrot = rotationMatrix(0, PI / 2, PI/4);
 			}
 			else
 			{
@@ -290,7 +289,7 @@ namespace cppcraft
 				{
 					matview.translate(lastHand.x + 0.1, lastHand.y, lastHand.z + 0.25);
 				}
-				matrot.rotateZYX(0, PI / 2, 0);
+				matrot = rotationMatrix(0, PI / 2, 0);
 			}
 			
 			matview *= matrot;
@@ -336,7 +335,7 @@ namespace cppcraft
 			}
 			
 			// view matrix
-			Matrix matview;
+			mat4 matview;
 			
 			// update vertex data
 			block_t id = helditem.getID();
@@ -356,8 +355,8 @@ namespace cppcraft
 					vertices[i].w = Block::cubeFaceById(helditem.getID(), (i / 24) * 2, 0);
 				
 				// translation & scaling
-				matview = Matrix(0.5);
-				matview.translated(lastHand.x - 0.35, lastHand.y, lastHand.z - 0.6);
+				matview = mat4(0.5);
+				matview.translate(lastHand.x - 0.35, lastHand.y, lastHand.z - 0.6);
 			}
 			else
 			{
@@ -374,8 +373,8 @@ namespace cppcraft
 				
 				// translation & scaling
 				matview.identity();
-				matview.translated(lastHand.x - 0.15, lastHand.y - 0.1, lastHand.z - 0.6);
-				matview *= Matrix(0.6);
+				matview.translate(lastHand.x - 0.15, lastHand.y - 0.1, lastHand.z - 0.6);
+				matview *= mat4(0.6);
 			}
 			
 			if (count)

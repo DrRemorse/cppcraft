@@ -73,7 +73,7 @@ namespace cppcraft
 		return text;
 	}
 	
-	void Shaderman::init(WindowClass& gamescr, const Matrix& matproj, const Matrix& matproj_long)
+	void Shaderman::init(WindowClass& gamescr, const mat4& matproj, const mat4& matproj_long)
 	{
 		logger << Log::INFO << "* Loading & processing shaders" << Log::ENDL;
 		

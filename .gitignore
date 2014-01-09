@@ -32,4 +32,9 @@
 # CodeLite
 *.workspace.*
 *.tags
+*.db
+*.session
+
+# Edited files
+*~
 

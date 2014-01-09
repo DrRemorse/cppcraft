@@ -67,7 +67,7 @@ namespace cppcraft
 		File.read((char*) compressor_databuffer, datalength.lzoSize);
 		
 		// decompress data
-		if (compressor.decompress(compressor_databuffer, datalength.lzoSize) == false)
+		if (compressor.decompress1x(compressor_databuffer, datalength.lzoSize) == false)
 		{
 			logger << Log::ERR << "Compressor::decompress(): Failed to decompress data" << Log::ENDL;
 			throw std::string("Compressor::decompress(): Failed to decompress data");

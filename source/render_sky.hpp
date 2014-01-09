@@ -19,7 +19,7 @@ namespace cppcraft
 		void render(Camera& camera, bool underwater);
 		void renderClouds(float dy, Camera& camera, double frameCounter);
 		
-		library::Matrix renderSunProj();
+		library::mat4 renderSunProj();
 		
 	};
 	extern SkyRenderer skyrenderer;

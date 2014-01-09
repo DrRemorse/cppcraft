@@ -1,8 +1,8 @@
 #include "camera.hpp"
 
-#include "library/config.hpp"
-#include "library/log.hpp"
-#include "library/opengl/window.hpp"
+#include <library/config.hpp>
+#include <library/log.hpp>
+#include <library/opengl/window.hpp>
 #include "sectors.hpp"
 #include "world.hpp"
 
@@ -37,12 +37,12 @@ namespace cppcraft
 		this->zfar  = cameraViewSectors * Sector::BLOCKS_XZ;
 		
 		// projection matrices
-		matproj.perspective(this->FOV, wnd.SA, this->znear, this->zfar);
-		matproj_long.perspective(this->FOV, wnd.SA, this->znear, this->zfar * 1.6);
+		matproj = perspectiveMatrix(this->FOV, wnd.SA, this->znear, this->zfar);
+		matproj_long = perspectiveMatrix(this->FOV, wnd.SA, this->znear, this->zfar * 1.6);
 		
 	}
 	
-	const Matrix& Camera::getProjectionLong() const
+	const mat4& Camera::getProjectionLong() const
 	{
 		return matproj_long;
 	}

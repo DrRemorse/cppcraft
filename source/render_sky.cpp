@@ -46,11 +46,9 @@ namespace cppcraft
 		satteliteVAO.end();
 	}
 	
+	// render background / atmosphere, sun and moon
 	void SkyRenderer::render(Camera& camera, bool underwater)
 	{
-		// render background / atmosphere, sun and moon
-		glDisable(GL_BLEND);
-		
 		// render sky dome
 		Atmosphere::render(camera);
 		
@@ -88,12 +86,12 @@ namespace cppcraft
 		satteliteVAO.render(GL_QUADS);
 	}
 	
-	Matrix SkyRenderer::renderSunProj()
+	mat4 SkyRenderer::renderSunProj()
 	{
 		Shader& sunshader = shaderman[Shaderman::SUNPROJ];
 		sunshader.bind();
 		
-		Matrix matsun = thesun.getSunMatrix();
+		mat4 matsun = thesun.getSunMatrix();
 		
 		// view matrix
 		sunshader.sendMatrix("matview", matsun);
@@ -117,12 +115,10 @@ namespace cppcraft
 		Shader& moon = shaderman[Shaderman::MOON];
 		moon.bind();
 		
-		Matrix matmoon, mattemp;
-		
-		mattemp.rotateZYX(0.0, -PI / 2, 0.0);
-		matmoon.rotateZYX(thesun.getRealtimeRadianAngle() + PI, 0.0, 0.0);
+		mat4 mattemp = rotationMatrix(0.0, -PI / 2, 0.0);
+		mat4 matmoon = rotationMatrix(thesun.getRealtimeRadianAngle() + PI, 0.0, 0.0);
 		mattemp *= matmoon;
-		mattemp.translated(0.0, 0.0, -2.0);
+		mattemp.translate(0.0, 0.0, -2.0);
 		
 		matmoon = camera.getRotationMatrix() * mattemp;
 		

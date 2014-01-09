@@ -1,9 +1,9 @@
 #include "render_fs.hpp"
 
-#include "library/opengl/opengl.hpp"
-#include "library/opengl/vao.hpp"
-#include "library/opengl/window.hpp"
-#include "library/math/vector.hpp"
+#include <library/opengl/opengl.hpp>
+#include <library/opengl/vao.hpp>
+#include <library/opengl/window.hpp>
+#include <library/math/vector.hpp>
 #include "player.hpp"
 #include "player_logic.hpp"
 #include "shaderman.hpp"

@@ -157,11 +157,9 @@ namespace cppcraft
 		if (dx > 0.0001 || dy > 0.0001)
 		{
 			// get old look vector
-			vec3 look1;
-			look1.lookVector(vec2(player.xrotrad, player.yrotrad));
-			
-			vec3 look2;
-			look2.lookVector(input.getRotation());
+			vec3 look1 = lookVector(vec2(player.xrotrad, player.yrotrad));
+			// .. and current look vector
+			vec3 look2 = lookVector(input.getRotation());
 			
 			// interpolate
 			vec3 newLook = look1.mix(look2, 0.40);

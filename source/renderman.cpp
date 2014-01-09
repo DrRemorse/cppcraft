@@ -19,7 +19,7 @@
 #include "worldmanager.hpp"
 #include <cmath>
 
-#define DEBUG
+//#define DEBUG
 
 using namespace library;
 
@@ -53,7 +53,7 @@ namespace cppcraft
 		// open a GLFW ogl context window
 		gamescr.open(wndconf);
 		// initialize openGL extensions
-		ogl.init(gamescr);
+		ogl.init();
 		
 		// enable custom point sprites
 		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE_ARB);

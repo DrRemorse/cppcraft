@@ -6,7 +6,7 @@
 
 namespace library
 {
-	class Matrix;
+	class mat4;
 	class WindowClass;
 }
 
@@ -15,7 +15,7 @@ namespace cppcraft
 	class Shaderman
 	{
 	public:
-		void init(library::WindowClass& gamescr, const library::Matrix& matproj, const library::Matrix& matproj_long);
+		void init(library::WindowClass& gamescr, const library::mat4& matproj, const library::mat4& matproj_long);
 		
 		typedef enum
 		{

@@ -1,8 +1,8 @@
 #include "atmosphere.hpp"
 
-#include "library/config.hpp"
-#include "library/opengl/opengl.hpp"
-#include "library/opengl/vao.hpp"
+#include <library/config.hpp>
+#include <library/opengl/opengl.hpp>
+#include <library/opengl/vao.hpp>
 #include "camera.hpp"
 #include "lighting.hpp"
 #include "player.hpp"
@@ -135,8 +135,8 @@ namespace cppcraft
 		textureman.bind(0, Textureman::T_SKYBOX);
 		
 		// create view matrix
-		Matrix matview = camera.getRotationMatrix();
-		matview.translated(0.0, -m_fInnerRadius, 0.0);
+		mat4 matview = camera.getRotationMatrix();
+		matview.translate(0.0, -m_fInnerRadius, 0.0);
 		shd.sendMatrix("matview", matview);
 		shd.sendFloat("above", 1.0);
 		
@@ -145,8 +145,8 @@ namespace cppcraft
 		
 		matview = camera.getRotationMatrix();
 		// multiply with negative-Y scaling matrix
-		matview *= Matrix(1.0, -0.8, 1.0);
-		matview.translated(0.0, -m_fInnerRadius, 0.0);
+		matview *= mat4(1.0, -0.8, 1.0);
+		matview.translate(0.0, -m_fInnerRadius, 0.0);
 		
 		shd.sendMatrix("matview", matview);
 		shd.sendFloat("above", 0.0);

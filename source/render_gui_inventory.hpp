@@ -1,14 +1,14 @@
 #ifndef RENDER_GUI_INVENTORY
 #define RENDER_GUI_INVENTORY
 
-#include "library/opengl/vao.hpp"
+#include <library/opengl/vao.hpp>
 #include "menu.hpp"
 #include "render_gui.hpp"
 #include <vector>
 
 namespace library
 {
-	class Matrix;
+	class mat4;
 }
 
 namespace cppcraft
@@ -26,7 +26,7 @@ namespace cppcraft
 		void clear();
 		int  emit(InventoryItem& itm, float x, float y, float size);
 		void upload();
-		void render(library::Matrix& ortho);
+		void render(library::mat4& ortho);
 		
 	private:
 		library::VAO itemsVAO;

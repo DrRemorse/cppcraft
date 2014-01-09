@@ -1,11 +1,11 @@
 #include "render_scene.hpp"
 
-#include "library/config.hpp"
-#include "library/log.hpp"
-#include "library/opengl/fbo.hpp"
-#include "library/opengl/opengl.hpp"
-#include "library/opengl/window.hpp"
-#include "library/opengl/camera.hpp"
+#include <library/config.hpp>
+#include <library/log.hpp>
+#include <library/opengl/fbo.hpp>
+#include <library/opengl/opengl.hpp>
+#include <library/opengl/window.hpp>
+#include <library/opengl/camera.hpp>
 
 #include "drawq.hpp"
 #include "gameconf.hpp"
