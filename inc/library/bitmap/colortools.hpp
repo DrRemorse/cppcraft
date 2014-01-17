@@ -1,8 +1,8 @@
 #ifndef COLORTOOLS_HPP
 #define COLORTOOLS_HPP
 
-#include "../math/toolbox.hpp"
-#include "../math/vector.hpp"
+#include <library/math/toolbox.hpp>
+#include <library/math/vector.hpp>
 #include <cstdint>
 
 namespace library

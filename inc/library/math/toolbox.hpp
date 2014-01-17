@@ -18,8 +18,7 @@ namespace library
 			return ((double)rand() / (double)RAND_MAX * 2.0 - 1.0) * max;
 		}
 		
-		// returns a random number between -max and max
-		// used eg. for simple displacement
+		// returns a random number 0 <= R < max
 		template <typename T>
 		inline T rnd(T max)
 		{
@@ -249,3 +248,4 @@ namespace library
 }
 
 #endif
+

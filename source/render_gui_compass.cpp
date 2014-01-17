@@ -41,15 +41,11 @@ namespace cppcraft
 			mat4 mattemp = rotationMatrix(0.0, 0.0, -player.yrotrad);
 			matview *= mattemp;
 			
-			// scale down to proper size
-			mattemp.scale(compassScale, compassScale, 1.0);
 			// orthograhic projection * view
-			compassMVP = matview * mattemp;
+			compassMVP = matview * mattemp * mat4(compassScale, compassScale, 1.0);
 			
-			// scale down to proper size
-			mattemp.scale(minimapScale, minimapScale, 1.0);
 			// orthograhic projection * view
-			minimapMVP = matview * mattemp;
+			minimapMVP = matview * mattemp * mat4(minimapScale, minimapScale, 1.0);
 		}
 		
 		/// minimap ///

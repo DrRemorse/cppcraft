@@ -81,7 +81,7 @@ namespace cppcraft
 		{
 			int xstp, ystp, zstp;
 			int majority;
-			int minGrid, maxGrid;
+			int gridSize;
 			float playerY;
 			const library::Frustum* frustum;
 		};

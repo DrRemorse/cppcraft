@@ -26,6 +26,17 @@ namespace library
 		int multisample;
 	};
 	
+	class WindowClass;
+	
+	class RenderClass
+	{
+	protected:
+		// prototype for rendering function
+		virtual bool render(WindowClass& wnd, double dtime, double timeElapsed) = 0;
+		
+		friend class WindowClass;
+	};
+	
 	class WindowClass
 	{
 	private:
@@ -34,9 +45,6 @@ namespace library
 		GLFWwindow* wndHandle;
 		
 	public:
-		// prototype for rendering function
-		typedef bool (*renderFunc)(WindowClass& wnd, double dtime, double timeElapsed);
-		
 		int SW, SH; // window size
 		float SA;   // window aspect
 		bool fullscreen;
@@ -58,7 +66,7 @@ namespace library
 		void setCurrent();
 		// starts a running rendering loop, that executes renderFunc
 		// each frame, until renderFunc returns false
-		void startRenderingLoop(renderFunc, double granularity);
+		void startRenderingLoop(RenderClass& rclass, double granularity);
 	};
 	
 }

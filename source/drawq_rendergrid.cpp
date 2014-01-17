@@ -1,8 +1,8 @@
 #include "drawq.hpp"
 
-#include "library/log.hpp"
-#include "library/opengl/opengl.hpp"
-#include "camera.hpp"
+#include <library/log.hpp>
+#include <library/math/frustum.hpp>
+#include <library/opengl/opengl.hpp>
 #include "columns.hpp"
 #include "sectors.hpp"
 
@@ -15,7 +15,7 @@ namespace cppcraft
 	
 	void DrawQueue::uniformGrid(rendergrid_t& rg, int x0, int x1, int z0, int z1, int quant)
 	{
-		const int  stepsize = camera.getGridsize() >> quant;
+		const int  stepsize = rg.gridSize >> quant;
 		const bool gridtest = (stepsize <= 2);
 		
 		const int bigstpx = rg.xstp * stepsize;

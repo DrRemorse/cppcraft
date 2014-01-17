@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
 	}
 	
 	// initialize input systems
-	input.init(renderer.getScreen());
+	input.init(renderer.getScreen(), true, true);
 	input.setRotation(vec2(player.xrotrad, player.yrotrad));
 	
 	try

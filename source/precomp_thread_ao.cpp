@@ -96,26 +96,42 @@ namespace cppcraft
 		#endif
 		
 		// optimize mesh
-		/*
 		int waterShaderline = (int)RenderConst::MAX_UNIQUE_SHADERS-1;
-		if (precomp->vertices[waterShaderline] == 1024)
+		static const int WATER_MAX_VERTS = Sector::BLOCKS_XZ * Sector::BLOCKS_XZ * 4;
+		
+		if (precomp->vertices[waterShaderline] == WATER_MAX_VERTS)
 		{
 			vertex_t* water = precomp->datadump + precomp->bufferoffset[waterShaderline];
 			
-			water[0].x = 0;
-			water[0].z = 0;
+			const unsigned long long C = water->c;
 			
-			water[1].x = 0;
-			water[1].z = RenderConst::VERTEX_SCALE * 16;
+			bool failed = false;
+			for (int i = 1; i < WATER_MAX_VERTS; i++)
+			{
+				if (water[i].c != C) { failed = true; break; }
+			}
 			
-			water[2].x = RenderConst::VERTEX_SCALE * 16;
-			water[2].z = RenderConst::VERTEX_SCALE * 16;
-			
-			water[3].x = RenderConst::VERTEX_SCALE * 16;
-			water[3].z = 0;
-			
-			precomp->vertices[waterShaderline] = 4;
-		}*/
+			if (failed == false)
+			{
+				water[0].x = 0;
+				water[0].z = 0;
+				
+				water[1].x = 0;
+				water[1].z = RenderConst::VERTEX_SCALE * Sector::BLOCKS_XZ;
+				
+				water[2].x = RenderConst::VERTEX_SCALE * Sector::BLOCKS_XZ;
+				water[2].z = RenderConst::VERTEX_SCALE * Sector::BLOCKS_XZ;
+				
+				water[3].x = RenderConst::VERTEX_SCALE * Sector::BLOCKS_XZ;
+				water[3].z = 0;
+				
+				precomp->vertices[waterShaderline] = 4;
+				
+				/*static int totalOptimized = 0;
+				totalOptimized++;
+				logger << Log::INFO << "Optimized " << totalOptimized << Log::ENDL;*/
+			}
+		}
 		
 		sector.progress = Sector::PROG_NEEDCOMPILE;
 		sector.culled  = false;

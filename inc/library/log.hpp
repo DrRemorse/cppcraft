@@ -9,11 +9,8 @@
 /**
  * Thread-safe logger class, logs to file & console/stdout (if enabled)
  * 
- * NOTE: Project must have declared/instantiated engine::Log engine::logger
- * somewhere in the project for this, and many other files, to link properly
- * 
- * To do that add this to main.cpp just after including log.hpp:
- * 	  engine::Log engine::logger("myproject.log");
+ * To open a logfile:
+ * 	  library::logger.open("myproject.log");
  * 
  * To disable console/stdout ouputput:
  * logger.setOutputConsole(false);

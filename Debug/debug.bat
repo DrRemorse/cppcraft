@@ -1,2 +1,3 @@
 @echo off
-gdb cppcraft.exe
+gdb cppcraft
+

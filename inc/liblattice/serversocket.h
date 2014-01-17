@@ -31,13 +31,22 @@ typedef struct sendq_link {
     struct sendq_link *next;
 } sendq_link;
 
+typedef struct uid_link {
+    uint32_t userid;
+    int standing_on;
+    struct uid_link *prev;
+    struct uid_link *next;
+} uid_link;
+
 typedef struct server_socket {
     int socket;
 
-    char writebuf[WRITE_LENGTH]; //block buffer to fill up for outbounds....
+    //char writebuf[WRITE_LENGTH]; //block buffer to fill up for outbounds....
+    char *writebuf;
     int wlen;
 
-    char rmsg[MTU + 1]; // +1 for \0
+    //char rmsg[MTU + 1]; // +1 for \0
+    char *rmsg;
     int rlen;
 
     sendq_link *sendq_head;
@@ -56,11 +65,25 @@ typedef struct server_socket {
 
     port_t c_port;
 
+    struct uid_link *uidlist_head;
+    struct uid_link *uidlist_tail;
+
 } server_socket;
 
 typedef int socket_error_t;
 
+
+extern uid_link * uid_link_add_front(server_socket *s, uint32_t uid, int standing_on);
+extern uid_link * uid_link_add_end(server_socket *s, uint32_t uid, int standing_on);
+extern void uid_link_del(server_socket *s, uid_link *link);
+extern void uid_link_delall(server_socket *s);
+extern uid_link *uid_link_find_any(uint32_t uid);
+extern uid_link *uid_link_find(server_socket *s, uint32_t uid);
+extern uid_link *uid_link_rfind(server_socket *s, uint32_t uid);
+
 extern void closesock(server_socket *s);
 extern void closeallservers(void);
+
+
 
 #endif

@@ -68,10 +68,21 @@ namespace cppcraft
 		Textureman();
 		
 		void init(library::WindowClass& gamescr);
-		void bind(int, named_textures_t);
-		void unbind(int);
+		
+		inline void bind(int unit, named_textures_t tx)
+		{
+			textures[tx].bind(unit);
+		}
+		inline void unbind(int unit)
+		{
+			textures[0].unbind(unit);
+		}
+		
 		// returns texture handle
-		GLuint get(named_textures_t);
+		inline GLuint get(named_textures_t tx)
+		{
+			return textures[tx].getHandle();
+		}
 		
 		void copyScreen(library::WindowClass& gamescr, named_textures_t tx);
 		

@@ -31,7 +31,8 @@ namespace library
 			int mods;
 		};
 		
-		void init(library::WindowClass& gamescr);
+		// initialize input using the current context
+		void init(library::WindowClass& gamescr, bool keyboard, bool mouse);
 		
 		// public keyboard functions
 		const input_t& getKeyEx(int) const;
@@ -40,6 +41,7 @@ namespace library
 		void hold(int);
 		// releases the hold of a key, setting state from KEY_LOCKED back to KEY_PRESSED
 		void release(int);
+		
 		// public mouse functions
 		const input_t& getMouseEx(int) const;
 		key_t getMouse(int) const;

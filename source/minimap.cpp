@@ -94,7 +94,7 @@ namespace cppcraft
 		shd.sendMatrix("matprojview", mvp);
 		
 		// position intra-block offset
-		vec2 offset(0.5 + this->ofsX / bitmap->getwidth(), 0.5 + this->ofsY / bitmap->getheight());
+		vec2 offset(0.5 + this->ofsX / bitmap->getWidth(), 0.5 + this->ofsY / bitmap->getHeight());
 		shd.sendVec2("offset", offset);
 		
 		// bind minimap texture
@@ -306,13 +306,13 @@ namespace cppcraft
 					getBlockColor(s0, 11, skylevel[7], 11), 0.5);
 		
 		// set final color @ pixel (px, pz)
-		int px = bitmap->getwidth()  / 2 - Sectors.getXZ() + 2 * sector.x;
-		int pz = bitmap->getheight() / 2 - Sectors.getXZ() + 2 * sector.z;
+		int px = bitmap->getWidth()  / 2 - Sectors.getXZ() + 2 * sector.x;
+		int pz = bitmap->getHeight() / 2 - Sectors.getXZ() + 2 * sector.z;
 		
 		Bitmap::rgba8_t* pixels = bitmap->data();
 		if (pixels == nullptr) throw std::string("Minimap::addSector(): Bitmap had no buffer");
 		
-		int scan = bitmap->getwidth();
+		int scan = bitmap->getWidth();
 		
 		pixels[  pz      * scan + px ] = colors[0];
 		pixels[ (pz + 1) * scan + px ] = colors[1];
@@ -325,14 +325,14 @@ namespace cppcraft
 		if (bitmap == nullptr) return;
 		if (bitmap->isValid() == false) return;
 		
-		int page = bitmap->getwidth(); // size of scanline, aka. pitch
+		int page = bitmap->getWidth(); // size of scanline, aka. pitch
 		Bitmap::rgba8_t* pixels = bitmap->data();
 		
 		if (x > 0)
 		{
-			for (int py = 0; py < bitmap->getheight(); py++)
+			for (int py = 0; py < bitmap->getHeight(); py++)
 			{
-				for (int px = 0; px <= bitmap->getwidth()-2 - 2; px += 2)
+				for (int px = 0; px <= bitmap->getWidth()-2 - 2; px += 2)
 				{
 					int p = py * page + px;
 					
@@ -346,9 +346,9 @@ namespace cppcraft
 		}
 		else if (x < 0)
 		{
-			for (int py = 0; py < bitmap->getheight(); py++)
+			for (int py = 0; py < bitmap->getHeight(); py++)
 			{
-				for (int px = bitmap->getwidth()-2; px >= 2; px -= 2)
+				for (int px = bitmap->getWidth()-2; px >= 2; px -= 2)
 				{
 					int p = py * page + px;
 					
@@ -363,18 +363,18 @@ namespace cppcraft
 		
 		if (z > 0)
 		{
-			for (int py = 0; py <= bitmap->getheight()-2 - 2; py += 2)
+			for (int py = 0; py <= bitmap->getHeight()-2 - 2; py += 2)
 			{
 				int p = py * page;
 				// to pixels + offset, from pixels + offset + 2 pages, copy 2 pages
 				memcpy(pixels + p, pixels + p + page * 2, page * 2 * sizeof(Bitmap::rgba8_t));
 			}
 			// clear last 2 scanlines
-			memset(pixels + (bitmap->getheight()-2) * page, 0, page * 2 * sizeof(Bitmap::rgba8_t));
+			memset(pixels + (bitmap->getHeight()-2) * page, 0, page * 2 * sizeof(Bitmap::rgba8_t));
 		}
 		else if (z < 0)
 		{
-			for (int py = bitmap->getheight()-2; py >= 2; py -= 2)
+			for (int py = bitmap->getHeight()-2; py >= 2; py -= 2)
 			{
 				int p = py * page;
 				// to pixels + offset, from pixels + offset - 2 pages, copy 2 pages

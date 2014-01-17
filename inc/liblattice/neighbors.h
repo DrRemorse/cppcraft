@@ -43,4 +43,6 @@ extern int add_neighbor(n_coord coord, server_socket *s);
 extern int del_neighbor(n_coord coord);
 
 extern server_socket *connect_server(n_coord coord, struct in_addr ip, port_t port);
+extern void disconnect_servers(void);
+extern void recenter_neighbors(n_coord newcenter);
 

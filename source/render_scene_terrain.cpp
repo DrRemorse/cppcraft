@@ -62,7 +62,7 @@ namespace cppcraft
 		}
 	}
 	
-	void SceneRenderer::recalculateFrustum(Camera& camera, DrawQueue& drawq, const vec3& look)
+	void SceneRenderer::recalculateFrustum(cppcraft::Camera& camera, DrawQueue& drawq, const vec3& look)
 	{
 		// recalculate camera frustum
 		camera.calculateFrustum();
@@ -160,16 +160,17 @@ namespace cppcraft
 		drawq.reset();
 		
 		// set frustum culling settings
-		DrawQueue::rendergrid_t rv;
-		rv.xstp = xstp;
-		rv.ystp = ystp;
-		rv.zstp = zstp;
-		rv.majority = majority;
-		rv.playerY  = playerY;
-		rv.frustum = &camera.getFrustum();
+		DrawQueue::rendergrid_t rg;
+		rg.xstp = xstp;
+		rg.ystp = ystp;
+		rg.zstp = zstp;
+		rg.majority = majority;
+		rg.playerY  = playerY;
+		rg.frustum = &camera.getFrustum();
+		rg.gridSize = camera.getGridsize();
 		
 		// start at roomsize 1, avoiding "everything"
-		drawq.uniformGrid(rv, x0, x1, z0, z1, 1);
+		drawq.uniformGrid(rg, x0, x1, z0, z1, 1);
 	}
 	
 	void SceneRenderer::compressRenderingQueue()

@@ -1,7 +1,7 @@
 #include "network.hpp"
 
-#include "library/log.hpp"
-#include "library/config.hpp"
+#include <library/log.hpp>
+#include <library/config.hpp>
 #include "player.hpp"
 #include "player_logic.hpp"
 #include "world.hpp"
@@ -25,9 +25,36 @@ namespace cppcraft
 {
 	Network network;
 	
-	void dummy(lattice_message* mp)
+	void message(lattice_message* mp)
 	{
-		logger << "got type " << mp->type << Log::ENDL;
+		switch (mp->type)
+		{
+		case T_CONNECTED:
+			logger << Log::INFO << "Connected to server" << Log::ENDL;
+			break;
+		case T_DISCONNECTED:
+			logger << Log::WARN << "Disconnected from server" << Log::ENDL;
+			break;
+			
+		case T_SAT:
+			logger << Log::INFO << "SAT angle: " << ((double*) mp->args)[0] << Log::ENDL;
+			break;
+			
+		case T_SATSTEP:
+			logger << Log::INFO << "SAT step: " << ((int*) mp->args)[0] << Log::ENDL;
+			break;
+			
+		case T_P:
+			logger << Log::INFO << "Player moves: " << ((int*) mp->args)[0] << Log::ENDL;
+			break;
+			
+		case T_LOG:
+			logger << Log::INFO << "SERVER  " << ((char*) mp->args) << Log::ENDL;
+			break;
+		default:
+			logger << Log::INFO << "got type " << mp->type << Log::ENDL;
+		}
+		
 		return;
 	}
 	
@@ -48,7 +75,7 @@ namespace cppcraft
 	
 	void Network::mainLoop()
 	{
-		lattice_init(-1, dummy);
+		lattice_init(-1, message);
 		
 		if (connect() == false)
 		{

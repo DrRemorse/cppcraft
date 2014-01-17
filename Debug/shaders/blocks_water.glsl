@@ -197,7 +197,8 @@ void main(void)
 	if (playerSubmerged == 0)
 	{
 		float reflevel = fresnel * dist;
-		color.rgb = mix(color.rgb, wreflection.rgb, 1.0);
+		//color.rgb = mix(color.rgb, wreflection.rgb, reflevel);
+		color.rgb = wreflection.rgb;
 	}
 	
 	// fake waves

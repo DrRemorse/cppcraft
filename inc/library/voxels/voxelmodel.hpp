@@ -1,7 +1,7 @@
 #ifndef VOXELMODEL_HPP
 #define VOXELMODEL_HPP
 
-#include "../opengl/vao.hpp"
+#include <library/opengl/vao.hpp>
 
 /**
  * Create, check that its "good", then render!
@@ -17,6 +17,9 @@ namespace library
 		VAO vao;
 		
 	public:
+		VoxelModel() {}
+		VoxelModel(const VoxelModel& vx);
+		
 		void create(GLsizei vertices, GLvoid* data);
 		
 		inline bool isGood() const
@@ -25,6 +28,7 @@ namespace library
 		}
 		
 		void render();
+		void render(GLint mode);
 	};
 }
 
