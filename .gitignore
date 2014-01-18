@@ -25,6 +25,7 @@
 # Executable & logs
 *.exe
 *.log
+Debug/cppcraft
 
 # Archives
 *.rar

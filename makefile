@@ -2,20 +2,20 @@
 #  cppcraft makefile  #
 #######################
 
-# code folders
-SOURCE_DIR = source
-SOURCE = .
-
-ifeq ($(OS),Windows_NT)
-RESOURCES = res/cppcraft.rc
-endif
-
 # build options
 # -Ofast -msse4.1 -ffast-math -mfpmath=both -march=native -flto -fwhole-program
 # -Ofast -msse4.1 -ffast-math -mfpmath=both -march=native
-BUILDOPT = -g
+BUILDOPT = -ggdb3
 # output file
 OUTPUT   = ./Debug/cppcraft
+
+# code folder
+SOURCE = source
+
+# resource file
+ifeq ($(OS),Windows_NT)
+RESOURCES = res/cppcraft.rc
+endif
 
 ##############################################################
 
@@ -27,7 +27,7 @@ CCFLAGS = -c -Wall -Wno-write-strings -Iinc
 ifeq ($(OS),Windows_NT)
 	LFLAGS  = -Llib -static -lpthread -lbassdll -llattice -lglfw3 -lgdi32 -lopengl32 -llzo2 -lws2_32 -ltcc
 else
-	LFLAGS  = -Llib -llibrary -lpthread -lbass -llzo2 -llattice -lGL -lGLU -lglfw3 -lX11 -lXxf86vm -lXrandr -lXi -ltcc -ldl
+	LFLAGS  = -Llib -llibrary -lpthread -lbass -llzo2 -llattice -lGL -lglfw3 -lX11 -lXxf86vm -lXrandr -lXi -ltcc -ldl -Wl,-rpath,../lib
 endif
 # resource builder
 RES = windres
@@ -38,9 +38,9 @@ RFLAGS = -O coff
 
 # make pipeline
 DIRECTORIES = $(SOURCE)
-CCDIRS  = $(foreach dir, $(DIRECTORIES), $(SOURCE_DIR)/$(dir)/*.c)
+CCDIRS  = $(foreach dir, $(DIRECTORIES), $(dir)/*.c)
 CCMODS  = $(wildcard $(CCDIRS))
-CXXDIRS = $(foreach dir, $(DIRECTORIES), $(SOURCE_DIR)/$(dir)/*.cpp)
+CXXDIRS = $(foreach dir, $(DIRECTORIES), $(dir)/*.cpp)
 CXXMODS = $(wildcard $(CXXDIRS))
 
 # compile each .c to .o
