@@ -68,9 +68,9 @@ namespace cppcraft
 		unsigned char* b1 = (unsigned char*)&c1;
 		unsigned char* b2 = (unsigned char*)&c2;
 		
-		int d1 = b1[0] - b2[0];
-		int d2 = b1[1] - b2[1];
-		int d3 = b1[2] - b2[2];
+		int d1 = abs(b1[0] - b2[0]);
+		int d2 = abs(b1[1] - b2[1]);
+		int d3 = abs(b1[2] - b2[2]);
 		
 		return (d1 > d2) ? ((d1 > d3) ? d1 : d3) : ((d2 > d3) ? d2 : d3);
 	}
@@ -115,7 +115,8 @@ namespace cppcraft
 				if (next[2].c != position[3].c) goto skipExtrusion;
 				if (next[1].c != position[0].c) goto skipExtrusion;
 				
-				if (colorDistance(next[1].biome, next[2].biome) > 6) goto skipExtrusion;
+				if (colorDistance(next[2].biome, next[3].biome) > 6) goto skipExtrusion;
+				if (colorDistance(next[0].biome, next[1].biome) > 6) goto skipExtrusion;
 				if (colorDistance(next[2].biome, position[3].biome) > 6) goto skipExtrusion;
 				if (colorDistance(next[1].biome, position[0].biome) > 6) goto skipExtrusion;
 				
