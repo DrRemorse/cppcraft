@@ -1,6 +1,6 @@
 #include "precomp_thread.hpp"
 
-#include "library/log.hpp"
+#include <library/log.hpp>
 
 #include "precompiler.hpp"
 #include "renderconst.hpp"

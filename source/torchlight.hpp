@@ -45,7 +45,7 @@ namespace cppcraft
 		const lightdata_t& getEmitter(int id) const;
 		
 		// light propagator
-		void lightSectorUpdates(Sector& s, block_t id, bool instant);
+		void lightSectorUpdates(Sector& s, bool instant);
 		// juggernaut function
 		vertex_color_t torchlight(LightList& list, float shadowLevel, Sector& sector, int bx, int by, int bz);
 		// juggernaut function

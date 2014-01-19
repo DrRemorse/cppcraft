@@ -32,7 +32,7 @@ namespace library
 		
 		void init();
 		
-		static const bool checkError();
+		static bool checkError();
 		
 	};
 	extern OpenGL ogl;

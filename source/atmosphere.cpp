@@ -160,6 +160,10 @@ namespace cppcraft
 		struct domevertex_t
 		{
 			float x, y, z;
+			
+			domevertex_t() {}
+			domevertex_t(float X, float Y, float Z) :
+				x(X), y(Y), z(Z) {}
 		};
 		
 		const int numX = 16;
@@ -185,10 +189,10 @@ namespace cppcraft
 			{
 				float a = stepa * x;
 				
-				va = (domevertex_t) { sinf(a)         * cosf(b) * r_outer,         sinf(b) * r_outer,         -cosf(a)         * cosf(b) * r_outer };
-				vb = (domevertex_t) { sinf(a + stepa) * cosf(b) * r_outer,         sinf(b) * r_outer,         -cosf(a + stepa) * cosf(b) * r_outer };
-				vc = (domevertex_t) { sinf(a + stepa) * cosf(b + stepb) * r_outer, sinf(b + stepb) * r_outer, -cosf(a + stepa) * cosf(b + stepb) * r_outer };
-				vd = (domevertex_t) { sinf(a)         * cosf(b + stepb) * r_outer, sinf(b + stepb) * r_outer, -cosf(a)         * cosf(b + stepb) * r_outer };
+				va = domevertex_t ( sinf(a)         * cosf(b) * r_outer,         sinf(b) * r_outer,         -cosf(a)         * cosf(b) * r_outer );
+				vb = domevertex_t ( sinf(a + stepa) * cosf(b) * r_outer,         sinf(b) * r_outer,         -cosf(a + stepa) * cosf(b) * r_outer );
+				vc = domevertex_t ( sinf(a + stepa) * cosf(b + stepb) * r_outer, sinf(b + stepb) * r_outer, -cosf(a + stepa) * cosf(b + stepb) * r_outer );
+				vd = domevertex_t ( sinf(a)         * cosf(b + stepb) * r_outer, sinf(b + stepb) * r_outer, -cosf(a)         * cosf(b + stepb) * r_outer );
 				
 				vertices[p + 0] = va;
 				vertices[p + 1] = vb;
@@ -208,9 +212,9 @@ namespace cppcraft
 		{
 			float a = stepa * x;
 			
-			va = (domevertex_t) { sinf(a)         * cosf(b) * r_outer, sinf(b) * r_outer, -cosf(a)         * cosf(b) * r_outer };
-			vb = (domevertex_t) { sinf(a + stepa) * cosf(b) * r_outer, sinf(b) * r_outer, -cosf(a + stepa) * cosf(b) * r_outer };
-			vc = (domevertex_t) { 0.0f, r_outer, 0.0f };
+			va = domevertex_t ( sinf(a)         * cosf(b) * r_outer, sinf(b) * r_outer, -cosf(a)         * cosf(b) * r_outer );
+			vb = domevertex_t ( sinf(a + stepa) * cosf(b) * r_outer, sinf(b) * r_outer, -cosf(a + stepa) * cosf(b) * r_outer );
+			vc = domevertex_t ( 0.0f, r_outer, 0.0f );
 			
 			vertices[p + 0] = va;
 			vertices[p + 1] = vb;

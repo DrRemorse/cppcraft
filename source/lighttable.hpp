@@ -37,6 +37,10 @@ namespace cppcraft
 		short bx, by, bz;
 		// light id (referring to an index in the global light list)
 		short id;
+		
+		blocklight_t() {}
+		blocklight_t(Sector* S, short X, short Y, short Z, short ID) :
+			s(S), bx(X), by(Y), bz(Z), id(ID) {}
 	};
 	
 	class LightList

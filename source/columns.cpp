@@ -36,7 +36,7 @@ namespace cppcraft
 		for (int z = 0; z < Sectors.getXZ(); z++)
 		for (int y = 0; y < COLUMNS_Y; y++)
 		{
-			this->columns[i++] = new Column(x, y, z);
+			this->columns[i++] = new Column(y);
 		}
 		
 		////////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ namespace cppcraft
 		
 	}
 	
-	Column::Column(int x, int y, int z)
+	Column::Column(int y)
 	{
 		// initialize VAO to 0, signifying a column without valid GL resources
 		this->vao = 0;

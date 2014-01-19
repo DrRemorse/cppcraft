@@ -22,7 +22,7 @@ endif
 # compiler
 CC = g++ $(BUILDOPT) -std=c++11
 # compiler flags
-CCFLAGS = -c -Wall -Wno-write-strings -Iinc
+CCFLAGS = -c -Wall -Wextra -pedantic -Wno-write-strings -Iinc
 # linker flags
 ifeq ($(OS),Windows_NT)
 	LFLAGS  = -Llib -static -lpthread -lbassdll -llattice -lglfw3 -lgdi32 -lopengl32 -llzo2 -lws2_32 -ltcc

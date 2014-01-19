@@ -15,7 +15,7 @@ namespace cppcraft
 		
 		// initialize column with position (x, z)
 		// position y is used to determine if the column is above the waterline
-		Column(int x, int y, int z);
+		Column(int y);
 		
 		bool renderable; // is renderable
 		bool updated;    // needs update

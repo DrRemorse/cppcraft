@@ -3,8 +3,8 @@
  * 
 **/
 
-#ifndef __TILES_HPP
-#define __TILES_HPP
+#ifndef TILES_HPP
+#define TILES_HPP
 
 namespace cppcraft
 {

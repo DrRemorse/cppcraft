@@ -1,14 +1,16 @@
 #include "precomp_thread.hpp"
 
-#include "library/log.hpp"
-#include "library/storage/bitarray.hpp"
+#include <library/log.hpp>
+#include <library/bitmap/colortools.hpp>
+#include <library/storage/bitarray.hpp>
 
 #include "blockmodels.hpp"
 #include "lighting.hpp"
 #include "precompiler.hpp"
+#include "renderconst.hpp"
 #include "sector.hpp"
 #include "spiders.hpp"
-#include "renderconst.hpp"
+#include "tiles.hpp"
 #include <cstring>
 
 using namespace library;
@@ -61,6 +63,155 @@ namespace cppcraft
 		
 	};
 	
+	int colorDistance(unsigned int c1, unsigned int c2)
+	{
+		unsigned char* b1 = (unsigned char*)&c1;
+		unsigned char* b2 = (unsigned char*)&c2;
+		
+		int d1 = b1[0] - b2[0];
+		int d2 = b1[1] - b2[1];
+		int d3 = b1[2] - b2[2];
+		
+		return (d1 > d2) ? ((d1 > d3) ? d1 : d3) : ((d2 > d3) ? d2 : d3);
+	}
+	
+	void optimizeMesh(unsigned short& verts, vertex_t* source)
+	{
+		int lastQuad = (verts / 4) - 1;
+		
+		// origin quad for each line
+		vertex_t* position = source;
+		vertex_t* next     = source + 4;
+		
+		for (int i = 0; i < lastQuad; i++, next += 4)
+		{
+			// determine that quad points upwards (+y)
+			if (position->nx != 0 || position->ny != 127 || position->nz != 0)
+				goto skipExtrusion;
+			
+			// and that it features the same texture as its next
+			if (position->w != next->w) goto skipExtrusion;
+			
+			// now check that the next quad has the same normal
+			#define normalToInt(x) ((unsigned int*)&x.nx)[0]
+			if (normalToInt(position[0]) != normalToInt(next[0]))
+				goto skipExtrusion;
+			
+			// next quad has previous quad position (-z)
+			if (next->z + RenderConst::VERTEX_SCALE == position->z)
+			if (next->x == position->x && next->y == position->y)
+			{
+				// next quad has same (consistent) color
+				/*for (int i = 0; i < 4; i++)
+				for (int j = 0; j < 4; j++)
+				{
+					if (next[i].c != position[j].c) goto skipExtrusion;
+					if (colorDistance(next[i].biome, position[j].biome) > 6) goto skipExtrusion;
+				}*/
+				if (next[2].c != next[3].c) goto skipExtrusion;
+				if (next[0].c != next[1].c) goto skipExtrusion;
+				if (position[2].c != position[3].c) goto skipExtrusion;
+				if (position[0].c != position[1].c) goto skipExtrusion;
+				if (next[2].c != position[3].c) goto skipExtrusion;
+				if (next[1].c != position[0].c) goto skipExtrusion;
+				
+				if (colorDistance(next[1].biome, next[2].biome) > 6) goto skipExtrusion;
+				if (colorDistance(next[2].biome, position[3].biome) > 6) goto skipExtrusion;
+				if (colorDistance(next[1].biome, position[0].biome) > 6) goto skipExtrusion;
+				
+				// now optimize the quad, by extending the position quad,
+				// and effectively removing the next quad
+				// PY: (0, 0) --> (0, 1) --> (1, 1) --> (1, 0)
+				// --> extend v[0] and v[3]
+				position[0].z -= RenderConst::VERTEX_SCALE;
+				position[3].z -= RenderConst::VERTEX_SCALE;
+				// wrap texture coordinates
+				position[0].v -= RenderConst::VERTEX_SCALE / tiles.tilesPerBigtile;
+				position[3].v -= RenderConst::VERTEX_SCALE / tiles.tilesPerBigtile;
+				
+				/*position[0].c = 0 << 24;
+				position[1].c = 0 << 24;
+				position[2].c = 0 << 24;
+				position[3].c = 0 << 24;*/
+				
+				verts -= 4;   // decrease total number of vertices
+				continue;
+			}
+		skipExtrusion:
+			// go to next position, and at the same time copy the entire
+			// next quad into position
+			position += 4;
+			for (int i = 0; i < 4; i++) position[i] = next[i];
+		}
+	}
+	
+	void PrecompThread::optimizeRepeatMesh()
+	{
+		unsigned short verts = precomp->vertices[RenderConst::TX_REPEAT];
+		
+		// try to optimize the water plane manually
+		if (verts >= 8)
+		{
+			vertex_t* repeat = precomp->datadump + precomp->bufferoffset[RenderConst::TX_REPEAT];
+			// verts is sent by reference
+			optimizeMesh(verts, repeat);
+			// set final number of vertices
+			precomp->vertices[RenderConst::TX_REPEAT] = verts;
+		}
+	}
+	
+	void PrecompThread::optimizeWaterMesh()
+	{
+		static const unsigned short WATER_MAX_VERTS = Sector::BLOCKS_XZ * Sector::BLOCKS_XZ * 4;
+		
+		bool failed = false;
+		unsigned short verts = precomp->vertices[RenderConst::TX_WATER];
+		vertex_t* water = precomp->datadump + precomp->bufferoffset[RenderConst::TX_WATER];
+		
+		if (verts == WATER_MAX_VERTS)
+		{
+			const unsigned long long C = water->c;
+			
+			for (int i = 1; i < WATER_MAX_VERTS; i++)
+			{
+				if (water[i].c != C) { failed = true; break; }
+			}
+			
+			if (failed == false)
+			{
+				water[0].x = 0;
+				water[0].z = 0;
+				
+				water[1].x = 0;
+				water[1].z = RenderConst::VERTEX_SCALE * Sector::BLOCKS_XZ;
+				
+				water[2].x = RenderConst::VERTEX_SCALE * Sector::BLOCKS_XZ;
+				water[2].z = RenderConst::VERTEX_SCALE * Sector::BLOCKS_XZ;
+				
+				water[3].x = RenderConst::VERTEX_SCALE * Sector::BLOCKS_XZ;
+				water[3].z = 0;
+				
+				// set new number of vertices
+				verts = 4;
+				
+				/*static int totalOptimized = 0;
+				totalOptimized++;
+				logger << Log::INFO << "Optimized " << totalOptimized << Log::ENDL;*/
+			}
+		}
+		else failed = true;
+		
+		// try to optimize the water plane manually
+		if (failed == true && verts >= 8)
+		{
+			// verts is sent by reference
+			optimizeMesh(verts, water);
+		}
+		
+		// set final number of vertices
+		precomp->vertices[RenderConst::TX_WATER] = verts;
+	}
+	
 	void PrecompThread::ambientOcclusion()
 	{
 		Sector& sector = *precomp->sector;
@@ -95,43 +246,10 @@ namespace cppcraft
 			ambientOcclusionGradients(this->occ, precomp->datadump, cnt);
 		#endif
 		
-		// optimize mesh
-		int waterShaderline = (int)RenderConst::MAX_UNIQUE_SHADERS-1;
-		static const int WATER_MAX_VERTS = Sector::BLOCKS_XZ * Sector::BLOCKS_XZ * 4;
-		
-		if (precomp->vertices[waterShaderline] == WATER_MAX_VERTS)
-		{
-			vertex_t* water = precomp->datadump + precomp->bufferoffset[waterShaderline];
-			
-			const unsigned long long C = water->c;
-			
-			bool failed = false;
-			for (int i = 1; i < WATER_MAX_VERTS; i++)
-			{
-				if (water[i].c != C) { failed = true; break; }
-			}
-			
-			if (failed == false)
-			{
-				water[0].x = 0;
-				water[0].z = 0;
-				
-				water[1].x = 0;
-				water[1].z = RenderConst::VERTEX_SCALE * Sector::BLOCKS_XZ;
-				
-				water[2].x = RenderConst::VERTEX_SCALE * Sector::BLOCKS_XZ;
-				water[2].z = RenderConst::VERTEX_SCALE * Sector::BLOCKS_XZ;
-				
-				water[3].x = RenderConst::VERTEX_SCALE * Sector::BLOCKS_XZ;
-				water[3].z = 0;
-				
-				precomp->vertices[waterShaderline] = 4;
-				
-				/*static int totalOptimized = 0;
-				totalOptimized++;
-				logger << Log::INFO << "Optimized " << totalOptimized << Log::ENDL;*/
-			}
-		}
+		// optimize repeating textures mesh
+		optimizeRepeatMesh();
+		// optimize water mesh
+		optimizeWaterMesh();
 		
 		sector.progress = Sector::PROG_NEEDCOMPILE;
 		sector.culled  = false;
@@ -140,9 +258,9 @@ namespace cppcraft
 	short addCornerShadowVertex(AmbientOcclusion& ao, vertex_t* vt, short x, short y, short z)
 	{
 		short corner = vt->face >> 3;
-		corner =(corner & 1) + // 0 if left,  1 if right
-				(corner & 2) + // 0 if lower, 2 if upper
-				(corner & 4);  // 0 if back,  4 if front
+		corner = (corner & 1) + // 0 if left,  1 if right
+				  (corner & 2) + // 0 if lower, 2 if upper
+				  (corner & 4);  // 0 if back,  4 if front
 		
 		short face = (vt->face & 7) - 1;
 		short index;

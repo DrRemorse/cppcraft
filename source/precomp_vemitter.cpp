@@ -240,19 +240,19 @@ namespace cppcraft
 		
 		if (shaderLine == RenderConst::TX_REPEAT)
 		{
-			indic[0].u = bx * repeat_factor;
+			indic[0].u = bx * repeat_factor; // 0, 0
 			indic[0].v = bz * repeat_factor;
 			indic[0].w = Block::bigFaceById(id, 2, 0);
 			
-			indic[1].u = bx * repeat_factor;
+			indic[1].u = bx * repeat_factor; // 0, 1
 			indic[1].v = (1 + bz) * repeat_factor;
 			indic[1].w = indic[0].w;
 			
-			indic[2].u = (1 + bx) * repeat_factor;
+			indic[2].u = (1 + bx) * repeat_factor; // 1, 1
 			indic[2].v = (1 + bz) * repeat_factor;
 			indic[2].w = indic[0].w;
 			
-			indic[3].u = (1 + bx) * repeat_factor;
+			indic[3].u = (1 + bx) * repeat_factor; // 1, 0
 			indic[3].v = bz * repeat_factor;
 			indic[3].w = indic[0].w;
 		}
@@ -297,20 +297,21 @@ namespace cppcraft
 		
 		if (shaderLine == RenderConst::TX_REPEAT)
 		{
-			indic[0].u = (1 + bx) * repeat_factor; // 1, 1
-			indic[0].v = (1 + bz) * repeat_factor;
+			// {1,1,  0,1,  0,0,  1,0}
+			indic[0].u = bx * repeat_factor; // 0, 0
+			indic[0].v = bz * repeat_factor;
 			indic[0].w = Block::bigFaceById(id, 3, 0);
 			
-			indic[1].u = bx * repeat_factor;       // 0, 1
-			indic[1].v = (1 + bz) * repeat_factor;
+			indic[1].u = (1 + bx) * repeat_factor;       // 1, 0
+			indic[1].v = bz * repeat_factor;
 			indic[1].w = indic[0].w;
 			
-			indic[2].u = bx * repeat_factor;       // 0, 0
-			indic[2].v = bz * repeat_factor;
+			indic[2].u = (1 + bx) * repeat_factor;       // 1, 1
+			indic[2].v = (1 + bz) * repeat_factor;
 			indic[2].w = indic[0].w;
 			
-			indic[3].u = (1 + bx) * repeat_factor; // 1, 0
-			indic[3].v = bz * repeat_factor;
+			indic[3].u = bx * repeat_factor; // 0, 1
+			indic[3].v = (1 + bz) * repeat_factor;
 			indic[3].w = indic[0].w;
 		}
 		else

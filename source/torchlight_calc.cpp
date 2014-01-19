@@ -15,7 +15,7 @@ using namespace library;
 
 namespace cppcraft
 {
-	void Torchlight::lightSectorUpdates(Sector& s, block_t id, bool instant)
+	void Torchlight::lightSectorUpdates(Sector& s, bool instant)
 	{
 		#define L_G_R  LIGHT_GATHER_REACH
 		

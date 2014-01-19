@@ -63,8 +63,7 @@ namespace cppcraft
 			if (face == 2) color = BGRA8(0, 0, 0,   20);
 			if (face == 4) color = BGRA8(0, 0, 0,   64);
 			
-			transformedCube.emplace_back( (GUIInventory::inventory_t)
-				{ v.x, v.y, v.z,  tu, tv, (float)face,  color });
+			transformedCube.emplace_back(v.x, v.y, v.z,  tu, tv, (float)face,  color);
 		}
 		
 	}
@@ -137,14 +136,14 @@ namespace cppcraft
 		// no count, no item!
 		if (itm.getCount() == 0) return 0;
 		// create single quad
-		itemTiles.emplace_back( (inventory_t)
-			{ x,        y + size, 0,   0, 0, tile,   BGRA8(255, 255, 255,   0) });
-		itemTiles.emplace_back( (inventory_t)
-			{ x + size, y + size, 0,   1, 0, tile,   BGRA8(255, 255, 255,   0) });
-		itemTiles.emplace_back( (inventory_t)
-			{ x + size, y,        0,   1, 1, tile,   BGRA8(255, 255, 255,   0) });
-		itemTiles.emplace_back( (inventory_t)
-			{ x,        y,        0,   0, 1, tile,   BGRA8(255, 255, 255, 128) });
+		itemTiles.emplace_back(
+			x,        y + size, 0,   0, 0, tile,   BGRA8(255, 255, 255,   0) );
+		itemTiles.emplace_back(
+			x + size, y + size, 0,   1, 0, tile,   BGRA8(255, 255, 255,   0) );
+		itemTiles.emplace_back(
+			x + size, y,        0,   1, 1, tile,   BGRA8(255, 255, 255,   0) );
+		itemTiles.emplace_back(
+			x,        y,        0,   0, 1, tile,   BGRA8(255, 255, 255, 128) );
 		
 		return 4;
 	}
@@ -154,14 +153,14 @@ namespace cppcraft
 		// face value is "as if" front
 		float tile = Block::cubeFaceById(itm.getID(), 0, 0);
 		// create single quad
-		blockTiles.emplace_back( (inventory_t)
-			{ x,        y + size, 0,   0, 0, tile,   BGRA8(255, 255, 255,   0) });
-		blockTiles.emplace_back( (inventory_t)
-			{ x + size, y + size, 0,   1, 0, tile,   BGRA8(255, 255, 255,   0) });
-		blockTiles.emplace_back( (inventory_t)
-			{ x + size, y,        0,   1, 1, tile,   BGRA8(255, 255, 255,   0) });
-		blockTiles.emplace_back( (inventory_t)
-			{ x,        y,        0,   0, 1, tile,   BGRA8(255, 255, 255, 128) });
+		blockTiles.emplace_back(
+			x,        y + size, 0,   0, 0, tile,   BGRA8(255, 255, 255,   0) );
+		blockTiles.emplace_back(
+			x + size, y + size, 0,   1, 0, tile,   BGRA8(255, 255, 255,   0) );
+		blockTiles.emplace_back(
+			x + size, y,        0,   1, 1, tile,   BGRA8(255, 255, 255,   0) );
+		blockTiles.emplace_back(
+			x,        y,        0,   0, 1, tile,   BGRA8(255, 255, 255, 128) );
 		return 4;
 	}
 	int GUIInventory::emitBlock(InventoryItem& itm, float x, float y, float size)
@@ -179,8 +178,7 @@ namespace cppcraft
 			// face value is located in vertex.w
 			float tw = Block::cubeFaceById(itm.getID(), vertex.w, 3);
 			
-			blockTiles.emplace_back( (inventory_t)
-				{ v.x, v.y, v.z,  vertex.u, vertex.v, tw,  vertex.color });
+			blockTiles.emplace_back(v.x, v.y, v.z,  vertex.u, vertex.v, tw,  vertex.color);
 		}
 		return 12;
 	}
@@ -242,6 +240,6 @@ namespace cppcraft
 			// render blocks
 			itemsVAO.render(GL_QUADS, items, blocks);
 		}
-	}
+	} // inventory.render
 	
 }

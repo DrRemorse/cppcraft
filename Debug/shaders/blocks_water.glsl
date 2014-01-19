@@ -21,6 +21,7 @@ in vec4 in_biome;
 in vec4 in_color;
 in vec4 in_color2;
 
+out vec4 waterColor;
 out vec4 lightdata;
 out vec4 torchlight;
 
@@ -63,6 +64,7 @@ void main(void)
 	waves.xy  = w_vertex.xz * vec2(0.10, 0.02) + timer * vec2(0.2, 0.0);
 	waves.zw  = w_vertex.xz * vec2(0.25, 0.05) + timer * vec2(0.2, 0.0);
 	
+	waterColor  = in_biome;
 	lightdata   = in_color;
 	torchlight  = in_color2;
 }
@@ -86,6 +88,7 @@ uniform vec4  playerLight;
 uniform float modulation;
 uniform int playerSubmerged;
 
+in vec4 waterColor;
 in vec4 lightdata;
 in vec4 torchlight;
 
@@ -186,19 +189,17 @@ void main(void)
 		dep = 1.0 - pow(dist, 3.0);
 	}
 	
-	// create water "color"
-	vec3 waterColor = mix(deepwater, shallowwater, dep);
+	// create final water color
+	vec4 color = vec4(mix(deepwater, shallowwater, dep), 1.0);
 	// mix water color and other-side
-	waterColor = mix(waterColor, underw.rgb, dep) * daylight;
-	// create final color value
-	vec4 color = vec4(waterColor, 1.0);
+	color.rgb = mix(color.rgb, underw.rgb, dep) * daylight;
 	
 	// add reflections
 	if (playerSubmerged == 0)
 	{
 		float reflevel = fresnel * dist;
-		//color.rgb = mix(color.rgb, wreflection.rgb, reflevel);
-		color.rgb = wreflection.rgb;
+		color.rgb = mix(color.rgb, wreflection.rgb, reflevel);
+		//color.rgb = wreflection.rgb;
 	}
 	
 	// fake waves

@@ -1,8 +1,8 @@
 #include "render_sky.hpp"
 
-#include "library/math/matrix.hpp"
-#include "library/opengl/opengl.hpp"
-#include "library/opengl/vao.hpp"
+#include <library/math/matrix.hpp>
+#include <library/opengl/opengl.hpp>
+#include <library/opengl/vao.hpp>
 #include "atmosphere.hpp"
 #include "camera.hpp"
 #include "renderconst.hpp"
@@ -33,13 +33,17 @@ namespace cppcraft
 		struct satellite_t
 		{
 			float vx, vy, vz;
+			
+			satellite_t() {}
+			satellite_t(float X, float Y, float Z) :
+				vx(X), vy(Y), vz(Z) {}
 		};
 		satellite_t mv[4];
 		
-		mv[0] = (satellite_t) { -0.5, -0.5, 0.0 };
-		mv[1] = (satellite_t) {  0.5, -0.5, 0.0 };
-		mv[2] = (satellite_t) {  0.5,  0.5, 0.0 };
-		mv[3] = (satellite_t) { -0.5,  0.5, 0.0 };
+		mv[0] = satellite_t ( -0.5, -0.5, 0.0 );
+		mv[1] = satellite_t (  0.5, -0.5, 0.0 );
+		mv[2] = satellite_t (  0.5,  0.5, 0.0 );
+		mv[3] = satellite_t ( -0.5,  0.5, 0.0 );
 		
 		satteliteVAO.begin(sizeof(satellite_t), 4, mv);
 		satteliteVAO.attrib(0, 3, GL_FLOAT, GL_FALSE, 0);

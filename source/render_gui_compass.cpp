@@ -38,14 +38,12 @@ namespace cppcraft
 			matview.translate_xy(compx, compy);
 			
 			// rotate properly
-			mat4 mattemp = rotationMatrix(0.0, 0.0, -player.yrotrad);
-			matview *= mattemp;
+			matview *= rotationMatrix(0.0, 0.0, -player.yrotrad);;
 			
 			// orthograhic projection * view
-			compassMVP = matview * mattemp * mat4(compassScale, compassScale, 1.0);
-			
+			compassMVP = matview * mat4(compassScale, compassScale, 1.0);
 			// orthograhic projection * view
-			minimapMVP = matview * mattemp * mat4(minimapScale, minimapScale, 1.0);
+			minimapMVP = matview * mat4(minimapScale, minimapScale, 1.0);
 		}
 		
 		/// minimap ///

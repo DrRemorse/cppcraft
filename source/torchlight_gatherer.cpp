@@ -194,8 +194,8 @@ namespace cppcraft
 								if (lightGathererHelper(s2, bx, by, bz))
 								{
 									// add light
-									list.lights.push_back(
-										(blocklight_t) { &s2, (short)bx, (short)by, (short)bz, lem }
+									list.lights.emplace_back(
+										&s2, (short)bx, (short)by, (short)bz, lem
 									);
 									
 								} // visibility culling

@@ -56,7 +56,7 @@ namespace cppcraft
 			if (sector.blockpt->lights)
 			{
 				// worst-case emissive block reach (_TORCH)
-				torchlight.lightSectorUpdates(sector, _TORCH, false);
+				torchlight.lightSectorUpdates(sector, false);
 			}
 		}
 		else

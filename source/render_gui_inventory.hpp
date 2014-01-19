@@ -21,6 +21,10 @@ namespace cppcraft
 			float x, y, z;
 			float u, v, w;
 			unsigned int color;
+			
+			inventory_t() {}
+			inventory_t (float X, float Y, float Z, float U, float V, float W, unsigned int C) :
+				x(X), y(Y), z(Z), u(U), v(V), w(W), color(C) {}
 		};
 	
 		void clear();

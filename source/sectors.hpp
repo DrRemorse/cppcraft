@@ -19,8 +19,8 @@ namespace cppcraft
 		
 		void createSectors(int xz);
 		
-		inline const int getXZ() const noexcept { return this->sectors_XZ; }
-		inline const int getY()  const noexcept { return SECTORS_Y; }
+		inline int getXZ() const { return this->sectors_XZ; }
+		inline int getY()  const { return SECTORS_Y; }
 		
 		// returns a reference to a Sector located at (x, y, z)
 		inline Sector& operator() (int x, int y, int z)

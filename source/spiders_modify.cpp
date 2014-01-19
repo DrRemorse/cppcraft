@@ -89,7 +89,7 @@ namespace cppcraft
 			s->countLights();
 			// update nearby sectors due to change in light count
 			// also, the haslights flag will be RESET for all neighboring sectors to this
-			torchlight.lightSectorUpdates(*s, id, immediate);
+			torchlight.lightSectorUpdates(*s, immediate);
 		}
 		else
 		{
@@ -201,7 +201,7 @@ namespace cppcraft
 		if (isLight(block.getID()))
 		{
 			s->countLights();
-			torchlight.lightSectorUpdates(*s, block.getID(), immediate);
+			torchlight.lightSectorUpdates(*s, immediate);
 		}
 		
 		// -- ubercheck if something below could need recompiling
