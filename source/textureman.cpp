@@ -39,13 +39,23 @@ namespace cppcraft
 			
 			textures[T_DIFFUSE] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_DIFFUSE].create(bmp, true, GL_REPEAT, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
-			textures[T_DIFFUSE].setAnisotropy(gameconf.anisotropy);
+			//textures[T_DIFFUSE].setAnisotropy(gameconf.anisotropy);
+			if (ogl.checkError())
+			{
+				throw std::string("Failed to set terrain texture anisotropic filter");
+			}
+			
+			if (ogl.checkError()) throw std::string("Materials(1) texture2d array error");
 			
 			// voxelize (some) tiles
 			voxels.createBlockModels(bmp);
+			
+			if (ogl.checkError())
+			{
+				throw std::string("Failed to create voxel blocks");
+			}
 		}
 		else throw std::string("Materials(1) missing source file: Diffuse");
-		if (ogl.checkError()) throw std::string("Materials(1) texture2d array error");
 		
 		if (bmp.load(config.get("textures.tonemap", "bitmap/default/tonemap.png"), Bitmap::PNG))
 		{
@@ -53,10 +63,11 @@ namespace cppcraft
 			
 			textures[T_TONEMAP] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_TONEMAP].create(bmp, true, GL_REPEAT, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
-			textures[T_TONEMAP].setAnisotropy(gameconf.anisotropy);
+			//textures[T_TONEMAP].setAnisotropy(gameconf.anisotropy);
+			
+			if (ogl.checkError()) throw std::string("Materials(2) texture2d array error");
 		}
 		else throw std::string("Materials(2) missing source file: Tonemap");
-		if (ogl.checkError()) throw std::string("Materials(2) texture2d array error");
 		
 		/// TERRAIN bigger tileset ///
 		if (bmp.load(config.get("textures.bigdiff", "bitmap/default/bigdiff.png"), Bitmap::PNG))
@@ -69,10 +80,11 @@ namespace cppcraft
 			
 			textures[T_BIG_DIFF] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_BIG_DIFF].create(bmp, true, GL_REPEAT, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
-			textures[T_BIG_DIFF].setAnisotropy(gameconf.anisotropy);
+			//textures[T_BIG_DIFF].setAnisotropy(gameconf.anisotropy);
+			
+			if (ogl.checkError()) throw std::string("Materials(3) texture2d array error");
 		}
 		else throw std::string("Materials(3) missing source file: Bigdiff");
-		if (ogl.checkError()) throw std::string("Materials(3) texture2d array error");
 		
 		if (bmp.load(config.get("textures.bigtone", "bitmap/default/bigtone.png"), Bitmap::PNG))
 		{
@@ -80,10 +92,11 @@ namespace cppcraft
 			
 			textures[T_BIG_TONE] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_BIG_TONE].create(bmp, true, GL_REPEAT, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
-			textures[T_BIG_TONE].setAnisotropy(gameconf.anisotropy);
+			//textures[T_BIG_TONE].setAnisotropy(gameconf.anisotropy);
+			
+			if (ogl.checkError()) throw std::string("Materials(4) texture2d array error");
 		}
 		else throw std::string("Materials(4) missing source file: Bigtone");
-		if (ogl.checkError()) throw std::string("Materials(4) texture2d array error");
 		
 		/// ITEMS tileset ///
 		if (bmp.load(config.get("textures.items", "bitmap/default/items.png"), Bitmap::PNG))
@@ -96,11 +109,12 @@ namespace cppcraft
 			textures[T_ITEMS] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_ITEMS].create(bmp, true, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
 			
+			if (ogl.checkError()) throw std::string("Items texture2d array error");
+			
 			// voxelize the items
 			voxels.createItemModels(bmp);
 		}
 		else throw std::string("Missing source file: Items tileset");
-		if (ogl.checkError()) throw std::string("Items texture2d array error");
 		
 		/// PLAYER MODELS tileset ///
 		if (bmp.load(config.get("textures.players", "bitmap/default/playerskins.png"), Bitmap::PNG))
@@ -109,10 +123,11 @@ namespace cppcraft
 			
 			textures[T_PLAYERMODELS] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_PLAYERMODELS].create(bmp, true, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
-			textures[T_PLAYERMODELS].setAnisotropy(gameconf.anisotropy);
+			//textures[T_PLAYERMODELS].setAnisotropy(gameconf.anisotropy);
+			
+			if (ogl.checkError()) throw std::string("Player skins texture2d array error");
 		}
 		else throw std::string("Missing source file: Player skins");
-		if (ogl.checkError()) throw std::string("Player skins texture2d array error");
 		
 		/// PARTICLES tileset ///
 		if (bmp.load(config.get("textures.partic", "bitmap/default/particles.png"), Bitmap::PNG))
@@ -126,18 +141,20 @@ namespace cppcraft
 			
 			textures[T_PARTICLES] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_PARTICLES].create(bmp, true, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+			
+			if (ogl.checkError()) throw std::string("Particles texture2d array error");
 		}
 		else throw std::string("Missing source file: Particles");
-		if (ogl.checkError()) throw std::string("Particles texture2d array error");
 		
 		/// PlayerSelection textures ///
 		if (bmp.load(config.get("textures.selection", "bitmap/default/selection.png"), Bitmap::PNG))
 		{
 			textures[T_SELECTION] = Texture(GL_TEXTURE_2D);
 			textures[T_SELECTION].create(bmp, true, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+			
+			if (ogl.checkError()) throw std::string("Selection texture2d error");
 		}
 		else throw std::string("Missing source file: Selection texture");
-		if (ogl.checkError()) throw std::string("Selection texture2d error");
 		
 		if (bmp.load(config.get("textures.mining", "bitmap/default/mining.png"), Bitmap::PNG))
 		{
@@ -145,9 +162,10 @@ namespace cppcraft
 			
 			textures[T_MINING] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_MINING].create(bmp, true, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
+			
+			if (ogl.checkError()) throw std::string("Selection texture2d error");
 		}
 		else throw std::string("Missing source file: Selection texture");
-		if (ogl.checkError()) throw std::string("Selection texture2d error");
 		
 		/// Sky renderer ///
 		
@@ -195,15 +213,6 @@ namespace cppcraft
 		
 		/// FS Renderer ///
 		
-		// noise texture
-		/*if (bmp.load(config.get("textures.noise", "bitmap/default/noise.png"), Bitmap::PNG))
-		{
-			textures[T_NOISE] = Texture(GL_TEXTURE_2D);
-			textures[T_NOISE].create(bmp, false, GL_REPEAT, GL_NEAREST, GL_NEAREST);
-		}
-		else throw std::string("Missing source file: Lensdirt texture");
-		if (ogl.checkError()) throw std::string("Lensdirt texture error");
-		*/
 		// dirty lens texture
 		if (bmp.load(config.get("textures.lens", "bitmap/default/lensdirt_lowc.png"), Bitmap::PNG))
 		{

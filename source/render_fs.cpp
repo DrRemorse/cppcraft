@@ -34,6 +34,11 @@ namespace cppcraft
 		glGenFramebuffers(1, &flareFBO);
 		
 		initFlare();
+		
+		if (ogl.checkError())
+		{
+			throw std::string("Failed to initialize screenspace framebuffers");
+		}
 	}
 	
 	void FSRenderer::blur(WindowClass& gamescr)
