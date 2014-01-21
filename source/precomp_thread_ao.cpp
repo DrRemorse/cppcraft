@@ -85,64 +85,67 @@ namespace cppcraft
 		
 		for (int i = 0; i < lastQuad; i++, next += 4)
 		{
-			// determine that quad points upwards (+y)
-			if (position->nx != 0 || position->ny != 127 || position->nz != 0)
-				goto skipExtrusion;
-			
-			// and that it features the same texture as its next
-			if (position->w != next->w) goto skipExtrusion;
-			
-			// now check that the next quad has the same normal
-			#define normalToInt(x) ((unsigned int*)&x.nx)[0]
-			if (normalToInt(position[0]) != normalToInt(next[0]))
-				goto skipExtrusion;
-			
-			// next quad has previous quad position (-z)
-			if (next->z + RenderConst::VERTEX_SCALE == position->z)
-			if (next->x == position->x && next->y == position->y)
+			for (vertex_t* current = source; current <= position; current += 4)
 			{
-				// next quad has same (consistent) color
-				/*for (int i = 0; i < 4; i++)
-				for (int j = 0; j < 4; j++)
+				// determine that quad points upwards (+y)
+				if (current->nx != 0 || current->ny != 127 || current->nz != 0)
+					continue;
+				
+				// and that it features the same texture as its next
+				if (current->w != next->w) continue;
+				
+				// now check that the next quad has the same normal
+				#define normalToInt(x) ((unsigned int*)&x.nx)[0]
+				if (normalToInt(current[0]) != normalToInt(next[0]))
+					continue;
+				
+				// next quad has previous quad position (-z)
+				if (next->z + RenderConst::VERTEX_SCALE == current->z)
+				if (next->x == current->x && next->y == current->y)
 				{
-					if (next[i].c != position[j].c) goto skipExtrusion;
-					if (colorDistance(next[i].biome, position[j].biome) > 6) goto skipExtrusion;
-				}*/
-				if (next[2].c != next[3].c) goto skipExtrusion;
-				if (next[0].c != next[1].c) goto skipExtrusion;
-				if (position[2].c != position[3].c) goto skipExtrusion;
-				if (position[0].c != position[1].c) goto skipExtrusion;
-				if (next[2].c != position[3].c) goto skipExtrusion;
-				if (next[1].c != position[0].c) goto skipExtrusion;
-				
-				if (colorDistance(next[2].biome, next[3].biome) > 6) goto skipExtrusion;
-				if (colorDistance(next[0].biome, next[1].biome) > 6) goto skipExtrusion;
-				if (colorDistance(next[2].biome, position[3].biome) > 6) goto skipExtrusion;
-				if (colorDistance(next[1].biome, position[0].biome) > 6) goto skipExtrusion;
-				
-				// now optimize the quad, by extending the position quad,
-				// and effectively removing the next quad
-				// PY: (0, 0) --> (0, 1) --> (1, 1) --> (1, 0)
-				// --> extend v[0] and v[3]
-				position[0].z -= RenderConst::VERTEX_SCALE;
-				position[3].z -= RenderConst::VERTEX_SCALE;
-				// wrap texture coordinates
-				position[0].v -= txsize;
-				position[3].v -= txsize;
-				
-				/*position[0].c = 0 << 24;
-				position[1].c = 0 << 24;
-				position[2].c = 0 << 24;
-				position[3].c = 0 << 24;*/
-				
-				verts -= 4;   // decrease total number of vertices
-				continue;
+					// next quad has same (consistent) color
+					/*for (int i = 0; i < 4; i++)
+					for (int j = 0; j < 4; j++)
+					{
+						if (next[i].c != position[j].c) goto skipExtrusion;
+						if (colorDistance(next[i].biome, position[j].biome) > 6) goto skipExtrusion;
+					}*/
+					if (next[2].c != next[3].c) continue;
+					if (next[0].c != next[1].c) continue;
+					if (current[2].c != current[3].c) continue;
+					if (current[0].c != current[1].c) continue;
+					if (next[2].c != current[3].c) continue;
+					if (next[1].c != current[0].c) continue;
+					
+					if (colorDistance(next[2].biome, next[3].biome) > 6) continue;
+					if (colorDistance(next[0].biome, next[1].biome) > 6) continue;
+					if (colorDistance(next[2].biome, current[3].biome) > 6) continue;
+					if (colorDistance(next[1].biome, current[0].biome) > 6) continue;
+					
+					// now optimize the quad, by extending the position quad,
+					// and effectively removing the next quad
+					// PY: (0, 0) --> (0, 1) --> (1, 1) --> (1, 0)
+					// --> extend v[0] and v[3]
+					current[0].z -= RenderConst::VERTEX_SCALE;
+					current[3].z -= RenderConst::VERTEX_SCALE;
+					// wrap texture coordinates
+					current[0].v -= txsize;
+					current[3].v -= txsize;
+					
+					/*current[0].c = 0 << 24;
+					current[1].c = 0 << 24;
+					current[2].c = 0 << 24;
+					current[3].c = 0 << 24;*/
+					
+					verts -= 4;   // decrease total number of vertices
+					goto skipAdvancement;
+				}
 			}
-		skipExtrusion:
 			// go to next position, and at the same time copy the entire
 			// next quad into position
 			position += 4;
 			for (int i = 0; i < 4; i++) position[i] = next[i];
+		skipAdvancement:;
 		}
 	}
 	
