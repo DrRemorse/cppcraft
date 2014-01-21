@@ -47,7 +47,7 @@ namespace cppcraft
 		}
 		if (input.getKey(GLFW_KEY_F2))
 		{
-			thesun.setRadianAngle(3.14159 / 2);
+			thesun.setRadianAngle(0.707);
 			Sectors.invalidateAll();
 			worldbuilder.reset();
 		}
@@ -59,7 +59,7 @@ namespace cppcraft
 		}
 		if (input.getKey(GLFW_KEY_F4))
 		{
-			thesun.setRadianAngle(-0.25);
+			thesun.setRadianAngle(-1);
 			Sectors.invalidateAll();
 			worldbuilder.reset();
 		}

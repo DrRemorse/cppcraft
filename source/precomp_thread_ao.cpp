@@ -75,7 +75,7 @@ namespace cppcraft
 		return (d1 > d2) ? ((d1 > d3) ? d1 : d3) : ((d2 > d3) ? d2 : d3);
 	}
 	
-	void optimizeMesh(unsigned short& verts, vertex_t* source)
+	void optimizeMesh(unsigned short& verts, vertex_t* source, int txsize)
 	{
 		int lastQuad = (verts / 4) - 1;
 		
@@ -127,8 +127,8 @@ namespace cppcraft
 				position[0].z -= RenderConst::VERTEX_SCALE;
 				position[3].z -= RenderConst::VERTEX_SCALE;
 				// wrap texture coordinates
-				position[0].v -= RenderConst::VERTEX_SCALE / tiles.tilesPerBigtile;
-				position[3].v -= RenderConst::VERTEX_SCALE / tiles.tilesPerBigtile;
+				position[0].v -= txsize;
+				position[3].v -= txsize;
 				
 				/*position[0].c = 0 << 24;
 				position[1].c = 0 << 24;
@@ -149,15 +149,39 @@ namespace cppcraft
 	void PrecompThread::optimizeRepeatMesh()
 	{
 		unsigned short verts = precomp->vertices[RenderConst::TX_REPEAT];
-		
-		// try to optimize the water plane manually
 		if (verts >= 8)
 		{
 			vertex_t* repeat = precomp->datadump + precomp->bufferoffset[RenderConst::TX_REPEAT];
 			// verts is sent by reference
-			optimizeMesh(verts, repeat);
+			optimizeMesh(verts, repeat, RenderConst::VERTEX_SCALE / tiles.tilesPerBigtile);
 			// set final number of vertices
 			precomp->vertices[RenderConst::TX_REPEAT] = verts;
+		}
+	}
+	
+	void PrecompThread::optimizeNormalMesh()
+	{
+		unsigned short verts = precomp->vertices[RenderConst::TX_SOLID];
+		if (verts >= 8)
+		{
+			vertex_t* mesh = precomp->datadump + precomp->bufferoffset[RenderConst::TX_SOLID];
+			// verts is sent by reference
+			optimizeMesh(verts, mesh, RenderConst::VERTEX_SCALE);
+			// set final number of vertices
+			precomp->vertices[RenderConst::TX_SOLID] = verts;
+		}
+	}
+	
+	void PrecompThread::optimizeAlphaMesh()
+	{
+		unsigned short verts = precomp->vertices[RenderConst::TX_2SIDED];
+		if (verts >= 8)
+		{
+			vertex_t* mesh = precomp->datadump + precomp->bufferoffset[RenderConst::TX_2SIDED];
+			// verts is sent by reference
+			optimizeMesh(verts, mesh, RenderConst::VERTEX_SCALE);
+			// set final number of vertices
+			precomp->vertices[RenderConst::TX_2SIDED] = verts;
 		}
 	}
 	
@@ -206,7 +230,7 @@ namespace cppcraft
 		if (failed == true && verts >= 8)
 		{
 			// verts is sent by reference
-			optimizeMesh(verts, water);
+			optimizeMesh(verts, water, RenderConst::VERTEX_SCALE);
 		}
 		
 		// set final number of vertices
@@ -249,6 +273,10 @@ namespace cppcraft
 		
 		// optimize repeating textures mesh
 		optimizeRepeatMesh();
+		// optimize normal solids
+		optimizeNormalMesh();
+		// optimize 2-sided textures
+		optimizeAlphaMesh();
 		// optimize water mesh
 		optimizeWaterMesh();
 		

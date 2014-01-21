@@ -1,8 +1,7 @@
 #ifndef SOUND_HPP
 #define SOUND_HPP
 
-#include "../math/vector.hpp"
-#include <bass.h>
+#include <library/math/vector.hpp>
 #include <memory>
 #include <string>
 

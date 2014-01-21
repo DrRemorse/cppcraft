@@ -103,13 +103,13 @@ namespace cppcraft
 		int y0, y1;
 		if (rg.ystp == 1)
 		{
-			y0 = 0;
+			y0 = 0; //(rg.playerY >= RenderConst::WATER_LEVEL) ? 1 : 0;
 			y1 = Columns.COLUMNS_Y - 1;
 		}
 		else
 		{
 			y0 = Columns.COLUMNS_Y - 1;
-			y1 = 0;
+			y1 = 0; //(rg.playerY >= RenderConst::WATER_LEVEL) ? 1 : 0;
 		}
 		
 		if (rg.zstp == 1)

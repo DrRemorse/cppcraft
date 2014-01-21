@@ -1,8 +1,8 @@
 #ifndef SHADER_HPP
 #define SHADER_HPP
 
-#include "../math/vector.hpp"
-#include "../math/matrix.hpp"
+#include <library/math/vector.hpp>
+#include <library/math/matrix.hpp>
 #include <GL/gl.h>
 #include <string>
 #include <vector>
@@ -56,7 +56,7 @@ namespace library
 		std::map<std::string, GLint> uniforms;
 		
 		// internal function for uploading shader code, creating and compiling the shader program
-		void createShader(std::string vertshader, std::string fragshader, std::string source, processFunc tokenizer, std::vector<std::string>& attributes);
+		void createShader(std::string vertshader, std::string fragshader, std::string source, std::vector<std::string>& attributes);
 		
 		// get errors/warnings from OpenGL context
 		void printShaderStatus(GLuint shader, bool linkstage);

@@ -1,7 +1,6 @@
 #ifndef MUSIC_HPP
 #define MUSIC_HPP
 
-#include "bass.h"
 #include <string>
 #include <memory>
 

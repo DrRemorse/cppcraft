@@ -38,7 +38,7 @@ namespace cppcraft
 			tiles.tilesY = bmp.getTilesY();
 			
 			textures[T_DIFFUSE] = Texture(GL_TEXTURE_2D_ARRAY);
-			textures[T_DIFFUSE].create(bmp, true, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
+			textures[T_DIFFUSE].create(bmp, true, GL_REPEAT, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
 			textures[T_DIFFUSE].setAnisotropy(gameconf.anisotropy);
 			
 			// voxelize (some) tiles
@@ -52,7 +52,7 @@ namespace cppcraft
 			bmp.parse2D(tiles.tileSize, tiles.tileSize);
 			
 			textures[T_TONEMAP] = Texture(GL_TEXTURE_2D_ARRAY);
-			textures[T_TONEMAP].create(bmp, true, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
+			textures[T_TONEMAP].create(bmp, true, GL_REPEAT, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
 			textures[T_TONEMAP].setAnisotropy(gameconf.anisotropy);
 		}
 		else throw std::string("Materials(2) missing source file: Tonemap");

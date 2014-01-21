@@ -102,12 +102,11 @@ namespace cppcraft
 	
 	w_coord getPlayerWC()
 	{
-		return (w_coord)
-		{
-			world.getWX(),
-			(int)player.Y >> 3,
-			world.getWZ()
-		};
+		w_coord wc;
+		wc.x = world.getWX();
+		wc.y = (int)player.Y >> 3;
+		wc.z = world.getWZ();
+		return wc;
 	}
 	
 	bool Network::connect()

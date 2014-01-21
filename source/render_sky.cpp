@@ -51,7 +51,7 @@ namespace cppcraft
 	}
 	
 	// render background / atmosphere, sun and moon
-	void SkyRenderer::render(Camera& camera, bool underwater)
+	void SkyRenderer::render(cppcraft::Camera& camera, bool underwater)
 	{
 		// render sky dome
 		Atmosphere::render(camera);
@@ -114,17 +114,16 @@ namespace cppcraft
 
 	void SkyRenderer::renderMoon(Camera& camera)
 	{
-		//if ogl.lastsun(2) > 0.2 then return
+		//if (thesun.getRealtimeAngle().y > 0.2) return;
 		
 		Shader& moon = shaderman[Shaderman::MOON];
 		moon.bind();
 		
-		mat4 mattemp = rotationMatrix(0.0, -PI / 2, 0.0);
-		mat4 matmoon = rotationMatrix(thesun.getRealtimeRadianAngle() + PI, 0.0, 0.0);
-		mattemp *= matmoon;
-		mattemp.translate(0.0, 0.0, -2.0);
+		mat4 matmoon = rotationMatrix(0.0, -PI / 2, 0.0);
+		matmoon *= rotationMatrix(thesun.getRealtimeRadianAngle() + PI, 0.0, 0.0);
+		matmoon.translate(0.0, 0.0, -2.0);
 		
-		matmoon = camera.getRotationMatrix() * mattemp;
+		matmoon = camera.getRotationMatrix() * matmoon;
 		
 		// view matrix
 		moon.sendMatrix("matview", matmoon);

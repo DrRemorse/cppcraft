@@ -1,18 +1,14 @@
 #include "soundman.hpp"
 
-#include <stdlib.h>
-#include <time.h>
-#include <sstream>
-
-#include "library/log.hpp"
-#include "library/sound/stream_channel.hpp"
+#include <library/log.hpp>
+#include <library/sound/stream_channel.hpp>
 #include "biome.hpp"
 #include "blocks.hpp"
 #include "flatlands.hpp"
 #include "gameconf.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
-#include <bass.h>
+#include <sstream>
 
 using namespace library;
 

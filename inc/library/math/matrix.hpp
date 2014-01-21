@@ -59,6 +59,10 @@ namespace library
 		{
 			return m[i];
 		}
+		inline matrix_t& operator[] (int i)
+		{
+			return m[i];
+		}
 		
 		vec3  operator * (const vec3&) const;
 		vec4  operator * (const vec4&) const;

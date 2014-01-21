@@ -121,7 +121,7 @@ namespace cppcraft
 		shd.sendVec3("v3CameraPos", vec3(0.0, m_fInnerRadius, 0.0));
 		shd.sendFloat("fCameraHeight", m_fInnerRadius);
 	}
-
+	
 	void Scatterer::render(Camera& camera)
 	{
 		Shader& shd = shaderman[Shaderman::ATMOSPHERE];

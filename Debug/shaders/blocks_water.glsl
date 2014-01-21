@@ -31,7 +31,6 @@ out vec3 v_ldir;
 out vec3 v_half;
 out vec3 v_normal;
 out vec3 l_normal;
-out vec3 l_reflect;
 
 out vec4 waves;
 
@@ -52,8 +51,6 @@ void main(void)
 	l_normal = in_normal;
 	v_normal = mat3(matview) * in_normal;
 	
-	// local reflection vector
-	l_reflect = reflect(-v_eye, v_normal) * mat3(matview);
 	// galactic coordinates
 	vec3 w_vertex  = position.xyz * mat3(matview) - worldOffset;
 	
@@ -99,7 +96,6 @@ in vec3 v_eye;
 in vec3 v_normal;
 
 in vec3 l_normal;
-in vec3 l_reflect;
 in vec4 waves; // wave positions
 
 const float ZFAR
@@ -119,14 +115,12 @@ void main(void)
 	vec3 tx = vec3(1.0, 0.0, grad.x);
 	vec3 ty = vec3(0.0, 1.0, grad.y);
 	
-	vec3 Normal = cross(ty, tx); //vec3(grad.x, grad.y, 0.0);
+	vec3 Normal = cross(ty, tx);
 	Normal.y += 1.0; // make sure its extremely positive
 	Normal = normalize(Normal);
 	
 	vec3 vNormal = mat3(matview) * Normal;
-	vec3 viewNormal = v_normal;
-	
-	vec3 vReflect   = l_reflect + Normal * 0.125;
+	vec3 viewNormal = normalize(v_normal);
 	
 	
 	//#define vEye   v_eye
@@ -136,7 +130,7 @@ void main(void)
 	
 	//----- fresnel term -----
 	
-	float fresnel = dot(vEye, v_normal);
+	float fresnel = dot(vEye, viewNormal);
 	fresnel = 0.97 - max(0.0, pow(fresnel, 3.0));
 	
 	//----- REFRACTION -----
@@ -158,10 +152,6 @@ void main(void)
 	vec4 wreflection = vec4(0.0);
 	if (playerSubmerged == 0)
 	{
-		// sky reflection
-		//vec3 reflection = textureCube(skymap, vReflect).rgb * daylight;
-		//color.rgb = mix(color.rgb, reflection, 0.3 * fresnel);
-		
 		// world/terrain reflection
 		wreflection = texture2D(reflectionmap, refcoord);
 		//wreflection.rgb = mix(wreflection.rgb, vec3(0.75), 0.2);
@@ -180,7 +170,7 @@ void main(void)
 	{
 		dep = max(0.0, underw.a - dist);
 		// we also want the water to always be less than 100% see-through
-		const float SEETHROUGH = 0.6;
+		const float SEETHROUGH = 1.0;
 		// minimum depth: 0.06, grows very quickly
 		dep = SEETHROUGH * (1.0 - smoothstep(0.0, 0.04, dist) * fresnel);
 	}
@@ -197,9 +187,7 @@ void main(void)
 	// add reflections
 	if (playerSubmerged == 0)
 	{
-		float reflevel = fresnel * dist;
-		color.rgb = mix(color.rgb, wreflection.rgb, reflevel);
-		//color.rgb = wreflection.rgb;
+		color.rgb = mix(color.rgb, wreflection.rgb, fresnel);
 	}
 	
 	// fake waves
@@ -207,7 +195,7 @@ void main(void)
 	color.rgb *= 1.0 + wavereflect * 0.1 * daylight;
 	
 	//- lighting (we need shadow later) -//
-	#include "lightw.glsl"
+	//#include "lightw.glsl"
 	
 	// sun / specular
 	const vec3  SUNCOLOR = vec3(1.0, 0.57, 0.23);
@@ -218,7 +206,7 @@ void main(void)
 	float spec  = max(0.0, dot(reflect(-vLight, viewNormal), vEye));
 	
 	vec3 specular = SUNCOLOR * SUNSPEC * pow(spec, 16.0) + pow(spec, 4.0) * 0.3;
-	color.rgb += specular * pow(shine, SUNSHINE) * daylight * shadow * shadow;
+	//color.rgb += specular * pow(shine, SUNSHINE) * daylight * shadow * shadow;
 	
 	#include "horizonfade.glsl"
 	

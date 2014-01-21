@@ -229,7 +229,7 @@ namespace cppcraft
 		
 		// reflections only happen on the exact water-plane anyways, 
 		// so we just disable them completely when the player is below it
-		if (playerY >= RenderConst::WATER_LEVEL && drawq[(int)RenderConst::MAX_UNIQUE_SHADERS-1].count() != 0)
+		if (playerY >= RenderConst::WATER_LEVEL && drawq[RenderConst::TX_WATER].count() != 0)
 		{
 			if (gameconf.reflections)
 			{
@@ -243,7 +243,7 @@ namespace cppcraft
 				glViewport(0, 0, renderer.gamescr.SW / 2, renderer.gamescr.SH / 2);
 				
 				glDepthMask(GL_TRUE);
-				glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+				glClear(GL_DEPTH_BUFFER_BIT);
 				
 				glDisable(GL_DEPTH_TEST);
 				glDepthMask(GL_FALSE);
@@ -270,7 +270,7 @@ namespace cppcraft
 					
 					// render clouds
 					float dy = playerY - RenderConst::WATER_LEVEL;
-					//skyrenderer.renderClouds(dy, reflectionCamera, renderer.frametick);
+					skyrenderer.renderClouds(dy, reflectionCamera, renderer.frametick);
 					
 					glDisable(GL_BLEND);
 					glColorMask(1, 1, 1, 1);

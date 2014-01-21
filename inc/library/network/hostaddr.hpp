@@ -3,7 +3,7 @@
 
 #ifdef __linux__
 	#include <netdb.h>
-	extern int h_errno;
+	//extern int* h_errno;
 #endif
 
 #include <string>
@@ -12,8 +12,6 @@ struct hostent;
 
 namespace library
 {
-	const int HOST_NAME_LENGTH = 64;
-	
 	class HostInfo
 	{
 	private:

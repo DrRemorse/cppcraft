@@ -131,6 +131,8 @@ namespace cppcraft
 		void ambientOcclusionGradients(AmbientOcclusion* ambocc, vertex_t* datadump, int vertexCount);
 		// mesh optimizers
 		void optimizeRepeatMesh();
+		void optimizeNormalMesh();
+		void optimizeAlphaMesh();
 		void optimizeWaterMesh();
 	};
 	
