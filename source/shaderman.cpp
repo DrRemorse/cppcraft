@@ -1,10 +1,11 @@
 #include "shaderman.hpp"
 
-#include "library/config.hpp"
-#include "library/log.hpp"
-#include "library/math/matrix.hpp"
-#include "library/opengl/window.hpp"
+#include <library/log.hpp>
+#include <library/config.hpp>
+#include <library/math/matrix.hpp>
+#include <library/opengl/window.hpp>
 #include "camera.hpp"
+#include "gameconf.hpp"
 #include "renderconst.hpp"
 #include <sstream>
 #include <string>
@@ -69,6 +70,10 @@ namespace cppcraft
 		{
 			text = (config.get("hq_clouds", false)) ? text : "";
 		}
+		else if (text == "#define REFLECTIONS")
+		{
+			text = (gameconf.reflections) ? text : "";
+		}
 		
 		return text;
 	}
@@ -125,7 +130,6 @@ namespace cppcraft
 		shaders[BLOCKS_WATER].bind();
 		shaders[BLOCKS_WATER].sendInteger("underwatermap", 0);
 		shaders[BLOCKS_WATER].sendInteger("reflectionmap", 1);
-		shaders[BLOCKS_WATER].sendInteger("skymap",  2);
 		// send viewport size & aspect
 		shaders[BLOCKS_WATER].sendVec3("screendata", vecScreen);
 		

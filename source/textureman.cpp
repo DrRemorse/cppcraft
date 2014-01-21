@@ -39,7 +39,7 @@ namespace cppcraft
 			
 			textures[T_DIFFUSE] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_DIFFUSE].create(bmp, true, GL_REPEAT, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
-			//textures[T_DIFFUSE].setAnisotropy(gameconf.anisotropy);
+			textures[T_DIFFUSE].setAnisotropy(gameconf.anisotropy);
 			if (ogl.checkError())
 			{
 				throw std::string("Failed to set terrain texture anisotropic filter");
@@ -63,7 +63,7 @@ namespace cppcraft
 			
 			textures[T_TONEMAP] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_TONEMAP].create(bmp, true, GL_REPEAT, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
-			//textures[T_TONEMAP].setAnisotropy(gameconf.anisotropy);
+			textures[T_TONEMAP].setAnisotropy(gameconf.anisotropy);
 			
 			if (ogl.checkError()) throw std::string("Materials(2) texture2d array error");
 		}
@@ -80,7 +80,7 @@ namespace cppcraft
 			
 			textures[T_BIG_DIFF] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_BIG_DIFF].create(bmp, true, GL_REPEAT, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
-			//textures[T_BIG_DIFF].setAnisotropy(gameconf.anisotropy);
+			textures[T_BIG_DIFF].setAnisotropy(gameconf.anisotropy);
 			
 			if (ogl.checkError()) throw std::string("Materials(3) texture2d array error");
 		}
@@ -92,7 +92,7 @@ namespace cppcraft
 			
 			textures[T_BIG_TONE] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_BIG_TONE].create(bmp, true, GL_REPEAT, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
-			//textures[T_BIG_TONE].setAnisotropy(gameconf.anisotropy);
+			textures[T_BIG_TONE].setAnisotropy(gameconf.anisotropy);
 			
 			if (ogl.checkError()) throw std::string("Materials(4) texture2d array error");
 		}
@@ -123,7 +123,7 @@ namespace cppcraft
 			
 			textures[T_PLAYERMODELS] = Texture(GL_TEXTURE_2D_ARRAY);
 			textures[T_PLAYERMODELS].create(bmp, true, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
-			//textures[T_PLAYERMODELS].setAnisotropy(gameconf.anisotropy);
+			textures[T_PLAYERMODELS].setAnisotropy(gameconf.anisotropy);
 			
 			if (ogl.checkError()) throw std::string("Player skins texture2d array error");
 		}
@@ -280,11 +280,13 @@ namespace cppcraft
 		textures[T_RENDERBUFFER].create(false, 0, gamescr.SW, gamescr.SH);
 		textures[T_RENDERBUFFER].setInterpolation(true);
 		
-		// world reflection buffer
-		textures[T_REFLECTION] = Texture(GL_TEXTURE_2D);
-		textures[T_REFLECTION].create(false, 0, gamescr.SW / 2, gamescr.SH / 2);
-		textures[T_REFLECTION].setInterpolation(true);
-		
+		if (gameconf.reflections)
+		{
+			// world reflection buffer
+			textures[T_REFLECTION] = Texture(GL_TEXTURE_2D);
+			textures[T_REFLECTION].create(false, 0, gamescr.SW / 2, gamescr.SH / 2);
+			textures[T_REFLECTION].setInterpolation(true);
+		}
 	}
 	
 	void Textureman::copyScreen(WindowClass& gamescr, named_textures_t tx)

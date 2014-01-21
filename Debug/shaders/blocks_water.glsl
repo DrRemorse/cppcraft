@@ -2,6 +2,8 @@
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
 
+#define REFLECTIONS
+
 #ifdef VERTEX_PROGRAM
 //precision highp float;
 precision mediump float;
@@ -30,7 +32,7 @@ out vec3 v_eye;
 out vec3 v_ldir;
 out vec3 v_half;
 out vec3 v_normal;
-out vec3 l_normal;
+flat out vec3 l_normal;
 
 out vec4 waves;
 
@@ -70,11 +72,10 @@ void main(void)
 
 #ifdef FRAGMENT_PROGRAM
 #extension GL_EXT_gpu_shader4 : enable
-precision highp float;
+//precision highp float;
 
 uniform sampler2D underwatermap;
 uniform sampler2D reflectionmap;
-uniform samplerCube skymap;
 
 uniform mat4 matview;
 uniform vec3 screendata;
@@ -95,7 +96,7 @@ in vec3 v_half;
 in vec3 v_eye;
 in vec3 v_normal;
 
-in vec3 l_normal;
+flat in vec3 l_normal;
 in vec4 waves; // wave positions
 
 const float ZFAR
@@ -149,13 +150,14 @@ void main(void)
 	
 	//----- REFLECTIONS -----
 	
+#ifdef REFLECTIONS
 	vec4 wreflection = vec4(0.0);
 	if (playerSubmerged == 0)
 	{
 		// world/terrain reflection
 		wreflection = texture2D(reflectionmap, refcoord);
-		//wreflection.rgb = mix(wreflection.rgb, vec3(0.75), 0.2);
 	}
+#endif
 	
 	//----- SEACOLOR -----
 	
@@ -182,20 +184,22 @@ void main(void)
 	// create final water color
 	vec4 color = vec4(mix(deepwater, shallowwater, dep), 1.0);
 	// mix water color and other-side
-	color.rgb = mix(color.rgb, underw.rgb, dep) * daylight;
+	color.rgb = mix(color.rgb, underw.rgb, dep); // * daylight;
 	
+#ifdef REFLECTIONS
 	// add reflections
 	if (playerSubmerged == 0)
 	{
 		color.rgb = mix(color.rgb, wreflection.rgb, fresnel);
 	}
+#endif
 	
 	// fake waves
 	float wavereflect = dot(reflect(-vLight, vNormal), vEye);
 	color.rgb *= 1.0 + wavereflect * 0.1 * daylight;
 	
 	//- lighting (we need shadow later) -//
-	//#include "lightw.glsl"
+	#include "lightw.glsl"
 	
 	// sun / specular
 	const vec3  SUNCOLOR = vec3(1.0, 0.57, 0.23);
@@ -206,7 +210,7 @@ void main(void)
 	float spec  = max(0.0, dot(reflect(-vLight, viewNormal), vEye));
 	
 	vec3 specular = SUNCOLOR * SUNSPEC * pow(spec, 16.0) + pow(spec, 4.0) * 0.3;
-	//color.rgb += specular * pow(shine, SUNSHINE) * daylight * shadow * shadow;
+	color.rgb += specular * pow(shine, SUNSHINE) * daylight * shadow * shadow;
 	
 	#include "horizonfade.glsl"
 	

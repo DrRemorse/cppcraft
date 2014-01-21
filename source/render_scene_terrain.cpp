@@ -1,8 +1,8 @@
 #include "render_scene.hpp"
 
-#include "library/log.hpp"
-#include "library/opengl/opengl.hpp"
-#include "library/opengl/fbo.hpp"
+#include <library/log.hpp>
+#include <library/opengl/opengl.hpp>
+#include <library/opengl/fbo.hpp>
 #include "columns.hpp"
 #include "drawq.hpp"
 #include "camera.hpp"
@@ -485,10 +485,11 @@ namespace cppcraft
 		
 		// bind underwater scene
 		textureman.bind(0, Textureman::T_UNDERWATERMAP);
-		// bind world-reflection
-		textureman.bind(1, Textureman::T_REFLECTION);
-		// bind skybox at slot 2
-		textureman.bind(2, Textureman::T_SKYBOX);
+		if (gameconf.reflections)
+		{
+			// bind world-reflection
+			textureman.bind(1, Textureman::T_REFLECTION);
+		}
 		
 		// water shader
 		int i = RenderConst::TX_WATER;
