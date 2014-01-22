@@ -87,16 +87,24 @@ namespace cppcraft
 		}
 		
 		int wheel = input.getWheel();
-		if (wheel < 0)
+		if (wheel > 0)
 		{
+			// go to next inventory item in quickbar
 			if (menu.quickbarX)
 				menu.quickbarX -= 1;
 			else
 				menu.quickbarX = inventory.getWidth()-1;
 		}
-		else if (wheel > 0)
+		else if (wheel < 0)
 		{
+			// previous quickbar item
 			menu.quickbarX = (menu.quickbarX + 1) % inventory.getWidth();
+		}
+		// number keys (1-9) to directly select on quickbar
+		for (int i = 1; i < 10; i++)
+		if (input.getKey(GLFW_KEY_0 + i))
+		{
+			menu.quickbarX = (i - 1) % inventory.getWidth();
 		}
 		
 		if (input.getKey(GLFW_KEY_ESCAPE))

@@ -1,9 +1,9 @@
 #include "render_player_selection.hpp"
 
-#include "library/log.hpp"
-#include "library/math/vector.hpp"
-#include "library/opengl/opengl.hpp"
-#include "library/opengl/vao.hpp"
+#include <library/log.hpp>
+#include <library/math/vector.hpp>
+#include <library/opengl/opengl.hpp>
+#include <library/opengl/vao.hpp>
 #include "blocks.hpp"
 #include "blockmodels.hpp"
 #include "vertex_block.hpp"
@@ -235,5 +235,4 @@ namespace cppcraft
 		
 		glColorMask(1, 1, 1, 1);
 	}
-	
 }
