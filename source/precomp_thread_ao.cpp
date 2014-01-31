@@ -43,11 +43,11 @@ namespace cppcraft
 		}
 		
 		// get/set point bits
-		void setPoint(int index, int corner, int face)
+		inline void setPoint(int index, int corner, int face)
 		{
 			pointData.set((index * 8 + corner) * 6 + face);
 		}
-		bool getPoint(int index, int corner, int face) const
+		inline bool getPoint(int index, int corner, int face) const
 		{
 			return pointData[(index * 8 + corner) * 6 + face];
 		}

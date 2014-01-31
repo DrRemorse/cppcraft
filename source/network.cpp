@@ -5,6 +5,7 @@
 #include "player.hpp"
 #include "player_logic.hpp"
 #include "world.hpp"
+#include <random>
 
 using namespace library;
 
@@ -51,6 +52,7 @@ namespace cppcraft
 		case T_LOG:
 			logger << Log::INFO << "SERVER  " << ((char*) mp->args) << Log::ENDL;
 			break;
+			
 		default:
 			logger << Log::INFO << "got type " << mp->type << Log::ENDL;
 		}
@@ -112,12 +114,16 @@ namespace cppcraft
 	bool Network::connect()
 	{
 		std::string  hostn = config.get("net.host", "127.0.0.1");
-		unsigned int port  = config.get("net.port", 8805);
+		unsigned int port  = config.get("net.port", 8804);
 		
 		std::string uname  = config.get("net.user", "guest");
 		std::string upass  = config.get("net.pass", "guest");
 		
-		lattice_player.userid = 12345;
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_int_distribution<unsigned int> dis;
+		
+		lattice_player.userid = dis(gen);
 		lattice_player.nickname = (char*) uname.c_str();
 		lattice_player.model = 5;
 		

@@ -26,27 +26,37 @@ namespace cppcraft
 	
 	class World
 	{
-		std::string folder;
-		int worldX;
-		int worldY;
-		int worldZ;
-		
 	public:
-		static const int WORLD_SIZE     = 268435456;
-		static const int WORLD_NODESIZE = 256;
-		static const int WORLD_CENTER   = WORLD_SIZE / 2;
+		typedef int wcoord_t;
 		
-		static const int WORLD_STARTING_X = WORLD_CENTER + WORLD_NODESIZE / 2;
-		static const int WORLD_STARTING_Z = WORLD_STARTING_X;
+		static const wcoord_t WORLD_SIZE     = 268435456;
+		static const wcoord_t WORLD_NODESIZE = 256;
+		static const wcoord_t WORLD_CENTER   = WORLD_SIZE / 2;
+		
+		static const wcoord_t WORLD_STARTING_X = WORLD_CENTER + WORLD_NODESIZE / 2;
+		static const wcoord_t WORLD_STARTING_Z = WORLD_STARTING_X;
+		
+		struct world_t
+		{
+		public:
+			world_t() {}
+			world_t(wcoord_t wx, wcoord_t wy, wcoord_t wz)
+				: worldX(wx), worldY(wy), worldZ(wz) {}
+			
+			wcoord_t worldX, worldY, worldZ;
+		};
 		
 		// initializes the world
 		void init(std::string& folder);
 		// returns current world folder
-		const std::string& worldFolder() const;
-		
-		int getWX() { return this->worldX; }
-		int getWY() { return this->worldY; }
-		int getWZ() { return this->worldZ; }
+		inline const std::string& worldFolder() const
+		{
+			return this->folder;
+		}
+
+		inline wcoord_t getWX() const { return worldCoords.worldX; }
+		inline wcoord_t getWY() const { return worldCoords.worldY; }
+		inline wcoord_t getWZ() const { return worldCoords.worldZ; }
 		
 		void load();
 		void save();
@@ -54,6 +64,10 @@ namespace cppcraft
 		// seamless transitions the word, and is the only one
 		// allowed to directly modify worldX, worldZ
 		friend Seamless; // special customer
+		
+	private:
+		std::string folder;
+		world_t worldCoords;
 	};
 	extern World world;
 }

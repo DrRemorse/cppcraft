@@ -2,15 +2,6 @@
 
 namespace cppcraft
 {
-
-NetPlayer::NetPlayer()
-{
-}
-
-NetPlayer::~NetPlayer()
-{
-}
-
-
+	
 }
 

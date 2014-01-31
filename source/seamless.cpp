@@ -107,7 +107,7 @@ namespace cppcraft
 			player.snapX = player.X;
 			player.JustMoved = true;
 			// offset world x by -1
-			world.worldX -= 1;
+			world.worldCoords.worldX -= 1;
 			
 			// only 25% left on the negative side
 			for (z = 0; z < Sectors.getXZ(); z++)
@@ -194,7 +194,7 @@ namespace cppcraft
 			player.snapX = player.X;
 			player.JustMoved = true;
 			// offset world x by +1
-			world.worldX += 1;
+			world.worldCoords.worldX += 1;
 			
 			// only 25% left on the positive side
 			for (z = 0; z < Sectors.getXZ(); z++)
@@ -282,7 +282,7 @@ namespace cppcraft
 			player.snapZ = player.Z;
 			player.JustMoved = true;
 			// offset world -z
-			world.worldZ -= 1;
+			world.worldCoords.worldZ -= 1;
 			
 			// only 25% left on the negative side
 			for (x = 0; x < Sectors.getXZ(); x++)
@@ -359,7 +359,7 @@ namespace cppcraft
 			player.snapZ = player.Z;
 			player.JustMoved = true;
 			// move world forward on the Z axis
-			world.worldZ += 1;
+			world.worldCoords.worldZ += 1;
 			
 			// move sectors forwards +z (and rollback last line)
 			for (x = 0; x < Sectors.getXZ(); x++)

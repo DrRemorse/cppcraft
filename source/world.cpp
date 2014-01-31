@@ -17,15 +17,19 @@ namespace cppcraft
 	
 	void World::init(std::string& worldFolder)
 	{
-		// first, initialize sectors & blocks
+		/// initialize sectors, blocks & flatlands ///
+		
 		int sectors_xz = config.get("sectors_axis", 48);
 		Sectors.createSectors(sectors_xz);
 		// also, initialize 2D flatlands (fsectors)
 		Flatlands.init();
-		// then, initialize world coordinates centering player in the world
-		this->worldX = WORLD_STARTING_X - sectors_xz / 2; //+ 84; //
-		this->worldY = 0;
-		this->worldZ = WORLD_STARTING_Z - sectors_xz / 2; //- 104; //
+		
+		/// load world position from folder ///
+		
+		// initialize world coordinates centering player in the world
+		worldCoords.worldX = WORLD_STARTING_X - sectors_xz / 2; //+ 84; //
+		worldCoords.worldY = 0;
+		worldCoords.worldZ = WORLD_STARTING_Z - sectors_xz / 2; //- 104; //
 		// finally, world folder, where world-data is located
 		if (worldFolder.size() == 0)
 		{
@@ -45,45 +49,25 @@ namespace cppcraft
 		}
 	}
 	
-	const std::string& World::worldFolder() const
-	{
-		return this->folder;
-	}
-	
-	struct savetheworld_t
-	{
-		int worldX, worldY, worldZ;
-	};
-	
 	void World::load()
 	{
-		std::ifstream ff (world.worldFolder() + "/world.data", std::ios::in | std::ios::binary);
+		std::ifstream ff (worldFolder() + "/world.data", std::ios::in | std::ios::binary);
 		if (!ff) return;
 		
-		savetheworld_t w;
-		
 		ff.seekg(0);
-		ff.read( (char*) &w, sizeof(savetheworld_t) );
+		ff.read( (char*) &worldCoords, sizeof(worldCoords) );
 		ff.read( (char*) &player, sizeof(player) );
 		
-		this->worldX = w.worldX;
-		this->worldY = w.worldY;
-		this->worldZ = w.worldZ;
 		// invalidate position snapshot
 		player.snapX = player.snapY = player.snapZ = 0;
 	}
 	void World::save()
 	{
-		std::ofstream ff (world.worldFolder() + "/world.data", std::ios::trunc | std::ios::binary);
+		std::ofstream ff (worldFolder() + "/world.data", std::ios::trunc | std::ios::binary);
 		if (!ff) return;
 		
-		savetheworld_t w = 
-		{
-			this->worldX, this->worldY, this->worldZ
-		};
-		
 		ff.seekp(0);
-		ff.write( (char*) &w, sizeof(savetheworld_t) );
+		ff.write( (char*) &worldCoords, sizeof(worldCoords) );
 		ff.write( (char*) &player, sizeof(player) );
 	}
 	
