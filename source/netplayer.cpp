@@ -2,6 +2,9 @@
 
 namespace cppcraft
 {
-	
+	void NetPlayer::setPosition(const b_coord& pos)
+	{
+		
+	}
 }
 

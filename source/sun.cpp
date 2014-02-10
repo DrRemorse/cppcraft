@@ -78,7 +78,7 @@ namespace cppcraft
 		
 		const float noonlight = 0.2;
 		const float nightlight = 0.75;
-		const float moonlight  = 0.85;
+		const float moonlight  = 1.0;
 		
 		float transit = 0.0;
 		

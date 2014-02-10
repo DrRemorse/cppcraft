@@ -105,20 +105,7 @@ namespace cppcraft
 		/////////////////////////////////////////
 		///   render atmosphere, moon, etc.   ///
 		/////////////////////////////////////////
-		skyrenderer.render(camera, underwater);
-		
-		// render clouds before terrain if we are submerged in water
-		if (true) //underwater)
-		{
-			glEnable(GL_BLEND);
-			glColorMask(1, 1, 1, 0);
-			
-			// render clouds
-			skyrenderer.renderClouds(-playerY, camera, renderer.frametick);
-			
-			glDisable(GL_BLEND);
-			glColorMask(1, 1, 1, 1);
-		}
+		skyrenderer.render(camera, -playerY, renderer.frametick, underwater);
 		
 		////////////////////////////////////////////////////
 		/// take snapshots of player state               ///
@@ -249,9 +236,10 @@ namespace cppcraft
 				
 				glDisable(GL_DEPTH_TEST);
 				glDepthMask(GL_FALSE);
-				glDisable(GL_CULL_FACE);
+				//glDisable(GL_CULL_FACE);
 				
-				skyrenderer.render(reflectionCamera, false);
+				// render sky (atmosphere, sun, moon, clouds)
+				skyrenderer.render(reflectionCamera, playerY - RenderConst::WATER_LEVEL, renderer.frametick, false);
 				
 				if (gameconf.reflectTerrain)
 				{
@@ -263,24 +251,9 @@ namespace cppcraft
 					renderReflectedScene(renderer, reflectionCamera);
 				}
 				
-				// render clouds to be reflected after terrain
-				if (true)
-				{
-					glDisable(GL_CULL_FACE);
-					glEnable(GL_BLEND);
-					glColorMask(1, 1, 1, 0);
-					
-					// render clouds
-					float dy = playerY - RenderConst::WATER_LEVEL;
-					skyrenderer.renderClouds(dy, reflectionCamera, renderer.frametick);
-					
-					glDisable(GL_BLEND);
-					glColorMask(1, 1, 1, 1);
-				}
-				
+				// unbind and return to normal viewport
 				reflectionFBO.unbind();
 				glViewport(0, 0, renderer.gamescr.SW, renderer.gamescr.SH);
-				
 			}
 		}
 		

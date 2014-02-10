@@ -19,10 +19,10 @@ namespace cppcraft
 	const float PI = atan(1.0) * 4;
 	LightingClass Lighting;
 	
-	const float LightingClass::DARKNESS = 256 * 0.96;
-	static const float DARK_SHADOWS     = 256 * 0.80;
-	const float LightingClass::SHADOWS  = 256 * 0.72;
-	const float LightingClass::CORNERS  = 256 * 0.48;
+	const float LightingClass::DARKNESS = 255;
+	static const float DARK_SHADOWS     = 255 * 0.80;
+	const float LightingClass::SHADOWS  = 255 * 0.72;
+	const float LightingClass::CORNERS  = 255 * 0.48;
 	
 	static const float RAY_CRASH_CONSTANT = 64.0f;
 	static const float LIGHT_FULL_DAMAGE  = 10.0f;

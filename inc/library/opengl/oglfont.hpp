@@ -45,12 +45,12 @@ namespace library
 	{
 	public:
 		OglFont();
-		OglFont(std::string filename, int size);
+		OglFont(const std::string& filename, int size);
 		
-		bool load(std::string filename, int size);
+		bool load(const std::string& filename, int size);
 		
 		void bind(GLenum unit);
-		void sendMatrix(mat4& matrix);
+		void sendMatrix(const mat4& matrix);
 		
 		void setBackColor(const vec4& color);
 		void setColor(const vec4& color);

@@ -16,7 +16,7 @@ namespace cppcraft
 		
 	public:
 		void init();
-		void render(Camera& camera, bool underwater);
+		void render(Camera& camera, float cloudLevel, double time, bool underwater);
 		void renderClouds(float dy, Camera& camera, double frameCounter);
 		
 		library::mat4 renderSunProj();

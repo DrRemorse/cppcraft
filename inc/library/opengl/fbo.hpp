@@ -1,6 +1,7 @@
 #ifndef FBO_HPP
 #define FBO_HPP
 
+#include <library/opengl/opengl.hpp>
 #include <string>
 #include <vector>
 
@@ -20,13 +21,21 @@ namespace library
 		static GLuint lastFBO;
 		
 	public:
-		FBO();
+		FBO() : fbo(0), rbo(0) {}
 		
 		// creates VBO handle, allowing further usage
 		void create();
 		// binds this FBO
-		void bind();
-		void unbind();
+		inline void bind()
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+			lastFBO = fbo;
+		}
+		inline void unbind()
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			lastFBO = 0;
+		}
 		
 		// attaches a color target to this FBO, but will only work
 		// if the texture isn't being read at the same time as being rendered to!

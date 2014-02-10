@@ -18,8 +18,13 @@ namespace library
 		};
 		
 		// constructors
-		Bitmap();
-		Bitmap(const std::string, bitmap_type);
+		Bitmap() :
+			buffer(nullptr), width(0), height(0), format(0) { }
+		Bitmap(const std::string file, bitmap_type btype)
+			: Bitmap()
+		{
+			load(file, btype);
+		}
 		Bitmap(int w, int h);
 		Bitmap(int w, int h, rgba8_t color);
 		~Bitmap();
@@ -52,18 +57,24 @@ namespace library
 			return this->format;
 		}
 		// get pixel at (x, y)
-		rgba8_t getPixel(int x, int y) const
+		inline rgba8_t getPixel(int x, int y) const
 		{
 			return buffer[y * getWidth() + x];
 		}
 		// set pixel at (x, y)
-		void setPixel(int x, int y, rgba8_t color)
+		inline void setPixel(int x, int y, rgba8_t color)
 		{
 			buffer[y * getWidth() + x] = color;
 		}
 		
-		int getTilesX() const;
-		int getTilesY() const;
+		inline int getTilesX() const
+		{
+			return this->tilesX;
+		}
+		inline int getTilesY() const
+		{
+			return this->tilesY;
+		}
 		
 		// isValid: returns false if the bitmap is currently invalid
 		bool isValid() const;

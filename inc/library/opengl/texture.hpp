@@ -86,12 +86,12 @@ namespace library
 		void uploadBGRA8(const Bitmap& bmp);
 		
 		// returns (raw) texture handle
-		GLuint getHandle();
+		GLuint getHandle() const { return this->id; }
 		// returns texture width/height
 		int getWidth() const { return width; }
 		int getHeight() const { return height; }
 		// returns last bound texture unit for this texture
-		GLenum getBoundUnit() const;
+		GLenum getBoundUnit() const { return this->boundUnit; }
 		
 		std::string toString() const;
 	};

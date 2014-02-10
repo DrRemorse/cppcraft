@@ -3,7 +3,7 @@
 
 #include <library/math/vector.hpp>
 #include <library/math/matrix.hpp>
-#include <GL/gl.h>
+#include <library/opengl/opengl.hpp>
 #include <string>
 #include <vector>
 #include <map>
@@ -26,30 +26,89 @@ namespace library
 		// binds/activates this shader
 		void bind();
 		
-		// queries OpenGL for the location of a uniform
-		void  prepareUniform(std::string);
-		// returns a previocusly prepared uniform location
-		GLint getUniform(std::string);
-		// returns exposed handle
-		GLuint getShader();
+		// returns exposed (internal) handle
+		GLuint getShader() const { return this->shader; }
 		
 		// initializes common shader uniform types
-		void sendFloat (GLint uniform, float v);
-		void sendVec2  (GLint uniform, const vec2& v);
-		void sendVec3  (GLint uniform, const vec3& v);
-		void sendVec4  (GLint uniform, const vec4& v);
-		void sendMatrix(GLint uniform, const mat4& m);
+		inline void sendFloat(GLint uniform, float f)
+		{
+			glUniform1f(uniform, f);
+		}
+		inline void sendVec2(GLint uniform, const vec2& v)
+		{
+			glUniform2f(uniform, v.x, v.y);
+		}
+		inline void sendVec3(GLint uniform, const vec3& v)
+		{
+			glUniform3fv(uniform, 1, (GLfloat*) &v.x);
+		}
+		inline void sendVec4(GLint uniform, const vec4& v)
+		{
+			glUniform4fv(uniform, 1, (GLfloat*) &v.x);
+		}
+		inline void sendMatrix(GLint uniform, const mat4& m)
+		{
+			glUniformMatrix4fv(uniform, 1, false, const_cast<mat4&> (m).data());
+		}
 		// std::string version
-		void sendFloat (std::string uniform, float v);
-		void sendVec2  (std::string uniform, const vec2& v);
-		void sendVec3  (std::string uniform, const vec3& v);
-		void sendVec4  (std::string uniform, const vec4& v);
-		void sendMatrix(std::string uniform, const mat4& m);
+		inline void sendFloat(const std::string& uniform, float v)
+		{
+			GLint location = getUniform(uniform);
+			if (location+1) sendFloat(location, v);
+		}
+		inline void sendVec2 (const std::string& uniform, const vec2& v)
+		{
+			GLint location = getUniform(uniform);
+			if (location+1) sendVec2(location, v);
+		}
+		inline void sendVec3 (const std::string& uniform, const vec3& v)
+		{
+			GLint location = getUniform(uniform);
+			if (location+1) sendVec3(location, v);
+		}
+		inline void sendVec4 (const std::string& uniform, const vec4& v)
+		{
+			GLint location = getUniform(uniform);
+			if (location+1) sendVec4(location, v);
+		}
+		inline void sendMatrix(const std::string& uniform, const mat4& m)
+		{
+			GLint location = getUniform(uniform);
+			if (location+1) sendMatrix(location, m);
+		}
 		// set-once senders
-		void sendInteger(std::string uniform, int id);
+		inline void sendInteger(const std::string& uniform, GLint id)
+		{
+			GLint location = glGetUniformLocation(this->shader, (GLchar*)uniform.c_str());
+			if (location+1) glUniform1i(location, id);
+		}
+		
+		// queries OpenGL for the location of a uniform
+		// prefetch uniform slot value, and store it
+		inline void prepareUniform(const std::string& uniform)
+		{
+			GLint location = glGetUniformLocation(this->shader, (GLchar*)uniform.c_str());
+			uniforms[uniform] = location;
+		}
+		// returns a previously prepared uniform location
+		GLint getUniform(const std::string& uniform)
+		{
+			// if the value doesn't exist yet, find it
+			if (uniforms.find(uniform) == uniforms.end())
+				prepareUniform(uniform);
+			// return uniform value
+			return uniforms[uniform];
+		}
 		
 		// unbinds any bound shader
-		static void unbind();
+		inline static void unbind()
+		{
+			if (lastShader)
+			{
+				lastShader = 0;
+				glUseProgram(0);
+			}
+		}
 		
 	private:
 		GLuint shader;
