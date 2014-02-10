@@ -26,6 +26,7 @@
 *.exe
 *.log
 Debug/cppcraft
+Debug/Worlds/test/world.data
 
 # Archives
 *.rar

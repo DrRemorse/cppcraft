@@ -40,7 +40,7 @@ void main()
 	
 	const float FOG_MAX  = 0.5;
 	const float SUN_MULT = 1.0;
-	const vec3 fogBaseColor = vec3(0.75);
+	const vec3 fogBaseColor = vec3(0.75, 0.75, 0.9);
 	const vec3 sunBaseColor = vec3(1.0, 0.9, 0.7);
 	
 	float sunAmount = smoothstep(0.25, 1.0, max(0.0, sunrad)) * SUN_MULT;
