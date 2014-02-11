@@ -122,10 +122,12 @@ namespace cppcraft
 		// restore viewport
 		glViewport(0, 0, gamescr.SW, gamescr.SH);
 		
-		if (ogl.checkError())
+		#ifdef DEBUG
+		if (OpenGL::checkError())
 		{
 			logger << Log::ERR << "FSRenderer::renderLensFlare(): Error after rendering lens flare" << Log::ENDL;
 			throw std::string("Error after rendering lens flare");
 		}
+		#endif
 	}
 }

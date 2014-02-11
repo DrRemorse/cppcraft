@@ -41,12 +41,6 @@ namespace cppcraft
 		font.setBackColor(vec4(0.0, 0.5));
 	}
 	
-	inline void guiPrinter(const vec3& position, const vec2& size, std::string text)
-	{
-		font.bind(0);
-		font.print(position, size, text);
-	}
-	
 	void GUIRenderer::render(Renderer& renderer)
 	{
 		// clear depth buffer
@@ -79,11 +73,12 @@ namespace cppcraft
 		/// test text ///
 		glEnable(GL_BLEND);
 		
-		guiPrinter(vec3(0.01, 0.01, 0.0), vec2(0.01), "cppcraft v0.1");
+		font.bind(0);
+		font.print(vec3(0.01, 0.01, 0.0), vec2(0.01), "cppcraft v0.1");
 		
 		std::stringstream ss;
 		ss << "fps: " << renderer.FPS;
-		guiPrinter(vec3(0.01, 0.02, 0.0), vec2(0.01), ss.str());
+		font.print(vec3(0.01, 0.02, 0.0), vec2(0.01), ss.str());
 		
 		glDisable(GL_BLEND);
 	}

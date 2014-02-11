@@ -78,6 +78,11 @@ namespace cppcraft
 			textures[0].unbind(unit);
 		}
 		
+		inline library::Texture& operator [] (named_textures_t tx)
+		{
+			return textures[tx];
+		}
+		
 		// returns texture handle
 		inline GLuint get(named_textures_t tx)
 		{

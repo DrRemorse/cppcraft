@@ -291,7 +291,7 @@ opengl_ext_decl void (*glBufferData)(GLenum target, GLint size, GLvoid* data, GL
 opengl_ext_decl void (*glBufferSubData)(GLenum target, GLint offset, GLsizei size, GLvoid* data);
 opengl_ext_decl void (*glDeleteBuffers)(GLsizei n, GLuint* ids);
 
-opengl_ext_decl void (*glActiveTexture)(GLenum textureunit);
+//opengl_ext_decl void (*glActiveTexture)(GLenum textureunit);
 opengl_ext_decl void (*glTexImage3D)(GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, GLvoid* data);
 opengl_ext_decl void (*glTexImage2DMultisample)(GLenum target, GLsizei samples, GLint internalformat, GLsizei width, GLsizei height, GLboolean fixedSampleLocations);
 

@@ -129,20 +129,18 @@ namespace cppcraft
 			throw std::string("Renderer::render(): This gamestate is not implemented yet!");
 		}
 		
-		if (ogl.checkError()) throw std::string("After frame");
+		#ifdef DEBUG
+		if (OpenGL::checkError())
+		{
+			throw std::string("Renderer::render(): OpenGL state error after rendering frame");
+		}
+		#endif
 		
 		// flip burgers
 		glfwSwapBuffers(gamescr.window());
 		
 		// disable stuff
 		camera.rotated = false;
-		
-		if (OpenGL::checkError())
-		{
-			logger << Log::ERR << "Renderer::render(): OpenGL error. Line: " << __LINE__ << Log::ENDL;
-			throw std::string("Renderer::render(): OpenGL state error");
-		}
-		
 	}
 	
 	

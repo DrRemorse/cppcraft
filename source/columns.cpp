@@ -244,10 +244,12 @@ namespace cppcraft
 		// disable vao & vbo
 		glBindVertexArray(0);
 		
-		if (ogl.checkError())
+		#ifdef DEBUG
+		if (OpenGL::checkError())
 		{
 			throw std::string("Column::compile(): OpenGL error after ending compiler");
 		}
+		#endif
 		
 		if (camera.getFrustum().column(x * Sector::BLOCKS_XZ + Sector::BLOCKS_XZ / 2,
 								z * Sector::BLOCKS_XZ + Sector::BLOCKS_XZ / 2,

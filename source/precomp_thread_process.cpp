@@ -160,7 +160,8 @@ namespace cppcraft
 			{
 				lastid = id;
 				
-				// determine shader index
+				// determine shader index, which determines states like wrapmode (repeat / clamp)
+				// and which shader is going to be used, also affects wether backfaces are culled
 				if (isDirt(id))
 				{
 					shaderLine = RenderConst::TX_REPEAT;
@@ -180,7 +181,7 @@ namespace cppcraft
 				{
 					shaderLine = RenderConst::TX_SOLID;
 				}
-				else if (id == _TORCH || id == _VINES || isLeaf(id))
+				else if (id == _TORCH || id == _VINES) // || isLeaf(id))
 				{
 					shaderLine = RenderConst::TX_2SIDED;
 				}

@@ -302,12 +302,15 @@ namespace cppcraft
 							location, 
 							loc_vtrans, 
 							position, renderCam.getViewMatrix());
+		
 		// check for errors
+		#ifdef DEBUG
 		if (OpenGL::checkError())
 		{
 			logger << Log::ERR << "Renderer::renderScene(): OpenGL error. Line: " << __LINE__ << Log::ENDL;
 			throw std::string("Renderer::renderScene(): OpenGL state error");
 		}
+		#endif
 		
 		// render all nonwater shaders
 		int nonwaterShaders = (int) RenderConst::MAX_UNIQUE_SHADERS - 1;
@@ -320,14 +323,14 @@ namespace cppcraft
 				
 				// enable face culling
 				glEnable(GL_CULL_FACE);
-				// change to repeatable textures
+				// change to big repeatable textures
 				textureman.bind(0, Textureman::T_BIG_DIFF);
 				textureman.bind(1, Textureman::T_BIG_TONE);
 				break;
 				
 			case RenderConst::TX_SOLID: // solid stuff (most blocks)
 				
-				// change to clamped textures
+				// change to small repeatable textures
 				textureman.bind(0, Textureman::T_DIFFUSE);
 				textureman.bind(1, Textureman::T_TONEMAP);
 				break;
@@ -343,6 +346,11 @@ namespace cppcraft
 				break;
 				
 			case RenderConst::TX_2SIDED: // 2-sided faces (torches, vines etc.)
+				
+				// change to small clamped textures
+				textureman[Textureman::T_DIFFUSE].setWrapMode(GL_CLAMP_TO_EDGE);
+				glActiveTexture(GL_TEXTURE0);
+				textureman[Textureman::T_DIFFUSE].setWrapMode(GL_CLAMP_TO_EDGE);
 				
 				// disable face culling (for 2-sidedness)
 				glDisable(GL_CULL_FACE);
@@ -402,6 +410,11 @@ namespace cppcraft
 			}
 			
 		} // next shaderline
+		
+		// change to repeating textures
+		textureman[Textureman::T_DIFFUSE].setWrapMode(GL_REPEAT);
+		glActiveTexture(GL_TEXTURE1);
+		textureman[Textureman::T_DIFFUSE].setWrapMode(GL_REPEAT);
 		
 	}
 	

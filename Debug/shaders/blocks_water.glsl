@@ -185,8 +185,8 @@ void main(void)
 	#include "lightw.glsl"
 	
 	// sun / specular
-	const vec3  SUNCOLOR = vec3(1.0, 0.57, 0.23);
-	const float SUNSPEC  = 0.55; // specular
+	const vec3  SUNCOLOR = vec3(1.0, 0.67, 0.23);
+	const float SUNSPEC  = 0.8; // specular
 	const float SUNSHINE = 2.0; // shininess
 	
 	float shine = max(0.0, dot(viewNormal, normalize(v_half)) );
