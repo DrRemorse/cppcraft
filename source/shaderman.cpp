@@ -96,7 +96,7 @@ namespace cppcraft
 		linkstage.emplace_back("in_color2");
 		
 		// block shaders
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < 6; i++)
 		{
 			switch (i)
 			{
@@ -115,6 +115,9 @@ namespace cppcraft
 			case 4:
 				shaders[STD_REFLECT] = Shader("shaders/blocks_reflection.glsl", tokenizer, linkstage);
 				break;
+			case 5:
+				shaders[BLOCKS_DEPTH] = Shader("shaders/blocks_depth.glsl", tokenizer, linkstage);
+				break;
 			}
 			
 			int sbase = (int)STD_BLOCKS;
@@ -124,14 +127,15 @@ namespace cppcraft
 			// texture units
 			shaders[sbase + i].sendInteger("texture", 0);
 			shaders[sbase + i].sendInteger("tonemap", 1);
+			
+			// send viewport size & aspect
+			shaders[sbase + i].sendVec3("screendata", vecScreen);
 		}
 		
 		// extra textures for water
 		shaders[BLOCKS_WATER].bind();
 		shaders[BLOCKS_WATER].sendInteger("underwatermap", 0);
 		shaders[BLOCKS_WATER].sendInteger("reflectionmap", 1);
-		// send viewport size & aspect
-		shaders[BLOCKS_WATER].sendVec3("screendata", vecScreen);
 		
 		linkstage.clear();
 		linkstage.emplace_back("in_vertex");

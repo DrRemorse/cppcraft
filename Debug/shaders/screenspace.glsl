@@ -62,7 +62,7 @@ void main()
 		
 		color = texture2D(texture, texCoord + waves);
 		depth = color.a;
-		wavyDepth = smoothstep(0.0, 0.1, depth);
+		wavyDepth = smoothstep(0.0, 0.075, depth);
 		
 		if (submerged == 1)
 		{	// submerged in water

@@ -46,30 +46,46 @@ namespace library
 	public:
 		OglFont();
 		OglFont(const std::string& filename, int size);
-		
 		bool load(const std::string& filename, int size);
 		
 		void bind(GLenum unit);
-		void sendMatrix(const mat4& matrix);
-		
-		void setBackColor(const vec4& color);
-		void setColor(const vec4& color);
-		
 		void print(const vec3& location, const vec2& size, std::string text);
 		
 		// returns 2D size of string in pixels
 		vec2 measure(std::string text) const;
+		
 		// size in pixels
-		int getSize() const;
+		int getSize() const
+		{
+			return this->size;
+		}
+		
+		void sendMatrix(const mat4& matrix)
+		{
+			shader->sendMatrix("mvp", matrix);
+		}
+		void setBackColor(const vec4& color)
+		{
+			shader->sendVec4("bgcolor", color);
+		}
+		void setColor(const vec4& color)
+		{
+			shader->sendVec4("fcolor", color);
+		}
+		
+		Shader& getShader() { return *shader; }
+		void setShader(Shader& shd)
+		{
+			shader = &shd;
+		}
+		void createDefaultShader();
 		
 	private:
-		void createShader();
-		
 		// font texture info
 		int size;
 		GLenum lastUnit;
 		Texture font;
-		Shader  shader;
+		Shader* shader;
 		VAO vao;
 	};
 	

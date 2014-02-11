@@ -432,11 +432,13 @@ namespace cppcraft
 							position, renderCam.getViewMatrix());
 		
 		// check for errors
+		#ifdef DEBUG
 		if (OpenGL::checkError())
 		{
 			logger << Log::ERR << "Renderer::renderReflectedScene(): OpenGL error. Line: " << __LINE__ << Log::ENDL;
 			throw std::string("Renderer::renderReflectedScene(): OpenGL state error");
 		}
+		#endif
 		
 		// render all nonwater shaders
 		int nonwaterShaders = (int) RenderConst::MAX_UNIQUE_SHADERS - 1;
@@ -485,32 +487,47 @@ namespace cppcraft
 		
 		// bind underwater scene
 		textureman.bind(0, Textureman::T_UNDERWATERMAP);
-		if (gameconf.reflections)
-		{
-			// bind world-reflection
-			textureman.bind(1, Textureman::T_REFLECTION);
-		}
 		
 		// water shader
 		int i = RenderConst::TX_WATER;
 		
-		// change shader-set
-		handleSceneUniforms(renderer.frametick, 
-							shaderman[Shaderman::BLOCKS_WATER], 
-							location, 
-							loc_vtrans, 
-							position, camera.getViewMatrix());
-		// send player submerged status
-		shaderman[Shaderman::BLOCKS_WATER].sendInteger("playerSubmerged", plogic.FullySubmerged);
-		// update world offset
-		shaderman[Shaderman::BLOCKS_WATER].sendVec3("worldOffset", camera.getWorldOffset());
+		if (plogic.FullySubmerged)
+		{
+			// underwater shader-set
+			handleSceneUniforms(renderer.frametick, 
+								shaderman[Shaderman::BLOCKS_DEPTH], 
+								location, 
+								loc_vtrans, 
+								position, camera.getViewMatrix());
+			// disable color writes
+			//glColorMask(0, 0, 0, 0);
+		}
+		else
+		{
+			if (gameconf.reflections)
+			{
+				// bind world-reflection
+				textureman.bind(1, Textureman::T_REFLECTION);
+			}
+			
+			// water shader-set
+			handleSceneUniforms(renderer.frametick, 
+								shaderman[Shaderman::BLOCKS_WATER], 
+								location, 
+								loc_vtrans, 
+								position, camera.getViewMatrix());
+			// update world offset
+			shaderman[Shaderman::BLOCKS_WATER].sendVec3("worldOffset", camera.getWorldOffset());
+		}
 		
 		// check for errors
+		#ifdef DEBUG
 		if (OpenGL::checkError())
 		{
 			logger << Log::ERR << "Renderer::renderSceneWater(): OpenGL error. Line: " << __LINE__ << Log::ENDL;
 			throw std::string("Renderer::renderSceneWater(): OpenGL state error");
 		}
+		#endif
 		
 		if (camera.needsupd == 1)
 		{
@@ -539,6 +556,12 @@ namespace cppcraft
 				Column* cv = drawq[i].get(j);
 				renderColumn(cv, i, position, loc_vtrans, renderer.dtime);
 			}
+		}
+		
+		if (plogic.FullySubmerged)
+		{
+			// enable color writes again
+			glColorMask(1, 1, 1, 1);
 		}
 		
 	} // renderSceneWater

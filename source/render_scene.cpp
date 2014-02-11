@@ -294,7 +294,7 @@ namespace cppcraft
 		{
 			glEnable(GL_CULL_FACE);
 		}
-		glDisable(GL_BLEND);
+		else glDisable(GL_CULL_FACE);
 		
 		// then water
 		renderSceneWater(renderer);

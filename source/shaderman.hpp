@@ -29,6 +29,7 @@ namespace cppcraft
 			ALPHA_BLOCKS,
 			BLOCKS_WATER,
 			STD_REFLECT,
+			BLOCKS_DEPTH,
 			
 			FSTERRAINFOG,
 			FSTERRAIN,

@@ -84,7 +84,6 @@ uniform float frameCounter;
 uniform float daylight;
 uniform vec4  playerLight;
 uniform float modulation;
-uniform int playerSubmerged;
 
 in vec4 waterColor;
 in vec4 lightdata;
@@ -132,7 +131,7 @@ void main(void)
 	//----- fresnel term -----
 	
 	float fresnel = dot(vEye, viewNormal);
-	fresnel = 0.97 - max(0.0, pow(fresnel, 3.0));
+	fresnel = pow(1.0 - max(0.0, fresnel), 5.0);
 	
 	//----- REFRACTION -----
 	
@@ -140,10 +139,10 @@ void main(void)
 	vec2 texCoord = gl_FragCoord.xy / screendata.xy;
 	
 	// start with underwater texture
-	float wdepth = vertdist / ZFAR;
+	float dist = vertdist / ZFAR;
 	
 	// wave modulation
-	vec2 refcoord = texCoord + Normal.xz * 0.01 * (0.25 + 0.75 * wdepth);
+	vec2 refcoord = texCoord + Normal.xz * 0.01 * (0.5 + 0.5 * dist);
 	
 	// read underwater, use as base color
 	vec4 underw = texture2D(underwatermap, refcoord);
@@ -151,12 +150,8 @@ void main(void)
 	//----- REFLECTIONS -----
 	
 #ifdef REFLECTIONS
-	vec4 wreflection = vec4(0.0);
-	if (playerSubmerged == 0)
-	{
-		// world/terrain reflection
-		wreflection = texture2D(reflectionmap, refcoord);
-	}
+	// world/terrain reflection
+	vec4 wreflection = texture2D(reflectionmap, refcoord);
 #endif
 	
 	//----- SEACOLOR -----
@@ -164,34 +159,22 @@ void main(void)
 	const vec3 deepwater    = vec3(0.26, 0.44, 0.53);
 	const vec3 shallowwater = vec3(0.35, 0.55, 0.60);
 	
-	float dist = vertdist / ZFAR;
-	float dep;
-	// if player is underwater, we need to see the sky properly
-	// however, above water we want the sky to appear as 100% seafloor
-	if (playerSubmerged == 0)
-	{
-		dep = max(0.0, underw.a - dist);
-		// we also want the water to always be less than 100% see-through
-		const float SEETHROUGH = 1.0;
-		// minimum depth: 0.06, grows very quickly
-		dep = SEETHROUGH * (1.0 - smoothstep(0.0, 0.04, dist) * fresnel);
-	}
-	else
-	{
-		dep = 1.0 - pow(dist, 3.0);
-	}
+	// see above:
+	float wdepth = 0.02 + max(0.0, underw.a - dist);
+	
+	// above water we want the sky to appear as 100% seafloor
+	float dep = 1.0 - smoothstep(0.0, 0.04, wdepth);
 	
 	// create final water color
-	vec4 color = vec4(mix(deepwater, shallowwater, dep), 1.0);
+	vec4 color = vec4(mix(shallowwater, deepwater, wdepth * 4.0), 1.0);
 	// mix water color and other-side
 	color.rgb = mix(color.rgb, underw.rgb, dep); // * daylight;
 	
+	//color.rgb = vec3(wdepth * 5.0);
+	
 #ifdef REFLECTIONS
 	// add reflections
-	if (playerSubmerged == 0)
-	{
-		color.rgb = mix(color.rgb, wreflection.rgb, fresnel);
-	}
+	color.rgb = mix(color.rgb, wreflection.rgb, fresnel);
 #endif
 	
 	// fake waves

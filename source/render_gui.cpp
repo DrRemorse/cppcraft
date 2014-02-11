@@ -33,6 +33,7 @@ namespace cppcraft
 		// initialize our font renderer
 		font.load("bitmap/default/gui/font.png", 16);
 		
+		font.createDefaultShader();
 		font.bind(0);
 		font.sendMatrix(ortho);
 		
@@ -42,12 +43,8 @@ namespace cppcraft
 	
 	inline void guiPrinter(const vec3& position, const vec2& size, std::string text)
 	{
-		glEnable(GL_BLEND);
-		
 		font.bind(0);
 		font.print(position, size, text);
-		
-		glDisable(GL_BLEND);
 	}
 	
 	void GUIRenderer::render(Renderer& renderer)
@@ -80,12 +77,15 @@ namespace cppcraft
 		renderQuickbarItems(ortho, renderer.frametick);
 		
 		/// test text ///
+		glEnable(GL_BLEND);
+		
 		guiPrinter(vec3(0.01, 0.01, 0.0), vec2(0.01), "cppcraft v0.1");
 		
 		std::stringstream ss;
 		ss << "fps: " << renderer.FPS;
 		guiPrinter(vec3(0.01, 0.02, 0.0), vec2(0.01), ss.str());
 		
+		glDisable(GL_BLEND);
 	}
 	
 	
