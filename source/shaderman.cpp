@@ -96,7 +96,7 @@ namespace cppcraft
 		linkstage.emplace_back("in_color2");
 		
 		// block shaders
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < 8; i++)
 		{
 			switch (i)
 			{
@@ -113,9 +113,15 @@ namespace cppcraft
 				shaders[BLOCKS_WATER] = Shader("shaders/blocks_water.glsl", tokenizer, linkstage);
 				break;
 			case 4:
-				shaders[STD_REFLECT] = Shader("shaders/blocks_reflection.glsl", tokenizer, linkstage);
+				shaders[BLOCKS_RUNWATER] = Shader("shaders/blocks_runwater.glsl", tokenizer, linkstage);
 				break;
 			case 5:
+				shaders[BLOCKS_LAVA] = Shader("shaders/blocks_lava.glsl", tokenizer, linkstage);
+				break;
+			case 6:
+				shaders[BLOCKS_REFLECT] = Shader("shaders/blocks_reflection.glsl", tokenizer, linkstage);
+				break;
+			case 7:
 				shaders[BLOCKS_DEPTH] = Shader("shaders/blocks_depth.glsl", tokenizer, linkstage);
 				break;
 			}

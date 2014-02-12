@@ -175,7 +175,7 @@ namespace cppcraft
 				}
 				else if (id == _LAVABLOCK)
 				{
-					shaderLine = RenderConst::TX_2SIDED;
+					shaderLine = RenderConst::TX_LAVA;
 				}
 				else if (id < ALPHA_BARRIER)
 				{

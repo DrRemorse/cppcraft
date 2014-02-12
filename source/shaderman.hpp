@@ -24,12 +24,14 @@ namespace cppcraft
 			SUN, SUNPROJ,
 			MOON,
 			
-			STD_BLOCKS,
-			CULLED_BLOCKS,
-			ALPHA_BLOCKS,
-			BLOCKS_WATER,
-			STD_REFLECT,
-			BLOCKS_DEPTH,
+			STD_BLOCKS,      // 1
+			CULLED_BLOCKS,   // 2
+			ALPHA_BLOCKS,    // 3
+			BLOCKS_WATER,    // 4
+			BLOCKS_RUNWATER, // 5
+			BLOCKS_LAVA,     // 6
+			BLOCKS_REFLECT,  // 7
+			BLOCKS_DEPTH,    // 8
 			
 			FSTERRAINFOG,
 			FSTERRAIN,

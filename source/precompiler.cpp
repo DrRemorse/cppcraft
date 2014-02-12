@@ -44,7 +44,9 @@ namespace cppcraft
 			8000, // TX_TRANS
 			1500, // TX_2SIDED
 			1500, // TX_CROSS
-			2000  // TX_WATER
+			1500, // TX_LAVA
+			2000, // TX_WATER
+			 500  // TX_RUNNING_WATER
 		};
 		
 		for (int t = 0; t < pcthread_count; t++)

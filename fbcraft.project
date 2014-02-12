@@ -198,6 +198,9 @@
       <File Name="Debug/shaders/ssao.glsl"/>
       <File Name="Debug/shaders/voxelobject.frag"/>
       <File Name="Debug/shaders/voxelobject.vertex"/>
+      <File Name="Debug/shaders/blocks_depth.glsl"/>
+      <File Name="Debug/shaders/blocks_lava.glsl"/>
+      <File Name="Debug/shaders/blocks_runwater.glsl"/>
     </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="source">

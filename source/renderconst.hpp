@@ -11,12 +11,16 @@ namespace cppcraft
 		
 		enum shaderline_t
 		{
+			// before "underwater" screenshot
 			TX_REPEAT = 0,
-			TX_SOLID  = 1,
+			TX_SOLID,
 			TX_TRANS,
 			TX_2SIDED,
 			TX_CROSS,
+			// after screenshot
 			TX_WATER,
+			TX_RUNNING_WATER,
+			TX_LAVA,
 			
 			MAX_UNIQUE_SHADERS
 		};

@@ -313,9 +313,8 @@ namespace cppcraft
 		#endif
 		
 		// render all nonwater shaders
-		int nonwaterShaders = (int) RenderConst::MAX_UNIQUE_SHADERS - 1;
 		
-		for (int i = 0; i < nonwaterShaders; i++)
+		for (int i = 0; i < (int) RenderConst::TX_WATER; i++)
 		{
 			switch (i)
 			{
@@ -439,9 +438,9 @@ namespace cppcraft
 		
 		// bind standard shader
 		handleSceneUniforms(renderer.frametick, 
-							shaderman[Shaderman::STD_REFLECT], 
-							location, 
-							loc_vtrans, 
+							shaderman[Shaderman::BLOCKS_REFLECT], 
+							location,
+							loc_vtrans,
 							position, renderCam.getViewMatrix());
 		
 		// check for errors
@@ -500,9 +499,11 @@ namespace cppcraft
 		
 		// bind underwater scene
 		textureman.bind(0, Textureman::T_UNDERWATERMAP);
-		
-		// water shader
-		int i = RenderConst::TX_WATER;
+		if (gameconf.reflections)
+		{
+			// bind world-reflection
+			textureman.bind(1, Textureman::T_REFLECTION);
+		}
 		
 		if (plogic.FullySubmerged)
 		{
@@ -512,25 +513,6 @@ namespace cppcraft
 								location, 
 								loc_vtrans, 
 								position, camera.getViewMatrix());
-			// disable color writes
-			//glColorMask(0, 0, 0, 0);
-		}
-		else
-		{
-			if (gameconf.reflections)
-			{
-				// bind world-reflection
-				textureman.bind(1, Textureman::T_REFLECTION);
-			}
-			
-			// water shader-set
-			handleSceneUniforms(renderer.frametick, 
-								shaderman[Shaderman::BLOCKS_WATER], 
-								location, 
-								loc_vtrans, 
-								position, camera.getViewMatrix());
-			// update world offset
-			shaderman[Shaderman::BLOCKS_WATER].sendVec3("worldOffset", camera.getWorldOffset());
 		}
 		
 		// check for errors
@@ -542,40 +524,68 @@ namespace cppcraft
 		}
 		#endif
 		
-		if (camera.needsupd == 1)
+		// water shader
+		for (int i = RenderConst::TX_WATER; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 		{
-			// render and count visible samples
-			for (int j = 0; j < drawq[i].count(); j++)
+			// FIXME: need to render water running_water and lava separately instead of "accepting fully submerged"
+			// as not rendering anything but depth values
+			
+			if (plogic.FullySubmerged == false)
 			{
-				Column* cv = drawq[i].get(j);
-				
-				// start counting samples passed
-				glBeginQuery(GL_ANY_SAMPLES_PASSED, cv->occlusion[i]);
-				
-				renderColumn(cv, i, position, loc_vtrans, renderer.dtime);
-				
-				// end counting
-				glEndQuery(GL_ANY_SAMPLES_PASSED);
-				
-				// set this as having been sampled
-				cv->occluded[i] = 1;
+				switch (i)
+				{
+					case RenderConst::TX_WATER:
+						// water shader-set
+						handleSceneUniforms(renderer.frametick, 
+											shaderman[Shaderman::BLOCKS_WATER],
+											location,
+											loc_vtrans,
+											position, camera.getViewMatrix());
+						// update world offset
+						shaderman[Shaderman::BLOCKS_WATER].sendVec3("worldOffset", camera.getWorldOffset());
+						break;
+					case RenderConst::TX_LAVA:
+						// lava shader-set
+						handleSceneUniforms(renderer.frametick, 
+											shaderman[Shaderman::BLOCKS_LAVA],
+											location,
+											loc_vtrans,
+											position, camera.getViewMatrix());
+						// update world offset
+						shaderman[Shaderman::BLOCKS_LAVA].sendVec3("worldOffset", camera.getWorldOffset());
+						break;
+				}
 			}
-		}
-		else
-		{
-			// direct render
-			for (int j = 0; j < drawq[i].count(); j++)
+			
+			if (camera.needsupd == 1)
 			{
-				Column* cv = drawq[i].get(j);
-				renderColumn(cv, i, position, loc_vtrans, renderer.dtime);
+				// render and count visible samples
+				for (int j = 0; j < drawq[i].count(); j++)
+				{
+					Column* cv = drawq[i].get(j);
+					
+					// start counting samples passed
+					glBeginQuery(GL_ANY_SAMPLES_PASSED, cv->occlusion[i]);
+					
+					renderColumn(cv, i, position, loc_vtrans, renderer.dtime);
+					
+					// end counting
+					glEndQuery(GL_ANY_SAMPLES_PASSED);
+					
+					// set this as having been sampled
+					cv->occluded[i] = 1;
+				}
 			}
-		}
-		
-		if (plogic.FullySubmerged)
-		{
-			// enable color writes again
-			glColorMask(1, 1, 1, 1);
-		}
+			else
+			{
+				// direct render
+				for (int j = 0; j < drawq[i].count(); j++)
+				{
+					Column* cv = drawq[i].get(j);
+					renderColumn(cv, i, position, loc_vtrans, renderer.dtime);
+				}
+			}
+		} // each shader
 		
 	} // renderSceneWater
 	
