@@ -46,10 +46,10 @@ void main(void)
 	if (texrange == TX_CROSS && vertdist < ZFAR * 0.2)
 	{
 		// fire animation
-		if (texCoord.z == 224.0)
+		/*if (texCoord.z == 224.0)
 		{
 			texCoord.z += mod(int(frameCounter / PI2 * 32.0 + length(in_vertex.xz) / 2.0), 8.0);
-		}
+		}*/
 		
 		// standing
 		float speed  = frameCounter * 0.01;
@@ -69,6 +69,7 @@ void main(void)
 			
 		} // hanging & standing
 	}
+	
 	gl_Position = matproj * position;
 	
 	lightdata  = in_color;

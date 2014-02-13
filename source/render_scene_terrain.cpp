@@ -360,11 +360,11 @@ namespace cppcraft
 									location, 
 									loc_vtrans, 
 									position, renderCam.getViewMatrix());
+				
 				// safe to increase step from this -->
 				if (drawq[i].count() == 0)
 				{
-					i += 1;
-					break;
+					continue;
 				}
 				// <-- safe to increase step from this
 				
@@ -452,10 +452,9 @@ namespace cppcraft
 		}
 		#endif
 		
-		// render all nonwater shaders
-		int nonwaterShaders = (int) RenderConst::MAX_UNIQUE_SHADERS - 1;
+		// render everything above water plane
 		
-		for (int i = 0; i < nonwaterShaders; i++)
+		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 		{
 			switch (i)
 			{

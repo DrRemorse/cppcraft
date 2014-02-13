@@ -1,6 +1,9 @@
 #include "blockmodels.hpp"
 
 #include "renderconst.hpp"
+#include <library/math/vector.hpp>
+
+using namespace library;
 
 namespace cppcraft
 {
@@ -9,18 +12,20 @@ namespace cppcraft
 		float cross_vertices[24] =
 		{
 			0.0, 0.0, 0.0,  1.0, 0.0, 1.0,  1.0, 1.0, 1.0,  0.0, 1.0, 0.0,
-			1.0, 0.0, 0.0,  1.0, 1.0, 0.0,  0.0, 1.0, 1.0,  0.0, 0.0, 1.0
+			1.0, 0.0, 0.0,  0.0, 0.0, 1.0,  0.0, 1.0, 1.0,  1.0, 1.0, 0.0
 		};
 		
-		signed char cross_normals[3] =
+		const vec3 norm = vec3(-1, 2, 0).normalized() * 127;
+		
+		char cross_normals[3] =
 		{
-			0, 127, 0 // top
+			(char) norm.x, (char) norm.y, (char) norm.z,
 		};
 		
 		float cross_texcoords[16] =
 		{
 			0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0,
-			1.0, 0.0,  1.0, 1.0,  0.0, 1.0,  0.0, 0.0
+			0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0
 		};
 		
 		// crosses (2 quads)
@@ -32,15 +37,16 @@ namespace cppcraft
 				bm[vert].x = cross_vertices[vert * 3 + 0] * RenderConst::VERTEX_SCALE; // x
 				bm[vert].y = cross_vertices[vert * 3 + 1] * RenderConst::VERTEX_SCALE; // y
 				bm[vert].z = cross_vertices[vert * 3 + 2] * RenderConst::VERTEX_SCALE; // z
+				bm[vert].face = 0;
 				
 				bm[vert].nx = cross_normals[0]; // nx
 				bm[vert].ny = cross_normals[1]; // ny
 				bm[vert].nz = cross_normals[2]; // nz
-				bm[vert].face = 0;
 				
 				// texture coordinates
 				bm[vert].u = cross_texcoords[vert * 2 + 0] * RenderConst::VERTEX_SCALE; // u
 				bm[vert].v = cross_texcoords[vert * 2 + 1] * RenderConst::VERTEX_SCALE; // v
+				bm[vert].w = 0;
 			}
 			// first mesh object in crosses are... crosses :)
 			crosses.add(bm);
