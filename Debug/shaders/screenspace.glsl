@@ -62,11 +62,11 @@ void main()
 		
 		color = texture2D(texture, texCoord + waves);
 		depth = color.a;
-		wavyDepth = smoothstep(0.0, 0.075, depth);
+		wavyDepth = smoothstep(0.0, 0.035, depth);
 		
 		if (submerged == 1)
 		{	// submerged in water
-			color.rgb = mix(color.rgb, SUB_WATER, 0.25 + 0.75 * wavyDepth);
+			color.rgb = mix(color.rgb, SUB_WATER, 0.35 + 0.65 * wavyDepth);
 		}
 		else
 		{	// submerged in lava

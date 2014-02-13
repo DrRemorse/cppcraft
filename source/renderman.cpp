@@ -52,6 +52,7 @@ namespace cppcraft
 		
 		// open a GLFW ogl context window
 		gamescr.open(wndconf);
+		gamescr.setPosition(0, 0);
 		// initialize openGL extensions
 		ogl.init();
 		
