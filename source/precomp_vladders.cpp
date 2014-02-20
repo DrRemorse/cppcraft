@@ -12,31 +12,31 @@ namespace cppcraft
 		{
 		case 0:
 			applyFaceLighting_PZ(bx, by, bz, 0);
-			/*indic[0].biome = fbiome[0]; // (0, 0)
+			indic[0].biome = fbiome[0]; // (0, 0)
 			indic[1].biome = fbiome[1]; // (1, 0)
 			indic[2].biome = fbiome[1]; // (1, 0)
-			indic[3].biome = fbiome[0]; // (0, 0)*/
+			indic[3].biome = fbiome[0]; // (0, 0)
 			break;
 		case 1:
 			applyFaceLighting_NZ(bx, by, bz, 0);
-			/*indic[0].biome = fbiome[2]; // (0, 1)
+			indic[0].biome = fbiome[2]; // (0, 1)
 			indic[1].biome = fbiome[2]; //
 			indic[2].biome = fbiome[3]; // (1, 1)
-			indic[3].biome = fbiome[3]; //*/
+			indic[3].biome = fbiome[3]; //
 			break;
 		case 2:
 			applyFaceLighting_PX(bx, by, bz, 0);
-			/*indic[0].biome = fbiome[0]; // (0, 0)
+			indic[0].biome = fbiome[0]; // (0, 0)
 			indic[1].biome = fbiome[0]; //
 			indic[2].biome = fbiome[2]; // (0, 1)
-			indic[3].biome = fbiome[2]; //*/
+			indic[3].biome = fbiome[2]; //
 			break;
 		case 3:
 			applyFaceLighting_NX(bx, by, bz, 0);
-			/*indic[0].biome = fbiome[1]; // (1, 0)
+			indic[0].biome = fbiome[1]; // (1, 0)
 			indic[1].biome = fbiome[3]; // (1, 1)
 			indic[2].biome = fbiome[3]; // (1, 1)
-			indic[3].biome = fbiome[1]; // (1, 0)*/
+			indic[3].biome = fbiome[1]; // (1, 0)
 			break;
 		}
 		

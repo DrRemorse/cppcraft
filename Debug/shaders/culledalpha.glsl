@@ -8,19 +8,15 @@ uniform mat4 matproj;
 uniform mat4 matview;
 uniform vec3 vtrans;
 
-uniform float frameCounter;
 uniform float daylight;
-uniform vec4  playerLight;
-uniform float modulation;
 uniform vec3  lightVector;
-uniform vec3  moonVector;
 
 in vec3 in_vertex;
 in vec3 in_normal;
 in vec3 in_texture;
+in vec4 in_biome;
 in vec4 in_color;
 in vec4 in_color2;
-in vec4 in_biome;
 
 out vec3 texCoord;
 out vec4 lightdata;
@@ -31,10 +27,6 @@ flat out float worldLight;
 out float vertdist;
 
 const float VERTEX_SCALE
-
-// gonzo's royally homemade deforms
-const float LEAFWIND_STRENGTH = 0.1;
-const float PI2 = 3.141592653 * 2.0;
 
 void main(void)
 {
@@ -49,9 +41,9 @@ void main(void)
 	// dotlight
 	#include "worldlight.glsl"
 	
+	biomeColor = in_biome;
 	lightdata  = in_color;
 	torchlight = in_color2;
-	biomeColor = in_biome;
 }
 #endif
 

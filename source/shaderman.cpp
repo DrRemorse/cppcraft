@@ -133,7 +133,6 @@ namespace cppcraft
 			// texture units
 			shaders[sbase + i].sendInteger("texture", 0);
 			shaders[sbase + i].sendInteger("tonemap", 1);
-			shaders[sbase + i].sendInteger("biomeTexture", 2);
 			
 			// send viewport size & aspect
 			shaders[sbase + i].sendVec3("screendata", vecScreen);

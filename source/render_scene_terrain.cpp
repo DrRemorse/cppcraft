@@ -7,7 +7,6 @@
 #include "drawq.hpp"
 #include "camera.hpp"
 #include "gameconf.hpp"
-#include "flatlands.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
 #include "renderman.hpp"
@@ -30,7 +29,7 @@ namespace cppcraft
 	void SceneRenderer::initTerrain()
 	{
 		// initialize flatland 3d textures
-		flatlands.initTextures();
+		//flatlands.initTextures();
 		
 		// initialize column drawing queue
 		drawq.init();
@@ -311,11 +310,11 @@ namespace cppcraft
 		vec3  position(-1);
 		
 		// bind terrain colors at unit 2
-		flatlands.bindTexture(2);
+		/*flatlands.bindTexture(2);
 		if (flatlands.mustUpload())
 		{
 			flatlands.uploadTexture();
-		}
+		}*/
 		//textureman.bind(4, Textureman::T_SKYBOX);
 		
 		// bind standard shader

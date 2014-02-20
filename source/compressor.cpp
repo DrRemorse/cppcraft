@@ -78,7 +78,7 @@ namespace cppcraft
 		memcpy (flatlands(x, z).fdata, cpos, sizeof(FlatlandSector::fdata));
 		
 		// flatlands covered by this column needs to be rebuilt
-		flatlands.buildTexture(x, z);
+		//flatlands.buildTexture(x, z);
 		
 		// move to first sectorblock
 		cpos += sizeof(FlatlandSector::fdata);

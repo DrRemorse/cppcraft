@@ -23,7 +23,6 @@ out vec3 texCoord;
 out vec4 biomeColor;
 out vec4 lightdata;
 out vec4 torchlight;
-out vec3 biomeCoords;
 out vec3 out_normal;
 
 out float vertdist;
@@ -39,9 +38,6 @@ const float PI2                 = 6.28318530717;
 void main(void)
 {
 	vec4 position = vec4(in_vertex / VERTEX_SCALE + vtrans, 1.0);
-	
-	biomeCoords = vec3(position.xz / (16*64), in_texture.w / 8);
-	
 	position = matview * position;
 	vertdist = length(position.xyz);
 	
@@ -88,7 +84,6 @@ void main(void)
 
 uniform sampler2DArray texture;
 uniform sampler2DArray tonemap;
-uniform sampler3D biomeTexture;
 
 uniform vec3 screendata;
 uniform vec3 lightVector;
@@ -113,15 +108,11 @@ const int TX_CROSS
 
 void main(void)
 {
-	#define coord texCoord
-	
-	vec4 color = texture2DArray(texture, coord.stp);
+	vec4 color = texture2DArray(texture, texCoord.stp);
 	if (color.a < 0.1) discard;
 	
-	//vec4 biomeColor = texture3D(biomeTexture, biomeCoords);
-	
 	// read tonecolor from tonemap
-	vec4 toneColor = texture2DArray(tonemap, coord.stp);
+	vec4 toneColor = texture2DArray(tonemap, texCoord.stp);
 	color.rgb = mix(color.rgb, biomeColor.rgb * toneColor.rgb, toneColor.a);
 	
 	#include "degamma.glsl"

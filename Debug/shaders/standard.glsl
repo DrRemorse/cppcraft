@@ -11,7 +11,6 @@ uniform vec3 vtrans;
 
 uniform vec3  lightVector;
 uniform float daylight;
-uniform sampler3D biomeTexture;
 
 in vec3 in_vertex;
 in vec3 in_normal;
@@ -40,17 +39,7 @@ const float ICE_TILE = 13.f * 16.f + 14.f;
 
 void main(void)
 {
-	vec4 position = vec4(in_vertex / VERTEX_SCALE, 1.0);
-	
-	if (position.x < 8)
-	{
-		vec3 biomeCoords = vec3(position.xz / 16, in_texture.w / 8);
-		biomeColor = texture3DLod(biomeTexture, biomeCoords, 0.0);
-	}
-	else
-		biomeColor = in_biome;
-	
-	position.xyz += vtrans;
+	vec4 position = vec4(in_vertex / VERTEX_SCALE + vtrans, 1.0);
 	position = matview * position;
 	vertdist = length(position.xyz);
 	gl_Position = matproj * position;
@@ -73,6 +62,7 @@ void main(void)
 	// dotlight
 	#include "worldlight.glsl"
 	
+	biomeColor = in_biome;
 	lightdata  = in_color;
 	torchlight = in_color2;
 }
@@ -84,7 +74,6 @@ void main(void)
 
 uniform sampler2DArray texture;
 uniform sampler2DArray tonemap;
-uniform sampler3D biomeTexture;
 //uniform samplerCube skymap;
 
 uniform vec3 screendata;
