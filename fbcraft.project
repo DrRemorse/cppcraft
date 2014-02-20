@@ -136,7 +136,7 @@
     <Excludepaths/>
     <Ignorefiles/>
     <Extensions>
-      <![CDATA[cpp;c;h;hpp;xrc;wxcp;fbp]]>
+      <![CDATA[cpp;c;h;hpp;xrc;wxcp;fbp;glsl;ini]]>
     </Extensions>
     <Topleveldir>../cppcraft</Topleveldir>
   </Reconciliation>

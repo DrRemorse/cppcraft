@@ -20,7 +20,7 @@ namespace cppcraft
 		indic[6].c = indic[5].c;
 		indic[7].c = indic[4].c;
 		
-		indic[0].biome = fbiome[0]; // (0, 0)
+		/*indic[0].biome = fbiome[0]; // (0, 0)
 		indic[3].biome = fbiome[0];
 		
 		indic[4].biome = fbiome[1]; // (1, 0)
@@ -30,7 +30,7 @@ namespace cppcraft
 		indic[7].biome = fbiome[2];
 		
 		indic[1].biome = fbiome[3]; // (1, 1)
-		indic[2].biome = fbiome[3];
+		indic[2].biome = fbiome[3];*/
 		
 		// set first vertex tile id
 		indic->w = Block::cubeFaceById(id, 0, 0);

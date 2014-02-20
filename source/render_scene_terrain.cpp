@@ -7,6 +7,7 @@
 #include "drawq.hpp"
 #include "camera.hpp"
 #include "gameconf.hpp"
+#include "flatlands.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
 #include "renderman.hpp"
@@ -28,6 +29,9 @@ namespace cppcraft
 	
 	void SceneRenderer::initTerrain()
 	{
+		// initialize flatland 3d textures
+		flatlands.initTextures();
+		
 		// initialize column drawing queue
 		drawq.init();
 		
@@ -48,7 +52,7 @@ namespace cppcraft
 		{
 			// set reflection camera view
 			mat4 matref = camera.getViewMatrix();
-			matref.translate(0, RenderConst::WATER_LEVEL*2, 0);
+			matref.translate(0, RenderConst::WATER_LEVEL * 2, 0);
 			matref *= mat4(1.0, -1.0, 1.0);
 			
 			reflectionCamera.setRotationMatrix(matref.rotation());
@@ -178,23 +182,26 @@ namespace cppcraft
 		// reset after 2nd run
 		if (camera.needsupd == 2) camera.needsupd = 0;
 		
+		int     count; // number of columns in each draw queue
+		Column* cv;    // queue: shaderline --> mesh index
+		GLuint  occlusion_result;
+		
 		// update and compress the draw queue
 		// by counting visible entries for each shader line, and re-adding as we go
 		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 		{
-			int count = drawq[i].count();
-			// clear, which does only 1 thing: count = 0
+			count = drawq[i].count();
+			// clear, which does only 1 thing: set count = 0
 			drawq[i].clear();
 			
 			// loop through this shader line
 			for (int j = 0; j < count; j++)
 			{
-				Column* cv = drawq[i].get(j);
+				cv = drawq[i].get(j);
 				
 				// get/set occlusion status
 				if (cv->occluded[i] == 1)
 				{
-					GLuint occlusion_result;
 					glGetQueryObjectuiv(cv->occlusion[i], GL_QUERY_RESULT_AVAILABLE, &occlusion_result);
 					
 					if (occlusion_result)
@@ -233,6 +240,8 @@ namespace cppcraft
 	
 	void renderColumn(Column* cv, int i, vec3& position, GLint loc_vtrans, double dtime)
 	{
+		// make sure we don't resend same position again
+		// around 10k+ skips per second with axis=64
 		if (position.x != cv->pos.x || 
 			position.y != cv->pos.y || 
 			position.z != cv->pos.z)
@@ -273,9 +282,13 @@ namespace cppcraft
 			shd.sendMatrix("matview", matview);
 		}
 		
-		// translation
-		loc_vtrans = shd.getUniform("vtrans");
-		position = vec3(-1);
+		/*static int lastref = 9;
+		
+		if (lastref != camera.ref)
+		{
+			lastref = camera.ref;
+			logger << Log::INFO << camera.ref << Log::ENDL;
+		}*/
 		
 		// common stuff
 		shd.sendVec3 ("lightVector", thesun.getRealtimeAngle());
@@ -284,7 +297,11 @@ namespace cppcraft
 		
 		shd.sendFloat("modulation", torchlight.getModulation(frameCounter));
 		
-		// texrange
+		// translation uniform location
+		loc_vtrans = shd.getUniform("vtrans");
+		position.x = -1; // invalidate position
+		
+		// texrange, because too lazy to create all shaders
 		location = shd.getUniform("texrange");
 	}
 	
@@ -293,8 +310,13 @@ namespace cppcraft
 		GLint loc_vtrans, location;
 		vec3  position(-1);
 		
-		// bind skybox at slot 4
-		textureman.bind(4, Textureman::T_SKYBOX);
+		// bind terrain colors at unit 2
+		flatlands.bindTexture(2);
+		if (flatlands.mustUpload())
+		{
+			flatlands.uploadTexture();
+		}
+		//textureman.bind(4, Textureman::T_SKYBOX);
 		
 		// bind standard shader
 		handleSceneUniforms(renderer.frametick, 
@@ -320,16 +342,14 @@ namespace cppcraft
 			{
 			case RenderConst::TX_REPEAT: // repeatable solids (most terrain)
 				
-				// enable face culling
-				glEnable(GL_CULL_FACE);
-				// change to big repeatable textures
+				// big repeatable textures
 				textureman.bind(0, Textureman::T_BIG_DIFF);
 				textureman.bind(1, Textureman::T_BIG_TONE);
 				break;
 				
 			case RenderConst::TX_SOLID: // solid stuff (most blocks)
 				
-				// change to small repeatable textures
+				// change to small, repeatable textures
 				textureman.bind(0, Textureman::T_DIFFUSE);
 				textureman.bind(1, Textureman::T_TONEMAP);
 				break;
@@ -346,7 +366,7 @@ namespace cppcraft
 				
 			case RenderConst::TX_2SIDED: // 2-sided faces (torches, vines etc.)
 				
-				// change to small clamped textures
+				// change to small, clamped textures
 				textureman[Textureman::T_DIFFUSE].setWrapMode(GL_CLAMP_TO_EDGE);
 				glActiveTexture(GL_TEXTURE0);
 				textureman[Textureman::T_DIFFUSE].setWrapMode(GL_CLAMP_TO_EDGE);

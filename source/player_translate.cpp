@@ -396,7 +396,7 @@ namespace cppcraft
 		/// set player sector ///
 		plogic.sector = Sectors.sectorAt(player.X, player.Y, player.Z);
 		/// set player terrain id ///
-		plogic.terrain = Flatlands.getTerrain(player.X, player.Z);
+		plogic.terrain = flatlands.getTerrain(player.X, player.Z);
 		
 		// if the player is flying, set certain flags and just exit
 		if (player.Flying)

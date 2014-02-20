@@ -66,7 +66,8 @@ namespace library
 		void setFormat(GLint newFormat);
 		
 		void create(const Bitmap& bmp, bool mipmap, GLint wm, GLint magf, GLint minf); // regular texture
-		void create(bool mipmap, int levels, int width, int height); // texture buffer
+		void create(int miplevels, int width, int height); // texture buffer
+		void create3d(int miplevels, int x, int y, int z); // 3d texture buffer
 		void createMultisample(int numsamples, int width, int height);
 		void createDepth(bool stencil24d8s, int width, int height);
 		// modify attributes
@@ -84,6 +85,7 @@ namespace library
 		
 		// upload (new) data
 		void uploadBGRA8(const Bitmap& bmp);
+		void upload3D(int sizeX, int sizeY, int sizeZ, void* pixeldata);
 		
 		// returns (raw) texture handle
 		GLuint getHandle() const { return this->id; }

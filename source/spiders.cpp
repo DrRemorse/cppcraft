@@ -14,9 +14,9 @@ namespace cppcraft
 	// wrap absolute position
 	Sector* Spiders::spiderwrap(int& bx, int& by, int& bz)
 	{
-		int fx = bx >> 4;
-		int fy = by >> 3;
-		int fz = bz >> 4;
+		int fx = bx >> Sector::BLOCKS_XZ_SH;
+		int fy = by >> Sector::BLOCKS_Y_SH;
+		int fz = bz >> Sector::BLOCKS_XZ_SH;
 		
 		if (fx < 0 || fx >= Sectors.getXZ() || 
 			fz < 0 || fz >= Sectors.getXZ() || 
@@ -32,9 +32,9 @@ namespace cppcraft
 	// wrap position relative to sector
 	Sector* Spiders::spiderwrap(Sector& s, int& bx, int& by, int& bz)
 	{
-		int fx = s.x + (bx >> 4); // Sector::BLOCKS_XZ;
-		int fy = s.y + (by >> 3); // Sector::BLOCKS_Y;
-		int fz = s.z + (bz >> 4); // Sector::BLOCKS_XZ;
+		int fx = s.x + (bx >> Sector::BLOCKS_XZ_SH);
+		int fy = s.y + (by >> Sector::BLOCKS_Y_SH);
+		int fz = s.z + (bz >> Sector::BLOCKS_XZ_SH);
 		
 		if (fx < 0 || fx >= Sectors.getXZ() || 
 			fz < 0 || fz >= Sectors.getXZ() || 

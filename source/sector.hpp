@@ -18,11 +18,14 @@ namespace cppcraft
 	class Sector
 	{
 	public:
-		// static sector(block) size constants
+		// static sector size constants
 		static const int BLOCKS_XZ = 16;
 		static const int BLOCKS_Y  =  8;
+		// sector bitshift size constants
+		static const int BLOCKS_XZ_SH = 4;
+		static const int BLOCKS_Y_SH  = 3;
 		
-		// sector-block, 3D volume of Block
+		// sector-block, a 3D volume of blocks
 		#pragma pack(push, 2)
 		typedef struct
 		{

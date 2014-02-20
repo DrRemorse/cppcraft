@@ -278,6 +278,7 @@ namespace cppcraft
 		glDepthFunc(GL_LEQUAL);
 		glDepthMask(GL_TRUE);
 		
+		// disable double-sided faces
 		glEnable(GL_CULL_FACE);
 		
 		// scene
@@ -330,15 +331,9 @@ namespace cppcraft
 		glEnable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
 		glDepthFunc(GL_LEQUAL);
+		
 		glEnable(GL_BLEND);
-		
 		glColorMask(1, 1, 1, 0);
-		
-		if (false) //underwater == false)
-		{
-			// render clouds
-			skyrenderer.renderClouds(-playerY, camera, renderer.frametick);
-		}
 		
 		// render particles
 		particleSystem.render(snapWX, snapWZ);

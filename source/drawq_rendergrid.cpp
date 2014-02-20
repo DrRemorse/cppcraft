@@ -4,6 +4,7 @@
 #include <library/math/frustum.hpp>
 #include <library/opengl/opengl.hpp>
 #include "columns.hpp"
+#include "flatlands.hpp"
 #include "sectors.hpp"
 
 using namespace library;
@@ -160,6 +161,7 @@ namespace cppcraft
 							gs_half
 						))
 					{
+						// this column is likely visible, and so we add all its meshes to queue
 						cv.pos.x = x * Sector::BLOCKS_XZ;
 						cv.pos.z = z * Sector::BLOCKS_XZ;
 						

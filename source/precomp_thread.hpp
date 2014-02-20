@@ -48,7 +48,10 @@ namespace cppcraft
 		static const int repeat_factor;
 		int bigTextures;
 		
-		// flatlands sectors & working data
+		// flatlands biome color index
+		int colorIndex;
+		
+		/*
 		FlatlandSector* flatl;
 		FlatlandSector* flatl_x;
 		FlatlandSector* flatl_z;
@@ -60,6 +63,7 @@ namespace cppcraft
 		unsigned int fbiome[4];
 		// cheap CRC, to prevent calculating the same color position twice
 		int fbicrc;
+		*/
 		
 		// processes a Block, outputs a mesh w/lighting
 		void process_block(const Block& currentBlock, int bx, int by, int bz);

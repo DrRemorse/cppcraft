@@ -363,7 +363,7 @@ namespace cppcraft
 				vec3 position(player.X, 0, player.Z);
 				position += vec3(toolbox::rndNorm(180), 0, toolbox::rndNorm(180));
 				
-				FlatlandSector::flatland_t& fs = Flatlands.getData(position.x, position.z);
+				FlatlandSector::flatland_t& fs = flatlands.getData(position.x, position.z);
 				// use skylevel as particle base height
 				position.y = fs.skyLevel;
 				

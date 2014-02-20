@@ -57,24 +57,26 @@ namespace cppcraft
 		pcg.worldY = (sector.y * Sector::BLOCKS_Y) * RenderConst::VERTEX_SCALE;
 		pcg.worldY_extra = 0;
 		
+		/*
 		// flatland data (biome +++)
-		pcg.flatl = Flatlands.manipulate(sector.x, sector.z);
+		pcg.flatl = flatlands.manipulate(sector.x, sector.z);
 		// flatlands +x
 		pcg.flatl_x = nullptr;
 		if (sector.x != Sectors.getXZ()-1)
-			pcg.flatl_x = Flatlands.manipulate(sector.x+1, sector.z);
+			pcg.flatl_x = flatlands.manipulate(sector.x+1, sector.z);
 		// flatlands +z
 		pcg.flatl_z = nullptr;
 		if (sector.z != Sectors.getXZ()-1)
-			pcg.flatl_z = Flatlands.manipulate(sector.x, sector.z+1);
+			pcg.flatl_z = flatlands.manipulate(sector.x, sector.z+1);
 		// flatlands +xz
 		pcg.flatl_xz = nullptr;
 		if (pcg.flatl_x != nullptr && pcg.flatl_z != nullptr)
-			pcg.flatl_xz = Flatlands.manipulate(sector.x+1, sector.z+1);
+			pcg.flatl_xz = flatlands.manipulate(sector.x+1, sector.z+1);
 		
 		pcg.fclid = 0;
 		pcg.lastclid = 0;
 		pcg.fbicrc = 256;
+		*/
 		
 		// iterate all
 		pcg.sector = pc.sector;

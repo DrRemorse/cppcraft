@@ -14,15 +14,15 @@ uniform int  texrange;
 
 in vec3 in_vertex;
 in vec3 in_normal;
-in vec3 in_texture;
+in vec4 in_texture;
 in vec4 in_color;
 in vec4 in_color2;
-in vec4 in_biome;
+//in vec4 in_biome;
 
 out vec3 texCoord;
 out vec4 lightdata;
 out vec4 torchlight;
-out vec4 biomeColor;
+out vec3 biomeCoords;
 out vec3 out_normal;
 
 out float vertdist;
@@ -38,6 +38,9 @@ const float PI2                 = 6.28318530717;
 void main(void)
 {
 	vec4 position = vec4(in_vertex / VERTEX_SCALE + vtrans, 1.0);
+	
+	biomeCoords = vec3(position.xz / (16*64), in_texture.w / 8);
+	
 	position = matview * position;
 	vertdist = length(position.xyz);
 	
@@ -74,7 +77,6 @@ void main(void)
 	
 	lightdata  = in_color;
 	torchlight = in_color2;
-	biomeColor = in_biome;
 	out_normal = in_normal;
 }
 #endif
@@ -84,6 +86,7 @@ void main(void)
 
 uniform sampler2DArray texture;
 uniform sampler2DArray tonemap;
+uniform sampler3D biomeTexture;
 
 uniform vec3 screendata;
 uniform vec3 lightVector;
@@ -96,7 +99,7 @@ uniform int   texrange;
 in vec3 texCoord;
 in vec4 lightdata;
 in vec4 torchlight;
-in vec4 biomeColor;
+in vec3 biomeCoords;
 in vec3 out_normal;
 
 in float vertdist;
@@ -110,7 +113,9 @@ void main(void)
 	#define coord texCoord
 	
 	vec4 color = texture2DArray(texture, coord.stp);
-	if (color.a < 0.1 || vertdist >= ZFAR) discard;
+	if (color.a < 0.1) discard;
+	
+	vec4 biomeColor = texture3D(biomeTexture, biomeCoords);
 	
 	// read tonecolor from tonemap
 	vec4 toneColor = texture2DArray(tonemap, coord.stp);

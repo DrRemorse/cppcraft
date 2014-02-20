@@ -152,4 +152,14 @@ namespace cppcraft
 		return true;
 	}
 	
+	
+	// from main world thread
+	void Network::handleNetworking()
+	{
+		if (player.JustMoved)
+		{
+			
+		}
+	}
+	
 }

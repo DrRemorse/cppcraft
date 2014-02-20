@@ -87,6 +87,8 @@ namespace cppcraft
 		{
 			for (vertex_t* current = source; current <= position; current += 4)
 			{
+				// while(0) break;
+				
 				// determine that quad points upwards (+y)
 				if (current->nx != 0 || current->ny != 127 || current->nz != 0)
 					continue;
@@ -117,10 +119,12 @@ namespace cppcraft
 					if (next[2].c != current[3].c) continue;
 					if (next[1].c != current[0].c) continue;
 					
+					/*
 					if (colorDistance(next[2].biome, next[3].biome) > 6) continue;
 					if (colorDistance(next[0].biome, next[1].biome) > 6) continue;
 					if (colorDistance(next[2].biome, current[3].biome) > 6) continue;
 					if (colorDistance(next[1].biome, current[0].biome) > 6) continue;
+					*/
 					
 					// now optimize the quad, by extending the position quad,
 					// and effectively removing the next quad

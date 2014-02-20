@@ -312,7 +312,7 @@ namespace cppcraft
 		int bzz = sectorz & (Sector::BLOCKS_XZ-1);
 		sectorz >>= 4;
 		
-		int skylevel = Flatlands(sectorx, sectorz)(bxx, bzz).skyLevel;
+		int skylevel = flatlands(sectorx, sectorz)(bxx, bzz).skyLevel;
 		int posy = (int) position.y;
 		int byy;
 		
@@ -389,7 +389,7 @@ namespace cppcraft
 		
 		// pre-calculate darkness level
 		// underground additional ray damage
-		int darklevel = Flatlands.getGroundLevel(position.x, position.z) - 2;
+		int darklevel = flatlands.getGroundLevel(position.x, position.z) - 2;
 		static const int darkramp  = 32;
 		static const int underlevel = 64;
 		

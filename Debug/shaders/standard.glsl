@@ -14,15 +14,15 @@ uniform float daylight;
 
 in vec3 in_vertex;
 in vec3 in_normal;
-in vec3 in_texture;
+in vec4 in_texture;
 in vec4 in_color;
 in vec4 in_color2;
-in vec4 in_biome;
+//in vec4 in_biome;
 
 out vec3 texCoord;
 out vec4 lightdata;
 out vec4 torchlight;
-out vec4 biomeColor;
+out vec3 biomeCoords;
 flat out float worldLight;
 
 out float vertdist;
@@ -39,7 +39,10 @@ const float ICE_TILE = 13.f * 16.f + 14.f;
 
 void main(void)
 {
-	vec4 position = vec4(in_vertex / VERTEX_SCALE + vtrans, 1.0);
+	vec4 position = vec4(in_vertex / VERTEX_SCALE, 1.0);
+	biomeCoords = vec3(position.xz / 16, in_texture.w / 8);
+	
+	position.xyz += vtrans;
 	position = matview * position;
 	vertdist = length(position.xyz);
 	gl_Position = matproj * position;
@@ -64,7 +67,6 @@ void main(void)
 	
 	lightdata  = in_color;
 	torchlight = in_color2;
-	biomeColor = in_biome;
 }
 
 #endif
@@ -75,6 +77,7 @@ void main(void)
 uniform sampler2DArray texture;
 uniform sampler2DArray tonemap;
 uniform samplerCube skymap;
+uniform sampler3D biomeTexture;
 
 uniform vec3 screendata;
 
@@ -85,7 +88,7 @@ uniform vec4  playerLight;
 in vec3 texCoord;
 in vec4 lightdata;
 in vec4 torchlight;
-in vec4 biomeColor;
+in vec3 biomeCoords;
 flat in float worldLight;
 
 in float vertdist;
@@ -103,7 +106,7 @@ void main(void)
 	// independent texture reads using inbound variable directly
 	// read tonecolor from tonemap
 	vec4 color = texture2DArray(tonemap, texCoord);
-	color.rgb *= biomeColor.rgb;
+	color.rgb *= texture3D(biomeTexture, biomeCoords).rgb;
 	
 	// mix diffuse map
 	vec4 diffuse = texture2DArray(texture, texCoord);

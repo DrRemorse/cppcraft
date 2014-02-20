@@ -238,15 +238,15 @@ namespace cppcraft
 				
 				// determine color index
 				// no change if the material does not use color indexing
-				fclid = Biomes::idToColorIndex(id);
+				colorIndex = Biomes::idToColorIndex(id);
 				
-				// we need to re-set the biome color
+				/*/ we need to re-set the biome color
 				// using the new fclid because of clid change
 				if (lastclid != fclid)
 				{
 					lastclid = fclid;
 					fbicrc = 256;
-				}
+				}*/
 				
 			} // lastid != id
 			
@@ -257,7 +257,7 @@ namespace cppcraft
 			#ifdef USE_BIOMEDATA
 				#define BIOME_CRC()  (bx * Sector::BLOCKS_XZ + bz)
 				
-				if (isColoredBlock(id))
+				/*if (isColoredBlock(id))
 				{
 					fbiome[0] = Biomes::getSpecialColorBGRA(currentBlock.getSpecial());
 					fbiome[1] = fbiome[0];
@@ -314,7 +314,7 @@ namespace cppcraft
 					fbicrc = BIOME_CRC();
 					
 				} // biome colors
-				
+				*/
 			#endif
 			
 			// vertex position in 16bits
@@ -402,6 +402,7 @@ namespace cppcraft
 				indic->x += vx;
 				indic->y += vy;
 				indic->z += vz;
+				indic->bindex = colorIndex;
 				indic += 1;
 			}
 			// increase vertex count for current shaderline

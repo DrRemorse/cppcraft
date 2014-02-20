@@ -163,14 +163,14 @@ namespace cppcraft
 				}
 				
 				// move flatlands backwards -x
-				FlatlandSector* flatl = Flatlands.manipulate(Sectors.getXZ() - 1, z);
+				FlatlandSector* flatl = flatlands.manipulate(Sectors.getXZ() - 1, z);
 				
 				for (x = Sectors.getXZ()-1; x >= 1; x--)
 				{
-					Flatlands.manipulate(x, z) = Flatlands.manipulate(x - 1, z);
+					flatlands.manipulate(x, z) = flatlands.manipulate(x - 1, z);
 				}
 				// re-set first on x-axis
-				Flatlands.manipulate(0, z) = flatl;
+				flatlands.manipulate(0, z) = flatl;
 				
 			} // sectors z
 			
@@ -249,12 +249,12 @@ namespace cppcraft
 				} // columns
 				
 				// move flatlands forwards +x
-				FlatlandSector* flatl = Flatlands.manipulate(0, z);
+				FlatlandSector* flatl = flatlands.manipulate(0, z);
 				for (x = 0; x < Sectors.getXZ()-1; x++)
 				{
-					Flatlands.manipulate(x, z) = Flatlands.manipulate(x + 1, z);
+					flatlands.manipulate(x, z) = flatlands.manipulate(x + 1, z);
 				}
-				Flatlands.manipulate(Sectors.getXZ()-1, z) = flatl;
+				flatlands.manipulate(Sectors.getXZ()-1, z) = flatl;
 				
 			} // sectors z
 			
@@ -329,13 +329,13 @@ namespace cppcraft
 				} // columns
 				
 				// move flatlands backwards -z
-				FlatlandSector* flatl = Flatlands.manipulate(x, Sectors.getXZ() - 1);
+				FlatlandSector* flatl = flatlands.manipulate(x, Sectors.getXZ() - 1);
 				
 				for (z = Sectors.getXZ()-1; z >= 1; z--)
 				{
-					Flatlands.manipulate(x, z) = Flatlands.manipulate(x, z - 1);
+					flatlands.manipulate(x, z) = flatlands.manipulate(x, z - 1);
 				}
-				Flatlands.manipulate(x, 0) = flatl;
+				flatlands.manipulate(x, 0) = flatl;
 				
 			} // sectors x
 			
@@ -406,13 +406,13 @@ namespace cppcraft
 				} // columns
 				
 				// move flatlands forwards +z
-				FlatlandSector* flatl = Flatlands.manipulate(x, 0);
+				FlatlandSector* flatl = flatlands.manipulate(x, 0);
 				
 				for (z = 0; z < Sectors.getXZ()-1; z++)
 				{
-					Flatlands.manipulate(x, z) = Flatlands.manipulate(x, z + 1);
+					flatlands.manipulate(x, z) = flatlands.manipulate(x, z + 1);
 				}
-				Flatlands.manipulate(x, Sectors.getXZ()-1) = flatl;
+				flatlands.manipulate(x, Sectors.getXZ()-1) = flatl;
 				
 			} // sectors x
 			

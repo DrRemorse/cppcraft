@@ -26,13 +26,13 @@ namespace cppcraft
 		GLshort u; // 12
 		GLshort v;
 		GLshort w;
-		GLshort p;
+		GLshort bindex;
 		
-		GLuint biome; // 20
+		//GLuint biome; // 20
 		
-		unsigned long long c; // 24
+		unsigned long long c; // 20 (24)
 		
-	};  // 32
+	};  // 28 (32)
 	#pragma pack(pop)
 	
 	#pragma pack(push, 4)

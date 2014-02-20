@@ -130,8 +130,8 @@ void main(void)
 	
 	//----- fresnel term -----
 	
-	float fresnel = dot(vEye, viewNormal);
-	fresnel = pow(1.0 - max(0.0, fresnel), 4.0);
+	float fresnel = max(0.0, dot(vEye, viewNormal));
+	fresnel = pow(1.0 - fresnel, 5.0);
 	
 	//----- REFRACTION -----
 	
@@ -157,7 +157,7 @@ void main(void)
 	//----- SEACOLOR -----
 	// 66, 113, 136
 	const vec3 deepwater    = vec3(42, 73, 87) * vec3(1.0 / 255.0);
-	const vec3 shallowwater = vec3(0.35, 0.55, 0.60);
+	const vec3 shallowwater = vec3(0.35, 0.55, 0.50);
 	
 	// see above:
 	float wdepth = 0.02 + max(0.0, underw.a - dist);
@@ -174,7 +174,7 @@ void main(void)
 	
 #ifdef REFLECTIONS
 	// add reflections
-	color.rgb = mix(color.rgb, wreflection.rgb, min(1.0, fresnel + 0.1 * dist));
+	color.rgb = mix(color.rgb, wreflection.rgb, min(1.0, fresnel + 0.5 * dist));
 #endif
 	
 	// fake waves

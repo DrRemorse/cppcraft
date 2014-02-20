@@ -31,7 +31,7 @@ flat out float worldLight;
 out float vertdist;
 
 const float VERTEX_SCALE
-const float ZFAR
+
 // gonzo's royally homemade deforms
 const float LEAFWIND_STRENGTH = 0.1;
 const float PI2 = 3.141592653 * 2.0;
@@ -76,14 +76,11 @@ const float ZFAR
 
 void main(void)
 {
-	// force independent texture reads using constant variable
-	#define coord texCoord
-	
-	vec4 color = texture2DArray(texture, coord.stp);
-	if (color.a < 0.1 || vertdist >= ZFAR) discard;
+	vec4 color = texture2DArray(texture, texCoord.stp);
+	if (color.a < 0.1) discard;
 	
 	// read tonecolor from tonemap
-	vec4 toneColor = texture2DArray(tonemap, coord.stp);
+	vec4 toneColor = texture2DArray(tonemap, texCoord.stp);
 	color.rgb = mix(color.rgb, biomeColor.rgb * toneColor.rgb, toneColor.a);
 	
 	#include "degamma.glsl"

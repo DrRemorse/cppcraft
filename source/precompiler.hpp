@@ -21,7 +21,11 @@ namespace cppcraft
 		
 		bool alive;
 		Sector* sector;
+		
+		// mesh data
 		vertex_t* datadump;
+		// fixed size light data
+		//lightdata_t* lightdump;
 		
 		#ifdef USE_INDEXING
 			indice_t*       indidump;

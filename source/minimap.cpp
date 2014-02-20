@@ -103,15 +103,15 @@ namespace cppcraft
 		minimapVAO.render(GL_QUADS);
 	}
 	
-	int fgetSkylevel(Sector& s, int x, int z)
+	inline int fgetSkylevel(Sector& s, int x, int z)
 	{
 		//return Flatlands::Flatsector::skylevel
-		return Flatlands(s.x, s.z)(x, z).skyLevel;
+		return flatlands(s.x, s.z)(x, z).skyLevel;
 	}
 	
-	Bitmap::rgba8_t fgetColor(Sector& s, int x, int z, int clid)
+	inline Bitmap::rgba8_t fgetColor(Sector& s, int x, int z, int clid)
 	{
-		return Flatlands(s.x, s.z)(x, z).fcolor[clid];
+		return flatlands(s.x, s.z)(x, z).fcolor[clid];
 	}
 	
 	Bitmap::rgba8_t mixColor(Bitmap::rgba8_t a, Bitmap::rgba8_t b, float mixlevel)

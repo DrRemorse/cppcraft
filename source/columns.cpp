@@ -231,14 +231,14 @@ namespace cppcraft
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(1, 3, GL_BYTE,			GL_TRUE,  sizeof(vertex_t), (void*) offsetof(vertex_t, nx)); // normal
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(2, 3, GL_SHORT,			GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, u )); // texture
+		glVertexAttribPointer(2, 4, GL_SHORT,			GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, u )); // texture
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE,	GL_TRUE,  sizeof(vertex_t), (void*) offsetof(vertex_t, biome)); // biome color
+		//glVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE,	GL_TRUE,  sizeof(vertex_t), (void*) offsetof(vertex_t, biome)); // biome color
+		//glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE,	GL_TRUE,  sizeof(vertex_t), (void*) offsetof(vertex_t, c));  // shadow and brightness
 		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(4, 4, GL_UNSIGNED_BYTE,	GL_TRUE,  sizeof(vertex_t), (void*) offsetof(vertex_t, c));  // shadow and brightness
+		glVertexAttribPointer(4, 4, GL_UNSIGNED_BYTE,	GL_TRUE,  sizeof(vertex_t), (void*) (offsetof(vertex_t, c) + 4)); // torchlight color
 		glEnableVertexAttribArray(4);
-		glVertexAttribPointer(5, 4, GL_UNSIGNED_BYTE,	GL_TRUE,  sizeof(vertex_t), (void*) (offsetof(vertex_t, c) + 4)); // torchlight color
-		glEnableVertexAttribArray(5);
 		}
 		
 		// disable vao & vbo
@@ -278,7 +278,6 @@ namespace cppcraft
 		// reset occluded state
 		for (size_t i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 			this->occluded[i] = 0;
-		
 	}
 	
 }

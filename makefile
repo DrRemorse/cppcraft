@@ -5,7 +5,7 @@
 # build options
 # -Ofast -msse4.1 -ffast-math -mfpmath=both -march=native -flto -fwhole-program
 # -Ofast -msse4.1 -ffast-math -mfpmath=both -march=native
-BUILDOPT = -Ofast -ffast-math -mfpmath=both
+BUILDOPT = -Ofast -ffast-math -mfpmath=both -march=native
 # output file
 OUTPUT   = ./Debug/cppcraft
 

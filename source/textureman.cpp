@@ -226,7 +226,7 @@ namespace cppcraft
 		for (int i = 0; i < 3; i++)
 		{
 			textures[(int)T_LENSFLARE + i] = Texture(GL_TEXTURE_2D, GL_RGBA16F_ARB);
-			textures[(int)T_LENSFLARE + i].create(false, 0, screenspace.flareTxW, screenspace.flareTxH);
+			textures[(int)T_LENSFLARE + i].create(0, screenspace.flareTxW, screenspace.flareTxH);
 			textures[(int)T_LENSFLARE + i].setInterpolation(true);
 		}
 		
@@ -234,7 +234,7 @@ namespace cppcraft
 		for (int i = 0; i < 2; i++)
 		{
 			textures[(int)T_BLURBUFFER1 + i] = Texture(GL_TEXTURE_2D, GL_RGBA16F_ARB);
-			textures[(int)T_BLURBUFFER1 + i].create(false, 0, screenspace.blurTxW, screenspace.blurTxH);
+			textures[(int)T_BLURBUFFER1 + i].create(0, screenspace.blurTxW, screenspace.blurTxH);
 			textures[(int)T_BLURBUFFER1 + i].setInterpolation(true);
 		}
 		
@@ -266,29 +266,29 @@ namespace cppcraft
 		// fullscreen skybuffer
 		textures[T_SKYBUFFER] = Texture(GL_TEXTURE_2D);
 		textures[T_SKYBUFFER].setFormat(GL_RGBA16F_ARB);
-		textures[T_SKYBUFFER].create(false, 0, gamescr.SW, gamescr.SH);
+		textures[T_SKYBUFFER].create(0, gamescr.SW, gamescr.SH);
 		
 		// fullscreen fog colorbuffer
 		textures[T_FOGBUFFER] = Texture(GL_TEXTURE_2D);
 		textures[T_FOGBUFFER].setFormat(GL_RGBA16F_ARB);
-		textures[T_FOGBUFFER].create(false, 0, gamescr.SW, gamescr.SH);
+		textures[T_FOGBUFFER].create(0, gamescr.SW, gamescr.SH);
 		
 		// fullscreen underwater texture
 		textures[T_UNDERWATERMAP] = Texture(GL_TEXTURE_2D);
 		textures[T_UNDERWATERMAP].setFormat(GL_RGBA16F_ARB);
-		textures[T_UNDERWATERMAP].create(false, 0, gamescr.SW, gamescr.SH);
+		textures[T_UNDERWATERMAP].create(0, gamescr.SW, gamescr.SH);
 		
 		// fullscreen colorbuffer
 		textures[T_RENDERBUFFER] = Texture(GL_TEXTURE_2D);
 		textures[T_RENDERBUFFER].setFormat(GL_RGBA16F_ARB);
-		textures[T_RENDERBUFFER].create(false, 0, gamescr.SW, gamescr.SH);
+		textures[T_RENDERBUFFER].create(0, gamescr.SW, gamescr.SH);
 		textures[T_RENDERBUFFER].setInterpolation(true);
 		
 		if (gameconf.reflections)
 		{
 			// world reflection buffer
 			textures[T_REFLECTION] = Texture(GL_TEXTURE_2D);
-			textures[T_REFLECTION].create(false, 0, gamescr.SW / 2, gamescr.SH / 2);
+			textures[T_REFLECTION].create(0, gamescr.SW / 2, gamescr.SH / 2);
 			//textures[T_REFLECTION].setFormat(GL_RGBA16F_ARB);
 			textures[T_REFLECTION].setInterpolation(true);
 		}

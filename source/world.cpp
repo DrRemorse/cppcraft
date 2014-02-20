@@ -22,7 +22,7 @@ namespace cppcraft
 		int sectors_xz = config.get("sectors_axis", 48);
 		Sectors.createSectors(sectors_xz);
 		// also, initialize 2D flatlands (fsectors)
-		Flatlands.init();
+		flatlands.init();
 		
 		/// load world position from folder ///
 		
