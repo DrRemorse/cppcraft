@@ -54,7 +54,7 @@ namespace cppcraft
 		for (int i = 0; i < vertices; i++)
 		{
 			indic[i].w = tid;
-			//indic[i].biome = fbiome[0];
+			indic[i].biome = fbiome[0];
 		}
 		
 		return vertices;

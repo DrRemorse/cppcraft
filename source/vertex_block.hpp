@@ -28,7 +28,7 @@ namespace cppcraft
 		GLshort w;
 		GLshort bindex;
 		
-		//GLuint biome; // 20
+		GLuint biome; // 20
 		
 		unsigned long long c; // 20 (24)
 		

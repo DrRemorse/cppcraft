@@ -393,9 +393,9 @@ namespace cppcraft
 				break;
 				
 			case RenderConst::TX_CROSS:
+				
 				// set new texrange
 				glUniform1i(location, i);
-				
 				break;
 			}
 			

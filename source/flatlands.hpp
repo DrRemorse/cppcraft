@@ -43,7 +43,7 @@ namespace cppcraft
 		~FlatlandsContainer();
 		
 		// returns a FlatlandSector reference from location (x, z)
-		inline FlatlandSector& operator() (int x, int z) const
+		inline FlatlandSector& operator() (int x, int z)
 		{
 			return *this->fsectors[x * Sectors.getXZ() + z];
 		}
@@ -52,17 +52,17 @@ namespace cppcraft
 		void init();
 		
 		// returns skylevel (in block units) from a local-grid position
-		FlatlandSector::flatland_t& getData(int x, int z) const;
+		FlatlandSector::flatland_t& getData(int x, int z);
 		
-		inline int getTerrain(int x, int z) const
+		inline int getTerrain(int x, int z)
 		{
 			return getData(x, z).terrain;
 		}
-		inline int getSkyLevel(int x, int z) const
+		inline int getSkyLevel(int x, int z)
 		{
 			return getData(x, z).skyLevel;
 		}
-		inline int getGroundLevel(int x, int z) const
+		inline int getGroundLevel(int x, int z)
 		{
 			return getData(x, z).groundLevel;
 		}
@@ -90,6 +90,7 @@ namespace cppcraft
 		
 		friend class Compressor;
 		friend class Seamless;
+		friend class PrecompThread;
 	};
 	extern FlatlandsContainer flatlands;
 }

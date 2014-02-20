@@ -3,6 +3,7 @@
 #include <library/log.hpp>
 #include <library/math/toolbox.hpp>
 #include <library/opengl/opengl.hpp>
+#include <cstring>
 
 using namespace library;
 
@@ -16,7 +17,7 @@ namespace cppcraft
 		return this->fdata[x][z];
 	}
 	
-	FlatlandSector::flatland_t& FlatlandsContainer::getData(int x, int z) const
+	FlatlandSector::flatland_t& FlatlandsContainer::getData(int x, int z)
 	{
 		// find flatland sector
 		int fx = x / Sector::BLOCKS_XZ;
@@ -61,7 +62,12 @@ namespace cppcraft
 	
 	void FlatlandsContainer::initTextures()
 	{
-		int xz = Sectors.getXZ() * Sector::BLOCKS_XZ;
+		const int xz = Sectors.getXZ() * Sector::BLOCKS_XZ;
+		const int VOL = xz * xz * FlatlandSector::FLATCOLORS;
+		
+		// allocate 3d pixel array
+		biomeArray = new unsigned int[VOL];
+		memset(biomeArray, 255, VOL * sizeof(int));
 		
 		// create biome 3d texture
 		#define GL_TEXTURE_3D 0x806F
@@ -78,10 +84,6 @@ namespace cppcraft
 	// build 3d texture containing all colors
 	void FlatlandsContainer::buildTexture(int fx, int fz)
 	{
-		const int xz = Sectors.getXZ() * Sector::BLOCKS_XZ;
-		const int VOL = xz * xz * FlatlandSector::FLATCOLORS;
-		
-		if (biomeArray == nullptr) biomeArray = new unsigned int[VOL];
 		unsigned int* p = biomeArray + (fx * Sectors.getXZ() + fz) * Sector::BLOCKS_XZ * FlatlandSector::FLATCOLORS;
 		
 		FlatlandSector& fsector = this[0](fx, fz);

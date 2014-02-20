@@ -240,13 +240,13 @@ namespace cppcraft
 				// no change if the material does not use color indexing
 				colorIndex = Biomes::idToColorIndex(id);
 				
-				/*/ we need to re-set the biome color
+				// we need to re-set the biome color
 				// using the new fclid because of clid change
-				if (lastclid != fclid)
+				if (lastclid != colorIndex)
 				{
-					lastclid = fclid;
+					lastclid = colorIndex;
 					fbicrc = 256;
-				}*/
+				}
 				
 			} // lastid != id
 			
@@ -257,7 +257,7 @@ namespace cppcraft
 			#ifdef USE_BIOMEDATA
 				#define BIOME_CRC()  (bx * Sector::BLOCKS_XZ + bz)
 				
-				/*if (isColoredBlock(id))
+				if (isColoredBlock(id))
 				{
 					fbiome[0] = Biomes::getSpecialColorBGRA(currentBlock.getSpecial());
 					fbiome[1] = fbiome[0];
@@ -268,53 +268,53 @@ namespace cppcraft
 				else if (fbicrc != BIOME_CRC())
 				{
 					// collect { biome_r, biome_g_, biome_b, skylevel } into a vec4:
-					fbiome[0] = flatl[0](bx, bz).fcolor[fclid];
+					fbiome[0] = flatl[0](bx, bz).fcolor[colorIndex];
 					
 					if (bx < Sector::BLOCKS_XZ-1)
 					{
-						fbiome[1] = flatl[0](bx+1, bz).fcolor[fclid];
+						fbiome[1] = flatl[0](bx+1, bz).fcolor[colorIndex];
 					}
 					else if (flatl_x != nullptr)
 					{
-						fbiome[1] = flatl_x[0](0, bz).fcolor[fclid];
+						fbiome[1] = flatl_x[0](0, bz).fcolor[colorIndex];
 					}
 					if (bz < Sector::BLOCKS_XZ-1)
 					{
-						fbiome[2] = flatl[0](bx, bz+1).fcolor[fclid];
+						fbiome[2] = flatl[0](bx, bz+1).fcolor[colorIndex];
 					}
 					else if (flatl_z != nullptr)
 					{
-						fbiome[2] = flatl_z[0](bx, 0).fcolor[fclid];
+						fbiome[2] = flatl_z[0](bx, 0).fcolor[colorIndex];
 					}
 					
 					if ((bx < Sector::BLOCKS_XZ-1) && (bz < Sector::BLOCKS_XZ-1))
 					{
-						fbiome[3] = flatl[0](bx+1, bz+1).fcolor[fclid];
+						fbiome[3] = flatl[0](bx+1, bz+1).fcolor[colorIndex];
 					}
 					else if (bx < Sector::BLOCKS_XZ-1)
 					{
 						if (flatl_z != nullptr)
 						{
-							fbiome[3] = flatl_z[0](bx+1, 0).fcolor[fclid];
+							fbiome[3] = flatl_z[0](bx+1, 0).fcolor[colorIndex];
 						}
 					}
 					else if (bz < Sector::BLOCKS_XZ-1)
 					{
 						if (flatl_x != nullptr)
 						{
-							fbiome[3] = flatl_x[0](0, bz+1).fcolor[fclid];
+							fbiome[3] = flatl_x[0](0, bz+1).fcolor[colorIndex];
 						}
 					}
 					else if (flatl_xz != nullptr)
 					{
-						fbiome[3] = flatl_xz[0](0, 0).fcolor[fclid];
+						fbiome[3] = flatl_xz[0](0, 0).fcolor[colorIndex];
 					}
 					
 					// unique value
 					fbicrc = BIOME_CRC();
 					
 				} // biome colors
-				*/
+				
 			#endif
 			
 			// vertex position in 16bits

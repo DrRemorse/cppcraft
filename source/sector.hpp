@@ -18,7 +18,7 @@ namespace cppcraft
 	class Sector
 	{
 	public:
-		// static sector size constants
+		// sector size constants
 		static const int BLOCKS_XZ = 16;
 		static const int BLOCKS_Y  =  8;
 		// sector bitshift size constants

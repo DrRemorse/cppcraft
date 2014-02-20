@@ -49,7 +49,7 @@ namespace cppcraft
 		if (datalength.lzoSize == 0)
 		{
 			// reset flatlands
-			memset( flatlands(x, z).fdata, 0,  sizeof(FlatlandSector::flatland_t) );
+			memset( flatlands(x, z).fdata, 0,  sizeof(FlatlandSector::fdata) );
 			// not generated world
 			for (int y = 0; y < Sectors.getY(); y++)
 			{

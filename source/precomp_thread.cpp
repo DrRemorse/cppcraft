@@ -1,14 +1,13 @@
 #include "precomp_thread.hpp"
 
 #include <library/log.hpp>
-
+#include <cstring>
 #include "precompiler.hpp"
 #include "renderconst.hpp"
 #include "sectors.hpp"
 #include "flatlands.hpp"
 #include "tiles.hpp"
 #include "threading.hpp"
-#include <cstring>
 
 using namespace library;
 
@@ -57,7 +56,7 @@ namespace cppcraft
 		pcg.worldY = (sector.y * Sector::BLOCKS_Y) * RenderConst::VERTEX_SCALE;
 		pcg.worldY_extra = 0;
 		
-		/*
+		
 		// flatland data (biome +++)
 		pcg.flatl = flatlands.manipulate(sector.x, sector.z);
 		// flatlands +x
@@ -72,11 +71,8 @@ namespace cppcraft
 		pcg.flatl_xz = nullptr;
 		if (pcg.flatl_x != nullptr && pcg.flatl_z != nullptr)
 			pcg.flatl_xz = flatlands.manipulate(sector.x+1, sector.z+1);
-		
-		pcg.fclid = 0;
-		pcg.lastclid = 0;
+		// initialize to invalid CRC value
 		pcg.fbicrc = 256;
-		*/
 		
 		// iterate all
 		pcg.sector = pc.sector;
@@ -87,11 +83,10 @@ namespace cppcraft
 		Block* currentBlock = &sector(bx, by, bz);
 		// number of non-air blocks
 		int blocks = sector.blockpt->blocks;
-		//bool totalsolid = sector.hardsolid == Sector::MAX_HARDSOLID;
+		//bool totalsolid = (sector.hardsolid == Sector::MAX_HARDSOLID);
 		
 		while(blocks)
 		{
-			//Block& currentBlock = s(bx, by, bz);
 			// ignore AIR and invalid blocks
 			if (currentBlock->getID() > AIR_END && currentBlock->getID() <= MAX_UNIQUE_IDS)
 			{

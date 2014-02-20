@@ -100,10 +100,10 @@ namespace cppcraft
 		
 	#endif
 		
-		/*indic[0].biome = fbiome[2];
+		indic[0].biome = fbiome[2];
 		indic[1].biome = fbiome[3];
 		indic[2].biome = fbiome[3];
-		indic[3].biome = fbiome[2];*/
+		indic[3].biome = fbiome[2];
 		
 		if (shaderLine == RenderConst::TX_REPEAT)
 		{
@@ -205,10 +205,10 @@ namespace cppcraft
 			indic[3].w = indic->w;
 		}
 		
-		/*indic[0].biome = fbiome[0];
+		indic[0].biome = fbiome[0];
 		indic[1].biome = fbiome[0];
 		indic[2].biome = fbiome[1];
-		indic[3].biome = fbiome[1];*/
+		indic[3].biome = fbiome[1];
 		
 	} // emitCubeVertexNZ()
 	
@@ -264,10 +264,10 @@ namespace cppcraft
 			indic[3].w = indic[0].w;
 		}
 		
-		/*indic[0].biome = fbiome[0];
+		indic[0].biome = fbiome[0];
 		indic[1].biome = fbiome[2];
 		indic[2].biome = fbiome[3];
-		indic[3].biome = fbiome[1];*/
+		indic[3].biome = fbiome[1];
 		
 	} // emitBlockvertexPY()
 	
@@ -322,10 +322,10 @@ namespace cppcraft
 			indic[3].w = indic->w;
 		}
 		
-		/*indic[0].biome = fbiome[0];
+		indic[0].biome = fbiome[0];
 		indic[1].biome = fbiome[1];
 		indic[2].biome = fbiome[3];
-		indic[3].biome = fbiome[2];*/
+		indic[3].biome = fbiome[2];
 		
 	} // emitCubeVertexPY()
 	
@@ -393,10 +393,10 @@ namespace cppcraft
 			indic[3].w = indic->w;
 		}
 		
-		/*indic[0].biome = fbiome[1];
+		indic[0].biome = fbiome[1];
 		indic[1].biome = fbiome[1];
 		indic[2].biome = fbiome[3];
-		indic[3].biome = fbiome[3];*/
+		indic[3].biome = fbiome[3];
 		
 	} // exitBlockVertexPX()
 
@@ -461,10 +461,10 @@ namespace cppcraft
 			indic[3].w = indic->w;
 		}
 		
-		/*indic[0].biome = fbiome[0];
+		indic[0].biome = fbiome[0];
 		indic[1].biome = fbiome[2];
 		indic[2].biome = fbiome[2];
-		indic[3].biome = fbiome[0];*/
+		indic[3].biome = fbiome[0];
 		
 	} // emitCubeVertexNX()
 	
