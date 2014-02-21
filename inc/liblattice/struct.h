@@ -85,6 +85,7 @@ struct message {
 #define T_DISCONNECTED 26
 #define T_MOVETO       27
 #define T_MOVEFROM     28
+#define T_CLOSING      29
 
 #define MFLAG_FROM      0x00000001         // Is fromuid set
 
@@ -98,6 +99,7 @@ typedef struct lattice_message {
     int type;
     int flags;
     uint32_t fromuid;
+    int length;
     void * args;
 
 } lattice_message;
@@ -116,6 +118,13 @@ typedef struct lattice_quit {
     char desc[MTU];
 
 } lattice_quit;
+
+typedef struct lattice_closing {
+
+    uint32_t numeric;
+    char desc[MTU];
+
+} lattice_closing;
 
 typedef struct lattice_pc {
 
@@ -265,5 +274,33 @@ typedef struct lattice_bump {
     b_coord bcoord;
 
 } lattice_bump;
+
+// ----------------------------------
+
+typedef struct sched_usec_link {
+    suseconds_t usec;
+    int type;
+    server_socket *socket;
+    struct sched_usec_link *prev;
+    struct sched_usec_link *next;
+} sched_usec_link;
+
+typedef struct sched_usec_header {
+    struct sched_usec_link *head;
+    struct sched_usec_link *tail;
+} sched_usec_header;
+
+
+typedef struct sched_sec_link {
+    time_t sec;
+    sched_usec_header usec_header;
+    struct sched_sec_link *prev;
+    struct sched_sec_link *next;
+} sched_sec_link;
+
+typedef struct sched_header {
+    struct sched_sec_link *head;
+    struct sched_sec_link *tail;
+} sched_header;
 
 #endif

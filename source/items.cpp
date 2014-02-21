@@ -222,9 +222,8 @@ namespace cppcraft
 		
 	} // ItemsClass::getName()
 	
-	int ItemsClass::getMiningTime(const Block& block, const InventoryItem& item) const
+	int ItemsClass::getMiningTime(const Block& block, const InventoryItem& helditem) const
 	{
-		InventoryItem helditem = InventoryItem(IT_DIAMPICK, ITT_ITEM, 1);
 		item_t ttt = IT_NONE;
 		block_t id = block.getID();
 		

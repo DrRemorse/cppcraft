@@ -26,8 +26,12 @@ namespace cppcraft
 		double pax, pay, paz;
 		// no-gravity toggle flag
 		bool Flying;
-		// true if player just moved, update camera etc.
+		// true if player moved voluntarily, update camera etc.
 		bool JustMoved;
+		// true if player changed position
+		bool changedPosition;
+		// true if player changed camera orientation (head rotation)
+		bool changedRotation;
 		
 		void initPlayer();
 		void initInputs();

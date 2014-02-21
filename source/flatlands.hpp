@@ -48,7 +48,7 @@ namespace cppcraft
 			return *this->fsectors[x * Sectors.getXZ() + z];
 		}
 		
-		// initialize container
+		// initialize flatlands axis (using sectors axis), called from World::init()
 		void init();
 		
 		// returns skylevel (in block units) from a local-grid position

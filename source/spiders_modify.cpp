@@ -215,6 +215,7 @@ namespace cppcraft
 	void Spiders::skylightReachDown(Sector& sector)
 	{
 		// do natn (yet)
+		int FIXME_unimplemented_function = sector.BLOCKS_XZ;
 	}
 	
 	inline void updateNeighboringSector(Sector& sector, bool immediate)

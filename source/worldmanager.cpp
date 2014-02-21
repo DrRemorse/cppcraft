@@ -84,7 +84,10 @@ namespace cppcraft
 			
 			try
 			{
-				// if the player moved, or is doing stuff we will be doing it here
+				/// if the player moved, or is currently doing stuff we will be doing it here ///
+				
+				// this function changes the player.positionChanged value each round
+				// also transports relevant player values to rendering thread
 				player.handleActions(_localtime);
 			}
 			catch (std::string exc)
@@ -158,6 +161,9 @@ namespace cppcraft
 				//double t1 = timer.getDeltaTime();
 				//logger << "WB time: " << t1 - t0 << Log::ENDL;
 			}
+			
+			// send & receive stuff
+			network.handleNetworking();
 			
 			// flush chunk write queue
 			chunks.flushChunks();

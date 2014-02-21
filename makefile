@@ -3,9 +3,10 @@
 #######################
 
 # build options
-# -Ofast -msse4.1 -ffast-math -mfpmath=both -march=native -flto -fwhole-program
-# -Ofast -msse4.1 -ffast-math -mfpmath=both -march=native
-BUILDOPT = -Ofast -ffast-math -mfpmath=both -march=native
+# -Ofast -mfpmath=both -march=native -flto
+# -Ofast -mfpmath=both -march=native
+# -g -Og
+BUILDOPT = -Ofast -mfpmath=both -march=native # -flto -ffinite-math-only -fno-signed-zeros -fno-trapping-math 
 # output file
 OUTPUT   = ./Debug/cppcraft
 

@@ -65,7 +65,6 @@ namespace cppcraft
 		bool Ladderized;
 		bool Slowfall;
 		bool Moved;
-		bool Rotate;
 		int  Motion;
 		playerSubmerged_t Submerged;
 		playerSubmerged_t FullySubmerged;

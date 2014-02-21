@@ -17,7 +17,8 @@ namespace cppcraft
 		static const int SECTORS_Y_SHL = 5;
 		static const int MAX_SECTORS_XZ_GRIDSIZE = 128;
 		
-		void createSectors(int xz);
+		// initializes with axis length, called from World::init()
+		void init(int xz);
 		
 		inline int getXZ() const { return this->sectors_XZ; }
 		inline int getY()  const { return SECTORS_Y; }

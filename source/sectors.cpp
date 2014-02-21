@@ -18,7 +18,7 @@ namespace cppcraft
 	}
 	
 	// allocates and initializes all Sectors
-	void SectorContainer::createSectors(int sectors_xz)
+	void SectorContainer::init(int sectors_xz)
 	{
 		// set number of sectors on X/Z axes
 		this->sectors_XZ = sectors_xz;
@@ -34,7 +34,6 @@ namespace cppcraft
 			// set reference to (Sector*) new Sector(x, y, z)
 			s = new Sector(x, y, z);
 		} // y, z, x
-		
 	}
 	
 	void SectorContainer::invalidateAll()

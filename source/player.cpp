@@ -50,13 +50,12 @@ namespace cppcraft
 		player.Y = Sector::BLOCKS_Y * 22; //RenderConst::WATER_LEVEL + Sector::BLOCKS_Y * 12; //2;
 		player.Z = player.X;
 		// acceleration
-		player.pax = 0.0;
-		player.paz = 0.0;
+		player.pax = player.pay = player.paz = 0.0;
 		// rotation
-		player.xrotrad = 0.0;
-		player.yrotrad = 0.0;
+		player.xrotrad = player.yrotrad = 0.0;
 		
 		player.snapStage = 0;
+		player.snapX = player.snapY = player.snapZ = 0;
 		
 		// initialize keyboard / joystick input
 		player.initInputs();
@@ -116,7 +115,9 @@ namespace cppcraft
 		{
 			// player could have been moved twice, the second time causing him to lose the moved flag
 			// so we need to explicitly test all scalars
-			if (snapX != X || snapY != Y || snapZ != Z)
+			player.changedPosition = (snapX != X || snapY != Y || snapZ != Z);
+			
+			if (player.changedPosition)
 			{
 				camera.recalc = true;
 				
@@ -154,7 +155,8 @@ namespace cppcraft
 		float dx = fabsf(player.xrotrad - input.getRotation().x);
 		float dy = fabsf(player.yrotrad - input.getRotation().y);
 		// rotate if too far apart
-		if (dx > 0.0001 || dy > 0.0001)
+		player.changedRotation = (dx > 0.0001 || dy > 0.0001);
+		if (player.changedRotation)
 		{
 			// get old look vector
 			vec3 look1 = lookVector(vec2(player.xrotrad, player.yrotrad));
@@ -162,7 +164,7 @@ namespace cppcraft
 			vec3 look2 = lookVector(input.getRotation());
 			
 			// interpolate
-			vec3 newLook = look1.mix(look2, 0.40);
+			vec3 newLook = look1.mix(look2, 0.30);
 			newLook.normalize();
 			
 			// back to pitch/yaw radians
@@ -172,7 +174,6 @@ namespace cppcraft
 			
 			camera.recalc  = true; // rebuild visibility set
 			camera.rotated = true; // resend all rotation matrices
-			plogic.Rotate = true;
 		}
 	}
 	

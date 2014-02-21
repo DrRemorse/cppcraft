@@ -4,6 +4,8 @@
 #include <library/config.hpp>
 #include "player.hpp"
 #include "player_logic.hpp"
+#include "sector.hpp"
+#include "spiders.hpp"
 #include "world.hpp"
 #include <random>
 
@@ -17,6 +19,7 @@ extern "C"
 	#else
 		#include <arpa/inet.h>
 	#endif
+	#include <liblattice/serversocket.h>
 	#include <liblattice/struct.h>
 	#include <liblattice/globals.h>
 	#include <liblattice/liblattice.h>
@@ -25,39 +28,21 @@ extern "C"
 namespace cppcraft
 {
 	Network network;
+	void message(lattice_message* mp);
 	
-	void message(lattice_message* mp)
+	SpiderCoord::SpiderCoord(double x, double y, double z)
 	{
-		switch (mp->type)
-		{
-		case T_CONNECTED:
-			logger << Log::INFO << "Connected to server" << Log::ENDL;
-			break;
-		case T_DISCONNECTED:
-			logger << Log::WARN << "Disconnected from server" << Log::ENDL;
-			break;
-			
-		case T_SAT:
-			logger << Log::INFO << "SAT angle: " << ((double*) mp->args)[0] << Log::ENDL;
-			break;
-			
-		case T_SATSTEP:
-			logger << Log::INFO << "SAT step: " << ((int*) mp->args)[0] << Log::ENDL;
-			break;
-			
-		case T_P:
-			logger << Log::INFO << "Player moves: " << ((int*) mp->args)[0] << Log::ENDL;
-			break;
-			
-		case T_LOG:
-			logger << Log::INFO << "SERVER  " << ((char*) mp->args) << Log::ENDL;
-			break;
-			
-		default:
-			logger << Log::INFO << "got type " << mp->type << Log::ENDL;
-		}
+		// get integral values
+		int bx = x, by = y, bz = z;
+		// get sector, and truncate integrals into sector-local coordinates
+		Sector* s = Spiders::spiderwrap(bx, by, bz);
+		// set final world coordinates
+		wcoord[0] = world.getWX() + s->x;
+		wcoord[1] = world.getWY() + s->y;
+		wcoord[2] = world.getWZ() + s->z;
 		
-		return;
+		// set final sector coordinates (with fractions)
+		scoord = vec3(bx, by, bz) + vec3(x, y, z).frac();
 	}
 	
 	void Network::init()
@@ -95,11 +80,46 @@ namespace cppcraft
 			waitTime.tv_sec  = 0;
 			waitTime.tv_usec = 5000;
 			lattice_select(&waitTime);
-			
 			lattice_process();
-			
 			lattice_flush();
+			
+			// transfer stuff from client to network
+			handleTransfer();
 		}
+	}
+	
+	void message(lattice_message* mp)
+	{
+		switch (mp->type)
+		{
+		case T_CONNECTED:
+			logger << Log::INFO << "Connected to server" << Log::ENDL;
+			break;
+		case T_DISCONNECTED:
+			logger << Log::WARN << "Disconnected from server" << Log::ENDL;
+			break;
+			
+		case T_SAT:
+			logger << Log::INFO << "SAT angle: " << ((double*) mp->args)[0] << Log::ENDL;
+			break;
+			
+		case T_SATSTEP:
+			logger << Log::INFO << "SAT step: " << ((int*) mp->args)[0] << Log::ENDL;
+			break;
+			
+		case T_P:
+			logger << Log::INFO << "Player moves: " << ((int*) mp->args)[0] << Log::ENDL;
+			break;
+			
+		case T_LOG:
+			logger << Log::INFO << "SERVER  " << ((char*) mp->args) << Log::ENDL;
+			break;
+			
+		default:
+			logger << Log::INFO << "got type " << mp->type << Log::ENDL;
+		}
+		
+		return;
 	}
 	
 	w_coord getPlayerWC()
@@ -114,7 +134,7 @@ namespace cppcraft
 	bool Network::connect()
 	{
 		std::string  hostn = config.get("net.host", "127.0.0.1");
-		unsigned int port  = config.get("net.port", 8804);
+		unsigned int port  = config.get("net.port", 8805);
 		
 		std::string uname  = config.get("net.user", "guest");
 		std::string upass  = config.get("net.pass", "guest");
@@ -153,13 +173,51 @@ namespace cppcraft
 	}
 	
 	
-	// from main world thread
+	/// from main (worldman) thread ///
 	void Network::handleNetworking()
 	{
-		if (player.JustMoved)
+		if (player.changedPosition || player.changedRotation)
 		{
-			
+			mtx.lock();
+			{
+				ntt.pmoved   = player.changedPosition;
+				ntt.protated = player.changedRotation;
+				
+				if (ntt.pmoved)   ntt.pcoord = SpiderCoord(player.X, player.Y, player.Z);
+				if (ntt.protated) ntt.prot   = vec2(player.xrotrad, player.yrotrad);
+			}
+			mtx.unlock();
 		}
 	}
 	
+	/// from networking scheduler ///
+	void Network::handleTransfer()
+	{
+		mtx.lock();
+		{
+			if (ntt.pmoved)
+			{
+				lattice_p lp;
+				// world coordinates
+				lp.wcoord.x = ntt.pcoord.wcoord[0];
+				lp.wcoord.y = ntt.pcoord.wcoord[1];
+				lp.wcoord.z = ntt.pcoord.wcoord[2];
+				// block coordinates
+				lp.bcoord.x = ntt.pcoord.scoord.x * 256;
+				lp.bcoord.y = ntt.pcoord.scoord.y * 256;
+				lp.bcoord.z = ntt.pcoord.scoord.z * 256;
+				
+				lattice_send((lattice_message*) &lp);
+			}
+			if (ntt.protated)
+			{
+				lattice_pr pr;
+				pr.rot.xrot = ntt.prot.x;
+				pr.rot.yrot = ntt.prot.y;
+				
+				lattice_send((lattice_message*) &pr);
+			}
+		}
+		mtx.unlock();
+	}
 }

@@ -10,17 +10,17 @@ using namespace library;
 
 namespace cppcraft
 {
-	// default world folder
-	static const std::string DEFAULT_WORLD_FOLDER = "world";
 	// one and only instance of WorldClass
 	World world;
 	
 	void World::init(std::string& worldFolder)
 	{
 		/// initialize sectors, blocks & flatlands ///
+		// default world folder
+		const std::string DEFAULT_WORLD_FOLDER = "world";
 		
 		int sectors_xz = config.get("sectors_axis", 48);
-		Sectors.createSectors(sectors_xz);
+		Sectors.init(sectors_xz);
 		// also, initialize 2D flatlands (fsectors)
 		flatlands.init();
 		
@@ -51,15 +51,13 @@ namespace cppcraft
 	
 	void World::load()
 	{
+		return;
 		std::ifstream ff (worldFolder() + "/world.data", std::ios::in | std::ios::binary);
 		if (!ff) return;
 		
 		ff.seekg(0);
 		ff.read( (char*) &worldCoords, sizeof(worldCoords) );
 		ff.read( (char*) &player, sizeof(player) );
-		
-		// invalidate position snapshot
-		player.snapX = player.snapY = player.snapZ = 0;
 	}
 	void World::save()
 	{
