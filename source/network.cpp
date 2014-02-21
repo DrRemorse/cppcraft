@@ -90,6 +90,31 @@ namespace cppcraft
 	
 	void message(lattice_message* mp)
 	{
+		/*
+		#define T_P       1
+		#define T_QUIT    2
+		#define T_PC      3
+		#define T_PR      4
+		#define T_PH      5
+		#define T_CHAT    6
+		#define T_ACTION  7
+		#define T_S       8
+		#define T_SC      9
+		#define T_BO      10
+		#define T_MO      11
+		#define T_BADD    12
+		#define T_BSET    13
+		#define T_BREM    14
+		#define T_PMINE   15
+		#define T_SCHAT   16
+		#define T_LUSERS  17
+		#define T_LOG     18
+		#define T_SATSTEP 19
+		#define T_SAT     20
+		#define T_FADE    21
+		#define T_USER    22
+		#define T_SERVER  23
+		*/
 		switch (mp->type)
 		{
 		case T_CONNECTED:
@@ -207,7 +232,11 @@ namespace cppcraft
 				lp.bcoord.y = ntt.pcoord.scoord.y * 256;
 				lp.bcoord.z = ntt.pcoord.scoord.z * 256;
 				
-				lattice_send((lattice_message*) &lp);
+				lattice_message lm;
+				lm.type = T_P;
+				lm.args = &lp;
+				
+				lattice_send(&lm);
 			}
 			if (ntt.protated)
 			{
@@ -215,7 +244,11 @@ namespace cppcraft
 				pr.rot.xrot = ntt.prot.x;
 				pr.rot.yrot = ntt.prot.y;
 				
-				lattice_send((lattice_message*) &pr);
+				lattice_message lm;
+				lm.type = T_PR;
+				lm.args = &pr;
+				
+				lattice_send(&lm);
 			}
 		}
 		mtx.unlock();

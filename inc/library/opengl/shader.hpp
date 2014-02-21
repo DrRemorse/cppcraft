@@ -85,17 +85,18 @@ namespace library
 		
 		// queries OpenGL for the location of a uniform
 		// prefetch uniform slot value, and store it
-		inline void prepareUniform(const std::string& uniform)
+		inline GLint prepareUniform(const std::string& uniform)
 		{
 			GLint location = glGetUniformLocation(this->shader, (GLchar*)uniform.c_str());
 			uniforms[uniform] = location;
+			return location;
 		}
 		// returns a previously prepared uniform location
-		GLint getUniform(const std::string& uniform)
+		inline GLint getUniform(const std::string& uniform)
 		{
 			// if the value doesn't exist yet, find it
 			if (uniforms.find(uniform) == uniforms.end())
-				prepareUniform(uniform);
+				return prepareUniform(uniform);
 			// return uniform value
 			return uniforms[uniform];
 		}
