@@ -167,6 +167,7 @@ namespace cppcraft
 		
 		// this stage has ended
 		// go to next stage: ambient occlusion gradients
-		sector.progress = Sector::PROG_NEEDAO;
+		if (sector.progress == Sector::PROG_RECOMPILING)
+			sector.progress = Sector::PROG_NEEDAO;
 	}
 }

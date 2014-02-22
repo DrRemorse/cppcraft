@@ -4,9 +4,10 @@
 #include <library/config.hpp>
 #include "player.hpp"
 #include "player_logic.hpp"
-#include "sector.hpp"
+#include "sectors.hpp"
 #include "spiders.hpp"
 #include "world.hpp"
+#include <cstring>
 #include <random>
 
 using namespace library;
@@ -30,19 +31,61 @@ namespace cppcraft
 	Network network;
 	void message(lattice_message* mp);
 	
-	SpiderCoord::SpiderCoord(double x, double y, double z)
+	PackCoord::PackCoord(double x, double y, double z)
 	{
 		// get integral values
 		int bx = x, by = y, bz = z;
 		// get sector, and truncate integrals into sector-local coordinates
 		Sector* s = Spiders::spiderwrap(bx, by, bz);
-		// set final world coordinates
-		wcoord[0] = world.getWX() + s->x;
-		wcoord[1] = world.getWY() + s->y;
-		wcoord[2] = world.getWZ() + s->z;
+		if (s == nullptr) { valid = false; return; }
 		
-		// set final sector coordinates (with fractions)
-		scoord = vec3(bx, by, bz) + vec3(x, y, z).frac();
+		// set world coordinates
+		wc.x = world.getWX() + s->x;
+		wc.y = world.getWY() + s->y;
+		wc.z = world.getWZ() + s->z;
+		
+		// set block coordinates (with 8-bit fractions)
+		vec3 f = vec3(x, y, z).frac();
+		bc.x = (bx << 8) + (f.x * 255);
+		bc.y = (by << 8) + (f.y * 255);
+		bc.z = (bz << 8) + (f.z * 255);
+		valid = true;
+	}
+	PackCoord::PackCoord(int bx, int by, int bz)
+	{
+		// get sector, and truncate integrals into sector-local coordinates
+		Sector* s = Spiders::spiderwrap(bx, by, bz);
+		if (s == nullptr) { valid = false; return; }
+		
+		// set world coordinates
+		wc.x = world.getWX() + s->x;
+		wc.y = world.getWY() + s->y;
+		wc.z = world.getWZ() + s->z;
+		
+		// set block coordinates
+		bc.x = bx;
+		bc.y = by;
+		bc.z = bz;
+		valid = true;
+	}
+	UnpackCoord::UnpackCoord(w_coord& w, b_coord& b)
+	{
+		// set final world coordinates
+		int sx = w.x - world.getWX();
+		int sy = w.y - world.getWY();
+		int sz = w.z - world.getWZ();
+		// validate position is inside our grid
+		if (sx < 0 || sx >= Sectors.getXZ() ||
+			sy < 0 || sy >= Sectors.getY() ||
+			sz < 0 || sz >= Sectors.getXZ())
+		{
+			valid = false; return;
+		}
+		// set values
+		this->bx = (sx << Sector::BLOCKS_XZ_SH) + b.x;
+		this->by = (sy << Sector::BLOCKS_Y_SH)  + b.y;
+		this->bz = (sz << Sector::BLOCKS_XZ_SH) + b.z;
+		valid = true;
 	}
 	
 	void Network::init()
@@ -88,6 +131,37 @@ namespace cppcraft
 		}
 	}
 	
+	/// incoming blocks ///
+	void blockAdded(lattice_badd* badd)
+	{
+		NetworkBlock block;
+		block.type = NetworkBlock::BADD;
+		block.wc = badd->wcoord;
+		block.bc = badd->bcoord;
+		block.block = Block(badd->block.id, badd->block.bf);
+		
+		network.addBlock(Network::INCOMING, block);
+	}
+	void blockAdded(lattice_bset* bset)
+	{
+		NetworkBlock block;
+		block.type = NetworkBlock::BSET;
+		block.wc = bset->wcoord;
+		block.bc = bset->bcoord;
+		block.block = Block(bset->block.id, bset->block.bf);
+		
+		network.addBlock(Network::INCOMING, block);
+	}
+	void blockAdded(lattice_brem* brem)
+	{
+		NetworkBlock block;
+		block.type = NetworkBlock::BREM;
+		block.wc = brem->wcoord;
+		block.bc = brem->bcoord;
+		
+		network.addBlock(Network::INCOMING, block);
+	}
+	
 	void message(lattice_message* mp)
 	{
 		/*
@@ -117,6 +191,9 @@ namespace cppcraft
 		*/
 		switch (mp->type)
 		{
+		case T_BUMP:
+			logger << Log::INFO << "I'm supposedly outside of all servers?" << Log::ENDL;
+			break;
 		case T_CONNECTED:
 			logger << Log::INFO << "Connected to server" << Log::ENDL;
 			break;
@@ -136,8 +213,18 @@ namespace cppcraft
 			logger << Log::INFO << "Player moves: " << ((int*) mp->args)[0] << Log::ENDL;
 			break;
 			
+		case T_BADD:
+			blockAdded((lattice_badd*) mp->args);
+			break;
+		case T_BSET:
+			blockAdded((lattice_bset*) mp->args);
+			break;
+		case T_BREM:
+			blockAdded((lattice_brem*) mp->args);
+			break;
+			
 		case T_LOG:
-			logger << Log::INFO << "SERVER  " << ((char*) mp->args) << Log::ENDL;
+			//logger << Log::INFO << "SERVER  " << ((char*) mp->args) << Log::ENDL;
 			break;
 			
 		default:
@@ -169,27 +256,31 @@ namespace cppcraft
 		std::uniform_int_distribution<unsigned int> dis;
 		
 		lattice_player.userid = dis(gen);
-		lattice_player.nickname = (char*) uname.c_str();
-		lattice_player.model = 5;
+		lattice_player.nickname = strdup((char*) uname.c_str());
 		
-		lattice_player.color = plogic.shadowColor;
+		PackCoord playerCoords(player.X, player.Y, player.Z);
+		
 		lattice_player.burstdist = 16;
-		lattice_player.wpos.x = world.getWX();
-		lattice_player.wpos.y = 20;
-		lattice_player.wpos.z = world.getWZ();
-		lattice_player.bpos.x = 584;
-		lattice_player.bpos.y = 434;
-		lattice_player.bpos.z = 1180;
-		lattice_player.hrot.xrot = 17;
-		lattice_player.hrot.yrot = 86;
+		
+		// network location
+		lattice_player.centeredon.x = (playerCoords.wc.x >> 8);
+		lattice_player.centeredon.y = (playerCoords.wc.y >> 8);
+		lattice_player.centeredon.z = (playerCoords.wc.z >> 8);
+		// world coordinates
+		lattice_player.wpos = playerCoords.wc;
+		// block coordinates
+		lattice_player.bpos = playerCoords.bc;
+		
+		lattice_player.hrot.xrot = player.xrotrad;
+		lattice_player.hrot.yrot = player.yrotrad;
+		
+		lattice_player.model = 5;
+		lattice_player.usercolor = 15;
+		lattice_player.color = plogic.shadowColor;
+		
 		lattice_player.hhold.item_id = 0;
 		lattice_player.hhold.item_type = 0;
 		lattice_player.mining = 0;
-		lattice_player.usercolor = 15;
-		
-		lattice_player.centeredon.x = 524288;
-		lattice_player.centeredon.y = 0;
-		lattice_player.centeredon.z = 524288;
 		
 		logger << Log::INFO << "Connecting to " << hostn << ":" << port << Log::ENDL;
 		
@@ -197,22 +288,58 @@ namespace cppcraft
 		return true;
 	}
 	
-	
 	/// from main (worldman) thread ///
 	void Network::handleNetworking()
 	{
+		mtx.lock();
 		if (player.changedPosition || player.changedRotation)
 		{
-			mtx.lock();
-			{
-				ntt.pmoved   = player.changedPosition;
-				ntt.protated = player.changedRotation;
-				
-				if (ntt.pmoved)   ntt.pcoord = SpiderCoord(player.X, player.Y, player.Z);
-				if (ntt.protated) ntt.prot   = vec2(player.xrotrad, player.yrotrad);
-			}
-			mtx.unlock();
+			ntt.pmoved   = player.changedPosition;
+			ntt.protated = player.changedRotation;
+			
+			if (ntt.pmoved)   ntt.pcoord = PackCoord(player.X, player.Y, player.Z);
+			if (ntt.protated) ntt.prot   = vec2(player.xrotrad, player.yrotrad);
 		}
+		
+		// receive blocks from network thread
+		while (ntt.incoming.size())
+		{
+			NetworkBlock& block = ntt.incoming.front();
+			
+			// unpack position
+			UnpackCoord coords(block.wc, block.bc);
+			
+			if (coords.valid)
+			{
+				block_t id = block.block.getID();
+				block_t bf = block.block.getFacing();
+				
+				//logger << Log::INFO << "block: " << id << ", " << bf << Log::ENDL;
+				
+				// make world modification
+				switch (block.type)
+				{
+					case NetworkBlock::BADD:
+						Spiders::addblock(coords.bx, coords.by, coords.bz, id, bf, true);
+						break;
+					case NetworkBlock::BSET:
+						Spiders::addblock(coords.bx, coords.by, coords.bz, id, bf, true);
+						break;
+					case NetworkBlock::BREM:
+						Spiders::removeBlock(coords.bx, coords.by, coords.bz, true);
+						break;
+				}
+				
+			} // valid coordinates
+			else
+			{
+				logger << Log::INFO << "Did not add block" << Log::ENDL;
+			}
+			ntt.incoming.pop_front();
+			
+		} // incoming block queue
+		
+		mtx.unlock();
 	}
 	
 	/// from networking scheduler ///
@@ -224,13 +351,10 @@ namespace cppcraft
 			{
 				lattice_p lp;
 				// world coordinates
-				lp.wcoord.x = ntt.pcoord.wcoord[0];
-				lp.wcoord.y = ntt.pcoord.wcoord[1];
-				lp.wcoord.z = ntt.pcoord.wcoord[2];
+				
+				lp.wcoord = ntt.pcoord.wc;
 				// block coordinates
-				lp.bcoord.x = ntt.pcoord.scoord.x * 256;
-				lp.bcoord.y = ntt.pcoord.scoord.y * 256;
-				lp.bcoord.z = ntt.pcoord.scoord.z * 256;
+				lp.bcoord = ntt.pcoord.bc;
 				
 				lattice_message lm;
 				lm.type = T_P;
@@ -252,5 +376,20 @@ namespace cppcraft
 			}
 		}
 		mtx.unlock();
+	}
+	
+	void Network::addBlock(direction_t dir, const NetworkBlock& block)
+	{
+		network.mtx.lock();
+		if (dir == INCOMING)
+		{
+			network.ntt.incoming.push_front(block);
+		}
+		else
+		{
+			network.ntt.outgoing.push_front(block);
+		}
+		network.mtx.unlock();
+		
 	}
 }

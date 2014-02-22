@@ -287,8 +287,9 @@ namespace cppcraft
 		// optimize water mesh
 		optimizeWaterMesh();
 		
-		sector.progress = Sector::PROG_NEEDCOMPILE;
-		sector.culled  = false;
+		if (sector.progress == Sector::PROG_AO)
+			sector.progress = Sector::PROG_NEEDCOMPILE;
+		// WTF is this?? sector.culled  = false;
 	}
 	
 	short addCornerShadowVertex(AmbientOcclusion& ao, vertex_t* vt, short x, short y, short z)

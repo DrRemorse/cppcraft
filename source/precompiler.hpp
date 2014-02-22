@@ -45,15 +45,21 @@ namespace cppcraft
 		
 		~Precompiler();
 		
-		Precomp& operator[] (unsigned int);
+		inline Precomp& operator[] (std::size_t i)
+		{
+			return this->queue[i];
+		}
 		
 		// initializes the precompiler pipeline stage
 		void init();
 		
 		// number of precompiler threads
-		std::size_t getThreads();
+		inline std::size_t getThreads()
+		{
+			return pcthread_count;
+		}
 		// returns a precompilation thread object
-		PrecompThread& getThread(int);
+		PrecompThread& getThread(int t);
 		// executes a round of precompilation
 		void run();
 		

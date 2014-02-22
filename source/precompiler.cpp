@@ -62,9 +62,9 @@ namespace cppcraft
 		
 	}
 	
-	std::size_t Precompiler::getThreads()
+	Precompiler::~Precompiler()
 	{
-		return pcthread_count;
+		delete[] pcthreads;
 	}
 	
 	PrecompThread& Precompiler::getThread(int t)
@@ -75,16 +75,6 @@ namespace cppcraft
 	Precomp::~Precomp()
 	{
 		delete[] this->datadump;
-	}
-	
-	Precompiler::~Precompiler()
-	{
-		delete[] pcthreads;
-	}
-	
-	Precomp& Precompiler::operator [] (unsigned int i)
-	{
-		return this->queue[i];
 	}
 	
 	// tries to complete a precompilation job
@@ -121,6 +111,8 @@ namespace cppcraft
 		sector.progress = Sector::PROG_COMPILED;
 		// set renderable flag to sector
 		sector.render = true;
+		// sector was definitely not culled
+		sector.culled = false;
 		
 		PrecompScheduler::add(sector);
 	}

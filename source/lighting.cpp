@@ -25,7 +25,7 @@ namespace cppcraft
 	const float LightingClass::CORNERS  = 255 * 0.48;
 	
 	static const float RAY_CRASH_CONSTANT = 64.0f;
-	static const float LIGHT_FULL_DAMAGE  = 10.0f;
+	static const float LIGHT_FULL_DAMAGE  = 24.0f;
 	static const float LIGHT_MEDI_DAMAGE  =  8.0f;
 	
 	void LightingClass::init()
@@ -40,32 +40,21 @@ namespace cppcraft
 		if (this->ray_count > 16) this->ray_count = 16;
 	}
 	
-	bool damageRay(block_t id, float& ray, float& maxdmg, bool& prediction, float distance_curve)
+	bool damageRay(block_t id, float& ray, float& maxdmg, float distance_curve)
 	{
 		if (id < ALPHA_BARRIER)
 		{
-			ray += LIGHT_FULL_DAMAGE;
+			ray += LIGHT_FULL_DAMAGE * distance_curve;
 		}
 		else if (isCross(id) || (id == _LANTERN) || (id == _LADDER) || (id == _VINES))
 		{
-			// do nothing
+			// we ignore all these blocks
 			return false;
 		}
 		else
 		{
-			ray += LIGHT_MEDI_DAMAGE;
-		}
-		// check as little as possible wether or not this ray can survive!
-		// add predicted damage
-		if (prediction)
-		{
-			// halve damage for super transparent blocks
-			if (id < BLEND_BARRIER)
-			{
-				// deal some dmg
-				ray += RAY_CRASH_CONSTANT * distance_curve * distance_curve;
-			}
-			prediction = false;
+			// remainder give light damage
+			ray += LIGHT_MEDI_DAMAGE * distance_curve;
 		}
 		// exit everything if too much damage
 		if (ray >= maxdmg)
@@ -114,7 +103,6 @@ namespace cppcraft
 		block_t id;
 		float inv_reach = 1.0 / Lighting.ray_length;
 		float distance_curve = 1.0;
-		bool prediction = true;
 		
 		int bxx, byy, bzz;
 		
@@ -130,9 +118,9 @@ namespace cppcraft
 			
 			// set current sector
 			Sector& s = Sectors(
-				bxx >> 4, // Sector::BLOCKS_XZ, 
-				byy >> 3, // Sector::BLOCKS_Y, 
-				bzz >> 4  // Sector::BLOCKS_XZ
+				bxx >> Sector::BLOCKS_XZ_SH,
+				byy >> Sector::BLOCKS_Y_SH,
+				bzz >> Sector::BLOCKS_XZ_SH
 			);
 			
 			// calculate lighting cost
@@ -148,7 +136,7 @@ namespace cppcraft
 				if (id) // _AIR is always 0
 				{
 					// ray damage function
-					if (damageRay(id, tmplight, maxlight, prediction, distance_curve))
+					if (damageRay(id, tmplight, maxlight, distance_curve))
 					{
 						// the ray has died, exit
 						return tmplight;
@@ -214,12 +202,11 @@ namespace cppcraft
 		block_t id;
 		float inv_reach = 1.0 / Lighting.ray_length;
 		float distance_curve = 1.0;
-		bool prediction = true;
 		
 		int bxx, byy;
 		int bzz = (int)position.z;
 		
-		int sectorz = bzz >> 4;
+		int sectorz = bzz >> Sector::BLOCKS_XZ_SH;
 		bzz &= (Sector::BLOCKS_XZ-1);
 		
 		while (distance_curve >= inv_reach)
@@ -246,7 +233,7 @@ namespace cppcraft
 				if (id) // _AIR is always 0
 				{
 					// ray damage function
-					if (damageRay(id, tmplight, maxlight, prediction, distance_curve))
+					if (damageRay(id, tmplight, maxlight, distance_curve))
 					{
 						// the ray has died, exit
 						return tmplight;
@@ -303,14 +290,13 @@ namespace cppcraft
 		block_t id;
 		float inv_reach = 1.0 / Lighting.ray_length;
 		float distance_curve = 1.0;
-		bool prediction = true;
 		
 		int sectorx = (int) position.x;
 		int bxx = sectorx & (Sector::BLOCKS_XZ-1);
-		sectorx >>= 4;
+		sectorx >>= Sector::BLOCKS_XZ_SH;
 		int sectorz = (int) position.z;
 		int bzz = sectorz & (Sector::BLOCKS_XZ-1);
-		sectorz >>= 4;
+		sectorz >>= Sector::BLOCKS_XZ_SH;
 		
 		int skylevel = flatlands(sectorx, sectorz)(bxx, bzz).skyLevel;
 		int posy = (int) position.y;
@@ -335,7 +321,7 @@ namespace cppcraft
 				if (id) // _AIR is always 0
 				{
 					// ray damage function
-					if (damageRay(id, tmplight, maxlight, prediction, distance_curve))
+					if (damageRay(id, tmplight, maxlight, distance_curve))
 					{
 						// the ray has died, exit
 						return tmplight;
@@ -389,26 +375,29 @@ namespace cppcraft
 		
 		// pre-calculate darkness level
 		// underground additional ray damage
-		int darklevel = flatlands.getGroundLevel(position.x, position.z) - 2;
+		const int groundlevel = flatlands.getGroundLevel(position.x, position.z) - 2;
 		static const int darkramp  = 32;
 		static const int underlevel = 64;
 		
 		float maxlight = SHADOWS;
-		float light = 0.0;
+		float light;
 		
-		if (position.y < darklevel)
+		if (position.y < groundlevel)
 		{
-			light = (darklevel - position.y) / darkramp;
+			light = (groundlevel - position.y) / darkramp;
 			if (light > 1.0) light = 1.0;
-			maxlight = SHADOWS * (1.0 - light) + light * DARK_SHADOWS;
-			light = 0.0;
+			maxlight = SHADOWS * (1.0 - light) + light * DARKNESS;
+			// if we are below "depths", amply darkness, otherwise reset it to 0
+			light *= (position.y < underlevel) ? maxlight : 0;
 		}
-		if (position.y < underlevel)
+		else light = 0.0;
+		
+		/*if (position.y < underlevel)
 		{
 			light = 1.0 - position.y / underlevel;
 			maxlight = maxlight * (1.0 - light) + light * DARKNESS;
 			light *= maxlight * 2.0;
-		}
+		}*/
 		
 		#define sunray   lightRay2D(light, maxlight, position, angle.x, angle.y)
 		#define halfray  lightRay2D(light, maxlight, position, half1.x, half1.y)

@@ -43,9 +43,29 @@ namespace cppcraft
 		// DOES NOTHING on default constructor
 		Block() {}
 		// constructor taking block id as parameter
-		Block(block_t id);
+		Block(block_t id)
+		{
+			this->data = id;
+		}
+		// semi-complete constructor
+		Block(block_t id, block_t bitfield)
+		{
+			this->data = id;
+			this->data |= bitfield << 10;
+		}
 		// complete constructor
-		Block(block_t id, block_t facing, block_t special);
+		Block(block_t id, block_t facing, block_t special)
+		{
+			this->data = id;
+			this->data |= facing << 10;
+			this->data |= special << 12;
+		}
+		
+		static Block fromBlock_t(block_t bdata)
+		{
+			Block b; b.data = bdata;
+			return b;
+		}
 		
 		// sets/gets the block ID for this block
 		inline void setID(block_t id)

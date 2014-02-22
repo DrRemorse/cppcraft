@@ -1,8 +1,8 @@
 #include "precompq.hpp"
 
-#include "library/log.hpp"
-#include "library/timing/timer.hpp"
-#include "library/threading/TThreadPool.hpp"
+#include <library/log.hpp>
+#include <library/timing/timer.hpp>
+#include <library/threading/TThreadPool.hpp>
 #include "columns.hpp"
 #include "precompiler.hpp"
 #include "precomp_thread.hpp"
@@ -99,9 +99,6 @@ namespace cppcraft
 	
 	void PrecompQ::addTruckload(Sector& s)
 	{
-		// set sector recompilation flag immediately
-		s.progress = Sector::PROG_NEEDRECOMP;
-		
 		// adds all sectors in this sectors "column" to the queue
 		int start_y = s.y - (s.y & (Columns.COLUMNS_SIZE-1));
 		int end_y   = start_y + Columns.COLUMNS_SIZE;
@@ -111,15 +108,21 @@ namespace cppcraft
 		{
 			Sector& s2 = Sectors(s.x, y, s.z);
 			
+			// NOTE bug fixed:
+			// don't try to re-add sectors that are already in the owen,
+			// because different threads might just start to work on the same sector
+			
 			// try to add all sectors that need recompilation, until queue is full
 			if (s2.contents == Sector::CONT_SAVEDATA && s2.culled == false)
 			{
-				// we don't want to add sectors that are about to be precompiled
-				if (s2.progress != Sector::PROG_RECOMPILE)
-				{
-					s2.progress = Sector::PROG_NEEDRECOMP;
+				if (s2.progress == Sector::PROG_NEEDRECOMP)
+					// we can directly add sector that is flagged as ready
 					addPrecomp(s2);
-				}
+				else if (s2.progress > Sector::PROG_RECOMPILE)
+					// we also don't want to REschedule sectors already being compiled
+					// that means we really just want to change its flag if its already in the owen
+					// NOTE: this will cause this same function to try to add living precomps to queue
+					s2.progress = Sector::PROG_NEEDRECOMP;
 			}
 			
 		} // y
@@ -141,24 +144,25 @@ namespace cppcraft
 		}
 		
 		// check if sector is about to be precompiled
-		if (s.progress == Sector::PROG_RECOMPILE)
+		if (s.progress >= Sector::PROG_RECOMPILE)
 		{
-			//logger << Log::WARN << "PrecompQ::addPrecomp(): Sector already about to be precompiled" << Log::ENDL;
+			//logger << Log::WARN << "PrecompQ::addPrecomp(): Sector already about to be recompiled" << Log::ENDL;
+			s.progress = Sector::PROG_RECOMPILE;
 			// not much to do, so exit
 			return true;
 		}
 		
 		// check that the sector isn't already in the queue
-		/*int index = precompIndex(s);
+		int index = precompIndex(s);
 		if (index != -1)
 		{
-			logger << Log::INFO << "PrecompQ::addPrecomp(): Already existed " << s.x << ", " << s.y << ", " << s.z << Log::ENDL;
+			//logger << Log::INFO << "PrecompQ::addPrecomp(): Already existed " << s.x << ", " << s.y << ", " << s.z << Log::ENDL;
 			//logger << Log::INFO << "progress: " << (int) s.progress << Log::ENDL;
 			
-			// if the sector was already in the queue, just start precompiling right this instant!
+			// if the sector was already in the queue, just start recompiling right this instant!
 			s.progress = Sector::PROG_RECOMPILE;
 			return true;
-		}*/
+		}
 		
 		// because of addTruckload() dependency, some precomps could be alive still
 		while (true)
@@ -199,7 +203,7 @@ namespace cppcraft
 		if (stage == Sector::PROG_RECOMPILING)
 		{
 			// before starting precompiler we need to isolate all data properly
-			// then check if the precomp can actually be run
+			// then check if the precomp can actually be run (or is needed at all)
 			cont = pt.isolator();
 		}
 		

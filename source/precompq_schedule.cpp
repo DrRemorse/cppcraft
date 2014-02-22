@@ -1,6 +1,6 @@
 #include "precompq_schedule.hpp"
 
-#include "library/log.hpp"
+#include <library/log.hpp>
 #include "columns.hpp"
 #include "compilers.hpp"
 #include "precompq.hpp"
@@ -31,7 +31,14 @@ namespace cppcraft
 			}
 		}
 		
-		psched.push_back( PrecompSchedule( sector ) );
+		psched.emplace_back(sector);
+	}
+	
+	template <typename T>
+	void remove_at(std::vector<T>&v, typename std::vector<T>::size_type n)
+	{
+		std::swap(v[n], v.back());
+		v.pop_back();
 	}
 	
 	void PrecompScheduler::scheduling()
@@ -41,7 +48,8 @@ namespace cppcraft
 			if (psched[i].schedule())
 			{
 				// if the item was passed on to compiler, remove it
-				psched.erase(psched.begin() + i);
+				remove_at(psched, i);
+				//psched.erase(psched.begin() + i);
 			}
 		}
 	}

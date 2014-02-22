@@ -7,16 +7,10 @@
 
 namespace cppcraft
 {
-	Block::Block(block_t id)
-	{
-		this->data = id;
-	}
-	
 	bool Block::hasActivation() const
 	{
 		return isDoor(getID());
 	}
-	
 	
 	int Block::facingToCube(block_t facing)
 	{
