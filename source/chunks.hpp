@@ -34,7 +34,7 @@ namespace cppcraft
 	class Chunks
 	{
 	public:
-		static const int chunk_size = 32;
+		static const int CHUNK_SIZE = 32;
 		static const int CHUNK_SH   = 5;
 		
 		// chunks

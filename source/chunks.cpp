@@ -1,8 +1,8 @@
 #include "chunks.hpp"
 
-#include "library/math/baseconv.hpp"
-#include "library/config.hpp"
-#include "library/log.hpp"
+#include <library/math/baseconv.hpp>
+#include <library/config.hpp>
+#include <library/log.hpp>
 #include "compressor.hpp"
 #include "sectors.hpp"
 #include "flatlands.hpp"
@@ -13,7 +13,7 @@ using namespace library;
 
 namespace cppcraft
 {
-	const int chunk_offset = Chunks::chunk_size * Sectors.getY() * Chunks::chunk_size;
+	static const int chunk_offset = Chunks::CHUNK_SIZE * Sectors.getY() * Chunks::CHUNK_SIZE;
 	
 	Chunks chunks;
 	
@@ -129,10 +129,10 @@ namespace cppcraft
 	
 	void Chunks::writeSector(Sector& s, std::fstream& File)
 	{
-		int dx = (world.getWX() + s.x) & (chunk_size - 1);
-		int dz = (world.getWZ() + s.z) & (chunk_size - 1);
+		int dx = (world.getWX() + s.x) & (CHUNK_SIZE - 1);
+		int dz = (world.getWZ() + s.z) & (CHUNK_SIZE - 1);
 		
-		int P = (1 + dx + s.y * chunk_size + dz * chunk_size * Sectors.getY()) * sizeof(int);
+		int P = (1 + dx + s.y * CHUNK_SIZE + dz * CHUNK_SIZE * Sectors.getY()) * sizeof(int);
 		int PL;
 		
 		if (s.contents == Sector::CONT_NULLSECTOR)
@@ -142,9 +142,6 @@ namespace cppcraft
 			// put location of data
 			File.seekp(P);
 			File.write( (char*) &PL, sizeof(PL) );
-			
-			// set sector as having modified data
-			s.contents = Sector::CONT_NULLSECTOR;
 		}
 		else
 		{
@@ -185,9 +182,6 @@ namespace cppcraft
 			// write sectorblock_t to disk
 			File.seekp(PL);
 			File.write( (char*) s.blockpt, sizeof(Sector::sectorblock_t) );
-			
-			// set sector as having modified data
-			s.contents = Sector::CONT_SAVEDATA;
 		}
 		if (!File)
 		{

@@ -1,8 +1,8 @@
 #include "generator.hpp"
 
-#include "library/config.hpp"
-#include "library/log.hpp"
-#include "library/timing/timer.hpp"
+#include <library/config.hpp>
+#include <library/log.hpp>
+#include <library/timing/timer.hpp>
 #include "chunks.hpp"
 #include "flatlands.hpp"
 #include "minimap.hpp"
@@ -20,8 +20,8 @@ using namespace library;
 
 namespace cppcraft
 {
-	unsigned int g_fres[Chunks::chunk_size][Sectors.SECTORS_Y][Chunks::chunk_size];
-	unsigned int g_compres[Chunks::chunk_size][Chunks::chunk_size];
+	unsigned int g_fres[Chunks::CHUNK_SIZE][Sectors.SECTORS_Y][Chunks::CHUNK_SIZE];
+	unsigned int g_compres[Chunks::CHUNK_SIZE][Chunks::CHUNK_SIZE];
 	
 	void Generator::init()
 	{
@@ -109,17 +109,17 @@ namespace cppcraft
 		//   NO EARLY EXITS HERE    //
 		// NOTE NOTE NOTE NOTE NOTE //
 		
-		int dx = (sector.x + world.getWX()) & (Chunks::chunk_size-1);
-		int dz = (sector.z + world.getWZ()) & (Chunks::chunk_size-1);
+		int dx = (sector.x + world.getWX()) & (Chunks::CHUNK_SIZE-1);
+		int dz = (sector.z + world.getWZ()) & (Chunks::CHUNK_SIZE-1);
 		
 		int x1 = sector.x - dx;
-		int x2 = x1 + Chunks::chunk_size;
+		int x2 = x1 + Chunks::CHUNK_SIZE;
 		
 		if (x1 < 0) x1 = 0;            // CLAMP AFTER x2 IS SET!!!
 		if (x2 > Sectors.getXZ()) x2 = Sectors.getXZ();
 		
 		int z1 = sector.z - dz;
-		int z2 = z1 + Chunks::chunk_size;
+		int z2 = z1 + Chunks::CHUNK_SIZE;
 		
 		if (z1 < 0) z1 = 0;            // CLAMP AFTER z2 IS SET!!!
 		if (z2 > Sectors.getXZ()) z2 = Sectors.getXZ();
@@ -139,8 +139,8 @@ namespace cppcraft
 				if (firstsector.contents == Sector::CONT_UNKNOWN)
 				{
 					// find sectors internal chunk position
-					dx = (x + world.getWX()) & (Chunks::chunk_size-1);
-					dz = (z + world.getWZ()) & (Chunks::chunk_size-1);
+					dx = (x + world.getWX()) & (Chunks::CHUNK_SIZE-1);
+					dz = (z + world.getWZ()) & (Chunks::CHUNK_SIZE-1);
 					
 					// if compressed file is open, and there was an entry
 					if (cf_open && (g_compres[dx][dz] != 0))
