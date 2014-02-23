@@ -111,6 +111,10 @@ namespace cppcraft
 			// set new bitfield
 			this->data |= (data & 63) << 10;
 		}
+		inline block_t getData() const
+		{
+			return this->data;
+		}
 		
 		// human readable name of a block
 		std::string getName() const;

@@ -24,6 +24,7 @@ extern "C"
 	#include <liblattice/struct.h>
 	#include <liblattice/globals.h>
 	#include <liblattice/liblattice.h>
+	#include <liblattice/client_commands.h>
 }
 
 namespace cppcraft
@@ -68,6 +69,20 @@ namespace cppcraft
 		bc.z = bz;
 		valid = true;
 	}
+	PackCoord::PackCoord(Sector* sector, int bx, int by, int bz)
+	{
+		// NOTE: may need to verify sector is not null
+		// set world coordinates
+		wc.x = world.getWX() + sector->x;
+		wc.y = world.getWY() + sector->y;
+		wc.z = world.getWZ() + sector->z;
+		
+		// set block coordinates
+		bc.x = bx;
+		bc.y = by;
+		bc.z = bz;
+		valid = true;
+	}
 	UnpackCoord::UnpackCoord(w_coord& w, b_coord& b)
 	{
 		// set final world coordinates
@@ -86,6 +101,17 @@ namespace cppcraft
 		this->by = (sy << Sector::BLOCKS_Y_SH)  + b.y;
 		this->bz = (sz << Sector::BLOCKS_XZ_SH) + b.z;
 		valid = true;
+	}
+	
+	NetworkBlock::NetworkBlock(int bx, int by, int bz, const Block& block, NetworkBlock::btype_t type)
+	{
+		PackCoord pc(bx, by, bz);
+		// make a clean copy
+		this->block = block;
+		// set coordinates
+		this->wc = pc.wc;
+		this->bc = pc.bc;
+		this->type = type;
 	}
 	
 	void Network::init()
@@ -375,6 +401,34 @@ namespace cppcraft
 				lattice_send(&lm);
 			}
 		}
+		
+		// send blocks to remote host
+		while (ntt.outgoing.size())
+		{
+			NetworkBlock& nb = ntt.outgoing.front();
+			
+			// make world modification
+			switch (nb.type)
+			{
+				::block_t block;
+				block.id = nb.block.getID();
+				block.bf = nb.block.getData() >> 10;
+				
+				case NetworkBlock::BADD:
+					c_badd(nb.wc, nb.bc, block);
+					break;
+				case NetworkBlock::BSET:
+					c_bset(nb.wc, nb.bc, block);
+					break;
+				case NetworkBlock::BREM:
+					c_brem(nb.wc, nb.bc);
+					break;
+			}
+			
+			ntt.outgoing.pop_front();
+			
+		} // outgoing block queue
+		
 		mtx.unlock();
 	}
 	

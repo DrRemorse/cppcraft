@@ -21,6 +21,7 @@ namespace cppcraft
 		PackCoord(double x, double y, double z);
 		// packed integral coordinates (0 bit fractions)
 		PackCoord(int bx, int by, int bz);
+		PackCoord(Sector* sector, int bx, int by, int bz);
 		
 		w_coord wc;
 		b_coord bc;
@@ -46,6 +47,9 @@ namespace cppcraft
 			BREM,
 			BSET
 		};
+		
+		NetworkBlock() {}
+		NetworkBlock(int bx, int by, int bz, const Block& block, btype_t type);
 		
 		btype_t type;
 		Block block;

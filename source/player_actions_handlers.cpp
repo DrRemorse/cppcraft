@@ -1,9 +1,10 @@
 #include "player_actions.hpp"
 
-#include "library/log.hpp"
-#include "library/math/vector.hpp"
+#include <library/log.hpp>
+#include <library/math/vector.hpp>
 #include "items.hpp"
 #include "menu.hpp"
+#include "network.hpp"
 #include "particles.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
@@ -53,7 +54,9 @@ namespace cppcraft
 			block_t bitfield = selectedBlock.getFacing() + (selectedBlock.getSpecial() << 2);
 			
 			Spiders::updateBlock(ddx, ddy, ddz, bitfield, true);
-			//networkSetBlock(ddx, ddy, ddz, b->id, bitfield);
+			
+			NetworkBlock nblock(ddx, ddy, ddz, selectedBlock, NetworkBlock::BSET);
+			network.addBlock(Network::OUTGOING, nblock);
 			
 			const block_t door_ul_bit = 1 << 2;
 			
@@ -61,13 +64,19 @@ namespace cppcraft
 			{
 				// update upper also
 				Spiders::updateBlock(ddx, ddy+1, ddz, bitfield - door_ul_bit, true);
-				//networkSetBlock(ddx, ddy+1, ddz, b->id, bitfield - door_ul_bit);
+				// send network update
+				NetworkBlock nblock(ddx, ddy+1, ddz, Block(id, bitfield - door_ul_bit), NetworkBlock::BSET);
+				network.addBlock(Network::OUTGOING, nblock);
+				
 			}
 			else
 			{
 				// update lower also
 				Spiders::updateBlock(ddx, ddy-1, ddz, bitfield + door_ul_bit, true);
-				//networkSetBlock(ddx, ddy-1, ddz, b->id, bitfield + door_ul_bit);
+				// send network update
+				NetworkBlock nblock(ddx, ddy-1, ddz, Block(id, bitfield + door_ul_bit), NetworkBlock::BSET);
+				network.addBlock(Network::OUTGOING, nblock);
+				
 			}
 			
 			#ifdef USE_SOUND
@@ -203,8 +212,12 @@ namespace cppcraft
 						// play placement sound
 						soundman.playMaterial(id, Soundman::sound_place);
 						
-						//networkSetBlock(s, ddx, ddy+1, ddz, curitem->id, facing)		   // upper
-						//networkSetBlock(s, ddx, ddy, ddz, curitem->id, facing + (1 shl 2)) // lower
+						// upper
+						NetworkBlock nblock(ddx, ddy+1, ddz, Block(id, facing), NetworkBlock::BSET);
+						network.addBlock(Network::OUTGOING, nblock);
+						// lower
+						nblock = NetworkBlock(ddx, ddy, ddz, Block(id, facing + (1 << 2)), NetworkBlock::BSET);
+						network.addBlock(Network::OUTGOING, nblock);
 						
 					} // upper door test
 				}
@@ -217,12 +230,16 @@ namespace cppcraft
 					
 					if (placed)
 					{
+						/// block was placed (PA_AddBlock --> build()) ///
+						
 						item.setCount(item.getCount() - 1); //decrease count (directly)!
 						
 						// play placement sound
 						soundman.playMaterial(id, Soundman::sound_place);
 						
-						//networkAdd(s, ddx, ddy, ddz, curitem->id, bfield)
+						// send update to network
+						NetworkBlock nblock(ddx, ddy, ddz, Block(id, bfield), NetworkBlock::BADD);
+						network.addBlock(Network::OUTGOING, nblock);
 					}
 					
 				}
@@ -237,7 +254,7 @@ namespace cppcraft
 	// if no action is being performed, try to select a block (in the world) instead
 	void PlayerActions::handleActions(double frametime)
 	{
-		block_t facing  = player.getBlockFacing();
+		//block_t facing  = player.getBlockFacing();
 		vec3 lookVector = player.getLookVector();
 		
 		playerselect_t& selection =  plogic.selection;
@@ -310,13 +327,17 @@ namespace cppcraft
 					{
 						// we're at lower, remove upper
 						Spiders::removeBlock(ddx, ddy+1, ddz, true);
-						//networkRemove(plogic.SelectedSector, ddx, ddy+1, ddz);
+						// send update to network
+						NetworkBlock nblock(ddx, ddy+1, ddz, Block(), NetworkBlock::BREM);
+						network.addBlock(Network::OUTGOING, nblock);
 					}
 					else
 					{
 						// we're at upper, remove lower
 						Spiders::removeBlock(ddx, ddy-1, ddz, true);
-						//networkRemove(plogic.SelectedSector, ddx, ddy-1, ddz);
+						// send update to network
+						NetworkBlock nblock(ddx, ddy-1, ddz, Block(), NetworkBlock::BREM);
+						network.addBlock(Network::OUTGOING, nblock);
 					}
 				}
 				
@@ -328,10 +349,11 @@ namespace cppcraft
 					// play material 'removed' sound
 					soundman.playMaterial(removed.getID(), Soundman::sound_remove);
 					
-					// propagate query removal of block
-					//networkRemove(plogic.SelectedSector, ddx, ddy, ddz)
-					// --------------------------------
+					// send update to network
+					NetworkBlock nblock(ddx, ddy, ddz, Block(), NetworkBlock::BREM);
+					network.addBlock(Network::OUTGOING, nblock);
 					
+					// --------------------------------
 					int FIXME_create_some_smoke_n_shits;
 					
 					// create particles using fractionals
