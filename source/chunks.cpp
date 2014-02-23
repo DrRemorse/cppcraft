@@ -25,8 +25,8 @@ namespace cppcraft
 	void Chunks::addSector(Sector& sector)
 	{
 		// generate chunk token from sector
-		int tmptokenX = (sector.x + world.getWX()) / chunk_size;
-		int tmptokenZ = (sector.z + world.getWZ()) / chunk_size;
+		int tmptokenX = (sector.x + world.getWX()) >> CHUNK_SH;
+		int tmptokenZ = (sector.z + world.getWZ()) >> CHUNK_SH;
 		
 		int foundChunk = -1;
 		
@@ -73,8 +73,8 @@ namespace cppcraft
 	std::string Chunks::getSectorString(Sector& sector)
 	{
 		// base32 composite of X and Z absolute world coordinates
-		return BaseConv::base32((sector.x + world.getWX()) / Chunks::chunk_size, 5) + "-" + 
-				BaseConv::base32((sector.z + world.getWZ()) / Chunks::chunk_size, 5);
+		return BaseConv::base32((sector.x + world.getWX()) >> Chunks::CHUNK_SH, 5) + "-" + 
+				BaseConv::base32((sector.z + world.getWZ()) >> Chunks::CHUNK_SH, 5);
 	}
 	
 	// forwards
@@ -135,44 +135,60 @@ namespace cppcraft
 		int P = (1 + dx + s.y * chunk_size + dz * chunk_size * Sectors.getY()) * sizeof(int);
 		int PL;
 		
-		// get location of data for this sector (slot)
-		// relative to beginning of file
-		File.seekg(P);
-		// read position data
-		File.read((char*) &PL, sizeof(PL));
-		
-		// if we failed to read, PL must be set to 0
-		if (!File) PL = 0;
-		
-		if (PL == 0)
-		{   // sector was not written! sound the alarm!
-			int currentCnt;
-			// get current number of sectors already written
-			File.seekg(0);
-			File.read( (char*) &currentCnt, sizeof(currentCnt) );
-			
-			// if we failed to read, currentCnt must be set to 0
-			if (!File) currentCnt = 0;
-			
-			PL = (1 + chunk_offset) * sizeof(int) + currentCnt * sizeof(Sector::sectorblock_t);
-			
+		if (s.contents == Sector::CONT_NULLSECTOR)
+		{
+			// nullsector has location '0'
+			PL = 0;
 			// put location of data
 			File.seekp(P);
 			File.write( (char*) &PL, sizeof(PL) );
 			
-			// increase count, and update it
-			currentCnt++;
-			File.seekp(0);
-			File.write( (char*) &currentCnt, sizeof(currentCnt) );
+			// set sector as having modified data
+			s.contents = Sector::CONT_NULLSECTOR;
 		}
-		
-		// reset all state flags
-		File.clear();
-		
-		// write sectorblock_t to disk
-		File.seekp(PL);
-		File.write( (char*) s.blockpt, sizeof(Sector::sectorblock_t) );
-		
+		else
+		{
+			// get location of data for this sector (slot)
+			// relative to beginning of file
+			File.seekg(P);
+			// read position data
+			File.read((char*) &PL, sizeof(PL));
+			
+			// if we failed to read, PL must be set to 0
+			if (!File) PL = 0;
+			
+			if (PL == 0)
+			{   // sector was not written! sound the alarm!
+				int currentCnt;
+				// get current number of sectors already written
+				File.seekg(0);
+				File.read( (char*) &currentCnt, sizeof(currentCnt) );
+				
+				// if we failed to read, currentCnt must be set to 0
+				if (!File) currentCnt = 0;
+				
+				PL = (1 + chunk_offset) * sizeof(int) + currentCnt * sizeof(Sector::sectorblock_t);
+				
+				// put location of data
+				File.seekp(P);
+				File.write( (char*) &PL, sizeof(PL) );
+				
+				// increase count, and update it
+				currentCnt++;
+				File.seekp(0);
+				File.write( (char*) &currentCnt, sizeof(currentCnt) );
+			}
+			
+			// reset all state flags
+			File.clear();
+			
+			// write sectorblock_t to disk
+			File.seekp(PL);
+			File.write( (char*) s.blockpt, sizeof(Sector::sectorblock_t) );
+			
+			// set sector as having modified data
+			s.contents = Sector::CONT_SAVEDATA;
+		}
 		if (!File)
 		{
 			logger << Log::ERR << "Error writing sectoral data: " << PL << Log::ENDL;
@@ -182,8 +198,6 @@ namespace cppcraft
 			
 			throw std::string("failed to write sector block data");
 		}
-		// set sector as having modified data
-		s.contents = Sector::CONT_SAVEDATA;
 		
 	} // writeSector
 	

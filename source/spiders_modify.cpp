@@ -157,6 +157,10 @@ namespace cppcraft
 		// we removed a non-air block, so decrease block counter
 		s->blockpt->blocks -= 1;
 		
+		// BEFORE we clear the sector entirely, make sure conditions are ok
+		s->blockpt->hardsolid = 0; // mui importante! must optimize later
+		s->culled = false;         // remove culled flag!
+		
 		// don't render something with 0 blocks
 		if (s->blockpt->blocks == 0)
 		{
@@ -175,6 +179,7 @@ namespace cppcraft
 			}
 			else s->progress = Sector::PROG_NEEDRECOMP;
 		}
+		// NOTE: after this point, the sector may be cleared! don't assume blockpt exists!
 		
 		// write updated sector to disk
 		chunks.addSector(*s);
@@ -188,9 +193,6 @@ namespace cppcraft
 			's->blockpt->b(bx,bz,by).datapos = 0 'reset index
 		EndIf
 		*/
-		
-		s->blockpt->hardsolid = 0; // mui importante! must optimize later
-		s->culled = false;         // remove culled flag!
 		
 		// update neighboring sectors (depending on edges)
 		updateSurroundings(*s, bx, by, bz, immediate);

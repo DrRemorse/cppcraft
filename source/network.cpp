@@ -407,22 +407,22 @@ namespace cppcraft
 		{
 			NetworkBlock& nb = ntt.outgoing.front();
 			
+			::block_t block;
+			block.id = nb.block.getID();
+			block.bf = nb.block.getData() >> 10;
+			
 			// make world modification
 			switch (nb.type)
 			{
-				::block_t block;
-				block.id = nb.block.getID();
-				block.bf = nb.block.getData() >> 10;
-				
-				case NetworkBlock::BADD:
-					c_badd(nb.wc, nb.bc, block);
-					break;
-				case NetworkBlock::BSET:
-					c_bset(nb.wc, nb.bc, block);
-					break;
-				case NetworkBlock::BREM:
-					c_brem(nb.wc, nb.bc);
-					break;
+			case NetworkBlock::BADD:
+				c_badd(nb.wc, nb.bc, block);
+				break;
+			case NetworkBlock::BSET:
+				c_bset(nb.wc, nb.bc, block);
+				break;
+			case NetworkBlock::BREM:
+				c_brem(nb.wc, nb.bc);
+				break;
 			}
 			
 			ntt.outgoing.pop_front();
