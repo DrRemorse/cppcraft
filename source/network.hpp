@@ -9,6 +9,8 @@
 #include <mutex>
 #include <thread>
 
+struct lattice_bump;
+
 namespace cppcraft
 {
 	class Sector;
@@ -99,6 +101,7 @@ namespace cppcraft
 		// just to have it somewhere visible
 		NetworkThreadTransfer ntt;
 		
+		friend void bumpError(lattice_bump* bump);
 	};
 	extern Network network;
 }

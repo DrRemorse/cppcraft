@@ -1,6 +1,6 @@
 #include "spiders.hpp"
 
-#include "library/log.hpp"
+#include <library/log.hpp>
 #include "blocks.hpp"
 #include "chunks.hpp"
 #include "generator.hpp"

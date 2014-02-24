@@ -2,6 +2,8 @@
 
 #include <library/log.hpp>
 #include <library/config.hpp>
+#include <library/opengl/input.hpp>
+#include <GL/glfw3.h>
 #include "player.hpp"
 #include "player_logic.hpp"
 #include "sectors.hpp"
@@ -188,6 +190,14 @@ namespace cppcraft
 		network.addBlock(Network::INCOMING, block);
 	}
 	
+	void bumpError(lattice_bump* bump)
+	{
+		PackCoord& pc = network.ntt.pcoord;
+		logger << Log::INFO << "Player: (" << pc.wc.x << "," << pc.wc.y << "," << pc.wc.z << ") bxyz (" << pc.bc.x << "," << pc.bc.y << "," << pc.bc.z << ")" << Log::ENDL;
+		//logger << Log::INFO << "I'm supposedly outside of all servers?" << Log::ENDL;
+		logger << Log::INFO << "Bump: (" << bump->bad_wcoord.x << "," << bump->bad_wcoord.y << "," << bump->bad_wcoord.z << ") bxyz (" << bump->bad_bcoord.x << "," << bump->bad_bcoord.y << "," << bump->bad_bcoord.z << ")" << Log::ENDL;
+	}
+	
 	void message(lattice_message* mp)
 	{
 		/*
@@ -218,7 +228,7 @@ namespace cppcraft
 		switch (mp->type)
 		{
 		case T_BUMP:
-			logger << Log::INFO << "I'm supposedly outside of all servers?" << Log::ENDL;
+			bumpError((lattice_bump*) mp->args);
 			break;
 		case T_CONNECTED:
 			logger << Log::INFO << "Connected to server" << Log::ENDL;
@@ -250,7 +260,7 @@ namespace cppcraft
 			break;
 			
 		case T_LOG:
-			//logger << Log::INFO << "SERVER  " << ((char*) mp->args) << Log::ENDL;
+			logger << Log::INFO << "SERVER  " << ((char*) mp->args) << Log::ENDL;
 			break;
 			
 		default:
@@ -314,9 +324,34 @@ namespace cppcraft
 		return true;
 	}
 	
+	void srv_show()
+	{
+		server_socket *s;
+		
+		for (int x=0;x<3;x++)
+		for (int y=0;y<3;y++)
+		for (int z=0;z<3;z++)
+		{
+			if ((s = neighbor_table[x][y][z]))
+			{
+				logger << Log::INFO << "Server [" << x << "," << y << "," << z << "]: " << s->coord.x << ", " << s->coord.y << ", " << s->coord.z << "  port=" << s->port << Log::ENDL;
+				
+				/*for (p = s->uidlist_head; p; p = p->next)
+				{
+					printf("Tracking UID: %d Standing: %d\n", p->userid, p->standing_on);
+				}*/
+			}
+		}
+	}
+	
 	/// from main (worldman) thread ///
 	void Network::handleNetworking()
 	{
+		if (input.getKey(GLFW_KEY_COMMA))
+		{
+			srv_show();
+		}
+		
 		mtx.lock();
 		if (player.changedPosition || player.changedRotation)
 		{
