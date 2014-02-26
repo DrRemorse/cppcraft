@@ -57,9 +57,9 @@ namespace cppcraft
 		
 		// set block coordinates (with 8-bit fractions)
 		vec3 f = vec3(x, y, z).frac();
-		bc.x = (bx << 8) + (f.x * 255);
-		bc.y = (by << 8) + (f.y * 255);
-		bc.z = (bz << 8) + (f.z * 255);
+		bc.x = (bx << 8) + (f.x * 256);
+		bc.y = (by << 8) + (f.y * 256);
+		bc.z = (bz << 8) + (f.z * 256);
 		valid = true;
 	}
 	PackCoord::PackCoord(int bx, int by, int bz)
@@ -209,6 +209,15 @@ namespace cppcraft
 		
 		logger << Log::INFO << "User joined: " << user->nickname << Log::ENDL;
 	}
+	void userQuits(NetPlayer::userid_t userid, lattice_quit* msg)
+	{
+		NetPlayer* np = netplayers.playerByUID(userid);
+		if (np)
+		{
+			logger << Log::INFO << "User quit: " << np->getName() << " (" << &msg->desc << ")" << Log::ENDL;
+			netplayers.remove(userid);
+		}
+	}
 	void userMoved(NetPlayer::userid_t userid, lattice_p* movement)
 	{
 		NetPlayer* np = netplayers.playerByUID(userid);
@@ -309,6 +318,10 @@ namespace cppcraft
 		case T_USER:
 			userAdded(mp->fromuid, (lattice_user*) mp->args);
 			break;
+		case T_FADE:
+		case T_QUIT:
+			userQuits(mp->fromuid, (lattice_quit*) mp->args);
+			break;
 			
 		default:
 			logger << Log::INFO << "got type " << mp->type << Log::ENDL;
@@ -404,14 +417,11 @@ namespace cppcraft
 		}
 		
 		mtx.lock();
-		if (player.changedPosition || player.changedRotation)
-		{
-			ntt.pmoved   = player.changedPosition;
-			ntt.protated = player.changedRotation;
-			
-			if (ntt.pmoved)   ntt.pcoord = PackCoord(player.X, player.Y, player.Z);
-			if (ntt.protated) ntt.prot   = vec2(player.xrotrad, player.yrotrad);
-		}
+		
+		ntt.pmoved   = player.changedPosition;
+		if (ntt.pmoved)   ntt.pcoord = PackCoord(player.X, player.Y, player.Z);
+		ntt.protated = player.changedRotation;
+		if (ntt.protated) ntt.prot   = vec2(player.xrotrad, player.yrotrad);
 		
 		// receive blocks from network thread
 		while (ntt.incoming.size())
