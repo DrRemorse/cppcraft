@@ -11,17 +11,18 @@ namespace cppcraft
 	class NetPlayers
 	{
 	public:
+		typedef unsigned int userid_t;
 		
 		inline void add(NetPlayer& p)
 		{
 			players.push_back(p);
 		}
-		void remove(unsigned int uid);
+		void remove(userid_t uid);
 		
 		// returns -1 if no matching uid was found
-		int indexByUID(unsigned int uid) const;
+		int indexByUID(userid_t uid) const;
 		// returns null if no matching uid was found
-		NetPlayer* playerByUID(unsigned int uid);
+		NetPlayer* playerByUID(userid_t uid);
 		
 		// network updates
 		void updatePosition(NetPlayer*, UnpackCoordF& position);

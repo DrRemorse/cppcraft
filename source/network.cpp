@@ -4,17 +4,21 @@
 #include <library/config.hpp>
 #include <library/opengl/input.hpp>
 #include <GL/glfw3.h>
+#include "netplayers.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
 #include "sectors.hpp"
 #include "spiders.hpp"
 #include "world.hpp"
 #include <cstring>
+#include <cmath>
 
 // REMOVE ME -->
 #include <cstdlib>     /* srand, rand */
 #include <ctime>       /* time */
 // <--
+
+static const double PI2 = 4 * atan(1) * 2;
 
 using namespace library;
 
@@ -198,6 +202,33 @@ namespace cppcraft
 		
 		network.addBlock(Network::INCOMING, block);
 	}
+	void userAdded(NetPlayer::userid_t userid, lattice_user* user)
+	{
+		NetPlayer nplayer(userid, user->nickname);
+		netplayers.add(nplayer);
+		
+		logger << Log::INFO << "User joined: " << user->nickname << Log::ENDL;
+	}
+	void userMoved(NetPlayer::userid_t userid, lattice_p* movement)
+	{
+		NetPlayer* np = netplayers.playerByUID(userid);
+		if (np)
+		{
+			UnpackCoordF coord(movement->wcoord, movement->bcoord);
+			netplayers.updatePosition(np, coord);
+		}
+	}
+	void userRotated(NetPlayer::userid_t userid, lattice_pr* rotated)
+	{
+		NetPlayer* np = netplayers.playerByUID(userid);
+		if (np)
+		{
+			vec2 rot(rotated->rot.xrot, rotated->rot.yrot);
+			rot = rot * PI2 / 4096;
+			//netplayers.updateRotation(rot);
+			np->setRotation(rot);
+		}
+	}
 	
 	void bumpError(lattice_bump* bump)
 	{
@@ -255,7 +286,10 @@ namespace cppcraft
 			break;
 			
 		case T_P:
-			logger << Log::INFO << "Player moves: " << ((int*) mp->args)[0] << Log::ENDL;
+			userMoved(mp->fromuid, (lattice_p*) mp->args);
+			break;
+		case T_PR:
+			userRotated(mp->fromuid, (lattice_pr*) mp->args);
 			break;
 			
 		case T_BADD:
@@ -270,6 +304,10 @@ namespace cppcraft
 			
 		case T_LOG:
 			logger << Log::INFO << "SERVER  " << ((char*) mp->args) << Log::ENDL;
+			break;
+			
+		case T_USER:
+			userAdded(mp->fromuid, (lattice_user*) mp->args);
 			break;
 			
 		default:
@@ -423,30 +461,14 @@ namespace cppcraft
 		{
 			if (ntt.pmoved)
 			{
-				lattice_p lp;
-				// world coordinates
-				
-				lp.wcoord = ntt.pcoord.wc;
-				// block coordinates
-				lp.bcoord = ntt.pcoord.bc;
-				
-				lattice_message lm;
-				lm.type = T_P;
-				lm.args = &lp;
-				
-				lattice_send(&lm);
+				c_p(ntt.pcoord.wc, ntt.pcoord.bc);
 			}
 			if (ntt.protated)
 			{
-				lattice_pr pr;
-				pr.rot.xrot = ntt.prot.x;
-				pr.rot.yrot = ntt.prot.y;
-				
-				lattice_message lm;
-				lm.type = T_PR;
-				lm.args = &pr;
-				
-				lattice_send(&lm);
+				head_rot rot;
+				rot.xrot = ntt.prot.x / PI2 * 4096;
+				rot.yrot = ntt.prot.y / PI2 * 4096;
+				c_pr(rot);
 			}
 		}
 		

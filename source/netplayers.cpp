@@ -2,6 +2,8 @@
 
 namespace cppcraft
 {
+	NetPlayers netplayers;
+	
 	void NetPlayers::remove(unsigned int uid)
 	{
 		int index = indexByUID(uid);
@@ -39,4 +41,3 @@ namespace cppcraft
 		p->setRotation(rotation);
 	}
 }
-

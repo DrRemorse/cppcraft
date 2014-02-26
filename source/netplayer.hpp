@@ -20,7 +20,7 @@ namespace cppcraft
 		typedef unsigned int userid_t;
 		
 		NetPlayer();
-		NetPlayer(userid_t uid, const std::string& name, const w_coord& w);
+		NetPlayer(userid_t uid, const std::string& name);
 		
 		inline userid_t getUserID() const
 		{

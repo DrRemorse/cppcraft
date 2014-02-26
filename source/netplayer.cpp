@@ -2,6 +2,12 @@
 
 namespace cppcraft
 {
+	NetPlayer::NetPlayer(NetPlayer::userid_t uid, const std::string& name)
+	{
+		this->userID = uid;
+		this->name = name;
+	}
+	
 	void NetPlayer::setPosition(w_coord& wc, library::vec3& pos)
 	{
 		this->wc = wc;
