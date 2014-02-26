@@ -17,6 +17,7 @@
 #include "renderman.hpp"
 #include "threading.hpp"
 #include "worldmanager.hpp"
+#include <random>
 
 #include <string>
 

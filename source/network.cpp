@@ -10,7 +10,11 @@
 #include "spiders.hpp"
 #include "world.hpp"
 #include <cstring>
-#include <random>
+
+// REMOVE ME -->
+#include <cstdlib>     /* srand, rand */
+#include <ctime>       /* time */
+// <--
 
 using namespace library;
 
@@ -103,6 +107,11 @@ namespace cppcraft
 		this->by = (sy << Sector::BLOCKS_Y_SH)  + b.y;
 		this->bz = (sz << Sector::BLOCKS_XZ_SH) + b.z;
 		valid = true;
+	}
+	UnpackCoordF::UnpackCoordF(w_coord& w, b_coord& b)
+	{
+		wc = w;
+		bc = vec3(b.x, b.y, b.z) / 256.0;
 	}
 	
 	NetworkBlock::NetworkBlock(int bx, int by, int bz, const Block& block, NetworkBlock::btype_t type)
@@ -287,11 +296,15 @@ namespace cppcraft
 		std::string uname  = config.get("net.user", "guest");
 		std::string upass  = config.get("net.pass", "guest");
 		
+		srand(time(0));
+		/*
 		std::random_device rd;
 		std::mt19937 gen(rd());
 		std::uniform_int_distribution<unsigned int> dis;
 		
 		lattice_player.userid = dis(gen);
+		*/
+		lattice_player.userid = rand();
 		lattice_player.nickname = strdup((char*) uname.c_str());
 		
 		PackCoord playerCoords(player.X, player.Y, player.Z);
@@ -318,7 +331,7 @@ namespace cppcraft
 		lattice_player.hhold.item_type = 0;
 		lattice_player.mining = 0;
 		
-		logger << Log::INFO << "Connecting to " << hostn << ":" << port << Log::ENDL;
+		logger << Log::INFO << "Connecting to " << hostn << ":" << port << " as " << lattice_player.userid << Log::ENDL;
 		
 		if (lattice_connect((char*) hostn.c_str(), port) < 0) return false;
 		return true;

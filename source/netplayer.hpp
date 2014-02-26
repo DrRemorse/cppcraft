@@ -3,11 +3,16 @@
 
 #include <library/math/vector.hpp>
 #include <liblattice/coordinates.h>
+//#include <network.hpp>
 #include "world.hpp"
 #include <string>
 
 namespace cppcraft
 {
+	struct dpos_t
+	{
+		double x, y, z;
+	};
 	
 	class NetPlayer
 	{
@@ -26,14 +31,22 @@ namespace cppcraft
 			return name;
 		}
 		
-		void setPosition(const b_coord& pos);
+		dpos_t getPosition(int wx, int wy, int wz);
+		const library::vec2& getRotation() const
+		{
+			return rotation;
+		}
+		
+		void setPosition(w_coord& wc, library::vec3& pos);
+		void setRotation(library::vec2& rot);
 		
 	private:
 		std::string name;
 		userid_t userID;
 		
 		// position & orientation
-		double pos[3];
+		w_coord wc;
+		library::vec3 pos;
 		library::vec2 rotation;
 		
 		// synchronized rendering data

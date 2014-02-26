@@ -32,12 +32,20 @@ namespace cppcraft
 	class UnpackCoord
 	{
 	public:
-		UnpackCoord() {}
 		// unpack integral coordinates (0 bit fractions)
 		UnpackCoord(w_coord& wc, b_coord& bc);
 		
 		int bx, by, bz;
 		bool valid;
+	};
+	class UnpackCoordF
+	{
+	public:
+		// unpack precision coordinates (8 bit fractions)
+		UnpackCoordF(w_coord& wc, b_coord& bc);
+		
+		w_coord wc;
+		library::vec3 bc;
 	};
 	
 	class NetworkBlock
