@@ -20,8 +20,8 @@ namespace cppcraft
 	LightingClass Lighting;
 	
 	const float LightingClass::DARKNESS = 255;
-	static const float DARK_SHADOWS     = 255 * 0.80;
-	const float LightingClass::SHADOWS  = 255 * 0.72;
+	static const float DARK_SHADOWS     = 255 * 0.78;
+	const float LightingClass::SHADOWS  = 255 * 0.68;
 	const float LightingClass::CORNERS  = 255 * 0.48;
 	
 	static const float RAY_CRASH_CONSTANT = 64.0f;

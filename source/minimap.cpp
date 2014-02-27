@@ -1,12 +1,11 @@
 #include "minimap.hpp"
 
-#include "library/config.hpp"
-#include "library/log.hpp"
-#include "library/bitmap/bitmap.hpp"
-#include "library/bitmap/colortools.hpp"
-#include "library/opengl/opengl.hpp"
-#include "library/opengl/vao.hpp"
-#include "library/opengl/texture.hpp"
+#include <library/log.hpp>
+#include <library/bitmap/bitmap.hpp>
+#include <library/bitmap/colortools.hpp>
+#include <library/opengl/opengl.hpp>
+#include <library/opengl/vao.hpp>
+#include <library/opengl/texture.hpp>
 #include "biome.hpp"
 #include "camera.hpp"
 #include "flatlands.hpp"
@@ -67,11 +66,11 @@ namespace cppcraft
 		minimapVAO.end();
 	}
 	
-	void Minimap::update()
+	void Minimap::update(double px, double pz)
 	{
 		// minimap subpixel offset
-		this->ofsX = (player.X - (Sectors.getXZ() * Sector::BLOCKS_XZ / 2)) / Seamless::OFFSET * 2;
-		this->ofsY = (player.Z - (Sectors.getXZ() * Sector::BLOCKS_XZ / 2)) / Seamless::OFFSET * 2;
+		this->ofsX = (px - (Sectors.getXZ() * Sector::BLOCKS_XZ / 2)) / Seamless::OFFSET * 2;
+		this->ofsY = (pz - (Sectors.getXZ() * Sector::BLOCKS_XZ / 2)) / Seamless::OFFSET * 2;
 		
 		// update synchronization
 		if (this->needs_update)

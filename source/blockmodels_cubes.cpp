@@ -50,7 +50,7 @@ namespace cppcraft
 			// in this order: +z -z +y -y +x -x
 			for (int face = 0; face < 6; face++)
 			{
-				// create mesj object with 4 vertices
+				// create mesh object with 4 vertices
 				BlockMesh bm(4);
 				SelectionMesh sm(4);
 				
@@ -135,6 +135,36 @@ namespace cppcraft
 				selectionCube[model].add(sm);
 			} // face
 		} // cube model
+		
+		// centroidal cube (24 verts)
+		// in this order: +z -z +y -y +x -x
+		;{
+			BlockMesh bm(24);
+			int index = 0;
+			
+			for (int face = 0; face < 6; face++)
+			{
+				for (int vertex = 0; vertex < 4; vertex++)
+				{
+					bm[index].x = (cube_vertices[face][vertex * 3    ] - 0.5) * VERTEX_SCALE; // x
+					bm[index].y = (cube_vertices[face][vertex * 3 + 1] - 0.5) * VERTEX_SCALE; // y
+					bm[index].z = (cube_vertices[face][vertex * 3 + 2] - 0.5) * VERTEX_SCALE; // z
+					bm[index].face = 0;
+					
+					bm[index].nx = cube_normals[face][0]; // nx
+					bm[index].ny = cube_normals[face][1]; // ny
+					bm[index].nz = cube_normals[face][2]; // nz
+					
+					bm[index].u = cube_texcoords[face][vertex * 2    ] * VERTEX_SCALE; // u
+					bm[index].v = cube_texcoords[face][vertex * 2 + 1] * VERTEX_SCALE; // v
+					bm[index].w = 0; // w = tile_id
+					
+				} // vertex
+				
+			} // face
+			centerCube.add(bm);
+			
+		} // centroidal cube
 		
 	} // initCubes()
 }

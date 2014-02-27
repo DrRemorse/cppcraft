@@ -49,5 +49,6 @@ namespace cppcraft
 		void renderSceneWater(Renderer& renderer);
 		
 		friend class SkyRenderer;
+		friend class GUIRenderer;
 	};
 }

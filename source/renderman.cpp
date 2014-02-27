@@ -5,8 +5,6 @@
 #include "library/opengl/opengl.hpp"
 
 #include "compilers.hpp"
-#include "camera.hpp"
-#include "gameconf.hpp"
 #include "player.hpp"
 #include "render_fs.hpp"
 #include "render_gui.hpp"
@@ -16,7 +14,6 @@
 #include "textureman.hpp"
 #include "tiles.hpp"
 #include "threading.hpp"
-#include "worldmanager.hpp"
 #include <cmath>
 
 //#define DEBUG
@@ -110,25 +107,12 @@ namespace cppcraft
 		
 		thesun.integrate(0.02 * dtime);
 		
-		switch (worldman.getState())
-		{
-		case worldman.GS_RUNNING:
-			// render scene
-			sceneRenderer->render(*this, worldman);
-			// post processing
-			screenspace.render(gamescr, this->frametick);
-			// gui
-			rendergui.render(*this);
-			break;
-		case worldman.GS_PAUSED:
-			sceneRenderer->render(*this, worldman);
-			//renderPause();
-			break;
-			
-		default:
-			logger << Log::ERR << "Renderer::render(): Invalid gamestate. Line: " << __LINE__ << Log::ENDL;
-			throw std::string("Renderer::render(): This gamestate is not implemented yet!");
-		}
+		// render scene
+		sceneRenderer->render(*this, worldman);
+		// post processing
+		screenspace.render(gamescr, this->frametick);
+		// gui
+		rendergui.render(*this);
 		
 		#ifdef DEBUG
 		if (OpenGL::checkError())

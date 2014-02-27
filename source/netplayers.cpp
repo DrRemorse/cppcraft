@@ -40,4 +40,9 @@ namespace cppcraft
 	{
 		p->setRotation(rotation);
 	}
+	
+	void NetPlayers::renderPlayers()
+	{
+		
+	}
 }

@@ -1,5 +1,11 @@
 #include "netplayer.hpp"
 
+#include <library/opengl/oglfont.hpp>
+#include <library/opengl/opengl.hpp>
+#include <library/opengl/vao.hpp>
+
+using namespace library;
+
 namespace cppcraft
 {
 	NetPlayer::NetPlayer(NetPlayer::userid_t uid, const std::string& name)

@@ -17,7 +17,7 @@ namespace cppcraft
 	public:
 		Minimap();
 		void init();
-		void update();
+		void update(double px, double pz);
 		void render(library::mat4& mvp);
 		
 		void addSector(Sector& s);

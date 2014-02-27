@@ -4,7 +4,9 @@
 #include "library/opengl/opengl.hpp"
 #include "library/opengl/window.hpp"
 #include "library/opengl/oglfont.hpp"
+#include "minimap.hpp"
 #include "renderman.hpp"
+#include "render_scene.hpp"
 #include "shaderman.hpp"
 #include <cmath>
 #include <sstream>
@@ -14,7 +16,6 @@ using namespace library;
 namespace cppcraft
 {
 	GUIRenderer rendergui;
-	const double PI = 4 * atan(1);
 	// the GUIs orthographic projection matrix
 	mat4 ortho;
 	// A wild Font appears!
@@ -39,6 +40,9 @@ namespace cppcraft
 		
 		font.setColor(vec4(0.8, 0.8, 1.0, 1.0));
 		font.setBackColor(vec4(0.0, 0.5));
+		
+		// initialize minimap
+		minimap.init();
 	}
 	
 	void GUIRenderer::render(Renderer& renderer)

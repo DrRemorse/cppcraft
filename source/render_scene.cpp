@@ -1,6 +1,5 @@
 #include "render_scene.hpp"
 
-#include <library/config.hpp>
 #include <library/log.hpp>
 #include <library/opengl/fbo.hpp>
 #include <library/opengl/opengl.hpp>
@@ -41,9 +40,6 @@ namespace cppcraft
 		// initialize sky renderer
 		skyrenderer.init();
 		
-		// initialize minimap
-		minimap.init();
-		
 		// the FBO we render the main scene to
 		sceneFBO.create();
 		sceneFBO.bind();
@@ -71,6 +67,7 @@ namespace cppcraft
 			reflectionCamera.init(renderer.gamescr);
 		}
 		lastTime = 0.0;
+		this->playerX = this->playerY = this->playerZ = 0.0;
 	}
 	
 	// render normal scene
@@ -112,7 +109,8 @@ namespace cppcraft
 		/// and recalculate rendering queue if necessary ///
 		////////////////////////////////////////////////////
 		
-		if (mtx.sectorseam.try_lock())
+		//if (mtx.sectorseam.try_lock())
+		mtx.sectorseam.lock();
 		{
 			mtx.playermove.lock();
 			{
@@ -120,7 +118,7 @@ namespace cppcraft
 				//          player snapshot           //
 				//------------------------------------//
 				
-				const double WEIGHT = 0.7;
+				const double WEIGHT = 0.5;
 				//logger << Log::INFO << WEIGHT << " <-- " << renderer.dtime << " / " << 0.0125 << Log::ENDL;
 				
 				// (cheap) movement interpolation
@@ -128,7 +126,7 @@ namespace cppcraft
 				
 				int dx = snapWX - world.getWX();
 				int dz = snapWZ - world.getWZ();
-				if (abs(dx) + abs(dz) < 2)
+				if (abs(dx) + abs(dz) < 3)
 				{
 					playerX = (playerX + dx * 16) * (1.0 - WEIGHT) + player.snapX * WEIGHT;
 					playerZ = (playerZ + dz * 16) * (1.0 - WEIGHT) + player.snapZ * WEIGHT;
@@ -162,10 +160,7 @@ namespace cppcraft
 			snapWZ = world.getWZ();
 			
 			/// update minimap ///
-			minimap.update();
-			
-			/// update particles ///
-			particleSystem.renderUpdate();
+			minimap.update(playerX, playerZ);
 			
 			/// camera deviations ///
 			if (cameraDeviation(renderer.frametick, renderer.dtime))
@@ -335,7 +330,9 @@ namespace cppcraft
 		glEnable(GL_BLEND);
 		glColorMask(1, 1, 1, 0);
 		
-		// render particles
+		/// update particles ///
+		particleSystem.renderUpdate();
+		/// render particles ///
 		particleSystem.render(snapWX, snapWZ);
 		
 		glColorMask(1, 1, 1, 1);
