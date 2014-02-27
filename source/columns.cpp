@@ -242,7 +242,7 @@ namespace cppcraft
 		}
 		
 		// disable vao & vbo
-		glBindVertexArray(0);
+		//glBindVertexArray(0);
 		
 		#ifdef DEBUG
 		if (OpenGL::checkError())

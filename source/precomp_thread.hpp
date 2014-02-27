@@ -132,10 +132,9 @@ namespace cppcraft
 		// ao gradient program, adding corner shadows to a completed mesh
 		void ambientOcclusionGradients(AmbientOcclusion* ambocc, vertex_t* datadump, int vertexCount);
 		// mesh optimizers
-		void optimizeRepeatMesh();
-		void optimizeNormalMesh();
-		void optimizeAlphaMesh();
-		void optimizeWaterMesh();
+		void optimizeMesh(unsigned short& verts, vertex_t* source, int txsize);
+		void optimizeMesh(int shaderline);
+		void optimizeShadedMesh(int shaderline);
 	};
 	
 }

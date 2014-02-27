@@ -52,6 +52,8 @@ namespace cppcraft
 		// synchronized rendering data
 		//vec2 grot;
 		library::vec3 gxyz;
+		
+		friend class NetPlayers;
 	};
 	
 }

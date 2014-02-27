@@ -1,10 +1,10 @@
 #include "textureman.hpp"
 
-#include "library/log.hpp"
-#include "library/config.hpp"
-#include "library/bitmap/bitmap.hpp"
-#include "library/opengl/window.hpp"
-#include "library/opengl/opengl.hpp"
+#include <library/log.hpp>
+#include <library/config.hpp>
+#include <library/bitmap/bitmap.hpp>
+#include <library/opengl/window.hpp>
+#include <library/opengl/opengl.hpp>
 #include "gameconf.hpp"
 #include "items.hpp"
 #include "render_fs.hpp"

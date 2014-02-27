@@ -9,6 +9,7 @@
 #include "drawq.hpp"
 #include "gameconf.hpp"
 #include "minimap.hpp"
+#include "netplayers.hpp"
 #include "particles.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
@@ -21,7 +22,6 @@
 #include "textureman.hpp"
 #include "threading.hpp"
 #include "world.hpp"
-#include <cmath>
 
 using namespace library;
 
@@ -162,6 +162,9 @@ namespace cppcraft
 			/// update minimap ///
 			minimap.update(playerX, playerZ);
 			
+			/// set player positions ///
+			netplayers.positionSnapshots(snapWX, snapWZ);
+			
 			/// camera deviations ///
 			if (cameraDeviation(renderer.frametick, renderer.dtime))
 			{
@@ -278,6 +281,9 @@ namespace cppcraft
 		
 		// scene
 		renderScene(renderer, camera);
+		
+		// render networked players
+		netplayers.renderPlayers();
 		
 		// render player selection
 		renderPlayerSelection();

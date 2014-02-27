@@ -75,7 +75,7 @@ namespace cppcraft
 		return (d1 > d2) ? ((d1 > d3) ? d1 : d3) : ((d2 > d3) ? d2 : d3);
 	}
 	
-	void optimizeMesh(unsigned short& verts, vertex_t* source, int txsize)
+	void PrecompThread::optimizeMesh(unsigned short& verts, vertex_t* source, int txsize)
 	{
 		int lastQuad = (verts / 4) - 1;
 		
@@ -152,57 +152,93 @@ namespace cppcraft
 		skipAdvancement:;
 		}
 	}
-	
-	void PrecompThread::optimizeRepeatMesh()
+	void optimizeShaderPlane(unsigned short& verts, vertex_t* source, int txsize)
 	{
-		unsigned short verts = precomp->vertices[RenderConst::TX_REPEAT];
+		int lastQuad = (verts / 4) - 1;
+		
+		// origin quad for each line
+		vertex_t* position = source;
+		vertex_t* next     = source + 4;
+		
+		for (int i = 0; i < lastQuad; i++, next += 4)
+		{
+			for (vertex_t* current = source; current <= position; current += 4)
+			{
+				// determine that quad points upwards (+y)
+				if (current->nx != 0 || current->ny != 127 || current->nz != 0)
+					continue;
+				
+				// and that it features the same texture as its next
+				if (current->w != next->w) continue;
+				
+				// now check that the next quad has the same normal
+				#define normalToInt(x) ((unsigned int*)&x.nx)[0]
+				if (normalToInt(current[0]) != normalToInt(next[0]))
+					continue;
+				
+				// next quad has previous quad position (-z)
+				if (next->z + RenderConst::VERTEX_SCALE == current->z)
+				if (next->x == current->x && next->y == current->y)
+				{
+					// next quad has same (consistent) color
+					if (next[2].c != next[3].c) continue;
+					if (next[0].c != next[1].c) continue;
+					if (current[2].c != current[3].c) continue;
+					if (current[0].c != current[1].c) continue;
+					if (next[2].c != current[3].c) continue;
+					if (next[1].c != current[0].c) continue;
+					
+					// now optimize the quad, by extending the position quad,
+					// and effectively removing the next quad
+					// PY: (0, 0) --> (0, 1) --> (1, 1) --> (1, 0)
+					// --> extend v[0] and v[3]
+					current[0].z -= RenderConst::VERTEX_SCALE;
+					current[3].z -= RenderConst::VERTEX_SCALE;
+					// wrap texture coordinates
+					current[0].v -= txsize;
+					current[3].v -= txsize;
+					
+					/*current[0].c = 0 << 24;
+					current[1].c = 0 << 24;
+					current[2].c = 0 << 24;
+					current[3].c = 0 << 24;*/
+					
+					verts -= 4;   // decrease total number of vertices
+					goto skipAdvancement;
+				}
+			}
+			// go to next position, and at the same time copy the entire
+			// next quad into position
+			position += 4;
+			for (int i = 0; i < 4; i++) position[i] = next[i];
+		skipAdvancement:;
+		}
+	}
+	
+	void PrecompThread::optimizeMesh(int shaderline)
+	{
+		unsigned short verts = precomp->vertices[shaderline];
 		if (verts >= 8)
 		{
-			vertex_t* repeat = precomp->datadump + precomp->bufferoffset[RenderConst::TX_REPEAT];
+			vertex_t* repeat = precomp->datadump + precomp->bufferoffset[shaderline];
 			// verts is sent by reference
 			optimizeMesh(verts, repeat, RenderConst::VERTEX_SCALE / tiles.tilesPerBigtile);
 			// set final number of vertices
-			precomp->vertices[RenderConst::TX_REPEAT] = verts;
+			precomp->vertices[shaderline] = verts;
 		}
 	}
 	
-	void PrecompThread::optimizeNormalMesh()
-	{
-		unsigned short verts = precomp->vertices[RenderConst::TX_SOLID];
-		if (verts >= 8)
-		{
-			vertex_t* mesh = precomp->datadump + precomp->bufferoffset[RenderConst::TX_SOLID];
-			// verts is sent by reference
-			optimizeMesh(verts, mesh, RenderConst::VERTEX_SCALE);
-			// set final number of vertices
-			precomp->vertices[RenderConst::TX_SOLID] = verts;
-		}
-	}
-	
-	void PrecompThread::optimizeAlphaMesh()
-	{
-		unsigned short verts = precomp->vertices[RenderConst::TX_2SIDED];
-		if (verts >= 8)
-		{
-			vertex_t* mesh = precomp->datadump + precomp->bufferoffset[RenderConst::TX_2SIDED];
-			// verts is sent by reference
-			optimizeMesh(verts, mesh, RenderConst::VERTEX_SCALE);
-			// set final number of vertices
-			precomp->vertices[RenderConst::TX_2SIDED] = verts;
-		}
-	}
-	
-	void PrecompThread::optimizeWaterMesh()
+	void PrecompThread::optimizeShadedMesh(int shaderline)
 	{
 		static const unsigned short WATER_MAX_VERTS = Sector::BLOCKS_XZ * Sector::BLOCKS_XZ * 4;
 		
-		bool failed = false;
-		unsigned short verts = precomp->vertices[RenderConst::TX_WATER];
-		vertex_t* water = precomp->datadump + precomp->bufferoffset[RenderConst::TX_WATER];
+		unsigned short verts = precomp->vertices[shaderline];
+		vertex_t* water = precomp->datadump + precomp->bufferoffset[shaderline];
 		
 		if (verts == WATER_MAX_VERTS)
 		{
 			const unsigned long long C = water->c;
+			bool failed = false;
 			
 			for (int i = 1; i < WATER_MAX_VERTS; i++)
 			{
@@ -223,25 +259,23 @@ namespace cppcraft
 				water[3].x = RenderConst::VERTEX_SCALE * Sector::BLOCKS_XZ;
 				water[3].z = 0;
 				
-				// set new number of vertices
-				verts = 4;
+				// set final number of vertices
+				precomp->vertices[shaderline] = 4;
 				
 				/*static int totalOptimized = 0;
 				totalOptimized++;
 				logger << Log::INFO << "Optimized " << totalOptimized << Log::ENDL;*/
 			}
 		}
-		else failed = true;
 		
 		// try to optimize the water plane manually
-		if (failed == true && verts >= 8)
+		if (verts >= 8)
 		{
 			// verts is sent by reference
-			optimizeMesh(verts, water, RenderConst::VERTEX_SCALE);
+			optimizeShaderPlane(verts, water, RenderConst::VERTEX_SCALE);
+			// set final number of vertices
+			precomp->vertices[shaderline] = verts;
 		}
-		
-		// set final number of vertices
-		precomp->vertices[RenderConst::TX_WATER] = verts;
 	}
 	
 	void PrecompThread::ambientOcclusion()
@@ -279,13 +313,14 @@ namespace cppcraft
 		#endif
 		
 		// optimize repeating textures mesh
-		optimizeRepeatMesh();
+		optimizeMesh(RenderConst::TX_REPEAT);
 		// optimize normal solids
-		optimizeNormalMesh();
+		optimizeMesh(RenderConst::TX_SOLID);
 		// optimize 2-sided textures
-		optimizeAlphaMesh();
-		// optimize water mesh
-		optimizeWaterMesh();
+		optimizeMesh(RenderConst::TX_2SIDED);
+		// optimize water & lava meshes
+		optimizeShadedMesh(RenderConst::TX_WATER);
+		optimizeShadedMesh(RenderConst::TX_LAVA);
 		
 		if (sector.progress == Sector::PROG_AO)
 			sector.progress = Sector::PROG_NEEDCOMPILE;

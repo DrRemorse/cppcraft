@@ -1,13 +1,15 @@
 #ifndef NETPLAYERS_HPP
 #define NETPLAYERS_HPP
 
-#include "network.hpp"
+#include <library/opengl/vao.hpp>
 #include "netplayer.hpp"
 #include <mutex>
 #include <vector>
 
 namespace cppcraft
 {
+	class UnpackCoordF;
+	
 	class NetPlayers
 	{
 	public:
@@ -28,6 +30,9 @@ namespace cppcraft
 		void updatePosition(NetPlayer*, UnpackCoordF& position);
 		void updateRotation(NetPlayer*, library::vec2& rotation);
 		
+		// convert positions from relative (w, b) to snapshot/renderable (g)
+		void positionSnapshots(int wx, int wz);
+		
 		// major functions
 		void renderPlayers();
 		void renderNameTags();
@@ -35,7 +40,7 @@ namespace cppcraft
 	private:
 		std::vector<NetPlayer> players;
 		std::mutex mtx;
-		
+		library::VAO vao;
 	};
 	extern NetPlayers netplayers;
 }
