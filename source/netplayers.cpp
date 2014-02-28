@@ -1,5 +1,6 @@
 #include "netplayers.hpp"
 
+#include <library/log.hpp>
 #include <library/opengl/oglfont.hpp>
 #include <library/opengl/opengl.hpp>
 #include "blockmodels.hpp"
@@ -59,7 +60,7 @@ namespace cppcraft
 		{
 			p.gxyz = vec3(
 				(p.wc.x - wx) * Sector::BLOCKS_XZ + p.pos.x,
-				p.pos.y, //(p.wc.y - wx) * Sector::BLOCKS_XZ,
+				(p.wc.y)      * Sector::BLOCKS_Y  + p.pos.y,
 				(p.wc.z - wz) * Sector::BLOCKS_XZ + p.pos.z
 			);
 		}
@@ -126,6 +127,7 @@ namespace cppcraft
 		// render each player
 		for (size_t i = 0; i < players.size(); i++)
 		{
+			logger << Log::INFO << "Rendering player: " << i << " at " << players[i].gxyz << Log::ENDL;
 			shd.sendVec3("vtrans", players[i].gxyz);
 			vao.bind();
 			vao.render(GL_QUADS);

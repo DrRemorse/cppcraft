@@ -2,8 +2,6 @@
 
 #include <library/log.hpp>
 #include <library/config.hpp>
-#include <library/opengl/input.hpp>
-#include <GL/glfw3.h>
 #include "netplayers.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
@@ -411,11 +409,6 @@ namespace cppcraft
 	/// from main (worldman) thread ///
 	void Network::handleNetworking()
 	{
-		if (input.getKey(GLFW_KEY_COMMA))
-		{
-			srv_show();
-		}
-		
 		mtx.lock();
 		
 		ntt.pmoved   = player.changedPosition;
@@ -514,16 +507,15 @@ namespace cppcraft
 	
 	void Network::addBlock(direction_t dir, const NetworkBlock& block)
 	{
-		network.mtx.lock();
+		mtx.lock();
 		if (dir == INCOMING)
 		{
-			network.ntt.incoming.push_front(block);
+			ntt.incoming.push_front(block);
 		}
 		else
 		{
-			network.ntt.outgoing.push_front(block);
+			ntt.outgoing.push_front(block);
 		}
-		network.mtx.unlock();
-		
+		mtx.unlock();
 	}
 }
