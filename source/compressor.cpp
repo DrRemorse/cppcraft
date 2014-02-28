@@ -15,13 +15,11 @@ namespace cppcraft
 	library::LZO compressor;
 	lzo_bytep compressor_databuffer;
 	
-	typedef struct
+	struct compressed_datalength_t
 	{
 		unsigned short lzoSize;
 		unsigned short sectors;
-		
-	} compressed_datalength_t;
-	
+	};
 	
 	void Compressor::init()
 	{

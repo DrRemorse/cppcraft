@@ -143,6 +143,11 @@ namespace cppcraft
 		shaders[BLOCKS_WATER].sendInteger("underwatermap", 0);
 		shaders[BLOCKS_WATER].sendInteger("reflectionmap", 1);
 		
+		linkstage.clear();
+		linkstage.emplace_back("in_vertex");
+		linkstage.emplace_back("in_normal");
+		linkstage.emplace_back("in_texture");
+		
 		shaders[PLAYERMODEL] = Shader("shaders/players.glsl", tokenizer, linkstage);
 		shaders[PLAYERMODEL].sendMatrix("matproj", matproj);
 		shaders[PLAYERMODEL].sendInteger("texture", 0);

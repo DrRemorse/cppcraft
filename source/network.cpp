@@ -130,6 +130,9 @@ namespace cppcraft
 	
 	void Network::init()
 	{
+		/// testing ///
+		netplayers.createTestPlayer();
+		
 		this->running = true;
 		this->networkThread = std::thread(&Network::mainLoop, this);
 	}
@@ -224,8 +227,12 @@ namespace cppcraft
 		NetPlayer* np = netplayers.playerByUID(userid);
 		if (np)
 		{
-			UnpackCoordF coord(movement->wcoord, movement->bcoord);
-			netplayers.updatePosition(np, coord);
+			if (movement)
+			{
+				UnpackCoordF coord(movement->wcoord, movement->bcoord);
+				netplayers.updatePosition(np, coord);
+			}
+			else netplayers.stopMoving(np);
 		}
 	}
 	void userRotated(NetPlayer::userid_t userid, lattice_pr* rotated)
@@ -456,7 +463,6 @@ namespace cppcraft
 			ntt.incoming.pop_front();
 			
 		} // incoming block queue
-		
 		mtx.unlock();
 	}
 	
@@ -467,7 +473,15 @@ namespace cppcraft
 		{
 			if (ntt.pmoved)
 			{
+				// start moving
 				c_p(ntt.pcoord.wc, ntt.pcoord.bc);
+				ntt.psentmoved = true;
+			}
+			else if (ntt.psentmoved)
+			{
+				// stop player
+				c_p_empty();
+				ntt.psentmoved = false;
 			}
 			if (ntt.protated)
 			{

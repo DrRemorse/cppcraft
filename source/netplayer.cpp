@@ -10,12 +10,12 @@ namespace cppcraft
 		this->name = name;
 	}
 	
-	void NetPlayer::setPosition(w_coord& wc, library::vec3& pos)
+	void NetPlayer::setPosition(w_coord& wc, const library::vec3& pos)
 	{
 		this->wc = wc;
 		this->pos = pos;
 	}
-	void NetPlayer::setRotation(library::vec2& rot)
+	void NetPlayer::setRotation(const library::vec2& rot)
 	{
 		this->rotation = rot;
 	}

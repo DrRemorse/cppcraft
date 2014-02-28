@@ -71,6 +71,8 @@ namespace cppcraft
 	{
 	public:
 		bool pmoved, protated;
+		// true if the last package was sent as player having moved
+		bool psentmoved;
 		// player coordinates
 		PackCoord pcoord;
 		// player rotation

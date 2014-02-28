@@ -1,6 +1,6 @@
 #include "blockmodels.hpp"
 
-#include "library/log.hpp"
+#include <library/log.hpp>
 #include <cstring>
 
 using namespace library;
@@ -33,6 +33,8 @@ namespace cppcraft
 		initLanterns();
 		// initialize cross meshes
 		initCrosses();
+		// initialize playermodel meshes
+		initPlayerMeshes();
 	}
 	
 	Mesh::Mesh()
@@ -66,6 +68,13 @@ namespace cppcraft
 		this->meshdata = malloc(vertices * vsize);
 	}
 	
+	PlayerMesh::PlayerMesh(int verts)
+	{
+		this->vertices = verts;
+		this->vsize = sizeof(player_vertex_t);
+		this->meshdata = malloc(vertices * vsize);
+	}
+	
 	MeshContainer::~MeshContainer()
 	{
 		for (size_t i = 0; i < meshes.size(); i++)
@@ -74,7 +83,7 @@ namespace cppcraft
 	
 	void MeshContainer::add(const Mesh& bm)
 	{
-		meshes.emplace_back(bm);
+		meshes.push_back(bm);
 	}
 	
 	vertex_t& MeshContainer::get(int meshid, int vertex)

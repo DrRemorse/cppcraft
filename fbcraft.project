@@ -364,6 +364,8 @@
     <File Name="source/netplayer.cpp"/>
     <File Name="source/precompq_schedule.cpp"/>
     <File Name="source/precompq_schedule.hpp"/>
+    <File Name="source/blockmodels_player.cpp"/>
+    <File Name="source/vertex_player.hpp"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>

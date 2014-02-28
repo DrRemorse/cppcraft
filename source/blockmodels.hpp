@@ -1,5 +1,6 @@
 #include "vertex_block.hpp"
 #include "vertex_selection.hpp"
+#include "vertex_player.hpp"
 
 #include <vector>
 
@@ -55,6 +56,17 @@ namespace cppcraft
 		}
 	};
 	
+	class PlayerMesh : public Mesh
+	{
+	public:
+		PlayerMesh(int verts);
+		
+		inline player_vertex_t& operator[] (int i)
+		{
+			return ((player_vertex_t*) meshdata)[i];
+		}
+	};
+	
 	class MeshContainer
 	{
 	private:
@@ -88,14 +100,14 @@ namespace cppcraft
 	class BlockModels
 	{
 	public:
-		typedef enum
+		enum modid_t
 		{	// cube mesh types
 			MI_BLOCK,
 			MI_LOWBLOCK,
 			MI_HALFBLOCK,
 			MI_INSET,
 			MI_MODEL_COUNT
-		} modid_t;
+		};
 		
 		// 6 faces * 4 verts/face = 24 vertices
 		// general 6-sided block models
@@ -136,6 +148,15 @@ namespace cppcraft
 		MeshContainer selectionStair;
 		MeshContainer selectionDoor;
 		
+		enum skinparts_t
+		{
+			SP_CENTROID,
+			SP_TOPCENTER,
+			SP_COUNT
+		};
+		
+		MeshContainer skinCubes;
+		
 		// initialization function
 		void init();
 		
@@ -149,6 +170,7 @@ namespace cppcraft
 		void initDoors();
 		void initLanterns();
 		void initCrosses();
+		void initPlayerMeshes();
 		
 		void extrude(selection_vertex_t& select, float dist, int face);
 	};

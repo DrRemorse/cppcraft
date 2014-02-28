@@ -3,7 +3,6 @@
 
 #include <library/math/vector.hpp>
 #include <liblattice/coordinates.h>
-//#include <network.hpp>
 #include "world.hpp"
 #include <string>
 
@@ -37,8 +36,8 @@ namespace cppcraft
 			return rotation;
 		}
 		
-		void setPosition(w_coord& wc, library::vec3& pos);
-		void setRotation(library::vec2& rot);
+		void setPosition(w_coord& wc, const library::vec3& pos);
+		void setRotation(const library::vec2& rot);
 		
 	private:
 		std::string name;
@@ -48,6 +47,8 @@ namespace cppcraft
 		w_coord wc;
 		library::vec3 pos;
 		library::vec2 rotation;
+		float bodyrot;
+		bool  moving;
 		
 		// synchronized rendering data
 		//vec2 grot;

@@ -29,6 +29,7 @@ namespace cppcraft
 		// network updates
 		void updatePosition(NetPlayer*, UnpackCoordF& position);
 		void updateRotation(NetPlayer*, library::vec2& rotation);
+		void stopMoving(NetPlayer* np);
 		
 		// convert positions from relative (w, b) to snapshot/renderable (g)
 		void positionSnapshots(int wx, int wz);
@@ -36,6 +37,9 @@ namespace cppcraft
 		// major functions
 		void renderPlayers(double frameCounter, double dtime);
 		void renderNameTags();
+		
+		void createTestPlayer();
+		void modulateTestPlayer(double frametime);
 		
 	private:
 		std::vector<NetPlayer> players;

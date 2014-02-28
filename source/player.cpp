@@ -110,6 +110,8 @@ namespace cppcraft
 	
 	void PlayerClass::handleActions(double frametime)
 	{
+		bool updateShadows = false;
+		
 		// if the player has moved from his snapshot, we need to synch with renderer
 		mtx.playermove.lock();
 		{
@@ -124,11 +126,7 @@ namespace cppcraft
 				// this needs to be a "better" test, ie. if someone added lights nearby
 				if ((int)snapX != (int)X || (int)snapY != (int)Y || (int)snapZ != (int)Z)
 				{
-					// get player shadows & torchlight
-					// a VERY costly operation, needs to be avoided at all costs
-					vertex_color_t vcolor = Spiders::getLightNow(X, Y, Z);
-					plogic.shadowColor = vcolor & 0xFFFFFFFF;
-					plogic.torchColor  = vcolor >> 32;
+					updateShadows = true;
 				}
 			}
 			
@@ -144,6 +142,15 @@ namespace cppcraft
 			
 		}
 		mtx.playermove.unlock();
+		
+		if (updateShadows)
+		{
+			// get player shadows & torchlight
+			// a VERY costly operation, needs to be avoided at all costs
+			vertex_color_t vcolor = Spiders::getLightNow(X, Y, Z);
+			plogic.shadowColor = vcolor & 0xFFFFFFFF;
+			plogic.torchColor  = vcolor >> 32;
+		}
 		
 		// handle player selection, actions and building
 		paction.handle(frametime);

@@ -6,12 +6,13 @@
 #include "blockmodels.hpp"
 #include "camera.hpp"
 #include "network.hpp"
-#include "sector.hpp"
+#include "sectors.hpp"
 #include "sun.hpp"
 #include "shaderman.hpp"
 #include "textureman.hpp"
 #include "torchlight.hpp"
-#include "vertex_block.hpp"
+#include "vertex_player.hpp"
+#include <cmath>
 
 using namespace library;
 
@@ -46,9 +47,14 @@ namespace cppcraft
 		return nullptr;
 	}
 	
-	void NetPlayers::updatePosition(NetPlayer* p, UnpackCoordF& position)
+	void NetPlayers::updatePosition(NetPlayer* np, UnpackCoordF& position)
 	{
-		p->setPosition(position.wc, position.bc);
+		np->setPosition(position.wc, position.bc);
+		np->moving = true;
+	}
+	void NetPlayers::stopMoving(NetPlayer* np)
+	{
+		np->moving = false;
 	}
 	
 	void NetPlayers::updateRotation(NetPlayer* p, library::vec2& rotation)
@@ -68,8 +74,54 @@ namespace cppcraft
 		}
 	}
 	
+	void NetPlayers::createTestPlayer()
+	{
+		NetPlayer nplayer(1234, "Test");
+		
+		w_coord wc;
+		wc.x = world.getWX() + Sectors.getXZ() / 2;
+		wc.z = world.getWZ() + Sectors.getXZ() / 2 - 1;
+		wc.y = Sectors.getY() / 2 + 6;
+		
+		vec3 pos(-6, 2.45, 9);
+		
+		nplayer.setPosition(wc, pos);
+		
+		players.push_back(nplayer);
+	}
+	void NetPlayers::modulateTestPlayer(double frametime)
+	{
+		NetPlayer* pl = playerByUID(1234);
+		if (pl)
+		{
+			pl->setRotation(vec2(cos(frametime * 0.04), frametime * 0.08));
+		}
+	}
+	
+	static const double PI = 4 * atan(1);
+	static const double PI2 = PI * 2;
+	
+	float interpolate_angle(double a1, double a2, double weight, double maxdelta)
+	{
+		float delta = (a2 + PI2) - (a1 + PI2);
+		
+		if (fabs(delta) > PI)
+		{
+			if (delta > 0) a2 += PI2;
+			else           a2 -= PI2;
+		}
+		
+		if (fabs(delta) > maxdelta)
+			return a1 * (1.0 - weight) + a2 * weight;
+		else
+			return a1;
+	}
+	
 	void NetPlayers::renderPlayers(double frameCounter, double dtime)
 	{
+		/// testing ///
+		netplayers.modulateTestPlayer(frameCounter);
+		
 		// playermodel texture
 		textureman[Textureman::T_PLAYERMODELS].bind(0);
 		
@@ -84,47 +136,20 @@ namespace cppcraft
 		
 		shd.sendFloat("modulation", torchlight.getModulation(frameCounter));
 		
-		int count = blockmodels.centerCube.totalCount();
+		int count = blockmodels.skinCubes.totalCount();
 		
 		// head mesh
 		if (vao.isGood() == false)
 		{
 			// create ccube and copy all centerCube vertices to ccube
-			vertex_t* ccube = new vertex_t[count];
-			blockmodels.centerCube.copyAll(ccube);
-			
-			// set ccube tile id
-			vertex_t* v = ccube;
-			
-			for (int face = 0; face < 6; face++)
-			for (int vert = 0; vert < 4; vert++)
-			{
-				switch (face)
-				{
-				case 0: // front
-					v->w = 0; break;
-				case 1: // back
-					v->w = 2; break;
-				case 2: // top
-					v->w = 3; break;
-				case 3: // bottom
-					v->w = 11; break;
-				case 4:
-				case 5: // right & left
-					v->w = 1; break;
-				}
-				v->c = 0;
-				v++;
-			}
+			player_vertex_t* ccube = new player_vertex_t[count];
+			blockmodels.skinCubes.copyAll(ccube);
 			
 			// upload data
-			vao.begin(sizeof(vertex_t), count, ccube);
-			vao.attrib(0, 3, GL_SHORT, false, offsetof(vertex_t, x));
-			vao.attrib(1, 3, GL_BYTE, true, offsetof(vertex_t, nx));
-			vao.attrib(2, 4, GL_SHORT, false, offsetof(vertex_t, u));
-			vao.attrib(3, 4, GL_UNSIGNED_BYTE, true, offsetof(vertex_t, biome));
-			vao.attrib(4, 4, GL_UNSIGNED_BYTE, true, offsetof(vertex_t, c));
-			vao.attrib(5, 4, GL_UNSIGNED_BYTE, true, offsetof(vertex_t, c) + 4);
+			vao.begin(sizeof(player_vertex_t), count, ccube);
+			vao.attrib(0, 3, GL_FLOAT, false, offsetof(player_vertex_t, x));
+			vao.attrib(1, 3, GL_BYTE,  true,  offsetof(player_vertex_t, nx));
+			vao.attrib(2, 4, GL_BYTE,  false, offsetof(player_vertex_t, u));
 			vao.end();
 			
 			delete[] ccube;
@@ -135,13 +160,72 @@ namespace cppcraft
 		{
 			mat4 matview = camera.getViewMatrix();
 			matview.translate(players[i].gxyz);
-			matview.rotateZYX(players[i].rotation.x, players[i].rotation.y, 0.0);
-			matview *= mat4(0.6);
-			shd.sendMatrix("matview", matview);
 			
 			//logger << Log::INFO << "Rendering player: " << i << " at " << players[i].gxyz << Log::ENDL;
 			vao.bind();
-			vao.render(GL_QUADS);
-		}
-	}
+			
+			// render head
+			mat4 matv = matview;
+			matv.rotateZYX(0.0, players[i].rotation.y, 0.0);
+			matv.rotateZYX(players[i].rotation.x, 0.0, 0.0);
+			shd.sendMatrix("matview", matv);
+			
+			vao.render(GL_QUADS, 0, 24);
+			
+			const float maxdelta = (players[i].moving) ? 0.05 : 0.8;
+			const float weight = 0.25 * dtime;
+			
+			// interpolate body rotation
+			players[i].bodyrot = interpolate_angle(players[i].bodyrot, players[i].rotation.y, weight, maxdelta);
+			
+			// render chest
+			matv = matview;
+			matv.translate_xy(0, -0.72);
+			matv.rotateZYX(0.0, players[i].bodyrot, 0.0);
+			shd.sendMatrix("matview", matv);
+			
+			vao.render(GL_QUADS, 24, 24);
+			
+			bool moving = players[i].moving;
+			
+			// render hands
+			matv = matview;
+			matv.rotateZYX(0.0, players[i].bodyrot, 0.0);
+			matv.translate_xy(-0.25, -0.27);
+			if (moving)
+				matv.rotateZYX(sin(frameCounter * 0.1), 0.0, 0.0);
+			shd.sendMatrix("matview", matv);
+			
+			vao.render(GL_QUADS, 48, 24);
+			
+			matv = matview;
+			matv.rotateZYX(0.0, players[i].bodyrot, 0.0);
+			matv.translate_xy(+0.25, -0.27);
+			if (moving)
+				matv.rotateZYX(sin(-frameCounter * 0.1), 0.0, 0.0);
+			shd.sendMatrix("matview", matv);
+			
+			vao.render(GL_QUADS, 48, 24);
+			
+			// render legs
+			matv = matview;
+			matv.rotateZYX(0.0, players[i].bodyrot, 0.0);
+			matv.translate_xy(-0.11, -0.75);
+			if (moving)
+				matv.rotateZYX(-sin(frameCounter * 0.1), 0.0, 0.0);
+			shd.sendMatrix("matview", matv);
+			
+			vao.render(GL_QUADS, 72, 24);
+			
+			matv = matview;
+			matv.rotateZYX(0.0, players[i].bodyrot, 0.0);
+			matv.translate_xy(+0.11, -0.75);
+			if (moving)
+				matv.rotateZYX(sin(frameCounter * 0.1), 0.0, 0.0);
+			shd.sendMatrix("matview", matv);
+			
+			vao.render(GL_QUADS, 72, 24);
+			
+		} // render each player
+	} // render players
 }
