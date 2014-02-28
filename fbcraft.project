@@ -201,6 +201,9 @@
       <File Name="Debug/shaders/blocks_depth.glsl"/>
       <File Name="Debug/shaders/blocks_lava.glsl"/>
       <File Name="Debug/shaders/blocks_runwater.glsl"/>
+      <File Name="Debug/shaders/blocks_reflection.glsl"/>
+      <File Name="Debug/shaders/depth.glsl"/>
+      <File Name="Debug/shaders/players.glsl"/>
     </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="source">
@@ -407,11 +410,11 @@
       <PreBuild/>
       <PostBuild/>
       <CustomBuild Enabled="yes">
-        <RebuildCommand>make rebuild</RebuildCommand>
-        <CleanCommand>make clean</CleanCommand>
-        <BuildCommand>make -j8</BuildCommand>
+        <RebuildCommand>mingw32-make rebuild</RebuildCommand>
+        <CleanCommand>mingw32-make clean</CleanCommand>
+        <BuildCommand>mingw32-make -j8</BuildCommand>
         <PreprocessFileCommand/>
-        <SingleFileCommand>make $(currentFile)</SingleFileCommand>
+        <SingleFileCommand>mingw32-make $(currentFile)</SingleFileCommand>
         <MakefileGenerationCommand/>
         <ThirdPartyToolName>None</ThirdPartyToolName>
         <WorkingDirectory/>

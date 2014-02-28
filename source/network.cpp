@@ -114,6 +114,7 @@ namespace cppcraft
 	{
 		wc = w;
 		bc = vec3(b.x, b.y, b.z) / 256.0;
+		//logger << Log::INFO << "Unpacked: " << w.x << ", " << w.y << "; " << w.z << " b " << bc.x << ", " << bc.y << ", " << bc.z << Log::ENDL;
 	}
 	
 	NetworkBlock::NetworkBlock(int bx, int by, int bz, const Block& block, NetworkBlock::btype_t type)

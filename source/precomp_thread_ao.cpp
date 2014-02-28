@@ -261,10 +261,7 @@ namespace cppcraft
 				
 				// set final number of vertices
 				precomp->vertices[shaderline] = 4;
-				
-				/*static int totalOptimized = 0;
-				totalOptimized++;
-				logger << Log::INFO << "Optimized " << totalOptimized << Log::ENDL;*/
+				return;
 			}
 		}
 		

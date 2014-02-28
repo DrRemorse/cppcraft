@@ -28,9 +28,10 @@ out vec4 lightdata;
 out vec4 torchlight;
 
 out float vertdist;
-out vec3 v_eye;
+out vec3 v_pos;
 out vec3 v_ldir;
-out vec3 v_half;
+//out vec3 v_eye;
+//out vec3 v_half;
 out vec3 v_normal;
 flat out vec3 l_normal;
 
@@ -46,9 +47,10 @@ void main(void)
 	gl_Position = matproj * position;
 	
 	// light and eye direction in view space
-	v_eye = -position.xyz / vertdist;
+	v_pos = -position.xyz;
 	v_ldir = mat3(matview) * lightVector;
-	v_half = normalize(v_eye + v_ldir);
+	//v_eye = -position.xyz / vertdist;
+	//v_half = normalize(v_eye + v_ldir);
 	// reflect light in view space using view-normal
 	l_normal = in_normal;
 	v_normal = mat3(matview) * in_normal;
@@ -91,8 +93,9 @@ in vec4 torchlight;
 
 in float vertdist;
 in vec3 v_ldir;
-in vec3 v_half;
-in vec3 v_eye;
+//in vec3 v_eye;
+//in vec3 v_half;
+in vec3 v_pos;
 in vec3 v_normal;
 
 flat in vec3 l_normal;
@@ -125,8 +128,9 @@ void main(void)
 	
 	//#define vEye   v_eye
 	//#define vLight v_ldir
-	vec3 vEye   = normalize(v_eye);
+	vec3 vEye   = normalize(v_pos);
 	vec3 vLight = normalize(v_ldir);
+	vec3 vHalf = normalize(vEye + v_ldir);
 	
 	//----- fresnel term -----
 	
@@ -189,7 +193,7 @@ void main(void)
 	const float SUNSPEC  = 0.8; // specular
 	const float SUNSHINE = 2.0; // shininess
 	
-	float shine = max(0.0, dot(viewNormal, normalize(v_half)) );
+	float shine = max(0.0, dot(viewNormal, vHalf) );
 	float spec  = max(0.0, dot(reflect(-vLight, viewNormal), vEye));
 	
 	vec3 specular = SUNCOLOR * SUNSPEC * pow(spec, 16.0) + pow(spec, 4.0) * 0.3;

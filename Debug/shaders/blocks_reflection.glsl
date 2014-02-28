@@ -85,9 +85,9 @@ void main(void)
 	#include "horizonfade.glsl"
 	
 	// fake fog
-	vec3 fogColor = vec3(0.7) * daylight;
+	/*vec3 fogColor = vec3(0.7) * daylight;
 	float dist = vertdist / ZFAR;
-	color.rgb = mix(color.rgb, fogColor, dist*dist * 0.5);
+	color.rgb = mix(color.rgb, fogColor, dist*dist * 0.5);*/
 	
 	// gamma again
 	gl_FragData[0] = color;
