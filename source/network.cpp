@@ -206,6 +206,8 @@ namespace cppcraft
 		NetPlayer nplayer(userid, user->nickname);
 		netplayers.add(nplayer);
 		
+		UnpackCoordF coord(user->wpos, user->bpos);
+		netplayers.updatePosition(&nplayer, coord);
 		logger << Log::INFO << "User joined: " << user->nickname << Log::ENDL;
 	}
 	void userQuits(NetPlayer::userid_t userid, lattice_quit* msg)
@@ -232,7 +234,7 @@ namespace cppcraft
 		if (np)
 		{
 			vec2 rot(rotated->rot.xrot, rotated->rot.yrot);
-			rot = rot * PI2 / 4096;
+			rot *= PI2 / 4096;
 			//netplayers.updateRotation(rot);
 			np->setRotation(rot);
 		}

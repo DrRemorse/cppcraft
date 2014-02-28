@@ -7,8 +7,10 @@
 #include "camera.hpp"
 #include "network.hpp"
 #include "sector.hpp"
+#include "sun.hpp"
 #include "shaderman.hpp"
 #include "textureman.hpp"
+#include "torchlight.hpp"
 #include "vertex_block.hpp"
 
 using namespace library;
@@ -66,7 +68,7 @@ namespace cppcraft
 		}
 	}
 	
-	void NetPlayers::renderPlayers()
+	void NetPlayers::renderPlayers(double frameCounter, double dtime)
 	{
 		// playermodel texture
 		textureman[Textureman::T_PLAYERMODELS].bind(0);
@@ -75,8 +77,12 @@ namespace cppcraft
 		Shader& shd = shaderman[Shaderman::PLAYERMODEL];
 		shd.bind();
 		
-		shd.sendMatrix("matview", camera.getViewMatrix());
-		shd.sendMatrix("matrot", camera.getRotationMatrix());
+		// common stuff
+		shd.sendVec3 ("lightVector", thesun.getRealtimeAngle());
+		shd.sendFloat("daylight",    thesun.getRealtimeDaylight());
+		shd.sendFloat("frameCounter", frameCounter);
+		
+		shd.sendFloat("modulation", torchlight.getModulation(frameCounter));
 		
 		int count = blockmodels.centerCube.totalCount();
 		
@@ -96,16 +102,16 @@ namespace cppcraft
 				switch (face)
 				{
 				case 0: // front
-					v->w = 0;
+					v->w = 0; break;
 				case 1: // back
-					v->w = 2;
+					v->w = 2; break;
 				case 2: // top
-					v->w = 3;
+					v->w = 3; break;
 				case 3: // bottom
-					v->w = 11;
+					v->w = 11; break;
 				case 4:
 				case 5: // right & left
-					v->w = 1;
+					v->w = 1; break;
 				}
 				v->c = 0;
 				v++;
@@ -127,8 +133,13 @@ namespace cppcraft
 		// render each player
 		for (size_t i = 0; i < players.size(); i++)
 		{
-			logger << Log::INFO << "Rendering player: " << i << " at " << players[i].gxyz << Log::ENDL;
-			shd.sendVec3("vtrans", players[i].gxyz);
+			mat4 matview = camera.getViewMatrix();
+			matview.translate(players[i].gxyz);
+			matview.rotateZYX(players[i].rotation.x, players[i].rotation.y, 0.0);
+			matview *= mat4(0.6);
+			shd.sendMatrix("matview", matview);
+			
+			//logger << Log::INFO << "Rendering player: " << i << " at " << players[i].gxyz << Log::ENDL;
 			vao.bind();
 			vao.render(GL_QUADS);
 		}

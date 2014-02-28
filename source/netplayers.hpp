@@ -34,7 +34,7 @@ namespace cppcraft
 		void positionSnapshots(int wx, int wz);
 		
 		// major functions
-		void renderPlayers();
+		void renderPlayers(double frameCounter, double dtime);
 		void renderNameTags();
 		
 	private:

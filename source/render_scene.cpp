@@ -282,8 +282,10 @@ namespace cppcraft
 		// scene
 		renderScene(renderer, camera);
 		
+		glEnable(GL_CULL_FACE);
+		
 		// render networked players
-		netplayers.renderPlayers();
+		netplayers.renderPlayers(renderer.frametick, renderer.dtime);
 		
 		// render player selection
 		renderPlayerSelection();

@@ -159,6 +159,7 @@ namespace cppcraft
 					bm[index].v = cube_texcoords[face][vertex * 2 + 1] * VERTEX_SCALE; // v
 					bm[index].w = 0; // w = tile_id
 					
+					index++;
 				} // vertex
 				
 			} // face

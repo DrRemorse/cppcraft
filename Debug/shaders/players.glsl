@@ -5,10 +5,8 @@
 #ifdef VERTEX_PROGRAM
 uniform mat4 matproj;
 uniform mat4 matview;
-uniform vec3 vtrans;
 
-uniform vec4 lightVector;
-uniform vec4 playerLight;
+uniform vec3 lightVector;
 uniform float modulation;
 
 in vec3 in_vertex;
@@ -30,21 +28,23 @@ const float ZFAR
 
 void main()
 {
-	vec4 position = vec4(in_vertex.xyz / VERTEX_SCALE + vtrans, 1.0);
-	position = gl_ModelViewMatrix * position;
+	vec4 position = vec4(in_vertex.xyz / VERTEX_SCALE, 1.0);
+	position = matview * position;
 	vertdist = length(position);
-	gl_Position = gl_ProjectionMatrix * position;
+	gl_Position = matproj * position;
 	
 	texCoord = in_texture.stp;
 	texCoord.st /= VERTEX_SCALE;
 	
-	/* worldlight */
+	/*
+	// worldlight //
 	const float ambience = 0.5;
 	float dotlight = dot(in_normal.xyz, lightVector.xyz);
 	worldLight = max(ambience * 0.6 + 0.5 * (0.5 + 0.5*dotlight), 0.2);
-	/* worldlight */
+	// worldlight //
 	
 	colordata = in_color;
+	*/
 }
 
 #endif
@@ -62,17 +62,20 @@ in float vertdist;
 flat in float worldLight;
 in float brightness;
 
+const float ZFAR
 
 void main(void)
 {
 	vec4 color = texture2DArray(texture, texCoord);
-	if (color.a < 0.1) discard; // le discard!
+	//if (color.a < 0.1) discard; // le discard!
 	
 	#include "degamma.glsl"
 	
 	// shadows & torchlight
-	color.rgb *= worldLight * min(1.0, daylight + brightness);
+	//color.rgb *= worldLight; // * min(1.0, daylight + brightness);
 	//color.rgb = mix(color.rgb, colordata.rgb, max(0.0, colordata.a - brightness));
+	
+	#include "horizonfade.glsl"
 	
 	#include "finalcolor.glsl"
 }
