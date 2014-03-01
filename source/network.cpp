@@ -40,101 +40,16 @@ namespace cppcraft
 	Network network;
 	void message(lattice_message* mp);
 	
-	PackCoord::PackCoord(double x, double y, double z)
-	{
-		// get integral values
-		int bx = x, by = y, bz = z;
-		// get sector, and truncate integrals into sector-local coordinates
-		Sector* s = Spiders::spiderwrap(bx, by, bz);
-		if (s == nullptr) { valid = false; return; }
-		
-		// set world coordinates
-		wc.x = world.getWX() + s->x;
-		wc.y = world.getWY() + s->y;
-		wc.z = world.getWZ() + s->z;
-		
-		// set block coordinates (with 8-bit fractions)
-		vec3 f = vec3(x, y, z).frac();
-		bc.x = (bx << 8) + (f.x * 256);
-		bc.y = (by << 8) + (f.y * 256);
-		bc.z = (bz << 8) + (f.z * 256);
-		valid = true;
-	}
-	PackCoord::PackCoord(int bx, int by, int bz)
-	{
-		// get sector, and truncate integrals into sector-local coordinates
-		Sector* s = Spiders::spiderwrap(bx, by, bz);
-		if (s == nullptr) { valid = false; return; }
-		
-		// set world coordinates
-		wc.x = world.getWX() + s->x;
-		wc.y = world.getWY() + s->y;
-		wc.z = world.getWZ() + s->z;
-		
-		// set block coordinates
-		bc.x = bx;
-		bc.y = by;
-		bc.z = bz;
-		valid = true;
-	}
-	PackCoord::PackCoord(Sector* sector, int bx, int by, int bz)
-	{
-		// NOTE: may need to verify sector is not null
-		// set world coordinates
-		wc.x = world.getWX() + sector->x;
-		wc.y = world.getWY() + sector->y;
-		wc.z = world.getWZ() + sector->z;
-		
-		// set block coordinates
-		bc.x = bx;
-		bc.y = by;
-		bc.z = bz;
-		valid = true;
-	}
-	UnpackCoord::UnpackCoord(w_coord& w, b_coord& b)
-	{
-		// set final world coordinates
-		int sx = w.x - world.getWX();
-		int sy = w.y - world.getWY();
-		int sz = w.z - world.getWZ();
-		// validate position is inside our grid
-		if (sx < 0 || sx >= Sectors.getXZ() ||
-			sy < 0 || sy >= Sectors.getY() ||
-			sz < 0 || sz >= Sectors.getXZ())
-		{
-			valid = false; return;
-		}
-		// set values
-		this->bx = (sx << Sector::BLOCKS_XZ_SH) + b.x;
-		this->by = (sy << Sector::BLOCKS_Y_SH)  + b.y;
-		this->bz = (sz << Sector::BLOCKS_XZ_SH) + b.z;
-		valid = true;
-	}
-	UnpackCoordF::UnpackCoordF(w_coord& w, b_coord& b)
-	{
-		wc = w;
-		bc = vec3(b.x, b.y, b.z) / 256.0;
-		//logger << Log::INFO << "Unpacked: " << w.x << ", " << w.y << "; " << w.z << " b " << bc.x << ", " << bc.y << ", " << bc.z << Log::ENDL;
-	}
-	
-	NetworkBlock::NetworkBlock(int bx, int by, int bz, const Block& block, NetworkBlock::btype_t type)
-	{
-		PackCoord pc(bx, by, bz);
-		// make a clean copy
-		this->block = block;
-		// set coordinates
-		this->wc = pc.wc;
-		this->bc = pc.bc;
-		this->type = type;
-	}
-	
 	void Network::init()
 	{
+		this->connected = false;
+		this->running = true;
+		this->networkThread = std::thread(&Network::mainLoop, this);
+		
 		/// testing ///
 		netplayers.createTestPlayer();
 		
-		this->running = true;
-		this->networkThread = std::thread(&Network::mainLoop, this);
+		timer.startNewRound();
 	}
 	
 	void Network::stop()
@@ -206,11 +121,12 @@ namespace cppcraft
 	}
 	void userAdded(NetPlayer::userid_t userid, lattice_user* user)
 	{
-		NetPlayer nplayer(userid, user->nickname);
+		UnpackCoordF coord(user->wpos, user->bpos);
+		// create netplayer
+		NetPlayer nplayer(userid, user->nickname, coord.wc, coord.bc);
+		// add to active netplayers list
 		netplayers.add(nplayer);
 		
-		UnpackCoordF coord(user->wpos, user->bpos);
-		netplayers.updatePosition(&nplayer, coord);
 		logger << Log::INFO << "User joined: " << user->nickname << Log::ENDL;
 	}
 	void userQuits(NetPlayer::userid_t userid, lattice_quit* msg)
@@ -230,9 +146,9 @@ namespace cppcraft
 			if (movement)
 			{
 				UnpackCoordF coord(movement->wcoord, movement->bcoord);
-				netplayers.updatePosition(np, coord);
+				np->moveTo(coord.wc, coord.bc);
 			}
-			else netplayers.stopMoving(np);
+			else np->stopMoving();
 		}
 	}
 	void userRotated(NetPlayer::userid_t userid, lattice_pr* rotated)
@@ -289,9 +205,11 @@ namespace cppcraft
 			break;
 		case T_CONNECTED:
 			logger << Log::INFO << "Connected to server" << Log::ENDL;
+			network.connected = true;
 			break;
 		case T_DISCONNECTED:
 			logger << Log::WARN << "Disconnected from server" << Log::ENDL;
+			network.connected = false;
 			break;
 			
 		case T_SAT:
@@ -332,19 +250,10 @@ namespace cppcraft
 			break;
 			
 		default:
-			logger << Log::INFO << "got type " << mp->type << Log::ENDL;
+			logger << Log::INFO << "Unimplemented message type: " << mp->type << Log::ENDL;
 		}
 		
 		return;
-	}
-	
-	w_coord getPlayerWC()
-	{
-		w_coord wc;
-		wc.x = world.getWX();
-		wc.y = (int)player.Y >> 3;
-		wc.z = world.getWZ();
-		return wc;
 	}
 	
 	bool Network::connect()
@@ -396,129 +305,125 @@ namespace cppcraft
 		return true;
 	}
 	
-	void srv_show()
-	{
-		server_socket *s;
-		
-		for (int x=0;x<3;x++)
-		for (int y=0;y<3;y++)
-		for (int z=0;z<3;z++)
-		{
-			if ((s = neighbor_table[x][y][z]))
-			{
-				logger << Log::INFO << "Server [" << x << "," << y << "," << z << "]: " << s->coord.x << ", " << s->coord.y << ", " << s->coord.z << "  port=" << s->port << Log::ENDL;
-				
-				/*for (p = s->uidlist_head; p; p = p->next)
-				{
-					printf("Tracking UID: %d Standing: %d\n", p->userid, p->standing_on);
-				}*/
-			}
-		}
-	}
-	
 	/// from main (worldman) thread ///
 	void Network::handleNetworking()
 	{
 		mtx.lock();
-		
-		ntt.pmoved   = player.changedPosition;
-		if (ntt.pmoved)   ntt.pcoord = PackCoord(player.X, player.Y, player.Z);
-		ntt.protated = player.changedRotation;
-		if (ntt.protated) ntt.prot   = vec2(player.xrotrad, player.yrotrad);
-		
-		// receive blocks from network thread
-		while (ntt.incoming.size())
 		{
-			NetworkBlock& block = ntt.incoming.front();
+			ntt.pmoved   = player.changedPosition;
+			if (ntt.pmoved)   ntt.pcoord = PackCoord(player.X, player.Y, player.Z);
+			ntt.protated = player.changedRotation;
+			if (ntt.protated) ntt.prot   = vec2(player.xrotrad, player.yrotrad);
 			
-			// unpack position
-			UnpackCoord coords(block.wc, block.bc);
-			
-			if (coords.valid)
+			// receive blocks from network thread
+			while (ntt.incoming.size())
 			{
-				block_t id = block.block.getID();
-				block_t bf = block.block.getFacing();
+				NetworkBlock& block = ntt.incoming.front();
 				
-				//logger << Log::INFO << "block: " << id << ", " << bf << Log::ENDL;
+				// unpack position
+				UnpackCoord coords(block.wc, block.bc);
 				
-				// make world modification
-				switch (block.type)
+				if (coords.valid)
 				{
-					case NetworkBlock::BADD:
-						Spiders::addblock(coords.bx, coords.by, coords.bz, id, bf, true);
-						break;
-					case NetworkBlock::BSET:
-						Spiders::addblock(coords.bx, coords.by, coords.bz, id, bf, true);
-						break;
-					case NetworkBlock::BREM:
-						Spiders::removeBlock(coords.bx, coords.by, coords.bz, true);
-						break;
+					block_t id = block.block.getID();
+					block_t bf = block.block.getFacing();
+					
+					//logger << Log::INFO << "block: " << id << ", " << bf << Log::ENDL;
+					
+					// make world modification
+					switch (block.type)
+					{
+						case NetworkBlock::BADD:
+							Spiders::addblock(coords.bx, coords.by, coords.bz, id, bf, true);
+							break;
+						case NetworkBlock::BSET:
+							Spiders::addblock(coords.bx, coords.by, coords.bz, id, bf, true);
+							break;
+						case NetworkBlock::BREM:
+							Spiders::removeBlock(coords.bx, coords.by, coords.bz, true);
+							break;
+					}
+					
+				} // valid coordinates
+				else
+				{
+					logger << Log::INFO << "Did not add block" << Log::ENDL;
 				}
+				ntt.incoming.pop_front();
 				
-			} // valid coordinates
-			else
-			{
-				logger << Log::INFO << "Did not add block" << Log::ENDL;
-			}
-			ntt.incoming.pop_front();
+			} // incoming block queue
 			
-		} // incoming block queue
+		}
 		mtx.unlock();
+		
+		// handle players - interpolate movement and determine if renderable
+		netplayers.handlePlayers(1.0);
 	}
 	
 	/// from networking scheduler ///
 	void Network::handleTransfer()
 	{
 		mtx.lock();
+		if (this->connected)
 		{
-			if (ntt.pmoved)
+			static const double UPDATE_INTERVAL = 0.200;
+			static double lastTime = 0.0;
+			
+			double deltat = timer.getDeltaTime();
+			if (deltat > lastTime + UPDATE_INTERVAL)
 			{
-				// start moving
-				c_p(ntt.pcoord.wc, ntt.pcoord.bc);
-				ntt.psentmoved = true;
+				lastTime = deltat;
+				
+				// update position & rotation
+				if (ntt.pmoved)
+				{
+					// start moving
+					c_p(ntt.pcoord.wc, ntt.pcoord.bc);
+					ntt.psentmoved = true;
+				}
+				else if (ntt.psentmoved)
+				{
+					// stop player
+					c_p_empty();
+					ntt.psentmoved = false;
+				}
+				if (ntt.protated)
+				{
+					head_rot rot;
+					rot.xrot = ntt.prot.x / PI2 * 4096;
+					rot.yrot = ntt.prot.y / PI2 * 4096;
+					c_pr(rot);
+				}
+				//logger << Log::INFO << "Send position updates at " << deltat << Log::ENDL;
 			}
-			else if (ntt.psentmoved)
+			
+			// send blocks to remote host
+			while (ntt.outgoing.size())
 			{
-				// stop player
-				c_p_empty();
-				ntt.psentmoved = false;
-			}
-			if (ntt.protated)
-			{
-				head_rot rot;
-				rot.xrot = ntt.prot.x / PI2 * 4096;
-				rot.yrot = ntt.prot.y / PI2 * 4096;
-				c_pr(rot);
-			}
+				NetworkBlock& nb = ntt.outgoing.front();
+				
+				::block_t block;
+				block.id = nb.block.getID();
+				block.bf = nb.block.getData() >> 10;
+				
+				// make world modification
+				switch (nb.type)
+				{
+				case NetworkBlock::BADD:
+					c_badd(nb.wc, nb.bc, block);
+					break;
+				case NetworkBlock::BSET:
+					c_bset(nb.wc, nb.bc, block);
+					break;
+				case NetworkBlock::BREM:
+					c_brem(nb.wc, nb.bc);
+					break;
+				}
+				// remove front block from queue
+				ntt.outgoing.pop_front();
+				
+			} // outgoing block queue
 		}
-		
-		// send blocks to remote host
-		while (ntt.outgoing.size())
-		{
-			NetworkBlock& nb = ntt.outgoing.front();
-			
-			::block_t block;
-			block.id = nb.block.getID();
-			block.bf = nb.block.getData() >> 10;
-			
-			// make world modification
-			switch (nb.type)
-			{
-			case NetworkBlock::BADD:
-				c_badd(nb.wc, nb.bc, block);
-				break;
-			case NetworkBlock::BSET:
-				c_bset(nb.wc, nb.bc, block);
-				break;
-			case NetworkBlock::BREM:
-				c_brem(nb.wc, nb.bc);
-				break;
-			}
-			
-			ntt.outgoing.pop_front();
-			
-		} // outgoing block queue
-		
 		mtx.unlock();
 	}
 	

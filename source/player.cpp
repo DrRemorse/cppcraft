@@ -117,9 +117,15 @@ namespace cppcraft
 		{
 			// player could have been moved twice, the second time causing him to lose the moved flag
 			// so we need to explicitly test all scalars
-			player.changedPosition = (snapX != X || snapY != Y || snapZ != Z);
+			const double min_change = 0.001;
+			const double net_change = 0.05;
 			
-			if (player.changedPosition)
+			// update renderer with small changes
+			bool precisionChange = (fabs(snapX - X) > min_change || fabs(snapY - Y) > min_change || fabs(snapZ - Z) > min_change);
+			// update networking if position changed by a bigger amount
+			player.changedPosition = (fabs(snapX - X) > net_change || fabs(snapY - Y) > net_change || fabs(snapZ - Z) > net_change);
+			
+			if (precisionChange)
 			{
 				camera.recalc = true;
 				

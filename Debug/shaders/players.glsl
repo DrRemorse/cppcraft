@@ -32,9 +32,12 @@ void main()
 	texCoord = in_texture.stp;
 	texCoord.st /= TEX_SCALE;
 	
+	// view normals
+	vec3 normal = mat3(matview) * in_normal.xyz;
+	
 	// worldlight //
 	const float ambience = 0.5;
-	float dotlight = dot(in_normal.xyz, lightVector.xyz);
+	float dotlight = dot(normal, lightVector.xyz);
 	worldLight = max(ambience * 0.6 + 0.5 * (0.5 + 0.5*dotlight), 0.2);
 	// worldlight //
 }

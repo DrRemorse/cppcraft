@@ -2,6 +2,7 @@
 #define NETWORK_HPP
 
 #include <library/math/vector.hpp>
+#include <library/timing/timer.hpp>
 #include <liblattice/coordinates.h>
 #include "blocks.hpp"
 #include "world.hpp"
@@ -10,6 +11,7 @@
 #include <thread>
 
 struct lattice_bump;
+struct lattice_message;
 
 namespace cppcraft
 {
@@ -105,13 +107,17 @@ namespace cppcraft
 		void handleTransfer();
 		
 		bool running;
+		bool connected;
 		std::mutex  mtx;
 		std::thread networkThread;
+		// timing for network updates
+		library::Timer timer;
 		// all the stuff we want to copy between the threads now and then, 
 		// just to have it somewhere visible
 		NetworkThreadTransfer ntt;
 		
 		friend void bumpError(lattice_bump* bump);
+		friend void message(lattice_message* mp);
 	};
 	extern Network network;
 }

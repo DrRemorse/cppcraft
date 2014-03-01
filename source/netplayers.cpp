@@ -47,37 +47,28 @@ namespace cppcraft
 		return nullptr;
 	}
 	
-	void NetPlayers::updatePosition(NetPlayer* np, UnpackCoordF& position)
-	{
-		np->setPosition(position.wc, position.bc);
-		np->moving = true;
-	}
-	void NetPlayers::stopMoving(NetPlayer* np)
-	{
-		np->moving = false;
-	}
-	
-	void NetPlayers::updateRotation(NetPlayer* p, library::vec2& rotation)
-	{
-		p->setRotation(rotation);
-	}
-	
 	void NetPlayers::positionSnapshots(int wx, int wz)
 	{
 		for (NetPlayer& p : players)
 		{
 			p.gxyz = vec3(
-				(p.wc.x - wx) * Sector::BLOCKS_XZ + p.pos.x,
-				(p.wc.y)      * Sector::BLOCKS_Y  + p.pos.y,
-				(p.wc.z - wz) * Sector::BLOCKS_XZ + p.pos.z
+				(p.wc_from.x - wx) * Sector::BLOCKS_XZ + p.bc_from.x,
+				(p.wc_from.y)      * Sector::BLOCKS_Y  + p.bc_from.y,
+				(p.wc_from.z - wz) * Sector::BLOCKS_XZ + p.bc_from.z
 			);
+		}
+	}
+	
+	void NetPlayers::handlePlayers(double dtime)
+	{
+		for (NetPlayer& p : players)
+		{
+			p.movementUpdate(dtime);
 		}
 	}
 	
 	void NetPlayers::createTestPlayer()
 	{
-		NetPlayer nplayer(1234, "Test");
-		
 		w_coord wc;
 		wc.x = world.getWX() + Sectors.getXZ() / 2;
 		wc.z = world.getWZ() + Sectors.getXZ() / 2 - 1;
@@ -85,7 +76,7 @@ namespace cppcraft
 		
 		vec3 pos(-6, 2.45, 9);
 		
-		nplayer.setPosition(wc, pos);
+		NetPlayer nplayer(1234, "Test", wc, pos);
 		
 		players.push_back(nplayer);
 	}
@@ -94,8 +85,9 @@ namespace cppcraft
 		NetPlayer* pl = playerByUID(1234);
 		if (pl)
 		{
-			pl->setRotation(vec2(cos(frametime * 0.04), frametime * 0.08));
+			pl->setRotation(vec2(cos(frametime * 0.04), frametime * 0.02));
 		}
+		pl->bc_to.x += 0.1;
 	}
 	
 	static const double PI = 4 * atan(1);
@@ -158,6 +150,11 @@ namespace cppcraft
 		// render each player
 		for (size_t i = 0; i < players.size(); i++)
 		{
+			NetPlayer& np = players[i];
+			if (np.render == false) continue;
+			
+			// FIXME: use dot product to determine if player is even in camera vision
+			
 			mat4 matview = camera.getViewMatrix();
 			matview.translate(players[i].gxyz);
 			
@@ -176,7 +173,8 @@ namespace cppcraft
 			const float weight = 0.25 * dtime;
 			
 			// interpolate body rotation
-			players[i].bodyrot = interpolate_angle(players[i].bodyrot, players[i].rotation.y, weight, maxdelta);
+			float brot = interpolate_angle(np.bodyrot, np.rotation.y, weight, maxdelta);
+			np.bodyrot = interpolate_angle(brot, np.bodyrot, 0.5 * dtime, 0.0);
 			
 			// render chest
 			matv = matview;

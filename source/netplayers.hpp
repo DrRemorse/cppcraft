@@ -26,13 +26,13 @@ namespace cppcraft
 		// returns null if no matching uid was found
 		NetPlayer* playerByUID(userid_t uid);
 		
-		// network updates
-		void updatePosition(NetPlayer*, UnpackCoordF& position);
-		void updateRotation(NetPlayer*, library::vec2& rotation);
-		void stopMoving(NetPlayer* np);
-		
 		// convert positions from relative (w, b) to snapshot/renderable (g)
+		// executed from rendering thread
 		void positionSnapshots(int wx, int wz);
+		
+		// determines whether players are renderable and interpolates movement etc.
+		// executed from network handler
+		void handlePlayers(double dtime);
 		
 		// major functions
 		void renderPlayers(double frameCounter, double dtime);

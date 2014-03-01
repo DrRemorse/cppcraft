@@ -136,7 +136,7 @@ namespace cppcraft
 		{
 			// build vertices
 			int vertices = 0;
-			selection_vertex_t* vertexData;
+			selection_vertex_t* vertexData = nullptr;
 			
 			// determine selection mesh
 			if (selection < 6)
