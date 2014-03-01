@@ -402,7 +402,6 @@ namespace cppcraft
 				indic->x += vx;
 				indic->y += vy;
 				indic->z += vz;
-				indic->bindex = colorIndex;
 				indic += 1;
 			}
 			// increase vertex count for current shaderline

@@ -16,23 +16,23 @@ namespace cppcraft
 		GLshort x; // 0
 		GLshort y;
 		GLshort z;
-		unsigned short face;
+		GLshort padding1;
 		
-		GLbyte nx; // 8
-		GLbyte ny;
-		GLbyte nz;
-		GLbyte p1;
-		
-		GLshort u; // 12
+		GLshort u; // 8
 		GLshort v;
 		GLshort w;
-		GLshort bindex;
+		GLshort padding2;
+		
+		GLbyte nx; // 16
+		GLbyte ny;
+		GLbyte nz;
+		unsigned char face;
 		
 		GLuint biome; // 20
 		
-		unsigned long long c; // 20 (24)
+		unsigned long long c; // 24
 		
-	};  // 28 (32)
+	};  // 32
 	#pragma pack(pop)
 	
 	#pragma pack(push, 4)
