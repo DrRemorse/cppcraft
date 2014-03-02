@@ -49,7 +49,10 @@ namespace library
 		bool load(const std::string& filename, int size);
 		
 		void bind(GLenum unit);
+		// Y-axis is upwards
 		void print(const vec3& location, const vec2& size, std::string text);
+		// Y-axis is downwards
+		void print2d(const vec3& location, const vec2& size, std::string text);
 		
 		// returns 2D size of string in pixels
 		vec2 measure(std::string text) const;

@@ -4,6 +4,7 @@
 namespace library
 {
 	class mat4;
+	class OglFont;
 }
 
 namespace cppcraft
@@ -22,6 +23,8 @@ namespace cppcraft
 		
 		void init(Renderer& renderer);
 		void render(Renderer& renderer);
+		
+		library::OglFont& getFont();
 		
 	private:
 		float width;

@@ -12,13 +12,15 @@ namespace cppcraft
 	static const double PI = 4 * atan(1);
 	static const double PI2 = PI * 2;
 	
-	NetPlayer::NetPlayer(NetPlayer::userid_t uid, const std::string& name, w_coord& wc, const vec3& pos)
+	NetPlayer::NetPlayer(NetPlayer::userid_t uid, const std::string& name, unsigned int color, w_coord& wc, const vec3& pos)
 	{
 		this->userID = uid;
-		this->name = name;
+		this->name   = name;
+		this->color  = color;
 		this->render = false;
 		this->wc_from = this->wc_to = wc;
 		this->bc_from = this->bc_to = pos;
+		this->moving = false;
 	}
 	
 	void NetPlayer::movementUpdate()

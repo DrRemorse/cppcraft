@@ -14,7 +14,7 @@ namespace cppcraft
 		typedef unsigned int userid_t;
 		
 		NetPlayer();
-		NetPlayer(userid_t uid, const std::string& name, w_coord& wc, const library::vec3& pos);
+		NetPlayer(userid_t uid, const std::string& name, unsigned int color, w_coord& wc, const library::vec3& pos);
 		
 		inline userid_t getUserID() const
 		{
@@ -54,6 +54,7 @@ namespace cppcraft
 		// synchronized rendering data
 		//vec2 grot;
 		library::vec3 gxyz;
+		unsigned int  color;
 		
 		friend class NetPlayers;
 	};

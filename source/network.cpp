@@ -134,7 +134,7 @@ namespace cppcraft
 	{
 		UnpackCoordF coord(user->wpos, user->bpos);
 		// create netplayer
-		NetPlayer nplayer(userid, user->nickname, coord.wc, coord.bc);
+		NetPlayer nplayer(userid, user->nickname, user->usercolor, coord.wc, coord.bc);
 		nplayer.setRotation(user->hrot.xrot, user->hrot.yrot);
 		// add to active netplayers list
 		netplayers.add(nplayer);

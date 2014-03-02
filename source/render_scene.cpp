@@ -343,6 +343,9 @@ namespace cppcraft
 		/// render particles ///
 		particleSystem.render(snapWX, snapWZ);
 		
+		/// render netplayer nametags ///
+		netplayers.renderNameTags();
+		
 		glColorMask(1, 1, 1, 1);
 		glDisable(GL_BLEND);
 		

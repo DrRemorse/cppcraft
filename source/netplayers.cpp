@@ -3,9 +3,12 @@
 #include <library/log.hpp>
 #include <library/opengl/oglfont.hpp>
 #include <library/opengl/opengl.hpp>
+#include <library/bitmap/colortools.hpp>
 #include "blockmodels.hpp"
 #include "camera.hpp"
 #include "network.hpp"
+#include "player.hpp"
+#include "render_gui.hpp"
 #include "sectors.hpp"
 #include "sun.hpp"
 #include "shaderman.hpp"
@@ -117,7 +120,7 @@ namespace cppcraft
 		
 		vec3 pos(-6, 2.45, 9);
 		
-		NetPlayer nplayer(1234, "Test", wc, pos);
+		NetPlayer nplayer(1234, "Test", 255, wc, pos);
 		
 		players.push_back(nplayer);
 	}
@@ -222,6 +225,7 @@ namespace cppcraft
 			if (np.render == false) continue;
 			
 			// FIXME: use dot product to determine if player is even in camera vision
+			// FIXME: send matview as camera followed by matmodel for use in both position & dotlight
 			
 			mat4 matview = camera.getViewMatrix();
 			matview.translate(np.gxyz);
@@ -232,7 +236,7 @@ namespace cppcraft
 			float headrot = PI - np.rotation.y;
 			while (headrot < 0) headrot += PI2;
 			
-			// render head
+			/// render head ///
 			mat4 matv = matview;
 			matv.rotateZYX(0.0, headrot, 0.0);
 			matv.rotateZYX(np.rotation.x, 0.0, 0.0);
@@ -255,7 +259,7 @@ namespace cppcraft
 			matrot = rotationMatrix(0.0, np.bodyrot, 0.0);
 			shd.sendMatrix("matrot", matrot);
 			
-			// render chest
+			/// render chest ///
 			matv = matview;
 			matv.translate_xy(0, -0.72);
 			matv.rotateZYX(0.0, np.bodyrot, 0.0);
@@ -263,7 +267,7 @@ namespace cppcraft
 			
 			vao.render(GL_QUADS, 24, 24);
 			
-			// render hands
+			/// render hands ///
 			matv = matview;
 			matv.rotateZYX(0.0, np.bodyrot, 0.0);
 			matv.translate_xy(-0.25, -0.27);
@@ -282,7 +286,7 @@ namespace cppcraft
 			
 			vao.render(GL_QUADS, 48, 24);
 			
-			// render legs
+			/// render legs ///
 			matv = matview;
 			matv.rotateZYX(0.0, np.bodyrot, 0.0);
 			matv.translate_xy(-0.11, -0.75);
@@ -303,4 +307,42 @@ namespace cppcraft
 			
 		} // render each player
 	} // render players
+	
+	void NetPlayers::renderNameTags()
+	{
+		OglFont& font = rendergui.getFont();
+		
+		font.bind(0);
+		
+		// render each player
+		for (size_t i = 0; i < players.size(); i++)
+		{
+			NetPlayer& np = players[i];
+			if (np.render == false) continue;
+			
+			// FIXME: use dot product to determine if player is even in camera vision
+			// FIXME: send matview as camera followed by matmodel for use in both position & dotlight
+			
+			// rotation & translation
+			mat4 matview = camera.getViewMatrix();
+			matview.translate(np.gxyz);
+			matview.translate_xy(0, 0.25);
+			//matview.rotateZYX(0.0, np.bodyrot, PI);
+			matview.rotateZYX(0.0, PI2 - player.yrotrad, 0.0);
+			
+			font.sendMatrix(camera.getProjection() * matview);
+			
+			// player color
+			vec4 color = colorToVector(np.color);
+			color.w = 1.0; // someone always fucks up alpha somewhere
+			font.setColor(color);
+			
+			// print text
+			static const vec2 SCALE(0.15);
+			const vec3 OFFSET(-np.name.size() * SCALE.x * 0.5, 0.0, 0.0);
+			
+			font.print(OFFSET, SCALE, np.name);
+		}
+	}
+	
 }

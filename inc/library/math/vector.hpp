@@ -233,7 +233,7 @@ namespace library
 	
 	// vec3 language functions
 	vec3::vector_t dot(const vec3& va, const vec3& vb);
-	vec3 distance(const vec3& va, const vec3& vb);
+	vec3::vector_t distance(const vec3& va, const vec3& vb);
 	vec3 normalize(const vec3&);
 	vec3 cross(const vec3&, const vec3&);
 	vec3 reflect(const vec3& I, const vec3& N);

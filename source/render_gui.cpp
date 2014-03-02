@@ -1,9 +1,9 @@
 #include "render_gui.hpp"
 
-#include "library/math/matrix.hpp"
-#include "library/opengl/opengl.hpp"
-#include "library/opengl/window.hpp"
-#include "library/opengl/oglfont.hpp"
+#include <library/math/matrix.hpp>
+#include <library/opengl/opengl.hpp>
+#include <library/opengl/window.hpp>
+#include <library/opengl/oglfont.hpp>
 #include "minimap.hpp"
 #include "renderman.hpp"
 #include "render_scene.hpp"
@@ -21,6 +21,11 @@ namespace cppcraft
 	// A wild Font appears!
 	OglFont font;
 	
+	library::OglFont& GUIRenderer::getFont()
+	{
+		return font;
+	}
+	
 	void GUIRenderer::init(Renderer& renderer)
 	{
 		width  = 1.0;
@@ -36,9 +41,6 @@ namespace cppcraft
 		
 		font.createDefaultShader();
 		font.bind(0);
-		font.sendMatrix(ortho);
-		
-		font.setColor(vec4(0.8, 0.8, 1.0, 1.0));
 		font.setBackColor(vec4(0.0, 0.5));
 		
 		// initialize minimap
@@ -78,11 +80,14 @@ namespace cppcraft
 		glEnable(GL_BLEND);
 		
 		font.bind(0);
-		font.print(vec3(0.01, 0.01, 0.0), vec2(0.01), "cppcraft v0.1");
+		font.sendMatrix(ortho);
+		font.setColor(vec4(0.8, 0.8, 1.0, 1.0));
+		
+		font.print2d(vec3(0.01, 0.01, 0.0), vec2(0.01), "cppcraft v0.1");
 		
 		std::stringstream ss;
 		ss << "fps: " << renderer.FPS;
-		font.print(vec3(0.01, 0.02, 0.0), vec2(0.01), ss.str());
+		font.print2d(vec3(0.01, 0.02, 0.0), vec2(0.01), ss.str());
 		
 		glDisable(GL_BLEND);
 	}
