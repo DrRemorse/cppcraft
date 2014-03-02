@@ -6,7 +6,7 @@
 # -Ofast -mfpmath=both -march=native -flto -ffinite-math-only -fno-signed-zeros -fno-trapping-math
 # -Ofast -mfpmath=both -march=native
 # -g -Og
-BUILDOPT = -g -Og # -Ofast -mfpmath=both -march=native # -flto -ffinite-math-only -fno-signed-zeros -fno-trapping-math
+BUILDOPT = -Ofast -mfpmath=both -march=native # -flto -ffinite-math-only -fno-signed-zeros -fno-trapping-math
 # output file
 OUTPUT   = ./Debug/cppcraft
 
