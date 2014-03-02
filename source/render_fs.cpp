@@ -1,5 +1,6 @@
 #include "render_fs.hpp"
 
+#include <library/config.hpp>
 #include <library/opengl/opengl.hpp>
 #include <library/opengl/vao.hpp>
 #include <library/opengl/window.hpp>
@@ -26,8 +27,16 @@ namespace cppcraft
 		this->blurTxW = gamescr.SW / 2;
 		this->blurTxH = gamescr.SH / 2;
 		
-		this->flareTxW = gamescr.SW / 2;
-		this->flareTxH = gamescr.SH / 2;
+		if (config.get("render.hq_lens", false))
+		{
+			this->flareTxW = gamescr.SW;
+			this->flareTxH = gamescr.SH;
+		}
+		else // half resolution when not high-quality
+		{
+			this->flareTxW = gamescr.SW / 2;
+			this->flareTxH = gamescr.SH / 2;
+		}
 		
 		// create screenspace FBOs
 		glGenFramebuffers(1, &blurFBO);
@@ -51,7 +60,7 @@ namespace cppcraft
 		glViewport(0, 0, gamescr.SW, gamescr.SH);
 	}
 	
-	void FSRenderer::fog(WindowClass& gamescr)
+	void FSRenderer::fog()
 	{
 		Shader& shd = shaderman[Shaderman::FSTERRAINFOG];
 		shd.bind();
@@ -74,7 +83,7 @@ namespace cppcraft
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 	
-	void FSRenderer::terrain(WindowClass& gamescr)
+	void FSRenderer::terrain()
 	{
 		// postprocessing shader
 		Shader& shd = shaderman[Shaderman::FSTERRAIN];

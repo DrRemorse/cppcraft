@@ -31,11 +31,11 @@ namespace cppcraft
 			return rotation;
 		}
 		
-		void setRotation(const library::vec2& rot);
+		void setRotation(int rotx, int roty);
 		void moveTo(w_coord& wc, const library::vec3& pos);
 		void stopMoving();
 		
-		void movementUpdate(double dtime);
+		void movementUpdate();
 		
 	private:
 		std::string name;

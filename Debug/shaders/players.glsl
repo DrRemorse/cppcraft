@@ -5,6 +5,7 @@
 #ifdef VERTEX_PROGRAM
 uniform mat4 matproj;
 uniform mat4 matview;
+uniform mat4 matrot;
 
 uniform vec3 lightVector;
 uniform float modulation;
@@ -33,7 +34,7 @@ void main()
 	texCoord.st /= TEX_SCALE;
 	
 	// view normals
-	vec3 normal = mat3(matview) * in_normal.xyz;
+	vec3 normal = mat3(matrot) * in_normal.xyz;
 	
 	// worldlight //
 	const float ambience = 0.5;

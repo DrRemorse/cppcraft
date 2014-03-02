@@ -118,7 +118,7 @@ namespace cppcraft
 			// player could have been moved twice, the second time causing him to lose the moved flag
 			// so we need to explicitly test all scalars
 			const double min_change = 0.001;
-			const double net_change = 0.05;
+			const double net_change = 0.01;
 			
 			// update renderer with small changes
 			bool precisionChange = (fabs(snapX - X) > min_change || fabs(snapY - Y) > min_change || fabs(snapZ - Z) > min_change);
@@ -134,6 +134,7 @@ namespace cppcraft
 				{
 					updateShadows = true;
 				}
+				
 			}
 			
 			snapX = X;
@@ -167,7 +168,8 @@ namespace cppcraft
 		// measure closeness
 		float dx = fabsf(player.xrotrad - input.getRotation().x);
 		float dy = fabsf(player.yrotrad - input.getRotation().y);
-		// rotate if too far apart
+		
+		// rotate if too far apart (NOTE: possible bug with calculating angle distance)
 		player.changedRotation = (dx > 0.0001 || dy > 0.0001);
 		if (player.changedRotation)
 		{

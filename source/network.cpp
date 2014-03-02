@@ -46,8 +46,10 @@ namespace cppcraft
 		this->running = true;
 		this->networkThread = std::thread(&Network::mainLoop, this);
 		
-		/// testing ///
-		netplayers.createTestPlayer();
+		#ifdef TEST_MODEL
+			/// testing ///
+			netplayers.createTestPlayer();
+		#endif
 		
 		timer.startNewRound();
 	}
@@ -76,6 +78,7 @@ namespace cppcraft
 		
 		timeval waitTime;
 		
+		// lattice processing mainloop
 		while (this->running)
 		{
 			waitTime.tv_sec  = 0;
@@ -85,7 +88,15 @@ namespace cppcraft
 			lattice_flush();
 			
 			// transfer stuff from client to network
+			// handles doodlemcgees, performs actions and handles magic
 			handleTransfer();
+		}
+		
+		// try to exit normally
+		if (this->connected)
+		{
+			c_quit("Normal exit");
+			lattice_flush();
 		}
 	}
 	
@@ -124,6 +135,7 @@ namespace cppcraft
 		UnpackCoordF coord(user->wpos, user->bpos);
 		// create netplayer
 		NetPlayer nplayer(userid, user->nickname, coord.wc, coord.bc);
+		nplayer.setRotation(user->hrot.xrot, user->hrot.yrot);
 		// add to active netplayers list
 		netplayers.add(nplayer);
 		
@@ -156,10 +168,7 @@ namespace cppcraft
 		NetPlayer* np = netplayers.playerByUID(userid);
 		if (np)
 		{
-			vec2 rot(rotated->rot.xrot, rotated->rot.yrot);
-			rot *= PI2 / 4096;
-			//netplayers.updateRotation(rot);
-			np->setRotation(rot);
+			np->setRotation(rotated->rot.xrot, rotated->rot.yrot);
 		}
 	}
 	
@@ -167,7 +176,6 @@ namespace cppcraft
 	{
 		PackCoord& pc = network.ntt.pcoord;
 		logger << Log::INFO << "Player: (" << pc.wc.x << "," << pc.wc.y << "," << pc.wc.z << ") bxyz (" << pc.bc.x << "," << pc.bc.y << "," << pc.bc.z << ")" << Log::ENDL;
-		//logger << Log::INFO << "I'm supposedly outside of all servers?" << Log::ENDL;
 		logger << Log::INFO << "Bump: (" << bump->bad_wcoord.x << "," << bump->bad_wcoord.y << "," << bump->bad_wcoord.z << ") bxyz (" << bump->bad_bcoord.x << "," << bump->bad_bcoord.y << "," << bump->bad_bcoord.z << ")" << Log::ENDL;
 	}
 	
@@ -288,8 +296,8 @@ namespace cppcraft
 		// block coordinates
 		lattice_player.bpos = playerCoords.bc;
 		
-		lattice_player.hrot.xrot = player.xrotrad;
-		lattice_player.hrot.yrot = player.yrotrad;
+		lattice_player.hrot.xrot = player.xrotrad / PI2 * 4096;
+		lattice_player.hrot.yrot = player.yrotrad / PI2 * 4096;
 		
 		lattice_player.model = 5;
 		lattice_player.usercolor = 15;
@@ -310,9 +318,9 @@ namespace cppcraft
 	{
 		mtx.lock();
 		{
-			ntt.pmoved   = player.changedPosition;
+			ntt.pmoved |= player.changedPosition;
 			if (ntt.pmoved)   ntt.pcoord = PackCoord(player.X, player.Y, player.Z);
-			ntt.protated = player.changedRotation;
+			ntt.protated |= player.changedRotation;
 			if (ntt.protated) ntt.prot   = vec2(player.xrotrad, player.yrotrad);
 			
 			// receive blocks from network thread
@@ -327,7 +335,6 @@ namespace cppcraft
 				{
 					block_t id = block.block.getID();
 					block_t bf = block.block.getFacing();
-					
 					//logger << Log::INFO << "block: " << id << ", " << bf << Log::ENDL;
 					
 					// make world modification
@@ -357,7 +364,7 @@ namespace cppcraft
 		mtx.unlock();
 		
 		// handle players - interpolate movement and determine if renderable
-		netplayers.handlePlayers(1.0);
+		netplayers.handlePlayers();
 	}
 	
 	/// from networking scheduler ///
@@ -366,7 +373,7 @@ namespace cppcraft
 		mtx.lock();
 		if (this->connected)
 		{
-			static const double UPDATE_INTERVAL = 0.200;
+			static const double UPDATE_INTERVAL = 0.100;
 			static double lastTime = 0.0;
 			
 			double deltat = timer.getDeltaTime();
@@ -379,11 +386,14 @@ namespace cppcraft
 				{
 					// start moving
 					c_p(ntt.pcoord.wc, ntt.pcoord.bc);
+					// signal that we are currently moving
 					ntt.psentmoved = true;
+					// disable further updates unless they come in after this one
+					ntt.pmoved     = false;
 				}
 				else if (ntt.psentmoved)
 				{
-					// stop player
+					// stop player, but only if we sent moving before this
 					c_p_empty();
 					ntt.psentmoved = false;
 				}
@@ -393,6 +403,8 @@ namespace cppcraft
 					rot.xrot = ntt.prot.x / PI2 * 4096;
 					rot.yrot = ntt.prot.y / PI2 * 4096;
 					c_pr(rot);
+					// disable further updates unless they come in after this one
+					ntt.protated = false;
 				}
 				//logger << Log::INFO << "Send position updates at " << deltat << Log::ENDL;
 			}

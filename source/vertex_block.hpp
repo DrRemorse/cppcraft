@@ -16,7 +16,7 @@ namespace cppcraft
 		GLshort x; // 0
 		GLshort y;
 		GLshort z;
-		GLshort padding1;
+		unsigned short face;
 		
 		GLshort u; // 8
 		GLshort v;
@@ -26,7 +26,7 @@ namespace cppcraft
 		GLbyte nx; // 16
 		GLbyte ny;
 		GLbyte nz;
-		unsigned char face;
+		GLbyte padding3;
 		
 		GLuint biome; // 20
 		

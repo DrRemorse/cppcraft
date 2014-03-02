@@ -47,25 +47,66 @@ namespace cppcraft
 		return nullptr;
 	}
 	
-	void NetPlayers::positionSnapshots(int wx, int wz)
+	void NetPlayers::positionSnapshots(int wx, int wz, double dtime)
 	{
 		for (NetPlayer& p : players)
 		{
-			p.gxyz = vec3(
-				(p.wc_from.x - wx) * Sector::BLOCKS_XZ + p.bc_from.x,
-				(p.wc_from.y)      * Sector::BLOCKS_Y  + p.bc_from.y,
-				(p.wc_from.z - wz) * Sector::BLOCKS_XZ + p.bc_from.z
-			);
+			if (p.render)
+			{
+				//logger << Log::INFO << this->name << ": interpolating movement" << Log::ENDL;
+				
+				// since the player is inside render distance, and the to and from distances are close enough,
+				// we will be interpolating for smooth movement
+				int wfx = (p.wc_from.x - wx) << Sector::BLOCKS_XZ_SH;
+				int wfy = (p.wc_from.y -  0) << Sector::BLOCKS_Y_SH;
+				int wfz = (p.wc_from.z - wz) << Sector::BLOCKS_XZ_SH;
+				
+				int wtx = (p.wc_to.x - wx) << Sector::BLOCKS_XZ_SH;
+				int wty = (p.wc_to.y -  0) << Sector::BLOCKS_Y_SH;
+				int wtz = (p.wc_to.z - wz) << Sector::BLOCKS_XZ_SH;
+				
+				// calculate local positions
+				vec3 wfvec = vec3(wfx, wfy, wfz) + p.bc_from;
+				vec3 wtvec = vec3(wtx, wty, wtz) + p.bc_to;
+				
+				// interpolate based on dtime
+				const float interpolator = 0.1 * dtime;
+				vec3 newpos = wfvec * (1.0 - interpolator) + wtvec * interpolator;
+				
+				/// recalculate new from position ///
+				// split into fractional and integrals
+				vec3 fracs = newpos.frac();
+				int bx = newpos.x;
+				int by = newpos.y;
+				int bz = newpos.z;
+				// reconstruct world position
+				p.wc_from.x = (bx >> Sector::BLOCKS_XZ_SH) + wx;
+				p.wc_from.y = (by >> Sector::BLOCKS_Y_SH)  +  0;
+				p.wc_from.z = (bz >> Sector::BLOCKS_XZ_SH) + wz;
+				// reconstruct sector position
+				p.bc_from.x = (bx & (Sector::BLOCKS_XZ-1)) + fracs.x;
+				p.bc_from.y = (by & (Sector::BLOCKS_Y-1))  + fracs.y;
+				p.bc_from.z = (bz & (Sector::BLOCKS_XZ-1)) + fracs.z;
+				
+				p.gxyz = vec3(
+					((p.wc_from.x - wx) << Sector::BLOCKS_XZ_SH) + p.bc_from.x,
+					((p.wc_from.y)      << Sector::BLOCKS_Y_SH)  + p.bc_from.y,
+					((p.wc_from.z - wz) << Sector::BLOCKS_XZ_SH) + p.bc_from.z
+				);
+			}
+		}
+	} // positionSnapshots
+	
+	void NetPlayers::handlePlayers()
+	{
+		for (NetPlayer& p : players)
+		{
+			p.movementUpdate();
 		}
 	}
 	
-	void NetPlayers::handlePlayers(double dtime)
-	{
-		for (NetPlayer& p : players)
-		{
-			p.movementUpdate(dtime);
-		}
-	}
+	static const double PI = 4 * atan(1);
+	static const double PI2 = PI * 2;
 	
 	void NetPlayers::createTestPlayer()
 	{
@@ -80,39 +121,66 @@ namespace cppcraft
 		
 		players.push_back(nplayer);
 	}
+	
 	void NetPlayers::modulateTestPlayer(double frametime)
 	{
 		NetPlayer* pl = playerByUID(1234);
 		if (pl)
 		{
-			pl->setRotation(vec2(cos(frametime * 0.04), frametime * 0.02));
+			pl->setRotation(cos(frametime * 0.04) / PI2 * 4096, fmod(frametime * 0.03, PI2) / PI2 * 4096);
 		}
-		pl->bc_to.x += 0.1;
+		//pl->bc_to.x += 0.02;
 	}
 	
-	static const double PI = 4 * atan(1);
-	static const double PI2 = PI * 2;
-	
-	float interpolate_angle(double a1, double a2, double weight, double maxdelta)
+	/*float curveAngle(float from, float to, float step)
 	{
-		float delta = (a2 + PI2) - (a1 + PI2);
+		if (step == 0) return from;
+		if (from == to || step == 1) return to;
+		
+		Vector2 fromVector = new Vector2((float)Math.Cos(from), (float)Math.Sin(from));
+		Vector2 toVector = new Vector2((float)Math.Cos(to), (float)Math.Sin(to));
+		
+		Vector2 currentVector = Slerp(fromVector, toVector, step);
+		
+		return (float)Math.Atan2(currentVector.Y, currentVector.X);
+	}
+	
+	public static Vector2 Slerp(Vector2 from, Vector2 to, float step)
+	{
+		if (step == 0) return from;
+		if (from == to || step == 1) return to;
+
+		double theta = Math.Acos(Vector2.Dot(from, to));
+		if (theta == 0) return to;
+
+		double sinTheta = Math.Sin(theta);
+		return (float)(Math.Sin((1 - step) * theta) / sinTheta) * from + (float)(Math.Sin(step * theta) / sinTheta) * to;
+	}*/
+	
+	float interpolate_angle(double afrom, double ato, double weight, double maxdelta)
+	{
+		float delta = ato - afrom;
 		
 		if (fabs(delta) > PI)
 		{
-			if (delta > 0) a2 += PI2;
-			else           a2 -= PI2;
+			if (delta > 0) ato -= PI2;
+			else           ato += PI2;
 		}
 		
 		if (fabs(delta) > maxdelta)
-			return a1 * (1.0 - weight) + a2 * weight;
-		else
-			return a1;
+			afrom = afrom * (1.0 - weight) + ato * weight;
+		
+		while (afrom >= PI2) afrom -= PI2;
+		while (afrom <    0) afrom += PI2;
+		return afrom;
 	}
 	
 	void NetPlayers::renderPlayers(double frameCounter, double dtime)
 	{
-		/// testing ///
-		netplayers.modulateTestPlayer(frameCounter);
+		#ifdef TEST_MODEL
+			/// testing ///
+			netplayers.modulateTestPlayer(frameCounter);
+		#endif
 		
 		// playermodel texture
 		textureman[Textureman::T_PLAYERMODELS].bind(0);
@@ -128,11 +196,11 @@ namespace cppcraft
 		
 		shd.sendFloat("modulation", torchlight.getModulation(frameCounter));
 		
-		int count = blockmodels.skinCubes.totalCount();
-		
 		// head mesh
 		if (vao.isGood() == false)
 		{
+			int count = blockmodels.skinCubes.totalCount();
+			
 			// create ccube and copy all centerCube vertices to ccube
 			player_vertex_t* ccube = new player_vertex_t[count];
 			blockmodels.skinCubes.copyAll(ccube);
@@ -156,50 +224,59 @@ namespace cppcraft
 			// FIXME: use dot product to determine if player is even in camera vision
 			
 			mat4 matview = camera.getViewMatrix();
-			matview.translate(players[i].gxyz);
+			matview.translate(np.gxyz);
 			
 			//logger << Log::INFO << "Rendering player: " << i << " at " << players[i].gxyz << Log::ENDL;
 			vao.bind();
 			
+			float headrot = PI - np.rotation.y;
+			while (headrot < 0) headrot += PI2;
+			
 			// render head
 			mat4 matv = matview;
-			matv.rotateZYX(0.0, players[i].rotation.y, 0.0);
-			matv.rotateZYX(players[i].rotation.x, 0.0, 0.0);
+			matv.rotateZYX(0.0, headrot, 0.0);
+			matv.rotateZYX(np.rotation.x, 0.0, 0.0);
 			shd.sendMatrix("matview", matv);
+			
+			mat4 matrot = rotationMatrix(0.0, headrot, 0.0);
+			matrot.rotateZYX(np.rotation.x, 0.0, 0.0);
+			shd.sendMatrix("matrot", matrot);
 			
 			vao.render(GL_QUADS, 0, 24);
 			
-			const float maxdelta = (players[i].moving) ? 0.05 : 0.8;
+			const float maxdelta = (np.moving) ? 0.05 : 0.8;
 			const float weight = 0.25 * dtime;
 			
-			// interpolate body rotation
-			float brot = interpolate_angle(np.bodyrot, np.rotation.y, weight, maxdelta);
-			np.bodyrot = interpolate_angle(brot, np.bodyrot, 0.5 * dtime, 0.0);
+			// interpolate body rotation and make it follow head rotation when moving,
+			// otherwise make it hold towards some minimum angle (maxdelta)
+			float brot = interpolate_angle(np.bodyrot, headrot, weight, maxdelta);
+			np.bodyrot = interpolate_angle(brot, np.bodyrot, 0.25 * dtime, 0.0);
+			
+			matrot = rotationMatrix(0.0, np.bodyrot, 0.0);
+			shd.sendMatrix("matrot", matrot);
 			
 			// render chest
 			matv = matview;
 			matv.translate_xy(0, -0.72);
-			matv.rotateZYX(0.0, players[i].bodyrot, 0.0);
+			matv.rotateZYX(0.0, np.bodyrot, 0.0);
 			shd.sendMatrix("matview", matv);
 			
 			vao.render(GL_QUADS, 24, 24);
 			
-			bool moving = players[i].moving;
-			
 			// render hands
 			matv = matview;
-			matv.rotateZYX(0.0, players[i].bodyrot, 0.0);
+			matv.rotateZYX(0.0, np.bodyrot, 0.0);
 			matv.translate_xy(-0.25, -0.27);
-			if (moving)
+			if (np.moving)
 				matv.rotateZYX(sin(frameCounter * 0.1), 0.0, 0.0);
 			shd.sendMatrix("matview", matv);
 			
 			vao.render(GL_QUADS, 48, 24);
 			
 			matv = matview;
-			matv.rotateZYX(0.0, players[i].bodyrot, 0.0);
+			matv.rotateZYX(0.0, np.bodyrot, 0.0);
 			matv.translate_xy(+0.25, -0.27);
-			if (moving)
+			if (np.moving)
 				matv.rotateZYX(sin(-frameCounter * 0.1), 0.0, 0.0);
 			shd.sendMatrix("matview", matv);
 			
@@ -207,18 +284,18 @@ namespace cppcraft
 			
 			// render legs
 			matv = matview;
-			matv.rotateZYX(0.0, players[i].bodyrot, 0.0);
+			matv.rotateZYX(0.0, np.bodyrot, 0.0);
 			matv.translate_xy(-0.11, -0.75);
-			if (moving)
+			if (np.moving)
 				matv.rotateZYX(-sin(frameCounter * 0.1), 0.0, 0.0);
 			shd.sendMatrix("matview", matv);
 			
 			vao.render(GL_QUADS, 72, 24);
 			
 			matv = matview;
-			matv.rotateZYX(0.0, players[i].bodyrot, 0.0);
+			matv.rotateZYX(0.0, np.bodyrot, 0.0);
 			matv.translate_xy(+0.11, -0.75);
-			if (moving)
+			if (np.moving)
 				matv.rotateZYX(sin(frameCounter * 0.1), 0.0, 0.0);
 			shd.sendMatrix("matview", matv);
 			

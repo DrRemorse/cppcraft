@@ -9,6 +9,9 @@ using namespace library;
 
 namespace cppcraft
 {
+	static const double PI = 4 * atan(1);
+	static const double PI2 = PI * 2;
+	
 	NetPlayer::NetPlayer(NetPlayer::userid_t uid, const std::string& name, w_coord& wc, const vec3& pos)
 	{
 		this->userID = uid;
@@ -18,7 +21,7 @@ namespace cppcraft
 		this->bc_from = this->bc_to = pos;
 	}
 	
-	void NetPlayer::movementUpdate(double dtime)
+	void NetPlayer::movementUpdate()
 	{
 		/// check if player is in local grid ///
 		if (wc_to.x < world.getWX() || wc_to.z < world.getWZ() ||
@@ -42,43 +45,7 @@ namespace cppcraft
 			//logger << Log::INFO << this->name << " was outside interpolation distance" << Log::ENDL;
 			wc_from = wc_to;
 			bc_from = bc_to;
-			render = true;
-			return;
 		}
-		
-		//logger << Log::INFO << this->name << ": interpolating movement" << Log::ENDL;
-		
-		// since the player is inside render distance, and the to and from distances are close enough, we will just interpolate
-		int wfx = (wc_from.x - world.getWX()) << Sector::BLOCKS_XZ_SH;
-		int wfy = (wc_from.y - world.getWY()) << Sector::BLOCKS_Y_SH;
-		int wfz = (wc_from.z - world.getWZ()) << Sector::BLOCKS_XZ_SH;
-		
-		int wtx = (wc_to.x - world.getWX()) << Sector::BLOCKS_XZ_SH;
-		int wty = (wc_to.y - world.getWY()) << Sector::BLOCKS_Y_SH;
-		int wtz = (wc_to.z - world.getWZ()) << Sector::BLOCKS_XZ_SH;
-		
-		// calculate local positions
-		vec3 wfvec = vec3(wfx, wfy, wfz) + bc_from;
-		vec3 wtvec = vec3(wtx, wty, wtz) + bc_to;
-		
-		// interpolate based on dtime
-		const float interpolator = 0.5 * dtime;
-		vec3 newpos = wfvec * (1.0 - interpolator) + wtvec * interpolator;
-		
-		/// recalculate new from position ///
-		// split into fractional and integrals
-		vec3 fracs = newpos.frac();
-		int bx = newpos.x;
-		int by = newpos.y;
-		int bz = newpos.z;
-		// reconstruct world position
-		wc_from.x = (bx >> Sector::BLOCKS_XZ_SH) + world.getWX();
-		wc_from.y = (by >> Sector::BLOCKS_Y_SH)  + world.getWY();
-		wc_from.z = (bz >> Sector::BLOCKS_XZ_SH) + world.getWZ();
-		// reconstruct sector position
-		bc_from.x = (bx & (Sector::BLOCKS_XZ-1)) + fracs.x;
-		bc_from.y = (by & (Sector::BLOCKS_Y-1))  + fracs.y;
-		bc_from.z = (bz & (Sector::BLOCKS_XZ-1)) + fracs.z;
 		
 		render = true;
 	}
@@ -93,9 +60,9 @@ namespace cppcraft
 	{
 		moving = false;
 	}
-	void NetPlayer::setRotation(const vec2& rot)
+	void NetPlayer::setRotation(int rx, int ry)
 	{
-		this->rotation = rot;
+		this->rotation = vec2(rx, ry) / 4096 * PI2;
 	}
 	
 	vec3 NetPlayer::getPosition(int wx, int wy, int wz)

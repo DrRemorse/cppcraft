@@ -163,7 +163,7 @@ namespace cppcraft
 			minimap.update(playerX, playerZ);
 			
 			/// set player positions ///
-			netplayers.positionSnapshots(snapWX, snapWZ);
+			netplayers.positionSnapshots(snapWX, snapWZ, renderer.dtime);
 			
 			/// camera deviations ///
 			if (cameraDeviation(renderer.frametick, renderer.dtime))
@@ -314,7 +314,7 @@ namespace cppcraft
 		textureman.bind(0, Textureman::T_FOGBUFFER);
 		textureman.bind(1, Textureman::T_SKYBUFFER);
 		
-		screenspace.fog(renderer.gamescr);
+		screenspace.fog();
 		
 		// blur the render buffer
 		textureman.bind(0, Textureman::T_RENDERBUFFER);
@@ -327,7 +327,7 @@ namespace cppcraft
 		textureman.bind(0, Textureman::T_RENDERBUFFER);
 		textureman.bind(1, Textureman::T_BLURBUFFER2);
 		
-		screenspace.terrain(renderer.gamescr);
+		screenspace.terrain();
 		
 		///  render clouds & particles  ///
 		

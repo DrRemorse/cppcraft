@@ -27,8 +27,8 @@ namespace cppcraft
 		void init(library::WindowClass& gamescr);
 		void initFlare();
 		void blur(library::WindowClass& gamescr);
-		void fog(library::WindowClass& gamescr);
-		void terrain(library::WindowClass& gamescr);
+		void fog();
+		void terrain();
 		
 		void render(library::WindowClass& gamescr, double frameCounter);
 		

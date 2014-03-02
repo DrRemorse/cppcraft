@@ -46,8 +46,7 @@ namespace cppcraft
 		this->angle.x   = cos(angle);
 		this->angle.y   = sin(angle);
 		
-		float direction = 1.0;
-		if (this->angle.x < 0) direction = -1.0;
+		float direction = (this->angle.x >= 0) ? 1.0 : -1.0;
 		
 		half1 = vec3(this->angle.x + direction * 0.08, this->angle.y, 0.0);
 		half1.normalize();

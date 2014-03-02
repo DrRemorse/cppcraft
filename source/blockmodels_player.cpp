@@ -180,7 +180,7 @@ namespace cppcraft
 				case 1: // back
 					bm[index].w = 8; break;
 				case 2: // top
-					bm[index].w = 12; break;
+					bm[index].w = 8; break;
 				case 3: // bottom
 					bm[index].w = 10; break;
 				case 4:

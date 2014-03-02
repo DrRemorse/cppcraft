@@ -1,10 +1,10 @@
 #include "render_fs.hpp"
 
-#include "library/log.hpp"
-#include "library/opengl/opengl.hpp"
-#include "library/opengl/vao.hpp"
-#include "library/opengl/window.hpp"
-#include "library/math/matrix.hpp"
+#include <library/log.hpp>
+#include <library/opengl/opengl.hpp>
+#include <library/opengl/vao.hpp>
+#include <library/opengl/window.hpp>
+#include <library/math/matrix.hpp>
 #include "camera.hpp"
 #include "player.hpp"
 #include "render_sky.hpp"
@@ -66,7 +66,7 @@ namespace cppcraft
 		
 		Shader& blur = shaderman[Shaderman::BLUR];
 		blur.bind();
-		blur.sendInteger("Width", 1);
+		blur.sendInteger("Width", 2);
 		blur.sendVec2("dir", vec2(1.0 / flareTxW, 0.0));
 		
 		//  render

@@ -28,11 +28,11 @@ namespace cppcraft
 		
 		// convert positions from relative (w, b) to snapshot/renderable (g)
 		// executed from rendering thread
-		void positionSnapshots(int wx, int wz);
+		void positionSnapshots(int wx, int wz, double dtime);
 		
 		// determines whether players are renderable and interpolates movement etc.
 		// executed from network handler
-		void handlePlayers(double dtime);
+		void handlePlayers();
 		
 		// major functions
 		void renderPlayers(double frameCounter, double dtime);
