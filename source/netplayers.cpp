@@ -73,7 +73,7 @@ namespace cppcraft
 				vec3 wtvec = vec3(wtx, wty, wtz) + p.bc_to;
 				
 				// interpolate based on dtime
-				const float interpolator = 0.1 * dtime;
+				const float interpolator = 0.05 * dtime;
 				vec3 newpos = wfvec * (1.0 - interpolator) + wtvec * interpolator;
 				
 				/// recalculate new from position ///
@@ -120,7 +120,7 @@ namespace cppcraft
 		
 		vec3 pos(-6, 2.45, 9);
 		
-		NetPlayer nplayer(1234, "Test", 255, wc, pos);
+		NetPlayer nplayer(1234, "Test", 1, 255, wc, pos);
 		
 		players.push_back(nplayer);
 	}
@@ -227,6 +227,9 @@ namespace cppcraft
 			// FIXME: use dot product to determine if player is even in camera vision
 			// FIXME: send matview as camera followed by matmodel for use in both position & dotlight
 			
+			/// now rendering player model ///
+			shd.sendFloat("skinmodel", np.model);
+			
 			mat4 matview = camera.getViewMatrix();
 			matview.translate(np.gxyz);
 			
@@ -254,7 +257,7 @@ namespace cppcraft
 			// interpolate body rotation and make it follow head rotation when moving,
 			// otherwise make it hold towards some minimum angle (maxdelta)
 			float brot = interpolate_angle(np.bodyrot, headrot, weight, maxdelta);
-			np.bodyrot = interpolate_angle(brot, np.bodyrot, 0.25 * dtime, 0.0);
+			np.bodyrot = interpolate_angle(brot, np.bodyrot, 0.05 * dtime, 0.0);
 			
 			matrot = rotationMatrix(0.0, np.bodyrot, 0.0);
 			shd.sendMatrix("matrot", matrot);

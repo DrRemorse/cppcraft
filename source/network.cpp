@@ -2,6 +2,7 @@
 
 #include <library/log.hpp>
 #include <library/config.hpp>
+#include <library/bitmap/colortools.hpp>
 #include "netplayers.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
@@ -134,7 +135,7 @@ namespace cppcraft
 	{
 		UnpackCoordF coord(user->wpos, user->bpos);
 		// create netplayer
-		NetPlayer nplayer(userid, user->nickname, user->usercolor, coord.wc, coord.bc);
+		NetPlayer nplayer(userid, user->nickname, user->model, user->usercolor, coord.wc, coord.bc);
 		nplayer.setRotation(user->hrot.xrot, user->hrot.yrot);
 		// add to active netplayers list
 		netplayers.add(nplayer);
@@ -299,8 +300,9 @@ namespace cppcraft
 		lattice_player.hrot.xrot = player.xrotrad / PI2 * 4096;
 		lattice_player.hrot.yrot = player.yrotrad / PI2 * 4096;
 		
-		lattice_player.model = 5;
-		lattice_player.usercolor = 15;
+		lattice_player.model = config.get("net.model", 0);
+		rgba8_t color = RGBA8(config.get("net.color.r", 255), config.get("net.color.g", 0), config.get("net.color.b", 0), 255);
+		lattice_player.usercolor = color;
 		lattice_player.color = plogic.shadowColor;
 		
 		lattice_player.hhold.item_id = 0;

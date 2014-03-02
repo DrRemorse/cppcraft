@@ -10,7 +10,7 @@
 #include <mutex>
 #include <thread>
 
-#define TEST_MODEL
+//#define TEST_MODEL
 
 struct lattice_bump;
 struct lattice_message;

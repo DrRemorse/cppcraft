@@ -9,6 +9,7 @@ uniform mat4 matrot;
 
 uniform vec3 lightVector;
 uniform float modulation;
+uniform float skinmodel;
 
 in vec3 in_vertex;
 in vec3 in_normal;
@@ -32,6 +33,7 @@ void main()
 	
 	texCoord = in_texture.stp;
 	texCoord.st /= TEX_SCALE;
+	texCoord.p += skinmodel * 16.0;
 	
 	// view normals
 	vec3 normal = mat3(matrot) * in_normal.xyz;
