@@ -49,7 +49,13 @@ namespace cppcraft
 		
 		// open a GLFW ogl context window
 		gamescr.open(wndconf);
-		gamescr.setPosition(0, 0);
+		
+		// move window if we are not fullscreen
+		if (wndconf.fullscreen == false)
+		{
+			gamescr.setPosition(config.get("window.x", 64), config.get("window.y", 64));
+		}
+		
 		// initialize openGL extensions
 		ogl.init();
 		
