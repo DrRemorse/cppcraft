@@ -44,9 +44,15 @@ namespace library
 	class OglFont
 	{
 	public:
-		OglFont();
-		OglFont(const std::string& filename, int size);
-		bool load(const std::string& filename, int size);
+		struct font_vertex_t
+		{
+			float x, y, z;
+			signed short s, t, p, q;
+		};
+		
+		OglFont() : tilesize(0), lastUnit(-1), vertices(0), vdata(nullptr) {}
+		OglFont(const std::string& filename, int fontsize);
+		bool load(const std::string& filename, int fontsize);
 		
 		void bind(GLenum unit);
 		// Y-axis is upwards
@@ -58,37 +64,40 @@ namespace library
 		vec2 measure(std::string text) const;
 		
 		// size in pixels
-		int getSize() const
+		inline int getFontSize() const
 		{
-			return this->size;
+			return this->tilesize;
 		}
 		
-		void sendMatrix(const mat4& matrix)
+		inline void sendMatrix(const mat4& matrix)
 		{
 			shader->sendMatrix("mvp", matrix);
 		}
-		void setBackColor(const vec4& color)
+		inline void setBackColor(const vec4& color)
 		{
 			shader->sendVec4("bgcolor", color);
 		}
-		void setColor(const vec4& color)
+		inline void setColor(const vec4& color)
 		{
 			shader->sendVec4("fcolor", color);
 		}
 		
-		Shader& getShader() { return *shader; }
-		void setShader(Shader& shd)
+		inline Shader& getShader() { return *shader; }
+		inline void setShader(Shader& shd)
 		{
 			shader = &shd;
 		}
 		void createDefaultShader();
 		
 	private:
-		// font texture info
-		int size;
+		// texture tile size
+		int tilesize;
+		// last texture unit for font
 		GLenum lastUnit;
 		Texture font;
 		Shader* shader;
+		int vertices;
+		font_vertex_t* vdata;
 		VAO vao;
 	};
 	
