@@ -152,7 +152,7 @@ namespace cppcraft
 		skipAdvancement:;
 		}
 	}
-	void optimizeShaderPlane(unsigned short& verts, vertex_t* source, int txsize)
+	void optimizeShaderPlane(unsigned short& verts, vertex_t* source)
 	{
 		int lastQuad = (verts / 4) - 1;
 		
@@ -167,9 +167,6 @@ namespace cppcraft
 				// determine that quad points upwards (+y)
 				if (current->nx != 0 || current->ny != 127 || current->nz != 0)
 					continue;
-				
-				// and that it features the same texture as its next
-				if (current->w != next->w) continue;
 				
 				// now check that the next quad has the same normal
 				#define normalToInt(x) ((unsigned int*)&x.nx)[0]
@@ -194,9 +191,6 @@ namespace cppcraft
 					// --> extend v[0] and v[3]
 					current[0].z -= RenderConst::VERTEX_SCALE;
 					current[3].z -= RenderConst::VERTEX_SCALE;
-					// wrap texture coordinates
-					current[0].v -= txsize;
-					current[3].v -= txsize;
 					
 					/*current[0].c = 0 << 24;
 					current[1].c = 0 << 24;
@@ -215,14 +209,14 @@ namespace cppcraft
 		}
 	}
 	
-	void PrecompThread::optimizeMesh(int shaderline)
+	void PrecompThread::optimizeMesh(int shaderline, int txsize)
 	{
 		unsigned short verts = precomp->vertices[shaderline];
 		if (verts >= 8)
 		{
 			vertex_t* repeat = precomp->datadump + precomp->bufferoffset[shaderline];
 			// verts is sent by reference
-			optimizeMesh(verts, repeat, RenderConst::VERTEX_SCALE / tiles.tilesPerBigtile);
+			optimizeMesh(verts, repeat, txsize);
 			// set final number of vertices
 			precomp->vertices[shaderline] = verts;
 		}
@@ -269,7 +263,7 @@ namespace cppcraft
 		if (verts >= 8)
 		{
 			// verts is sent by reference
-			optimizeShaderPlane(verts, water, RenderConst::VERTEX_SCALE);
+			optimizeShaderPlane(verts, water);
 			// set final number of vertices
 			precomp->vertices[shaderline] = verts;
 		}
@@ -310,11 +304,11 @@ namespace cppcraft
 		#endif
 		
 		// optimize repeating textures mesh
-		optimizeMesh(RenderConst::TX_REPEAT);
+		optimizeMesh(RenderConst::TX_REPEAT, RenderConst::VERTEX_SCALE / tiles.tilesPerBigtile);
 		// optimize normal solids
-		optimizeMesh(RenderConst::TX_SOLID);
+		optimizeMesh(RenderConst::TX_SOLID, RenderConst::VERTEX_SCALE);
 		// optimize 2-sided textures
-		optimizeMesh(RenderConst::TX_2SIDED);
+		optimizeMesh(RenderConst::TX_2SIDED, RenderConst::VERTEX_SCALE);
 		// optimize water & lava meshes
 		optimizeShadedMesh(RenderConst::TX_WATER);
 		optimizeShadedMesh(RenderConst::TX_LAVA);

@@ -133,7 +133,7 @@ namespace cppcraft
 		void ambientOcclusionGradients(AmbientOcclusion* ambocc, vertex_t* datadump, int vertexCount);
 		// mesh optimizers
 		void optimizeMesh(unsigned short& verts, vertex_t* source, int txsize);
-		void optimizeMesh(int shaderline);
+		void optimizeMesh(int shaderline, int txsize);
 		void optimizeShadedMesh(int shaderline);
 	};
 	

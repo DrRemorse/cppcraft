@@ -57,7 +57,7 @@ namespace library
 		}
 		
 		// begin sending data to VAO
-		void begin(GLuint vertexSize, GLsizei vertices, GLvoid* data)
+		inline void begin(GLuint vertexSize, GLsizei vertices, GLvoid* data)
 		{
 			#define GL_STATIC_DRAW_ARB 0x88E4
 			begin(vertexSize, vertices, data, GL_STATIC_DRAW_ARB);
@@ -73,6 +73,11 @@ namespace library
 			this->isCreating = false;
 		}
 		// RE-upload data, assuming VAO is already initialized
+		inline void upload(GLuint vertexSize, GLsizei vertices, GLvoid* data)
+		{
+			#define GL_STATIC_DRAW_ARB 0x88E4
+			upload(vertexSize, vertices, data, GL_STATIC_DRAW_ARB);
+		}
 		void upload(GLuint vertexSize, GLsizei vertices, GLvoid* data, GLenum usage);
 		
 		// pre-made VAOs

@@ -312,7 +312,7 @@ namespace cppcraft
 	
 	void NetPlayers::renderNameTags()
 	{
-		OglFont& font = rendergui.getFont();
+		SimpleFont& font = rendergui.getFont();
 		
 		font.bind(0);
 		
@@ -343,7 +343,7 @@ namespace cppcraft
 			static const vec2 SCALE(0.15);
 			const vec3 OFFSET(-np.name.size() * SCALE.x * 0.5, 0.0, 0.0);
 			
-			font.print(OFFSET, SCALE, np.name);
+			font.print(OFFSET, SCALE, np.name, true);
 		}
 	}
 	

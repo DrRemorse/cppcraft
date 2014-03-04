@@ -22,11 +22,11 @@ namespace cppcraft
 		// create default inventory
 		for (int x = 0; x < 4; x++)
 		{
-			inventory(x, quickbarY) = InventoryItem(IT_WOODPICK + x, ITT_ITEM, 64);
+			inventory(x, quickbarY) = InventoryItem(IT_WOODPICK + x, ITT_ITEM, 1);
 		}
-		inventory(4, quickbarY) = InventoryItem(_WOODDOOR, ITT_BLOCK, 64);
-		inventory(5, quickbarY) = InventoryItem(_PLANK, ITT_BLOCK, 64);
-		inventory(6, quickbarY) = InventoryItem(_LADDER, ITT_BLOCK, 64);
+		inventory(4, quickbarY) = InventoryItem(_WOODDOOR, ITT_BLOCK, 8);
+		inventory(5, quickbarY) = InventoryItem(_PLANK, ITT_BLOCK, 9999);
+		inventory(6, quickbarY) = InventoryItem(_LADDER, ITT_BLOCK, 999);
 		inventory(7, quickbarY) = InventoryItem(_TORCH, ITT_BLOCK, 64);
 		inventory(8, quickbarY) = InventoryItem(_LANTERN, ITT_BLOCK, 64);
 		

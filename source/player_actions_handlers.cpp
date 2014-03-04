@@ -208,6 +208,7 @@ namespace cppcraft
 						
 						// decrease count (directly)!
 						item.setCount(item.getCount() - 1);
+						inventory.setChanged(true);
 						
 						// play placement sound
 						soundman.playMaterial(id, Soundman::sound_place);
@@ -233,6 +234,7 @@ namespace cppcraft
 						/// block was placed (PA_AddBlock --> build()) ///
 						
 						item.setCount(item.getCount() - 1); //decrease count (directly)!
+						inventory.setChanged(true);
 						
 						// play placement sound
 						soundman.playMaterial(id, Soundman::sound_place);

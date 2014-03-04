@@ -19,9 +19,9 @@ namespace cppcraft
 	// the GUIs orthographic projection matrix
 	mat4 ortho;
 	// A wild Font appears!
-	OglFont font;
+	SimpleFont font;
 	
-	library::OglFont& GUIRenderer::getFont()
+	library::SimpleFont& GUIRenderer::getFont()
 	{
 		return font;
 	}
@@ -34,14 +34,12 @@ namespace cppcraft
 		// orthographic projection
 		ortho = orthoMatrix(width, height, 0, 2);
 		
-		initInventoryRenderer();
-		
 		// initialize our font renderer
-		font.load("bitmap/default/gui/font.png", 16);
+		font.createTexture("bitmap/default/gui/font.png", 16);
+		font.createShader();
 		
-		font.createDefaultShader();
-		font.bind(0);
-		font.setBackColor(vec4(0.0, 0.5));
+		// initialize inventories
+		initInventoryRenderer();
 		
 		// initialize minimap
 		minimap.init();
@@ -82,12 +80,13 @@ namespace cppcraft
 		font.bind(0);
 		font.sendMatrix(ortho);
 		font.setColor(vec4(0.8, 0.8, 1.0, 1.0));
+		font.setBackColor(vec4(0.0, 0.4));
 		
-		font.print2d(vec3(0.01, 0.01, 0.0), vec2(0.01), "cppcraft v0.1");
+		font.print(vec3(0.01, 0.01, 0.0), vec2(0.01), "cppcraft v0.1", false);
 		
 		std::stringstream ss;
 		ss << "fps: " << renderer.FPS;
-		font.print2d(vec3(0.01, 0.02, 0.0), vec2(0.01), ss.str());
+		font.print(vec3(0.01, 0.02, 0.0), vec2(0.01), ss.str(), false);
 		
 		glDisable(GL_BLEND);
 	}

@@ -1,5 +1,5 @@
-#ifndef OGLFONT_HPP
-#define OGLFONT_HPP
+#ifndef SIMPLEFONT_HPP
+#define SIMPLEFONT_HPP
 /**
  * Simple OpenGL font implementation
  * 
@@ -7,9 +7,16 @@
  * 
  * *** initialization ***
  * // initialize our font renderer
- * OglFont font("bitmaps/font.png", 16);
- * // or:
- * font.load("bitmap/default/gui/font.png", 16);
+ * SimpleFont font;
+ * 
+ * // create a texture from a file
+ * Texture* texture = SimpleFont::createTexture("filename.png", 16);
+ * // set it to the font object
+ * font.setTexture(*texture);
+ * 
+ * // create a default shader
+ * Shader* shader = SimpleFont::createShader();
+ * font.setShader(*shader);
  * 
  * // bind the font (to texture slot 0)
  * font.bind(0);
@@ -21,7 +28,7 @@
  * font.setBackColor(vec4(0.0, 0.5)); // 50% transparent black
  * 
  * *** in rendering loop ***
- * // make sure the font object is bound
+ * // make sure the font object is bound, where the number is the texture unit
  * font.bind(0);
  * // print text to (0.5, 0.5, 0.0), scaled by (0.1, 0.1) with text: Hello world!
  * font.print(vec3(0.5, 0.5, 0.0), vec2(0.1), "Hello world!");
@@ -33,15 +40,16 @@
 
 #include "../math/vector.hpp"
 #include "shader.hpp"
-#include "texture.hpp"
 #include "vao.hpp"
 #include <string>
+#include <vector>
 
 namespace library
 {
 	class mat4;
+	class Texture;
 	
-	class OglFont
+	class SimpleFont
 	{
 	public:
 		struct font_vertex_t
@@ -49,16 +57,24 @@ namespace library
 			float x, y, z;
 			signed short s, t, p, q;
 		};
+		struct print_data_t
+		{
+			vec3 location;
+			vec2 size;
+			std::string text;
+		};
 		
-		OglFont() : tilesize(0), lastUnit(-1), vertices(0), vdata(nullptr) {}
-		OglFont(const std::string& filename, int fontsize);
-		bool load(const std::string& filename, int fontsize);
+		SimpleFont() : tilesize(0), lastUnit(-1), max_vertices(0), vdata(nullptr) {}
+		~SimpleFont();
 		
 		void bind(GLenum unit);
-		// Y-axis is upwards
-		void print(const vec3& location, const vec2& size, std::string text);
-		// Y-axis is downwards
-		void print2d(const vec3& location, const vec2& size, std::string text);
+		// print and render a single line of text
+		void print(const vec3& location, const vec2& size, std::string text, bool YaxisUp);
+		
+		// generate & upload many lines of text
+		void serialUpload(std::vector<print_data_t>& data, bool YaxisUp);
+		// render with the current uploaded text
+		void render();
 		
 		// returns 2D size of string in pixels
 		vec2 measure(std::string text) const;
@@ -82,24 +98,41 @@ namespace library
 			shader->sendVec4("fcolor", color);
 		}
 		
-		inline Shader& getShader() { return *shader; }
-		inline void setShader(Shader& shd)
+		// texture related
+		inline Texture* getTexture() { return texture; }
+		inline void setTexture(Texture* tex)
 		{
-			shader = &shd;
+			this->texture = tex;
 		}
-		void createDefaultShader();
+		// creates (and sets) a tiled texture compatible with this font renderer
+		Texture* createTexture(const std::string& filename, int tilesize);
+		// shader related
+		inline Shader* getShader() { return shader; }
+		inline void setShader(Shader* shd)
+		{
+			this->shader = shd;
+		}
+		// creates (and sets) a default shader compatible with this font renderer
+		Shader* createShader();
 		
 	private:
-		void uploadAndRender(int verts);
+		void resizeVertexArray(int verts);
+		void emitTextBlock(font_vertex_t*& fvx, const vec3& loc, const vec2& size, std::string& text, const int* wind);
+		void upload(int verts);
 		
 		// texture tile size
 		int tilesize;
+		
 		// last texture unit for font
 		GLenum lastUnit;
-		Texture font;
-		Shader* shader;
-		int vertices;
+		// currently bound texture
+		Texture* texture;
+		// currently bound shader
+		Shader*  shader;
+		// vertex data
+		int max_vertices;
 		font_vertex_t* vdata;
+		// opengl vertex array object
 		VAO vao;
 	};
 	
