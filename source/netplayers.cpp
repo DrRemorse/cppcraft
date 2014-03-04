@@ -315,6 +315,7 @@ namespace cppcraft
 		SimpleFont& font = rendergui.getFont();
 		
 		font.bind(0);
+		font.setBackColor(vec4(0.0, 0.25));
 		
 		// render each player
 		for (size_t i = 0; i < players.size(); i++)
