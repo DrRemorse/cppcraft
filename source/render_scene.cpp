@@ -102,7 +102,7 @@ namespace cppcraft
 		/////////////////////////////////////////
 		///   render atmosphere, moon, etc.   ///
 		/////////////////////////////////////////
-		skyrenderer.render(camera, -playerY, renderer.frametick, underwater);
+		skyrenderer.render(camera, -playerY, renderer.frametick, underwater ? 2 : 0);
 		
 		////////////////////////////////////////////////////
 		/// take snapshots of player state               ///
@@ -237,7 +237,7 @@ namespace cppcraft
 				//glDisable(GL_CULL_FACE);
 				
 				// render sky (atmosphere, sun, moon, clouds)
-				skyrenderer.render(reflectionCamera, playerY - RenderConst::WATER_LEVEL, renderer.frametick, false);
+				skyrenderer.render(reflectionCamera, playerY - RenderConst::WATER_LEVEL, renderer.frametick, 1);
 				
 				if (gameconf.reflectTerrain)
 				{

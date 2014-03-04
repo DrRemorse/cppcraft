@@ -51,7 +51,7 @@ namespace cppcraft
 	}
 	
 	// render background / atmosphere, sun and moon
-	void SkyRenderer::render(cppcraft::Camera& camera, float cloudLevel, double time, bool underwater)
+	void SkyRenderer::render(cppcraft::Camera& camera, float cloudLevel, double time, int mode)
 	{
 		// render sky dome
 		Atmosphere::render(camera);
@@ -60,9 +60,9 @@ namespace cppcraft
 		glColorMask(1, 1, 1, 0);
 		
 		// render regular sun
-		if (underwater)
+		if (mode == 2)
 		{
-			//renderSun();
+			renderSun();
 		}
 		
 		// render moon texture

@@ -146,7 +146,7 @@ void main(void)
 	float dist = vertdist / ZFAR;
 	
 	// wave modulation
-	vec2 refcoord = texCoord + Normal.xz * 0.01 * (0.5 + 0.5 * dist);
+	vec2 refcoord = texCoord + Normal.xz * 0.01;
 	
 	// read underwater, use as base color
 	vec4 underw = texture2D(underwatermap, refcoord);
@@ -182,7 +182,7 @@ void main(void)
 #endif
 	
 	// fake waves
-	float wavereflect = dot(reflect(-vLight, vNormal), vEye);
+	float wavereflect = max(0.0, dot(reflect(-vLight, vNormal), vEye));
 	color.rgb *= 1.0 + wavereflect * 0.1 * daylight;
 	
 	//- lighting (we need shadow later) -//

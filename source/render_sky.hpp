@@ -1,7 +1,7 @@
 #ifndef RENDERSKY_HPP
 #define RENDERSKY_HPP
 
-#include "library/math/matrix.hpp"
+#include <library/math/matrix.hpp>
 
 namespace cppcraft
 {
@@ -16,7 +16,7 @@ namespace cppcraft
 		
 	public:
 		void init();
-		void render(Camera& camera, float cloudLevel, double time, bool underwater);
+		void render(Camera& camera, float cloudLevel, double time, int mode);
 		void renderClouds(float dy, Camera& camera, double frameCounter);
 		
 		library::mat4 renderSunProj();

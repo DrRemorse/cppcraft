@@ -190,11 +190,11 @@ namespace cppcraft
 				break;
 			}
 			
+			// check if we are allowed to place a block in the selected position
 			Block& newBlock = Spiders::getBlock(ddx, ddy, ddz);
 			if (Block::blockPlacement(newBlock.getID()))
 			{
-				// tests passed, we can place the block
-				
+				// check if the block we are to place requires special rules
 				if (isDoor(id))
 				{
 					// place a door
