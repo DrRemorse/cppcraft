@@ -4,7 +4,10 @@
 #include <library/bitmap/colortools.hpp>
 #include <library/math/matrix.hpp>
 #include <library/opengl/opengl.hpp>
+#include <library/opengl/oglfont.hpp>
 #include "blocks.hpp"
+#include "menu.hpp"
+#include "render_gui.hpp"
 #include "shaderman.hpp"
 #include "textureman.hpp"
 #include <cmath>
@@ -47,25 +50,25 @@ namespace cppcraft
 			1.0, 0.0,  1.0, 1.0,  0.0, 1.0,  0.0, 0.0,
 		};
 		
+		unsigned int GUIcube_colors[3] = 
+		{
+			BGRA8(0, 0, 0,   0),
+			BGRA8(0, 0, 0,  20),
+			BGRA8(0, 0, 0,  64)
+		};
+		
 		// create pre-transformed cube mesh
 		
 		for (int i = 0; i < 12; i++)
 		{
-			int face = (i / 4) * 2;
-			
 			vec3& v = GUI_cube[i];
 			
 			float tu = GUIcube_tex[i * 2 + 0];
 			float tv = GUIcube_tex[i * 2 + 1];
 			
-			unsigned int color;
-			if (face == 0) color = BGRA8(0, 0, 0,    0);
-			if (face == 2) color = BGRA8(0, 0, 0,   20);
-			if (face == 4) color = BGRA8(0, 0, 0,   64);
-			
-			transformedCube.emplace_back(v.x, v.y, v.z,  tu, tv, (float)face,  color);
+			int face = i >> 2;
+			transformedCube.emplace_back(v.x, v.y, v.z,  tu, tv, (float)face * 2, GUIcube_colors[face]);
 		}
-		
 	}
 	
 	void GUIRenderer::renderQuickbarItems(library::mat4& ortho, double frameCounter)
@@ -111,17 +114,14 @@ namespace cppcraft
 	{
 		if (itm.isItem())
 		{
-			// texture tile id
-			float tile = items.tileByID(itm.getID());
-			
-			return quickbarItems.emitQuad(itm, x, y, size, tile);
+			return quickbarItems.emitQuad(itm, x, y, size);
 		}
 		else if (itm.isBlock())
 		{
 			// some blocks can be represented by quads
 			if (itm.getID() == _LADDER || isCross(itm.getID()))
 			{
-				return quickbarItems.emitBlockQuad(itm, x, y, size);
+				return quickbarItems.emitQuad(itm, x, y, size);
 			}
 			// presentable rotated blocks
 			return quickbarItems.emitBlock(itm, x, y, size * 0.8);
@@ -129,37 +129,21 @@ namespace cppcraft
 		return 0;
 	}
 	
-	int GUIInventory::emitQuad(InventoryItem& itm, float x, float y, float size, float tile)
-	{
-		// no item, no texture!
-		if (itm.getID() == IT_NONE) return 0;
-		// no count, no item!
-		if (itm.getCount() == 0) return 0;
-		// create single quad
-		itemTiles.emplace_back(
-			x,        y + size, 0,   0, 0, tile,   BGRA8(255, 255, 255,   0) );
-		itemTiles.emplace_back(
-			x + size, y + size, 0,   1, 0, tile,   BGRA8(255, 255, 255,   0) );
-		itemTiles.emplace_back(
-			x + size, y,        0,   1, 1, tile,   BGRA8(255, 255, 255,   0) );
-		itemTiles.emplace_back(
-			x,        y,        0,   0, 1, tile,   BGRA8(255, 255, 255, 128) );
-		
-		return 4;
-	}
-	
-	int GUIInventory::emitBlockQuad(InventoryItem& itm, float x, float y, float size)
+	int GUIInventory::emitQuad(InventoryItem& itm, float x, float y, float size)
 	{
 		// face value is "as if" front
-		float tile = Block::cubeFaceById(itm.getID(), 0, 0);
+		float tile = itm.getTextureTileID();
+		// emit to itemTiles or blockTiles depending on item type
+		std::vector<inventory_t>& dest = (itm.isItem()) ? itemTiles : blockTiles;
+		
 		// create single quad
-		blockTiles.emplace_back(
+		dest.emplace_back(
 			x,        y + size, 0,   0, 0, tile,   BGRA8(255, 255, 255,   0) );
-		blockTiles.emplace_back(
+		dest.emplace_back(
 			x + size, y + size, 0,   1, 0, tile,   BGRA8(255, 255, 255,   0) );
-		blockTiles.emplace_back(
+		dest.emplace_back(
 			x + size, y,        0,   1, 1, tile,   BGRA8(255, 255, 255,   0) );
-		blockTiles.emplace_back(
+		dest.emplace_back(
 			x,        y,        0,   0, 1, tile,   BGRA8(255, 255, 255, 128) );
 		return 4;
 	}
@@ -177,7 +161,7 @@ namespace cppcraft
 			
 			// face value is located in vertex.w
 			float tw = Block::cubeFaceById(itm.getID(), vertex.w, 3);
-			
+			// emit to blockTiles only
 			blockTiles.emplace_back(v.x, v.y, v.z,  vertex.u, vertex.v, tw,  vertex.color);
 		}
 		return 12;
@@ -197,30 +181,27 @@ namespace cppcraft
 		}
 		
 		/// upload blocks & items ///
-		if (itemsVAO.isGood() == false)
+		if (vao.isGood() == false)
 		{
-			itemsVAO.begin(sizeof(inventory_t), itemTiles.size(), itemTiles.data());
-			itemsVAO.attrib(0, 3, GL_FLOAT, GL_FALSE, offsetof(inventory_t, x));
-			itemsVAO.attrib(1, 3, GL_FLOAT, GL_FALSE, offsetof(inventory_t, u));
-			itemsVAO.attrib(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, offsetof(inventory_t, color));
-			itemsVAO.end();
+			vao.begin(sizeof(inventory_t), itemTiles.size(), itemTiles.data());
+			vao.attrib(0, 3, GL_FLOAT, GL_FALSE, offsetof(inventory_t, x));
+			vao.attrib(1, 3, GL_FLOAT, GL_FALSE, offsetof(inventory_t, u));
+			vao.attrib(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, offsetof(inventory_t, color));
+			vao.end();
 		}
 		else
 		{
-			itemsVAO.begin(sizeof(inventory_t), itemTiles.size(), itemTiles.data());
-			itemsVAO.end();
+			vao.upload(sizeof(inventory_t), itemTiles.size(), itemTiles.data(), GL_STATIC_DRAW);
 		}
 	}
 	
 	void GUIInventory::render(mat4& ortho)
 	{
-		int total  = itemTiles.size();
-		
 		// nothing to do here with no items or blocks
-		if (total == 0) return;
+		if (blockTiles.size() == 0) return;
 		
+		int items  = itemTiles.size() - blockTiles.size();
 		int blocks = blockTiles.size();
-		int items  = total - blocks;
 		
 		/// render all menu items ///
 		shaderman[Shaderman::MENUITEM].bind();
@@ -231,15 +212,15 @@ namespace cppcraft
 			// items texture
 			textureman.bind(0, Textureman::T_ITEMS);
 			// render items
-			itemsVAO.render(GL_QUADS, 0, items);
+			vao.render(GL_QUADS, 0, items);
 		}
 		if (blocks)
 		{
 			// blocks texture
 			textureman.bind(0, Textureman::T_DIFFUSE);
 			// render blocks
-			itemsVAO.render(GL_QUADS, items, blocks);
+			vao.render(GL_QUADS, items, blocks);
 		}
-	} // inventory.render
+	} // GUIInventory::render
 	
 }

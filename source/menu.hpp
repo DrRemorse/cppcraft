@@ -47,19 +47,10 @@ namespace cppcraft
 		InventoryItem& operator() (int x, int y);
 		
 		// getters
-		inline int getWidth() const noexcept
-		{
-			return this->width;
-		}
-		inline int getHeight() const noexcept
-		{
-			return this->height;
-		}
+		inline int getWidth()  const { return this->width; }
+		inline int getHeight() const { return this->height; }
 		// changed flag, used for re-uploading inventory meshes to gpu
-		inline bool isChanged() const noexcept
-		{
-			return this->changed;
-		}
+		inline bool isChanged() const { return this->changed; }
 		void setChanged(bool v) { this->changed = v; }
 		
 	private:

@@ -90,6 +90,8 @@ namespace library
 		void createDefaultShader();
 		
 	private:
+		void uploadAndRender(int verts);
+		
 		// texture tile size
 		int tilesize;
 		// last texture unit for font

@@ -16,7 +16,7 @@ namespace cppcraft
 {
 	PrecompQ precompq;
 	ThreadPool::TPool* threadpool;
-	static const double PRECOMPQ_MAX_THREADWAIT = 0.015;
+	static const double PRECOMPQ_MAX_THREADWAIT = 0.013;
 	
 	class PrecompJob : public ThreadPool::TPool::TJob
 	{

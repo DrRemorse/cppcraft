@@ -1,7 +1,7 @@
 #include "items.hpp"
 
-#include "library/config.hpp"
-#include "library/log.hpp"
+#include <library/config.hpp>
+#include <library/log.hpp>
 #include "blocks.hpp"
 
 using namespace library;
@@ -9,13 +9,6 @@ using namespace library;
 namespace cppcraft
 {
 	ItemsClass items;
-	
-	InventoryItem::InventoryItem()
-	{
-		id = IT_NONE;
-		type = ITT_BLOCK;
-		count = special = health = 0;
-	}
 	
 	InventoryItem::InventoryItem(item_t itemID, unsigned short icount)
 	{
@@ -44,27 +37,7 @@ namespace cppcraft
 		return items.getName(this->getID());
 	}
 	
-	bool InventoryItem::isAlive() const noexcept
-	{
-		return (this->getID() != 0 && this->getCount() != 0);
-	}
-	
-	bool InventoryItem::isItem() const noexcept
-	{
-		return (this->getType() == ITT_ITEM && isAlive());
-	}
-	
-	bool InventoryItem::isToolItem() const noexcept
-	{
-		return (isItem() && this->getID() < 50);
-	}
-	
-	bool InventoryItem::isBlock() const noexcept
-	{
-		return (isAlive() && getType() == ITT_BLOCK);
-	}
-	
-	int InventoryItem::tileByID() const
+	int InventoryItem::getTextureTileID() const
 	{
 		// regular blocks (as items)
 		if (this->getType() == ITT_BLOCK) return Block::cubeFaceById(this->getID(), 0, 0);

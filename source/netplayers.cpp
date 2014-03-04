@@ -227,14 +227,13 @@ namespace cppcraft
 			// FIXME: use dot product to determine if player is even in camera vision
 			// FIXME: send matview as camera followed by matmodel for use in both position & dotlight
 			
+			//logger << Log::INFO << "Rendering player: " << i << " at " << players[i].gxyz << Log::ENDL;
+			
 			/// now rendering player model ///
 			shd.sendFloat("skinmodel", np.model);
 			
 			mat4 matview = camera.getViewMatrix();
 			matview.translate(np.gxyz);
-			
-			//logger << Log::INFO << "Rendering player: " << i << " at " << players[i].gxyz << Log::ENDL;
-			vao.bind();
 			
 			float headrot = PI - np.rotation.y;
 			while (headrot < 0) headrot += PI2;

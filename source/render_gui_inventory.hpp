@@ -2,8 +2,6 @@
 #define RENDER_GUI_INVENTORY
 
 #include <library/opengl/vao.hpp>
-#include "menu.hpp"
-#include "render_gui.hpp"
 #include <vector>
 
 namespace library
@@ -13,6 +11,8 @@ namespace library
 
 namespace cppcraft
 {
+	class InventoryItem;
+	
 	class GUIInventory
 	{
 	public:
@@ -26,22 +26,20 @@ namespace cppcraft
 			inventory_t (float X, float Y, float Z, float U, float V, float W, unsigned int C) :
 				x(X), y(Y), z(Z), u(U), v(V), w(W), color(C) {}
 		};
-	
+		
 		void clear();
 		int  emit(InventoryItem& itm, float x, float y, float size);
 		void upload();
 		void render(library::mat4& ortho);
 		
 	private:
-		library::VAO itemsVAO;
-		library::VAO blocksVAO;
+		library::VAO vao;
 		
 		std::vector<inventory_t> blockTiles;
 		std::vector<inventory_t> itemTiles;
 		
-		int emitQuad(InventoryItem& itm, float x, float y, float size, float tile);
+		int emitQuad(InventoryItem& itm, float x, float y, float size);
 		int emitBlock(InventoryItem& itm, float x, float y, float size);
-		int emitBlockQuad(InventoryItem& itm, float x, float y, float size);
 	};
 }
 

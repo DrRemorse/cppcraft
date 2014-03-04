@@ -79,65 +79,82 @@ namespace cppcraft
 	public:
 		static const int MAX_STACK = 64;
 		
-		InventoryItem();
+		InventoryItem()
+		{
+			id = IT_NONE;
+			type = ITT_BLOCK;
+			count = special = health = 0;
+		}
 		InventoryItem(item_t itemID, unsigned short icount);
 		InventoryItem(item_t itemID, itemtype_t itype, unsigned short icount);
 		
-		inline void setID(item_t id) noexcept
+		inline void setID(item_t id)
 		{
 			this->id = id;
 		}
-		inline item_t getID() const noexcept
+		inline item_t getID() const
 		{
 			return this->id;
 		}
 		
-		inline void setCount(unsigned short count) noexcept
+		inline void setCount(unsigned short count)
 		{
 			this->count = count;
 		}
-		inline unsigned short getCount() const noexcept
+		inline unsigned short getCount() const
 		{
 			return this->count;
 		}
 		
-		inline void setSpecial(unsigned char special) noexcept
+		inline void setSpecial(unsigned char special)
 		{
 			this->special = special;
 		}
-		inline unsigned char getSpecial() const noexcept
+		inline unsigned char getSpecial() const
 		{
 			return this->special;
 		}
 		
-		inline void setType(unsigned char type) noexcept
+		inline void setType(unsigned char type)
 		{
 			this->type = type;
 		}
-		inline unsigned char getType() const noexcept
+		inline unsigned char getType() const
 		{
 			return this->type;
 		}
 		
-		inline void setHealth(unsigned char health) noexcept
+		inline void setHealth(unsigned char health)
 		{
 			this->health = health;
 		}
-		inline unsigned char getHealth() const noexcept
+		inline unsigned char getHealth() const
 		{
 			return this->health;
 		}
 		
 		std::string getName() const;
 		
-		bool isAlive() const noexcept;
-		bool isItem() const noexcept;
-		bool isToolItem() const noexcept;
-		bool isBlock() const noexcept;
+		bool isAlive() const
+		{
+			return (this->getID() != 0 && this->getCount() != 0);
+		}
+		inline bool isItem() const
+		{
+			return (isAlive() && this->getType() == ITT_ITEM);
+		}
+		bool isToolItem() const
+		{
+			return (isItem() && this->getID() < 50);
+		}
+		bool isBlock() const
+		{
+			return (isAlive() && getType() == ITT_BLOCK);
+		}
 		
 		// returns the appropriate tile ID
 		// regardless of item type
-		int tileByID() const;
+		int getTextureTileID() const;
 	};
 	
 	class ItemsClass
