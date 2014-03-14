@@ -146,7 +146,7 @@ void main(void)
 	float dist = vertdist / ZFAR;
 	
 	// wave modulation
-	vec2 refcoord = texCoord + Normal.xz * 0.01;
+	vec2 refcoord = texCoord + Normal.xz * (0.002 + 0.008 * dist);
 	
 	// read underwater, use as base color
 	vec4 underw = texture2D(underwatermap, refcoord);

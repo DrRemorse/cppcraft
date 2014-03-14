@@ -4,6 +4,7 @@
 #include <library/opengl/opengl.hpp>
 #include <library/opengl/window.hpp>
 #include <library/opengl/oglfont.hpp>
+#include "chat.hpp"
 #include "minimap.hpp"
 #include "renderman.hpp"
 #include "render_scene.hpp"
@@ -74,11 +75,15 @@ namespace cppcraft
 		/// quickbar items ///
 		renderQuickbarItems(ortho, renderer.frametick);
 		
-		/// test text ///
+		/// chatbox ///
 		glEnable(GL_BLEND);
 		
 		font.bind(0);
 		font.sendMatrix(ortho);
+		
+		chatbox.render(font, renderer);
+		
+		/// debug text ///
 		font.setColor(vec4(0.8, 0.8, 1.0, 1.0));
 		font.setBackColor(vec4(0.0, 0.4));
 		

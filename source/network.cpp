@@ -3,6 +3,7 @@
 #include <library/log.hpp>
 #include <library/config.hpp>
 #include <library/bitmap/colortools.hpp>
+#include "chat.hpp"
 #include "netplayers.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
@@ -74,6 +75,7 @@ namespace cppcraft
 			return;
 		}
 		logger << Log::INFO << "Connected to network" << Log::ENDL;
+		chatbox.add("Connected to network", Chatbox::L_INFO);
 		
 		lattice_flush();
 		
@@ -131,6 +133,7 @@ namespace cppcraft
 		
 		network.addBlock(Network::INCOMING, block);
 	}
+	
 	void userAdded(NetPlayer::userid_t userid, lattice_user* user)
 	{
 		UnpackCoordF coord(user->wpos, user->bpos);
@@ -151,6 +154,15 @@ namespace cppcraft
 			netplayers.remove(userid);
 		}
 	}
+	void userChat(NetPlayer::userid_t userid, const char* text)
+	{
+		NetPlayer* np = netplayers.playerByUID(userid);
+		if (np)
+		{
+			chatbox.add(np->getName(), text, Chatbox::L_CHAT);
+		}
+	}
+	
 	void userMoved(NetPlayer::userid_t userid, lattice_p* movement)
 	{
 		NetPlayer* np = netplayers.playerByUID(userid);
@@ -248,7 +260,11 @@ namespace cppcraft
 			
 		case T_LOG:
 			logger << Log::INFO << "SERVER  " << ((char*) mp->args) << Log::ENDL;
+			chatbox.add((const char*) mp->args, Chatbox::L_SERVER);
 			break;
+			
+		case T_CHAT:
+			userChat(mp->fromuid, (const char*) mp->args);
 			
 		case T_USER:
 			userAdded(mp->fromuid, (lattice_user*) mp->args);
@@ -309,7 +325,11 @@ namespace cppcraft
 		lattice_player.hhold.item_type = 0;
 		lattice_player.mining = 0;
 		
-		logger << Log::INFO << "Connecting to " << hostn << ":" << port << " as " << lattice_player.userid << Log::ENDL;
+		std::stringstream ss;
+		ss << "Connecting to " << hostn << ":" << port;
+		
+		logger << Log::INFO << ss.str() << Log::ENDL;
+		chatbox.add(ss.str(), Chatbox::L_INFO);
 		
 		if (lattice_connect((char*) hostn.c_str(), port) < 0) return false;
 		return true;

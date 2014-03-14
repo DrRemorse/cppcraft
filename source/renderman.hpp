@@ -1,7 +1,7 @@
 #ifndef RENDERMAN_HPP
 #define RENDERMAN_HPP
 
-#include "library/opengl/window.hpp"
+#include <library/opengl/window.hpp>
 #include <string>
 
 namespace cppcraft
@@ -41,6 +41,7 @@ namespace cppcraft
 		
 		friend class SceneRenderer;
 		friend class GUIRenderer;
+		friend class Chatbox;
 	};
 	
 }

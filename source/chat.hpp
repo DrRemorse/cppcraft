@@ -1,40 +1,65 @@
 /**
- * 
- * 
+ * Chatbox showing you unimportant text
  * 
 **/
-
 #ifndef CHAT_HPP
 #define CHAT_HPP
 
-#include <vector>
+#include <mutex>
 #include <string>
+#include <time.h>
+#include <vector>
+
+namespace library
+{
+	class SimpleFont;
+}
 
 namespace cppcraft
 {
+	class Renderer;
+	extern time_t currentTime();
+	
 	class Chatbox
 	{
 	public:
-		typedef unsigned int color_t;
-		
-		void render();
-		void add(std::string text, color_t color, bool newline);
-		void addChat(std::string source, color_t scolor, std::string text, color_t tcolor);
-		
-	private:
-		struct ChatboxLine
+		enum chattype_t
 		{
-			std::string text;
-			color_t color;
-			bool newline;
-			
-			ChatboxLine() {}
-			ChatboxLine(std::string Text, color_t Color, bool NewLine) :
-				text(Text), color(Color), newline(NewLine) {}
+			L_INFO,
+			L_SERVER,
+			L_SELF,
+			L_CHAT
 		};
 		
-		std::vector<ChatboxLine> lines;
+		struct ChatLine
+		{
+			std::string source;
+			std::string text;
+			chattype_t  type;
+			time_t time;
+			bool newline;
+			
+			ChatLine(std::string Text, chattype_t Type) :
+				source(""), text(Text), type(Type), time(currentTime()) {}
+			ChatLine(std::string Source, std::string Text, chattype_t Type) :
+				source(Source), text(Text), type(Type), time(currentTime()) {}
+		};
+		
+		typedef unsigned int color_t;
+		
+		Chatbox();
+		
+		void init();
+		void render(library::SimpleFont& font, Renderer& renderer);
+		void add(const std::string& text, chattype_t type);
+		void add(const std::string& source, const std::string& text, chattype_t type);
+		
+	private:
+		float fadeout;
+		
+		std::vector<ChatLine> lines;
 		std::string typetext;
+		std::mutex  mtx;
 		bool typing;
 	};
 	extern Chatbox chatbox;

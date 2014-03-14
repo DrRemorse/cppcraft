@@ -24,19 +24,15 @@ namespace cppcraft
 		screenVAO.createScreenspaceVAO();
 		
 		// set texture sizes
-		this->blurTxW = gamescr.SW / 2;
-		this->blurTxH = gamescr.SH / 2;
+		// fs blur
+		int factor = config.get("render.hq_blur", false) ? 1 : 2;
+		this->blurTxW = gamescr.SW / factor;
+		this->blurTxH = gamescr.SH / factor;
 		
-		if (config.get("render.hq_lens", false))
-		{
-			this->flareTxW = gamescr.SW;
-			this->flareTxH = gamescr.SH;
-		}
-		else // half resolution when not high-quality
-		{
-			this->flareTxW = gamescr.SW / 2;
-			this->flareTxH = gamescr.SH / 2;
-		}
+		// lens flare
+		factor = config.get("render.hq_lens", false) ? 2 : 4;
+		this->flareTxW = gamescr.SW / factor;
+		this->flareTxH = gamescr.SH / factor;
 		
 		// create screenspace FBOs
 		glGenFramebuffers(1, &blurFBO);

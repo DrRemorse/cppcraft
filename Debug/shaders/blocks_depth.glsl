@@ -16,17 +16,17 @@ in vec4 in_biome;
 in vec4 in_color;
 in vec4 in_color2;
 
-out float vertdist;
-
+out vec3 pos;
 const float VERTEX_SCALE
-const float ZFAR
 
 void main(void)
 {
 	vec4 position = vec4(in_vertex / VERTEX_SCALE + vtrans, 1.0);
 	position = matview * position;
-	vertdist = length(position.xyz) / ZFAR;
+	//vertdist = length(position.xyz) / ZFAR;
 	gl_Position = matproj * position;
+	
+	pos = position.xyz;
 }
 
 #endif
@@ -36,10 +36,13 @@ void main(void)
 uniform sampler2D texture;
 uniform vec3 screendata;
 
-in float vertdist;
+in vec3 pos;
+const float ZFAR
 
 void main(void)
 {
+	float vertdist = length(pos) / ZFAR;
+	
 	vec2 texCoord =  gl_FragCoord.xy / screendata.xy;
 	gl_FragData[0] = vec4(texture2D(texture, texCoord).rgb, vertdist);
 }
