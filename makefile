@@ -6,7 +6,7 @@
 # -Ofast -mfpmath=both -march=native -flto -ffinite-math-only -fno-signed-zeros -fno-trapping-math
 # -Ofast -mfpmath=both -march=native
 # -g -Og
-BUILDOPT = -Ofast -mfpmath=both -march=native # -flto -ffinite-math-only -fno-signed-zeros -fno-trapping-math
+BUILDOPT = -Ofast -mfpmath=both -march=native -ffinite-math-only -fno-signed-zeros -fno-trapping-math
 # output file
 OUTPUT   = ./Debug/cppcraft
 
@@ -25,10 +25,9 @@ CC = g++ $(BUILDOPT) -std=c++11
 # compiler flags
 CCFLAGS = -c -Wall -Wextra -pedantic -Wno-write-strings -Iinc
 # linker flags
+LFLAGS  = -Llib -llibrary -lbass -llzo2 -llattice `pkg-config --static --libs glfw3` -Wl,-rpath,../lib
 ifeq ($(OS),Windows_NT)
-	LFLAGS  = -Llib -static -llibrary -lpthread -lbassdll -llattice -lglfw3 -lgdi32 -lopengl32 -llzo2 -lws2_32
-else
-	LFLAGS  = -Llib -llibrary -lbass -llzo2 -llattice `pkg-config --static --libs glfw3` -Wl,-rpath,../lib
+	LFLAGS  = -Llib -static -llibrary -lpthread -lbassdll -lglfw3 -lgdi32 -lopengl32 -llzo2 -llattice -lws2_32
 endif
 # resource builder
 RES = windres
@@ -62,6 +61,8 @@ CCOBJS  = $(CCMODS:.c=.o)
 CXXOBJS = $(CXXMODS:.cpp=.o)
 # resource .rc to .o
 CCRES   = $(RESOURCES:.rc=.o)
+
+.PHONY: clean all
 
 # link all OBJS using CC and link with LFLAGS, then output to OUTPUT
 all: $(CXXOBJS) $(CCOBJS) $(CCRES)
