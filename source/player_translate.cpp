@@ -19,6 +19,7 @@ namespace cppcraft
 	void PlayerLogic::translatePlayer()
 	{
 		bool moved = false;
+		bool jumpKey = input.getKey(keyconf.k_jump) != 0 && player.busyControls() == false;
 		
 		const double PLAYER_GROUND_LEVEL = 1.51;
 		const double fw_feettest   = 1.45; // feet level, used for gravity and landing tests
@@ -127,7 +128,7 @@ namespace cppcraft
 			// so that the player can continue to try to escape water
 			if (FullySubmerged) EscapeAttempt = true;
 			
-			if (input.getKey(keyconf.k_jump))
+			if (jumpKey)
 			{
 				// if the jump key isnt held yet
 				if (input.getKey(keyconf.k_jump) != Input::KEY_LOCKED)
@@ -226,7 +227,7 @@ namespace cppcraft
 							// reverse player Y-force (and stop gravitizing)
 							player.pay = -player.pay;
 							// extra bounce power under 1.6 Y-force when player is holding jump key
-							if (fabs(player.pay) < PlayerPhysics::bump_maxjump && input.getKey(keyconf.k_jump) != 0)
+							if (fabs(player.pay) < PlayerPhysics::bump_maxjump && jumpKey)
 							{
 								player.pay += player.pay * PlayerPhysics::bump_jumpiness;
 							}
@@ -542,7 +543,9 @@ namespace cppcraft
 	
 	void PlayerLogic::handlePlayerJumping()
 	{
-		if (input.getKey(keyconf.k_jump)) // keyconf.jbuttons(0)
+		bool jumpKey = input.getKey(keyconf.k_jump) && player.busyControls() == false;
+		
+		if (jumpKey) // keyconf.jbuttons(0)
 		{
 			// it's disallowed to try to continue to jump when the eye-height + 0.10 is non-air
 			if (Block::fluidAndCrossToAir( Spiders::testAreaEx(player.X,player.Y+0.10,player.Z) ) == _AIR)
@@ -570,7 +573,7 @@ namespace cppcraft
 				else if (freefall == true)
 				{
 					// jump key pressed, but not held
-					if (input.getKey(keyconf.k_jump) == Input::KEY_PRESSED)
+					if (input.getKey(keyconf.k_jump) == Input::KEY_PRESSED && player.busyControls() == false)
 					{
 						#ifdef USE_JETPACK
 						if (jetpackFuel != 0)

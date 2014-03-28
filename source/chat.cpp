@@ -162,7 +162,6 @@ namespace cppcraft
 		
 		// minimum background size
 		int bgsize = copy.size();
-		if (bgsize < 3) bgsize = 3;
 		
 		// chatbox background
 		Shader& shd = shaderman[Shaderman::GUI_COLOR];
