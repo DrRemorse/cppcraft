@@ -105,9 +105,9 @@ namespace cppcraft
 		void addBlock(direction_t, const NetworkBlock&);
 		void sendChat(const std::string& text);
 		
-		inline const std::string& getNickName() const
+		inline const std::string& getNickname() const
 		{
-			return nickname;
+			return this->nickname;
 		}
 		
 	private:

@@ -180,7 +180,7 @@ namespace cppcraft
 			std::string ctext = input.getText() + ((((int) (renderer.frametick / 50) % 2) == 0) ? "_" : " ");
 			std::string now = timeString(currentTime());
 			
-			size_t msglen = now.size() + 2 + network.getNickName().size() + 2 + ctext.size() + 1;
+			size_t msglen = now.size() + 2 + network.getNickname().size() + 2 + ctext.size() + 1;
 			
 			matbox = ortho;
 			matbox.translate_xy(cbPos.x, cbPos.y + textScale.y + 0.005);
@@ -196,7 +196,7 @@ namespace cppcraft
 			// print actual text typed into chatbox
 			vec3 textPos(cbPos);
 			textPos.y += textScale.y + 0.005;
-			renderSourcedMessage(font, textPos, textScale, now, network.getNickName(), ctext, 1.0);
+			renderSourcedMessage(font, textPos, textScale, now, network.getNickname(), ctext, 1.0);
 		}
 		
 		if (copy.size() == 0) return;
@@ -223,13 +223,13 @@ namespace cppcraft
 			switch (cl.type)
 			{
 			case Chatbox::L_SERVER:
-				renderInfoMessage(font, textPos, textScale, timeString(cl.time), "SERVER", cl.text, alpha);
+				renderInfoMessage(font, textPos, textScale, timeString(cl.time), cl.source, cl.text, alpha);
 				break;
 			case Chatbox::L_INFO:
-				renderInfoMessage(font, textPos, textScale, timeString(cl.time), "[!]", cl.text, alpha);
+				renderInfoMessage(font, textPos, textScale, timeString(cl.time), cl.source, cl.text, alpha);
 				break;
 			case Chatbox::L_SELF:
-				renderSourcedMessage(font, textPos, textScale, timeString(cl.time), network.getNickName(), cl.text, alpha);
+				renderSourcedMessage(font, textPos, textScale, timeString(cl.time), cl.source, cl.text, alpha);
 				break;
 			case Chatbox::L_CHAT:
 				renderInfoMessage(font, textPos, textScale, timeString(cl.time), cl.source, cl.text, alpha);

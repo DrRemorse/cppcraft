@@ -133,11 +133,11 @@ namespace cppcraft
 		{
 			if (input.getKey(keyconf.k_sprint))
 			{
-				this->curspeed = (this->curspeed * intrpol + PlayerPhysics::spdFlying * 0.25 * invintr);
+				this->curspeed = (this->curspeed * intrpol + PlayerPhysics::spdFlying * invintr);
 			}
 			else
 			{
-				this->curspeed = (this->curspeed * intrpol + PlayerPhysics::spdFlying * invintr);
+				this->curspeed = (this->curspeed * intrpol + PlayerPhysics::spdFlying * 0.25 * invintr);
 			}
 		}
 		else

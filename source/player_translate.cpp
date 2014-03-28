@@ -27,45 +27,33 @@ namespace cppcraft
 		const double fw_crouchtest = 1.58; // downwards test for crouch
 		const double fw_autojump   = 2.20; // downwards test for auto-jump
 		
-		block_t s[4];
-		
 		//----------------------//
 		//   flying up / down   //
 		//----------------------//
 		
-	#ifdef DBG_FLYINGd
-	if (player.busyControls() == false)
-	{
-		if (input.getKey(keyconf.k_flydown))
+		#ifdef DBG_FLYING
+		if (player.busyControls() == false)
 		{
-			// move slower when sprint key is held down
-			if (input.getKey(keyconf.k_sprint))
+			if (input.getKey(keyconf.k_flydown))
 			{
-				player.Y -= PlayerPhysics::spdUpDown * 0.25;
+				// fly faster when sprint key is held down
+				if (input.getKey(keyconf.k_sprint))
+					player.Y -= PlayerPhysics::spdUpDown;
+				else
+					player.Y -= PlayerPhysics::spdUpDown * 0.25;
 				moved = true;
 			}
-			else
+			if (input.getKey(keyconf.k_flyup))
 			{
-				player.Y -= PlayerPhysics::spdUpDown;
+				// fly faster when sprint key is held down
+				if (input.getKey(keyconf.k_sprint))
+					player.Y += PlayerPhysics::spdUpDown;
+				else
+					player.Y += PlayerPhysics::spdUpDown * 0.25;
 				moved = true;
 			}
 		}
-		if (input.getKey(keyconf.k_flyup))
-		{
-			// move slower when sprint key is held down
-			if (input.getKey(keyconf.k_sprint))
-			{
-				player.Y += PlayerPhysics::spdUpDown * 0.25;
-				moved = true;
-			}
-			else
-			{
-				player.Y += PlayerPhysics::spdUpDown;
-				moved = true;
-			}
-		}
-	}
-	#endif
+		#endif
 		
 		//////////////////////////
 		/// Integrated gravity ///
@@ -191,6 +179,9 @@ namespace cppcraft
 		{
 			player.pay *= 0.5;
 		}
+		
+		// 
+		block_t s[4];
 		
 		// when player is determined to be falling, do the fallowing:
 		if (plogic.freefall && player.pay != 0)

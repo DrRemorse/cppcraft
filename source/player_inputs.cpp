@@ -5,6 +5,7 @@
 #include <library/opengl/input.hpp>
 #include "chat.hpp"
 #include "menu.hpp"
+#include "network.hpp"
 #include "player_inputs.hpp"
 #include "sectors.hpp"
 #include "sun.hpp"
@@ -136,8 +137,9 @@ namespace cppcraft
 			
 			if (chatbox.isOpen() == false)
 			{
-				// execute command, or say something
-				logger << Log::INFO << "Chat: " << input.getText() << Log::ENDL;
+				// say something, as long as its something :)
+				if (input.getText().size())
+					network.sendChat(input.getText());
 			}
 			input.clearText();
 		}

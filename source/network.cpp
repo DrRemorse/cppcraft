@@ -490,5 +490,7 @@ namespace cppcraft
 		mtx.lock();
 		ntt.outgoingChat = text;
 		mtx.unlock();
+		
+		chatbox.add(this->nickname, text, Chatbox::L_SELF);
 	}
 }
