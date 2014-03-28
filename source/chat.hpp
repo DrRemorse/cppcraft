@@ -31,7 +31,6 @@ namespace cppcraft
 		{
 			L_INFO,
 			L_SERVER,
-			L_SELF,
 			L_CHAT
 		};
 		

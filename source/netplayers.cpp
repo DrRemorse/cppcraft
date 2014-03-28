@@ -315,7 +315,7 @@ namespace cppcraft
 		SimpleFont& font = rendergui.getFont();
 		
 		font.bind(0);
-		font.setBackColor(vec4(0.0, 0.25));
+		font.setBackColor(vec4(0.2, 0.3));
 		
 		// render each player
 		for (size_t i = 0; i < players.size(); i++)
@@ -341,7 +341,7 @@ namespace cppcraft
 			font.setColor(color);
 			
 			// print text
-			static const vec2 SCALE(0.15);
+			const vec2 SCALE(0.16 * 0.6, 0.16);
 			const vec3 OFFSET(-np.name.size() * SCALE.x * 0.5, 0.0, 0.0);
 			
 			font.print(OFFSET, SCALE, np.name, true);

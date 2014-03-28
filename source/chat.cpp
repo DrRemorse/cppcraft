@@ -36,6 +36,7 @@ namespace cppcraft
 		: source(Source), text(Text), type(Type), time(currentTime())
 	{
 		length = timeString(time).size() + 2 + source.length() + text.size();
+		if (type == L_CHAT) length += 2;
 	}
 	
 	void Chatbox::init(float width, float height)
@@ -176,7 +177,7 @@ namespace cppcraft
 		// render typing box
 		if (chatOpen)
 		{
-			std::string ctext = input.getText() + ((((int) (renderer.frametick / 50) % 2) == 0) ? "_" : " ");
+			std::string ctext = input.getText() + ((((int) renderer.frametick / 50) % 2 == 0) ? "_" : " ");
 			std::string now = timeString(currentTime());
 			
 			size_t msglen = now.size() + 2 + network.getNickname().size() + 2 + ctext.size() + 1;
@@ -226,9 +227,6 @@ namespace cppcraft
 				break;
 			case Chatbox::L_INFO:
 				renderInfoMessage(font, textPos, textScale, timeString(cl.time), cl.source, cl.text, alpha);
-				break;
-			case Chatbox::L_SELF:
-				renderSourcedMessage(font, textPos, textScale, timeString(cl.time), cl.source, cl.text, alpha);
 				break;
 			case Chatbox::L_CHAT:
 				renderInfoMessage(font, textPos, textScale, timeString(cl.time), cl.source, cl.text, alpha);

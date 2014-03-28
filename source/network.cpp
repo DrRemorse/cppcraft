@@ -265,6 +265,7 @@ namespace cppcraft
 			
 		case T_CHAT:
 			userChat(mp->fromuid, (const char*) mp->args);
+			break;
 			
 		case T_USER:
 			userAdded(mp->fromuid, (lattice_user*) mp->args);
@@ -491,6 +492,6 @@ namespace cppcraft
 		ntt.outgoingChat = text;
 		mtx.unlock();
 		
-		chatbox.add(this->nickname, text, Chatbox::L_SELF);
+		chatbox.add(this->nickname, text, Chatbox::L_CHAT);
 	}
 }
