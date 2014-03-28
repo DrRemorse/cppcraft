@@ -55,7 +55,7 @@ namespace library
 		struct font_vertex_t
 		{
 			float x, y, z;
-			signed short s, t, p, q;
+			float s, t, p;
 		};
 		struct print_data_t
 		{
@@ -64,7 +64,7 @@ namespace library
 			std::string text;
 		};
 		
-		SimpleFont() : tilesize(0), lastUnit(-1), max_vertices(0), vdata(nullptr) {}
+		SimpleFont();
 		~SimpleFont();
 		
 		void bind(GLenum unit);
@@ -84,6 +84,8 @@ namespace library
 		{
 			return this->tilesize;
 		}
+		
+		void setClip(const vec2& clip);
 		
 		inline void sendMatrix(const mat4& matrix)
 		{
@@ -117,11 +119,15 @@ namespace library
 		
 	private:
 		void resizeVertexArray(int verts);
-		void emitTextBlock(font_vertex_t*& fvx, const vec3& loc, const vec2& size, std::string& text, const int* wind);
+		void emitTextBlock(font_vertex_t*& fvx, const vec3& loc, const vec2& size, std::string& text, const std::vector<float>& wind);
 		void upload(int verts);
 		
 		// texture tile size
 		int tilesize;
+		// clip offsets (left/right, top/bottom)
+		library::vec2 clip;
+		std::vector<float> font_windings_up;
+		std::vector<float> font_windings_down;
 		
 		// last texture unit for font
 		GLenum lastUnit;

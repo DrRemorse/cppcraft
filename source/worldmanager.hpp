@@ -3,6 +3,11 @@
 
 #include <string>
 
+namespace library
+{
+	class WindowClass;
+}
+
 namespace cppcraft
 {
 	class Chunks;
@@ -25,7 +30,7 @@ namespace cppcraft
 		} gamestate_t;
 		
 		// initializer
-		void init(gamestate_t, std::string& folder);
+		void init(gamestate_t, library::WindowClass& scr, std::string& folder);
 		// running thread function
 		void main();
 		

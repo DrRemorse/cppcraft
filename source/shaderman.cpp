@@ -285,6 +285,12 @@ namespace cppcraft
 		shaders[COMPASS] = Shader("shaders/compass.glsl", tokenizer, linkstage);
 		shaders[COMPASS].sendInteger("texture", 0);
 		
+		// color-only shader
+		linkstage.clear();
+		linkstage.emplace_back("in_vertex");
+		linkstage.emplace_back("in_color");
+		
+		shaders[GUI_COLOR] = Shader("shaders/gui_color.glsl", tokenizer, linkstage);
 	}
 	
 	Shader& Shaderman::operator[] (shaderlist_t shader)

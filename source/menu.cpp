@@ -44,6 +44,7 @@ namespace cppcraft
 	}
 	
 	Inventory::Inventory(int w, int h)
+		: Inventory()
 	{
 		this->width = w;
 		this->height = h;

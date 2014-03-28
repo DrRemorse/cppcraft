@@ -1,8 +1,8 @@
 #include "player_logic.hpp"
 
-#include "library/log.hpp"
-#include "library/math/toolbox.hpp"
-#include "library/opengl/input.hpp"
+#include <library/log.hpp>
+#include <library/math/toolbox.hpp>
+#include <library/opengl/input.hpp>
 #include "flatlands.hpp"
 #include "player.hpp"
 #include "player_inputs.hpp"
@@ -33,7 +33,9 @@ namespace cppcraft
 		//   flying up / down   //
 		//----------------------//
 		
-	#ifdef DBG_FLYING
+	#ifdef DBG_FLYINGd
+	if (player.busyControls() == false)
+	{
 		if (input.getKey(keyconf.k_flydown))
 		{
 			// move slower when sprint key is held down
@@ -62,6 +64,7 @@ namespace cppcraft
 				moved = true;
 			}
 		}
+	}
 	#endif
 		
 		//////////////////////////

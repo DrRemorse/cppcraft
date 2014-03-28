@@ -3,8 +3,13 @@
 
 #define DBG_FLYING
 
-#include "library/math/vector.hpp"
+#include <library/math/vector.hpp>
 #include "blocks.hpp"
+
+namespace library
+{
+	class WindowClass;
+}
 
 namespace cppcraft
 {
@@ -34,7 +39,7 @@ namespace cppcraft
 		bool changedRotation;
 		
 		void initPlayer();
-		void initInputs();
+		void initInputs(library::WindowClass& scr);
 		// first we run this, to get inputs
 		void handleInputs();
 		// then, for each tick passed we run this
@@ -50,6 +55,8 @@ namespace cppcraft
 		block_t getBlockFacing() const;
 		// returns the terrain id for current player position (x, z)
 		int getTerrain() const;
+		// returns true if we are using in-game controls, or busy with something else
+		bool busyControls() const;
 	};
 	extern PlayerClass player;
 	

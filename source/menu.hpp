@@ -42,7 +42,7 @@ namespace cppcraft
 	class Inventory
 	{
 	public:
-		Inventory() : changed(false), items(nullptr) {}
+		Inventory() : changed(false), opened(false), items(nullptr) {}
 		Inventory(int w, int h);
 		InventoryItem& operator() (int x, int y);
 		
@@ -53,8 +53,14 @@ namespace cppcraft
 		inline bool isChanged() const { return this->changed; }
 		void setChanged(bool v) { this->changed = v; }
 		
+		bool isOpen() const
+		{
+			return this->opened;
+		}
+		
 	private:
 		bool changed;
+		bool opened;
 		int width, height;
 		InventoryItem* items;
 	};

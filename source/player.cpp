@@ -4,6 +4,8 @@
 #include <library/math/vector.hpp>
 #include <library/opengl/input.hpp>
 #include "camera.hpp"
+#include "chat.hpp"
+#include "menu.hpp"
 #include "player_actions.hpp"
 #include "player_logic.hpp"
 #include "player_physics.hpp"
@@ -56,14 +58,15 @@ namespace cppcraft
 		
 		player.snapStage = 0;
 		player.snapX = player.snapY = player.snapZ = 0;
-		
-		// initialize keyboard / joystick input
-		player.initInputs();
 	}
 	
 	int PlayerClass::getTerrain() const
 	{
 		return plogic.terrain;
+	}
+	bool PlayerClass::busyControls() const
+	{
+		return chatbox.isOpen() || inventory.isOpen();
 	}
 	
 	library::vec3 PlayerClass::getLookVector() const

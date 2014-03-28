@@ -13,7 +13,7 @@
 
 namespace cppcraft
 {
-	void WorldManager::init(gamestate_t gs, std::string& worldFolder)
+	void WorldManager::init(gamestate_t gs, library::WindowClass& gameScreen, std::string& worldFolder)
 	{
 		this->gamestate = gs;
 		// initalize world
@@ -39,6 +39,9 @@ namespace cppcraft
 		
 		// initialize sound
 		soundman.init();
+		
+		// initialize keyboard / joystick input
+		player.initInputs(gameScreen);
 	}
 	
 }

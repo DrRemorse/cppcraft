@@ -38,12 +38,16 @@ namespace cppcraft
 		// initialize our font renderer
 		font.createTexture("bitmap/default/gui/font.png", 16);
 		font.createShader();
+		font.setClip(vec2(0.2, 0.0));
 		
 		// initialize inventories
 		initInventoryRenderer();
 		
 		// initialize minimap
 		minimap.init();
+		
+		// initialize chatbox & chat-transformation station
+		chatbox.init(width, height);
 	}
 	
 	void GUIRenderer::render(Renderer& renderer)
@@ -78,20 +82,22 @@ namespace cppcraft
 		/// chatbox ///
 		glEnable(GL_BLEND);
 		
+		vec2 textScale(0.01 * 0.6, 0.01);
 		font.bind(0);
 		font.sendMatrix(ortho);
 		
-		chatbox.render(font, renderer);
+		chatbox.render(font, ortho, textScale, renderer);
 		
 		/// debug text ///
+		font.bind(0);
 		font.setColor(vec4(0.8, 0.8, 1.0, 1.0));
 		font.setBackColor(vec4(0.0, 0.4));
 		
-		font.print(vec3(0.01, 0.01, 0.0), vec2(0.01), "cppcraft v0.1", false);
+		font.print(vec3(0.01, 0.01, 0.0), textScale, "cppcraft v0.1", false);
 		
 		std::stringstream ss;
 		ss << "fps: " << renderer.FPS;
-		font.print(vec3(0.01, 0.02, 0.0), vec2(0.01), ss.str(), false);
+		font.print(vec3(0.01, 0.02, 0.0), textScale, ss.str(), false);
 		
 		glDisable(GL_BLEND);
 	}

@@ -6,10 +6,9 @@
  * 
 **/
 
-#include "library/config.hpp"
-#include "library/log.hpp"
-#include "library/math/vector.hpp"
-#include "library/opengl/input.hpp"
+#include <library/config.hpp>
+#include <library/log.hpp>
+#include <library/opengl/input.hpp>
 
 #include "gameconf.hpp"
 #include "generator.hpp"
@@ -26,16 +25,6 @@ const std::string logFile    = "cppcraft.log";
 
 using namespace library;
 using namespace cppcraft;
-
-#include "library/script/script.hpp"
-
-extern "C"
-{
-	void myfunc()
-	{
-		logger << Log::INFO << "My func executed!" << Log::ENDL;
-	}
-}
 
 int main(int argc, char* argv[])
 {
@@ -75,7 +64,7 @@ int main(int argc, char* argv[])
 	WorldManager worldman;
 	try
 	{
-		worldman.init(WorldManager::GS_RUNNING, wfolder);
+		worldman.init(WorldManager::GS_RUNNING, renderer.getScreen(), wfolder);
 	}
 	catch (std::string errorstring)
 	{
@@ -83,10 +72,6 @@ int main(int argc, char* argv[])
 		logger.write(Log::ERR, "Failed to initialize renderer... Exiting.");
 		return 1;
 	}
-	
-	// initialize input systems
-	input.init(renderer.getScreen(), true, true);
-	input.setRotation(vec2(player.xrotrad, player.yrotrad));
 	
 	try
 	{

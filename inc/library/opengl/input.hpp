@@ -58,9 +58,16 @@ namespace library
 		// returns mousewheel status _AND_ resets it internally
 		int getWheel(); // 0 = no change, down < 0, up > 0
 		
-		// wide text string for keyboardType
-		// modification of text has no impact on anything, ever
-		std::wstring text;
+		
+		inline const std::string& getText() const
+		{
+			return this->text;
+		}
+		bool textBackspace();
+		inline void clearText()
+		{
+			this->text.clear();
+		}
 		
 	private:
 		library::WindowClass* gamescr;
@@ -79,6 +86,8 @@ namespace library
 		input_t mouse[MAX_MOUSE];
 		// mousewheel
 		int wheel;
+		// typed text
+		std::string text;
 		
 		friend void keyboard(GLFWwindow* window, int key, int action, int a, int b);
 		friend void keyboardType(GLFWwindow* window, unsigned int character);

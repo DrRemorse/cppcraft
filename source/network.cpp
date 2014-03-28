@@ -75,7 +75,7 @@ namespace cppcraft
 			return;
 		}
 		logger << Log::INFO << "Connected to network" << Log::ENDL;
-		chatbox.add("Connected to network", Chatbox::L_INFO);
+		chatbox.add("[!]", "Connected to network", Chatbox::L_INFO);
 		
 		lattice_flush();
 		
@@ -260,7 +260,7 @@ namespace cppcraft
 			
 		case T_LOG:
 			logger << Log::INFO << "SERVER  " << ((char*) mp->args) << Log::ENDL;
-			chatbox.add((const char*) mp->args, Chatbox::L_SERVER);
+			chatbox.add("SERVER", (const char*) mp->args, Chatbox::L_SERVER);
 			break;
 			
 		case T_CHAT:
@@ -288,6 +288,9 @@ namespace cppcraft
 		
 		std::string uname  = config.get("net.user", "guest");
 		std::string upass  = config.get("net.pass", "guest");
+		
+		// for now:
+		this->nickname = uname;
 		
 		srand(time(0));
 		/*
@@ -329,7 +332,7 @@ namespace cppcraft
 		ss << "Connecting to " << hostn << ":" << port;
 		
 		logger << Log::INFO << ss.str() << Log::ENDL;
-		chatbox.add(ss.str(), Chatbox::L_INFO);
+		chatbox.add("[!]", ss.str(), Chatbox::L_INFO);
 		
 		if (lattice_connect((char*) hostn.c_str(), port) < 0) return false;
 		return true;
@@ -457,6 +460,13 @@ namespace cppcraft
 				ntt.outgoing.pop_front();
 				
 			} // outgoing block queue
+			
+			// outgoing chat
+			if (ntt.outgoingChat.size())
+			{
+				c_chat((char*) ntt.outgoingChat.c_str());
+				ntt.outgoingChat.clear();
+			}
 		}
 		mtx.unlock();
 	}
@@ -472,6 +482,13 @@ namespace cppcraft
 		{
 			ntt.outgoing.push_front(block);
 		}
+		mtx.unlock();
+	}
+	
+	void Network::sendChat(const std::string& text)
+	{
+		mtx.lock();
+		ntt.outgoingChat = text;
 		mtx.unlock();
 	}
 }

@@ -56,6 +56,9 @@ namespace library
 		vec2& pow(double e);
 		vec2& pow(const vec2& v);
 		
+		// linear interpolation
+		vec2 mix(const vec2&, float) const;
+		
 		// -= vec2 operators =- //
 		
 		// unary - (negate)

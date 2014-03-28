@@ -84,6 +84,8 @@ namespace cppcraft
 		
 		std::deque<NetworkBlock> incoming;
 		std::deque<NetworkBlock> outgoing;
+		
+		std::string outgoingChat;
 	};
 	
 	class Network
@@ -101,6 +103,12 @@ namespace cppcraft
 		void handleNetworking();
 		
 		void addBlock(direction_t, const NetworkBlock&);
+		void sendChat(const std::string& text);
+		
+		inline const std::string& getNickName() const
+		{
+			return nickname;
+		}
 		
 	private:
 		bool connect();
@@ -117,6 +125,8 @@ namespace cppcraft
 		// all the stuff we want to copy between the threads now and then, 
 		// just to have it somewhere visible
 		NetworkThreadTransfer ntt;
+		
+		std::string nickname;
 		
 		friend void bumpError(lattice_bump* bump);
 		friend void message(lattice_message* mp);

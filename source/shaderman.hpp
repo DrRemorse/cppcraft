@@ -52,14 +52,13 @@ namespace cppcraft
 			GAUSS,
 			BLUR,
 			LENSFLARE,
-			CREPUSCULAR,
 			POSTPROCESS,
 			
 			COMPASS,
 			MINIMAP,
 			GUI,
+			GUI_COLOR,
 			MENUITEM,
-			CHAT,
 			
 			NUMBER_OF_SHADERS
 			

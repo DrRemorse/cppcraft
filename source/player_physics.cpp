@@ -1,8 +1,8 @@
 #include "player_physics.hpp"
 
-#include "library/log.hpp"
-#include "library/math/toolbox.hpp"
-#include "library/opengl/input.hpp"
+#include <library/log.hpp>
+#include <library/math/toolbox.hpp>
+#include <library/opengl/input.hpp>
 #include "player.hpp"
 #include "player_logic.hpp"
 #include "player_inputs.hpp"
@@ -184,35 +184,38 @@ namespace cppcraft
 		double dx = 0.0;
 		double dz = 0.0;
 		
-		if (input.getKey(keyconf.k_left))   // A
+		if (player.busyControls() == false)
 		{
-			dx -= cos(player.yrotrad);
-			dz -= sin(player.yrotrad);
-		}
-		if (input.getKey(keyconf.k_right))  // D
-		{
-			dx += cos(player.yrotrad);
-			dz += sin(player.yrotrad);
-		}
-		if (input.getKey(keyconf.k_forward)) // W
-		{
-			dx += sin(player.yrotrad);
-			dz -= cos(player.yrotrad);
-			plogic.Motion = 1;
-		}
-		if (input.getKey(keyconf.k_backward)) // S
-		{
-			dx -= sin(player.yrotrad);
-			dz += cos(player.yrotrad);
-			plogic.Motion = 2;
-		}
-		
-		double length = sqrt(dx*dx + dz*dz);
-		
-		if (length > 0.0000001)
-		{
-			dx *= this->curspeed / length;
-			dz *= this->curspeed / length;
+			if (input.getKey(keyconf.k_left))   // A
+			{
+				dx -= cos(player.yrotrad);
+				dz -= sin(player.yrotrad);
+			}
+			if (input.getKey(keyconf.k_right))  // D
+			{
+				dx += cos(player.yrotrad);
+				dz += sin(player.yrotrad);
+			}
+			if (input.getKey(keyconf.k_forward)) // W
+			{
+				dx += sin(player.yrotrad);
+				dz -= cos(player.yrotrad);
+				plogic.Motion = 1;
+			}
+			if (input.getKey(keyconf.k_backward)) // S
+			{
+				dx -= sin(player.yrotrad);
+				dz += cos(player.yrotrad);
+				plogic.Motion = 2;
+			}
+			
+			double length = sqrt(dx*dx + dz*dz);
+			
+			if (length > 0.0000001)
+			{
+				dx *= this->curspeed / length;
+				dz *= this->curspeed / length;
+			}
 		}
 		
 		// preserve momentum, build player acceleration
