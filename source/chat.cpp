@@ -139,14 +139,14 @@ namespace cppcraft
 		mtx.lock();
 		
 		// fade out text and remove after time has passed
-		this->fadeout -= renderer.dtime;
-		if (this->fadeout < 0)
+		if (this->lines.size())
 		{
-			if (this->lines.size())
+			this->fadeout -= renderer.dtime;
+			if (this->fadeout < 0)
 			{
+				this->fadeout = CHAT_FADEOUT;
 				lines.erase(lines.begin(), lines.begin()+1);
 			}
-			this->fadeout = CHAT_FADEOUT;
 		}
 		// clone lines before leaving lock
 		std::vector<ChatLine> copy = this->lines;
