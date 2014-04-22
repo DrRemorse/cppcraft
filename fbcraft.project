@@ -417,7 +417,7 @@
       <CustomBuild Enabled="yes">
         <RebuildCommand>make rebuild</RebuildCommand>
         <CleanCommand>mingw32-make clean</CleanCommand>
-        <BuildCommand>mingw32-make -j4</BuildCommand>
+        <BuildCommand>mingw32-make -j8</BuildCommand>
         <PreprocessFileCommand/>
         <SingleFileCommand>make $(currentFile)</SingleFileCommand>
         <MakefileGenerationCommand/>

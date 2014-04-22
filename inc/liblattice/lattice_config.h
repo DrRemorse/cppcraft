@@ -1,3 +1,6 @@
+#ifndef LATTICE_CONFIG_H
+#define LATTICE_CONFIG_H
+
 #define LATTICE_XMIN 0
 #define LATTICE_XMAX 0x000FFFFF
 #define LATTICE_YMIN 0
@@ -17,3 +20,11 @@
 #define VISUAL_UNIT  32  // sectors
 #define BURST_UNIT_MAX VISUAL_UNIT
 
+#define SERVER_RETRY 120
+
+#define SERVER_HANDSHAKE_TIMEOUT 30
+
+#define SERVER_SEND_PING 120
+#define SERVER_PING_TIMEOUT 60
+
+#endif
