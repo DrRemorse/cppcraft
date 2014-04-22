@@ -1,5 +1,5 @@
-#ifndef TIMER_HPP
-#define TIMER_HPP
+#ifndef LIBRARY_TIMER_HPP
+#define LIBRARY_TIMER_HPP
 
 #include "highperf.hpp"
 

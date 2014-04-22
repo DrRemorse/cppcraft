@@ -27,7 +27,7 @@ CCFLAGS = -c -Wall -Wextra -pedantic -Wno-write-strings -Iinc
 # linker flags
 LFLAGS  = -Llib -llibrary -lbass -llzo2 -llattice `pkg-config --static --libs glfw3` -Wl,-rpath,../lib
 ifeq ($(OS),Windows_NT)
-	LFLAGS  = -Llib -static -llibrary -lpthread -lbassdll -lglfw3 -lgdi32 -lopengl32 -llzo2 -llattice -lws2_32
+	LFLAGS  = -Llib -static -llibrary -lpthread -lbassdll -lglfw3 -lgdi32 -lglew32s -lopengl32 -llzo2 -llattice -lws2_32
 endif
 # resource builder
 RES = windres

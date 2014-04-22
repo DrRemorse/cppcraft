@@ -18,8 +18,8 @@ namespace library
 		// initializes empty shader object
 		Shader() { this->shader = 0; };
 		// creates shader from external file
-		Shader(std::string filename, std::vector<std::string>& attributes);
-		Shader(std::string filename, processFunc tokenizer, std::vector<std::string>& attributes);
+		Shader(const std::string& filename, const std::vector<std::string>& attributes);
+		Shader(const std::string& filename, processFunc tokenizer, const std::vector<std::string>& attributes);
 		// create shader from string (as shader code)
 		Shader(const std::string& vertex, const std::string& frag, const std::string& title, std::vector<std::string>& attributes);
 		
@@ -116,17 +116,16 @@ namespace library
 		std::map<std::string, GLint> uniforms;
 		
 		// internal function for uploading shader code, creating and compiling the shader program
-		void createShader(std::string vertshader, std::string fragshader, std::string source, std::vector<std::string>& attributes);
+		void createShader(const std::string& vertshader, const std::string& fragshader, const std::string& source, const std::vector<std::string>& attributes);
 		
 		// get errors/warnings from OpenGL context
 		void printShaderStatus(GLuint shader, bool linkstage);
 		// preprocess files recursively
-		std::string shaderProcessor(std::string filename, processFunc tokenizer, bool isVertex);
+		std::string shaderProcessor(const std::string& filename, processFunc tokenizer, bool isVertex);
 		
 		// keep track of last bound shader
 		static GLuint lastShader;
 	};
-	
 }
 
 #endif

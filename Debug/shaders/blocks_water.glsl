@@ -5,9 +5,6 @@
 #define REFLECTIONS
 
 #ifdef VERTEX_PROGRAM
-//precision highp float;
-precision mediump float;
-
 uniform mat4 matproj;
 uniform mat4 matview;
 uniform vec3 vtrans;
@@ -30,8 +27,6 @@ out vec4 torchlight;
 out float vertdist;
 out vec3 v_pos;
 out vec3 v_ldir;
-//out vec3 v_eye;
-//out vec3 v_half;
 out vec3 v_normal;
 flat out vec3 l_normal;
 
@@ -74,8 +69,6 @@ void main(void)
 
 #ifdef FRAGMENT_PROGRAM
 #extension GL_EXT_gpu_shader4 : enable
-//precision highp float;
-
 uniform sampler2D underwatermap;
 uniform sampler2D reflectionmap;
 
@@ -119,7 +112,7 @@ void main(void)
 	vec3 ty = vec3(0.0, 1.0, grad.y);
 	
 	vec3 Normal = cross(ty, tx);
-	Normal.y += 1.0; // make sure its extremely positive
+	Normal.y += 1.0; // make sure its positive
 	Normal = normalize(Normal);
 	
 	vec3 vNormal = mat3(matview) * Normal;

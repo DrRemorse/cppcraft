@@ -26,8 +26,6 @@ out vec4 torchlight;
 flat out float worldLight;
 
 out float vertdist;
-//flat out vec3 out_normal;
-
 //flat out float reflection;
 //out vec3 v_reflect;
 
@@ -56,8 +54,6 @@ void main(void)
 	}*/
 	
 	texCoord = vec3(in_texture.st / VERTEX_SCALE, in_texture.p);
-	
-	//out_normal = in_normal.xyz * 2.0 - vec3(1.0);
 	
 	// dotlight
 	#include "worldlight.glsl"
@@ -89,7 +85,6 @@ in vec4 torchlight;
 flat in float worldLight;
 
 in float vertdist;
-//flat in vec3 out_normal;
 
 flat in float reflection;
 in vec3 v_reflect;
