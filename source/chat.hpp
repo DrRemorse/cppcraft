@@ -66,6 +66,8 @@ namespace cppcraft
 		std::mutex  mtx;
 		bool chatOpen;
 		
+		void remove(int index);
+		
 		void renderSourcedMessage
 		(
 			library::SimpleFont& font, 

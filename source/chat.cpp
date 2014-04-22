@@ -73,7 +73,16 @@ namespace cppcraft
 	{
 		mtx.lock();
 		lines.emplace_back(src, text, type);
+		if (lines.size() > 7)
+		{
+			remove(0);
+		}
 		mtx.unlock();
+	}
+	void Chatbox::remove(int index)
+	{
+		auto i = lines.begin()+index;
+		lines.erase(i, i+1);
 	}
 	
 	void Chatbox::renderSourcedMessage(SimpleFont& font, const vec3& spos, const vec2& scale, const std::string& time, const std::string& source, const std::string& text, float alpha)
@@ -145,7 +154,7 @@ namespace cppcraft
 			if (this->fadeout < 0)
 			{
 				this->fadeout = CHAT_FADEOUT;
-				lines.erase(lines.begin(), lines.begin()+1);
+				remove(0);
 			}
 		}
 		// clone lines before leaving lock
