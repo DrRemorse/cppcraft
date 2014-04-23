@@ -1,7 +1,7 @@
 #include "worldmanager.hpp"
 
-#include "library/log.hpp"
-#include "library/timing/timer.hpp"
+#include <library/log.hpp>
+#include <library/timing/timer.hpp>
 #include "chunks.hpp"
 #include "network.hpp"
 #include "particles.hpp"

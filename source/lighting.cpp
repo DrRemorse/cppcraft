@@ -26,7 +26,7 @@ namespace cppcraft
 	
 	static const float RAY_CRASH_CONSTANT = 64.0f;
 	static const float LIGHT_FULL_DAMAGE  = 24.0f;
-	static const float LIGHT_MEDI_DAMAGE  =  8.0f;
+	static const float LIGHT_MEDI_DAMAGE  = 10.0f;
 	
 	void LightingClass::init()
 	{

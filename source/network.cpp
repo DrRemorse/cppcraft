@@ -45,8 +45,11 @@ namespace cppcraft
 	void Network::init()
 	{
 		this->connected = false;
-		this->running = true;
-		this->networkThread = std::thread(&Network::mainLoop, this);
+		if (config.get("net.connect", false))
+		{
+			this->running = true;
+			this->networkThread = std::thread(&Network::mainLoop, this);
+		}
 		
 		#ifdef TEST_MODEL
 			/// testing ///
@@ -380,7 +383,7 @@ namespace cppcraft
 				} // valid coordinates
 				else
 				{
-					logger << Log::INFO << "Did not add block" << Log::ENDL;
+					logger << Log::WARN << "network: Block coords out of bounds" << Log::ENDL;
 				}
 				ntt.incoming.pop_front();
 				

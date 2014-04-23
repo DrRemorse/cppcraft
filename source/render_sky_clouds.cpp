@@ -79,6 +79,7 @@ namespace cppcraft
 	
 	void SkyRenderer::renderClouds(float dy, Camera& camera, double frameCounter)
 	{
+		return;
 		// bind cloud shader
 		Shader& shd = shaderman[Shaderman::CLOUDS];
 		shd.bind();

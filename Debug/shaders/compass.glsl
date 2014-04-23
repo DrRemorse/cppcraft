@@ -50,7 +50,7 @@ void main(void)
 	
 	color.rgb = mix(color.rgb, arrowColor, arrow);
 	// fade out insides
-	color.a *= smoothstep(0.4, 1.0, 1.0 - rad);
+	color.a *= smoothstep(0.4, 1.0, 1.0 - rad) * 0.25;
 	// arrow -> spawn
 	color.a += 2.0 * arrow * rad * (1.0 - rad);
 	
