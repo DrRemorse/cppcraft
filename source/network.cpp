@@ -451,7 +451,7 @@ namespace cppcraft
 			// outgoing chat
 			if (ntt.outgoingChat.size())
 			{
-				c_chat((char*) ntt.outgoingChat.c_str());
+				c_schat((char*) ntt.outgoingChat.c_str());
 				ntt.outgoingChat.clear();
 			}
 		}
