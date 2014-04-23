@@ -13,28 +13,13 @@
 #include <cstring>
 #include <cmath>
 
-// REMOVE ME -->
-#include <cstdlib>     /* srand, rand */
-#include <ctime>       /* time */
-// <--
-
 static const double PI2 = 4 * atan(1) * 2;
 
 using namespace library;
 
 extern "C"
 {
-	#include <liblattice/lattice_config.h>
-	#ifdef _WIN32
-		#include <windows.h>
-	#else
-		#include <arpa/inet.h>
-	#endif
-	#include <liblattice/serversocket.h>
-	#include <liblattice/struct.h>
-	#include <liblattice/globals.h>
 	#include <liblattice/liblattice.h>
-	#include <liblattice/client_commands.h>
 }
 
 namespace cppcraft
@@ -295,6 +280,7 @@ namespace cppcraft
 		
 		// for now:
 		this->nickname = uname;
+		lattice_player_t lplayer;
 		
 		srand(time(0));
 		/*
@@ -302,41 +288,38 @@ namespace cppcraft
 		std::mt19937 gen(rd());
 		std::uniform_int_distribution<unsigned int> dis;
 		
-		lattice_player.userid = dis(gen);
+		lplayer.userid = dis(gen);
 		*/
-		lattice_player.userid = rand();
-		lattice_player.nickname = strdup((char*) uname.c_str());
+		lplayer.userid = rand();
+		lplayer.nickname = strdup((char*) uname.c_str());
+		
+		lplayer.burstdist = 16;
 		
 		PackCoord playerCoords(player.X, player.Y, player.Z);
-		
-		lattice_player.burstdist = 16;
-		
-		// network location
-		lattice_player.centeredon.x = (playerCoords.wc.x >> 8);
-		lattice_player.centeredon.y = (playerCoords.wc.y >> 8);
-		lattice_player.centeredon.z = (playerCoords.wc.z >> 8);
 		// world coordinates
-		lattice_player.wpos = playerCoords.wc;
+		lplayer.wpos = playerCoords.wc;
 		// block coordinates
-		lattice_player.bpos = playerCoords.bc;
+		lplayer.bpos = playerCoords.bc;
 		
-		lattice_player.hrot.xrot = player.xrotrad / PI2 * 4096;
-		lattice_player.hrot.yrot = player.yrotrad / PI2 * 4096;
+		lplayer.hrot.xrot = player.xrotrad / PI2 * 4096;
+		lplayer.hrot.yrot = player.yrotrad / PI2 * 4096;
 		
-		lattice_player.model = config.get("net.model", 0);
+		lplayer.model = config.get("net.model", 0);
 		rgba8_t color = RGBA8(config.get("net.color.r", 255), config.get("net.color.g", 0), config.get("net.color.b", 0), 255);
-		lattice_player.usercolor = color;
-		lattice_player.color = plogic.shadowColor;
+		lplayer.usercolor = color;
+		lplayer.color = plogic.shadowColor;
 		
-		lattice_player.hhold.item_id = 0;
-		lattice_player.hhold.item_type = 0;
-		lattice_player.mining = 0;
+		lplayer.hhold.item_id = 0;
+		lplayer.hhold.item_type = 0;
+		lplayer.mining = 0;
 		
 		std::stringstream ss;
 		ss << "Connecting to " << hostn << ":" << port;
 		
 		logger << Log::INFO << ss.str() << Log::ENDL;
 		chatbox.add("[!]", ss.str(), Chatbox::L_INFO);
+		
+		lattice_setplayer(&lplayer);
 		
 		if (lattice_connect((char*) hostn.c_str(), port) < 0) return false;
 		return true;
