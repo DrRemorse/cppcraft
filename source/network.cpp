@@ -251,6 +251,7 @@ namespace cppcraft
 			chatbox.add("SERVER", (const char*) mp->args, Chatbox::L_SERVER);
 			break;
 			
+		case T_SCHAT:
 		case T_CHAT:
 			userChat(mp->fromuid, (const char*) mp->args);
 			break;
