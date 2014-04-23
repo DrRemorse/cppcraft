@@ -100,7 +100,7 @@ namespace cppcraft
 	void PlayerClass::handlePlayerTicks()
 	{
 		// handle player rotation
-		handleRotation();
+		//handleRotation();
 		// acceleration & movement inputs
 		playerPhysics.handleMomentum();
 		// jumping, big enough to get its own module
@@ -166,11 +166,11 @@ namespace cppcraft
 		paction.handle(frametime);
 	}
 	
-	void PlayerClass::handleRotation()
+	void PlayerClass::handleRotation(double dtime)
 	{
 		// measure closeness
-		float dx = fabsf(player.xrotrad - input.getRotation().x);
-		float dy = fabsf(player.yrotrad - input.getRotation().y);
+		float dx = fabsf(player.xrotrad - input.getRotation().x) * dtime;
+		float dy = fabsf(player.yrotrad - input.getRotation().y) * dtime;
 		
 		// rotate if too far apart (NOTE: possible bug with calculating angle distance)
 		player.changedRotation = (dx > 0.0001 || dy > 0.0001);
@@ -182,7 +182,7 @@ namespace cppcraft
 			vec3 look2 = lookVector(input.getRotation());
 			
 			// interpolate
-			vec3 newLook = look1.mix(look2, 0.30);
+			vec3 newLook = look1.mix(look2, 0.40);
 			newLook.normalize();
 			
 			// back to pitch/yaw radians

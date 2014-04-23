@@ -200,7 +200,7 @@ namespace cppcraft
 			glfwPollEvents();
 			
 			// handle player rotation
-			player.handleRotation();
+			player.handleRotation(dtime);
 		}
 		
 		// close main window
