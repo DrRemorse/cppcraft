@@ -182,7 +182,7 @@ namespace cppcraft
 			vec3 look2 = lookVector(input.getRotation());
 			
 			// interpolate
-			vec3 newLook = look1.mix(look2, 0.40);
+			vec3 newLook = look1.mix(look2, 0.40 * dtime);
 			newLook.normalize();
 			
 			// back to pitch/yaw radians

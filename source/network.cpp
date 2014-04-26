@@ -173,6 +173,11 @@ namespace cppcraft
 		}
 	}
 	
+	void networkClosing(lattice_closing* lclose)
+	{
+		logger << Log::WARN << "Server about to disconnect: " << lclose->desc << Log::ENDL;
+		chatbox.add("[!]", "Disconnecting: " + std::string(lclose->desc), Chatbox::L_SERVER);
+	}
 	void bumpError(lattice_bump* bump)
 	{
 		PackCoord& pc = network.ntt.pcoord;
@@ -216,6 +221,10 @@ namespace cppcraft
 			logger << Log::INFO << "Connected to server" << Log::ENDL;
 			network.connected = true;
 			break;
+		case T_CLOSING:
+			networkClosing((lattice_closing*) mp->args);
+			break;
+			
 		case T_DISCONNECTED:
 			logger << Log::WARN << "Disconnected from server" << Log::ENDL;
 			network.connected = false;

@@ -137,7 +137,9 @@ namespace cppcraft
 		// create view matrix
 		mat4 matview = camera.getRotationMatrix();
 		matview.translate(0.0, -m_fInnerRadius, 0.0);
-		shd.sendMatrix("matview", matview);
+		
+		matview = camera.getProjection() * matview;
+		shd.sendMatrix("matmvp", matview);
 		shd.sendFloat("above", 1.0);
 		
 		// render
@@ -147,8 +149,9 @@ namespace cppcraft
 		// multiply with negative-Y scaling matrix
 		matview *= mat4(1.0, -0.8, 1.0);
 		matview.translate(0.0, -m_fInnerRadius, 0.0);
+		matview = camera.getProjection() * matview;
 		
-		shd.sendMatrix("matview", matview);
+		shd.sendMatrix("matmvp", matview);
 		shd.sendFloat("above", 0.0);
 		
 		// render mirrored on y-axis
@@ -179,7 +182,7 @@ namespace cppcraft
 		float stepa  = PI * 2.0f / numX;
 		float startb = asin(r_inner / r_outer), stepb = (PI / 2.0f - startb) / 4.0f;
 		
-		int p = 0;
+		domevertex_t* v = vertices;
 		
 		for (int y = 0; y < numY; y++)
 		{
@@ -189,20 +192,19 @@ namespace cppcraft
 			{
 				float a = stepa * x;
 				
-				va = domevertex_t ( sinf(a)         * cosf(b) * r_outer,         sinf(b) * r_outer,         -cosf(a)         * cosf(b) * r_outer );
-				vb = domevertex_t ( sinf(a + stepa) * cosf(b) * r_outer,         sinf(b) * r_outer,         -cosf(a + stepa) * cosf(b) * r_outer );
-				vc = domevertex_t ( sinf(a + stepa) * cosf(b + stepb) * r_outer, sinf(b + stepb) * r_outer, -cosf(a + stepa) * cosf(b + stepb) * r_outer );
-				vd = domevertex_t ( sinf(a)         * cosf(b + stepb) * r_outer, sinf(b + stepb) * r_outer, -cosf(a)         * cosf(b + stepb) * r_outer );
+				va = domevertex_t( sinf(a)         * cosf(b) * r_outer,         sinf(b) * r_outer,         -cosf(a)         * cosf(b) * r_outer );
+				vb = domevertex_t( sinf(a + stepa) * cosf(b) * r_outer,         sinf(b) * r_outer,         -cosf(a + stepa) * cosf(b) * r_outer );
+				vc = domevertex_t( sinf(a + stepa) * cosf(b + stepb) * r_outer, sinf(b + stepb) * r_outer, -cosf(a + stepa) * cosf(b + stepb) * r_outer );
+				vd = domevertex_t( sinf(a)         * cosf(b + stepb) * r_outer, sinf(b + stepb) * r_outer, -cosf(a)         * cosf(b + stepb) * r_outer );
 				
-				vertices[p + 0] = va;
-				vertices[p + 1] = vb;
-				vertices[p + 2] = vc;
-				p += 3;
+				v[0] = va;
+				v[1] = vb;
+				v[2] = vc;
 				
-				vertices[p + 0] = vc;
-				vertices[p + 1] = vd;
-				vertices[p + 2] = va;
-				p += 3;
+				v[3] = vc;
+				v[4] = vd;
+				v[5] = va;
+				v += 6;
 			}
 		}
 		
@@ -216,16 +218,18 @@ namespace cppcraft
 			vb = domevertex_t ( sinf(a + stepa) * cosf(b) * r_outer, sinf(b) * r_outer, -cosf(a + stepa) * cosf(b) * r_outer );
 			vc = domevertex_t ( 0.0f, r_outer, 0.0f );
 			
-			vertices[p + 0] = va;
-			vertices[p + 1] = vb;
-			vertices[p + 2] = vc;
-			p += 3;
+			v[0] = va;
+			v[1] = vb;
+			v[2] = vc;
+			v += 3;
 		}
 		
+		// upload to GPU
 		scatter.vao.begin(sizeof(domevertex_t), num_vertices, vertices);
 		scatter.vao.attrib(0, 3, GL_FLOAT, GL_FALSE, 0);
+		//scatter.vao.indexes(indexes, indexCounter);
 		scatter.vao.end();
-		scatter.vao.unbind();
+		
 		// cleanup
 		delete[] vertices;
 	}

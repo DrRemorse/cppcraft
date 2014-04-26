@@ -4,8 +4,7 @@
 
 #ifdef VERTEX_PROGRAM
 
-uniform mat4 matproj;
-uniform mat4 matview;
+uniform mat4 matmvp;
 
 uniform vec3 v3CameraPos;		// The camera's current position
 uniform vec3 v3LightPos;		// The direction vector to the light source
@@ -27,6 +26,7 @@ uniform float above; // 1.0 above horizon, 0.0 below horizon
 
 in vec3 in_vertex;
 
+out vec3 v3x;
 out vec3 v3Direction;
 out vec3 color_rayleigh;
 out vec3 color_mie;
@@ -40,8 +40,13 @@ float scale(float fCos)
 
 void main(void)
 {
+	v3x = in_vertex.xyz - v3CameraPos;
+	v3x.y = (v3x.y * above) + 0.01 * (1.0 - above);
+	
+	v3Direction = v3CameraPos - in_vertex.xyz;
+	
 	// Get the ray from the camera to the vertex, and its length (which is the far point of the ray passing through the atmosphere)
-	vec3 v3Ray = in_vertex.xyz - v3CameraPos;
+	vec3 v3Ray = v3x;
 	float fFar = length(v3Ray);
 	v3Ray /= fFar;
 	
@@ -74,11 +79,10 @@ void main(void)
 	
 	starc = normalize(v3Ray);
 	// Finally, scale the Mie and Rayleigh colors and set up the varying variables for the pixel shader
-	color_mie = v3FrontColor * fKmESun; // * above;
+	color_mie = v3FrontColor * fKmESun;
 	color_rayleigh = v3FrontColor * (v3InvWavelength * fKrESun);
-	v3Direction = v3CameraPos - in_vertex.xyz;
 	
-	gl_Position = matproj * matview * vec4(in_vertex.xyz, 1.0);
+	gl_Position = matmvp * vec4(in_vertex.xyz, 1.0);
 }
 
 #endif
@@ -96,6 +100,7 @@ uniform vec3 v3LightPos;
 uniform float g;
 uniform float g2;
 
+in vec3 v3x;
 in vec3 v3Direction;
 in vec3 color_rayleigh;
 in vec3 color_mie;
@@ -105,19 +110,19 @@ const float exposure = 2.5;
 
 void main (void)
 {
-	float fCos = dot(v3LightPos, v3Direction) / length(v3Direction);
+	float fCos = dot(v3LightPos, -v3x) / length(v3x);
 	float fRayleighPhase = 0.75 * (1.0 + fCos*fCos);
 	float fMiePhase = 1.5 * ((1.0 - g2) / (2.0 + g2)) * (1.0 + fCos*fCos) / pow(1.0 + g2 - 2.0*g*fCos, 1.5);
 	
 	vec3 final = fRayleighPhase * color_rayleigh + fMiePhase * color_mie;
 	
-	vec3 norm = normalize(vec3(v3Direction.x, -v3Direction.y, v3Direction.z));
-	if (above < 0.5) norm.y = -norm.y;
+	vec3 norm = normalize(v3Direction);
+	norm.y *= (0.5 - above) * 2.0;
 	
 	vec3 skymap = textureCube(texture, norm).rgb;
-	final = mix(final, skymap, final.b * 1.1 - final.r * 0.5 );
+	final = mix(final, skymap, final.b - final.r * 0.5);
 	
-	float darkness = max(0.0, 0.16 - length(final)) / 0.16 * 0.707;
+	float darkness = max(0.0, 0.16 - length(final)) * 6.0;
 	if (darkness > 0.05)
 	{
 		// stars

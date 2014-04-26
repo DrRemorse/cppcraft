@@ -16,10 +16,7 @@ void main(void)
 #ifdef FRAGMENT_PROGRAM
 uniform sampler2D terrain;
 uniform sampler2D skytexture;
-//uniform sampler2D normals;
-//uniform sampler2D noisetex;
 
-uniform float daylight;
 uniform float sundot;
 uniform vec2  sunCoord;
 
@@ -37,7 +34,7 @@ void main()
 	
 	// add fog & sunlight
 	float sunrad = 1.0 - distance(texCoord, sunCoord) / 0.5;
-	float notSky = step(depth, 0.999);
+	float notSky = step(depth, 0.998);
 	
 	const vec3 fogBaseColor = vec3(0.9);
 	const vec3 sunBaseColor = vec3(1.0, 1.0, 0.7);
@@ -52,7 +49,7 @@ void main()
 	
 	// mix in fog
 	vec3 skyColor = texture2D(skytexture, texCoord).rgb;
-	color.rgb = mix(color.rgb, skyColor * daylight, fogAmount);
+	color.rgb = mix(color.rgb, skyColor, fogAmount);
 	
 	gl_FragData[0] = color;
 }

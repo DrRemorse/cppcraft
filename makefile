@@ -6,7 +6,7 @@
 # -Ofast -mfpmath=both -march=native -flto -ffinite-math-only -fno-signed-zeros -fno-trapping-math
 # -Ofast -mfpmath=both -march=native
 # -g -Og
-BUILDOPT = -Ofast -mfpmath=both -march=native -ffinite-math-only -fno-signed-zeros -fno-trapping-math
+BUILDOPT = -Ofast -mfpmath=both -march=native
 # output file
 OUTPUT   = ./Debug/cppcraft
 
@@ -23,7 +23,7 @@ endif
 # compiler
 CC = g++ $(BUILDOPT) -std=c++11
 # compiler flags
-CCFLAGS = -c -Wall -Wextra -pedantic -Wno-write-strings -Iinc
+CCFLAGS = -c -Wall -Wextra -pedantic -Iinc
 # linker flags
 LFLAGS  = -Llib -llibrary -lbass -llzo2 -llattice `pkg-config --static --libs glfw3` -Wl,-rpath,../lib
 ifeq ($(OS),Windows_NT)

@@ -65,8 +65,6 @@ namespace cppcraft
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_RENDERBUFFER), 0);
 		
 		// dot for how much we are looking at sun
-		shd.sendFloat("daylight", thesun.getRealtimeDaylight());
-		
 		float sundot = thesun.getRealtimeAngle().dot(player.getLookVector());
 		shd.sendFloat("sundot", sundot);
 		
