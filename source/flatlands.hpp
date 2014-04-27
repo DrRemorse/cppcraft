@@ -35,6 +35,10 @@ namespace cppcraft
 		friend class FlatlandsContainer;
 		friend class Compressor;
 		friend class Generator;
+		
+	public:
+		// the (decompressed) file record size of a flatland-sector
+		static const int FLATLAND_SIZE = sizeof(fdata);
 	};
 	
 	class FlatlandsContainer

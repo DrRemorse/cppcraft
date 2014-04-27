@@ -130,6 +130,7 @@ namespace cppcraft
 		{
 			for (int z = z1; z < z2; z++)
 			{
+				// bottom / first sector in column
 				Sector& firstsector = Sectors(x, 0, z);
 				
 				//-------------------------------------------------//
@@ -156,7 +157,7 @@ namespace cppcraft
 					else
 					{
 						// reset flatlands
-						memset( flatlands(x, z).fdata, 0,  sizeof(FlatlandSector::flatland_t) );
+						memset(flatlands(x, z).fdata, 0,  FlatlandSector::FLATLAND_SIZE);
 						
 						for (int y = 0; y < Sectors.getY(); y++)
 						{

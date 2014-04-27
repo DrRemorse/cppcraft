@@ -10,8 +10,6 @@
 #include "player.hpp"
 #include "player_logic.hpp"
 #include "renderman.hpp"
-#include "render_fs.hpp"
-#include "sectors.hpp"
 #include "shaderman.hpp"
 #include "sun.hpp"
 #include "textureman.hpp"
@@ -522,6 +520,7 @@ namespace cppcraft
 			// bind world-reflection
 			textureman.bind(1, Textureman::T_REFLECTION);
 		}
+		textureman.bind(2, Textureman::T_MAGMA);
 		
 		if (plogic.FullySubmerged)
 		{
@@ -560,7 +559,8 @@ namespace cppcraft
 											loc_vtrans,
 											position, camera.getViewMatrix());
 						// update world offset
-						shaderman[Shaderman::BLOCKS_WATER].sendVec3("worldOffset", camera.getWorldOffset());
+						if (camera.ref)
+							shaderman[Shaderman::BLOCKS_WATER].sendVec3("worldOffset", camera.getWorldOffset());
 						break;
 					case RenderConst::TX_LAVA:
 						// lava shader-set
@@ -570,7 +570,8 @@ namespace cppcraft
 											loc_vtrans,
 											position, camera.getViewMatrix());
 						// update world offset
-						shaderman[Shaderman::BLOCKS_LAVA].sendVec3("worldOffset", camera.getWorldOffset());
+						if (camera.ref)
+							shaderman[Shaderman::BLOCKS_LAVA].sendVec3("worldOffset", camera.getWorldOffset());
 						break;
 				}
 			}

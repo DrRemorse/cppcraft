@@ -3,8 +3,6 @@
 #define FRAGMENT_PROGRAM
 
 #ifdef VERTEX_PROGRAM
-//precision mediump float;
-
 uniform mat4 matproj;
 uniform mat4 matview;
 uniform vec3 vtrans;
@@ -38,8 +36,8 @@ void main(void)
 #endif
 
 #ifdef FRAGMENT_PROGRAM
-
-uniform sampler2D texture;
+uniform sampler2D underwater;
+uniform sampler2D lavatex;
 uniform vec3 screendata;
 
 uniform float frameCounter;
@@ -47,34 +45,31 @@ uniform float frameCounter;
 in float vertdist;
 in vec2  wave;
 
-#include "noise.glsl"
-
 void main(void)
 {
-	float timer = frameCounter / 800.0;
+	float timer = frameCounter / 50.0;
+	vec2 subwave  = sin(timer * vec2(2.0) + wave * 0.5) * sin(timer);
+	vec2 lavawave = wave * 0.25 + subwave * 0.01;
 	
-	vec2 wave1 = wave * 1.0 + timer * vec2(1, 0) + sin(timer * vec2(1));
-	vec2 wave2 = wave * 2.0 + timer * vec2(0, 1);
+	// sloppy waving
+	vec3 lavaColor = texture2D(lavatex, lavawave).rgb;
+	// cheap sparkling
+	lavaColor.r += pow(lavaColor.r, 1.0 / abs(subwave.x * subwave.y)) * 0.5;
 	
-	// animated lava
-	float n = snoise(wave1) * snoise(wave2);
-	n = smoothstep(0.2, 0.6, n * 0.5 + 0.5);
-	
-	const vec3 lavaHigh = vec3(1.0, 0.8, 0.3);
-	const vec3 lavaLow  = vec3(0.5, 0.0, 0.1);
-	
-	vec3 lavaColor = mix(lavaHigh, lavaLow, n);
-	
+#ifdef UNDERLAVA
 	// under the lava
 	vec2 texCoord =  gl_FragCoord.xy / screendata.xy;
-	vec4 underlava = texture2D(texture, texCoord);
+	vec4 underlava = texture2D(underwater, texCoord);
 	
 	float wdepth = 0.02 + max(0.0, underlava.a - vertdist);
 	
-	float dep = smoothstep(0.0, 0.04, wdepth);
+	float dep = smoothstep(0.0, 0.03, wdepth);
 	
 	// mix it all together
 	vec3 color = mix(underlava.rgb, lavaColor, dep);
+#else
+	vec3 color = lavaColor;
+#endif
 	
 	gl_FragData[0] = vec4(color, vertdist);
 }

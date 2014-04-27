@@ -143,6 +143,11 @@ namespace cppcraft
 		shaders[BLOCKS_WATER].sendInteger("underwatermap", 0);
 		shaders[BLOCKS_WATER].sendInteger("reflectionmap", 1);
 		
+		// extra textures for lava
+		shaders[BLOCKS_LAVA].bind();
+		shaders[BLOCKS_LAVA].sendInteger("underwater", 0);
+		shaders[BLOCKS_LAVA].sendInteger("lavatex", 2);
+		
 		linkstage.clear();
 		linkstage.emplace_back("in_vertex");
 		linkstage.emplace_back("in_normal");

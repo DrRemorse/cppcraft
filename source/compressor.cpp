@@ -1,7 +1,7 @@
 #include "compressor.hpp"
 
-#include "library/log.hpp"
-#include "library/compression/lzo.hpp"
+#include <library/log.hpp>
+#include <library/compression/lzo.hpp>
 #include "compressor_rle.hpp"
 #include "sectors.hpp"
 #include "flatlands.hpp"
@@ -25,7 +25,7 @@ namespace cppcraft
 	{
 		logger << Log::INFO << "* Initializing compressor" << Log::ENDL;
 		
-		const int compressed_column_size = sizeof(FlatlandSector::fdata) + Sectors.getY() * sizeof(Sector::sectorblock_t);
+		const int compressed_column_size = FlatlandSector::FLATLAND_SIZE + Sectors.getY() * sizeof(Sector::sectorblock_t);
 		
 		// initialize LZO
 		compressor.init(compressed_column_size);
@@ -47,7 +47,7 @@ namespace cppcraft
 		if (datalength.lzoSize == 0)
 		{
 			// reset flatlands
-			memset( flatlands(x, z).fdata, 0,  sizeof(FlatlandSector::fdata) );
+			memset( flatlands(x, z).fdata, 0,  FlatlandSector::FLATLAND_SIZE);
 			// not generated world
 			for (int y = 0; y < Sectors.getY(); y++)
 			{
@@ -73,7 +73,7 @@ namespace cppcraft
 		lzo_bytep cpos = compressor.getData();
 		
 		// copy over flatland struct
-		memcpy (flatlands(x, z).fdata, cpos, sizeof(FlatlandSector::fdata));
+		memcpy (flatlands(x, z).fdata, cpos, FlatlandSector::FLATLAND_SIZE);
 		
 		// flatlands covered by this column needs to be rebuilt
 		//flatlands.buildTexture(x, z);

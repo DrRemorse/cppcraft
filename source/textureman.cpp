@@ -211,6 +211,15 @@ namespace cppcraft
 		else throw std::string("Missing source file: Clouds texture");
 		if (ogl.checkError()) throw std::string("Clouds texture error");
 		
+		// magma texture
+		if (bmp.load(config.get("textures.magma", "bitmap/default/magma.png"), Bitmap::PNG))
+		{
+			textures[T_MAGMA] = Texture(GL_TEXTURE_2D);
+			textures[T_MAGMA].create(bmp, true, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+		}
+		else throw std::string("Missing source file: Magma texture");
+		if (ogl.checkError()) throw std::string("Magma texture error");
+		
 		/// FS Renderer ///
 		
 		// dirty lens texture
