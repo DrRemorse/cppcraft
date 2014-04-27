@@ -40,12 +40,12 @@ namespace cppcraft
 		
 		p = &torchlights[L_LAVA];
 		// lava (_LAVABLOCK)
-		p->reach = 5;
-		p->curve = 1.0;
-		p->cap   = 0.5;
+		p->reach = 3;
+		p->curve = 1.4;
+		p->cap   = 0.6;
 		
-		p->colors     = 0.5;
-		p->brightness = 0.8;
+		p->colors     = 0.55;
+		p->brightness = 0.4;
 		
 		p->r = 1.0;
 		p->g = 0.45;
