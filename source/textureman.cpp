@@ -215,7 +215,7 @@ namespace cppcraft
 		if (bmp.load(config.get("textures.magma", "bitmap/default/magma.png"), Bitmap::PNG))
 		{
 			textures[T_MAGMA] = Texture(GL_TEXTURE_2D);
-			textures[T_MAGMA].create(bmp, true, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+			textures[T_MAGMA].create(bmp, true, GL_REPEAT, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
 		}
 		else throw std::string("Missing source file: Magma texture");
 		if (ogl.checkError()) throw std::string("Magma texture error");
