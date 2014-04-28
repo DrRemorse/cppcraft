@@ -414,6 +414,7 @@ namespace cppcraft
 #define isLowblock(id) (id >= LOWBLOCK_START && id <= LOWBLOCK_END)
 #define isHalfblock(id) (id >= HALFBLOCK_START && id <= HALFBLOCK_END)
 
+#define isPole(id) (id == _WOODPOLE)
 #define isDoor(id) (id == _WOODDOOR || id == _STONEDOOR)
 
 #define isColoredBlock(id) (id == _GIANTSHROOMTOP || id == _GIANTSHROOMTOPSPECLE || id == _GIANTSHROOMTOPEDGE)

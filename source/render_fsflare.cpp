@@ -22,6 +22,7 @@ namespace cppcraft
 	void FSRenderer::initFlare()
 	{
 		lensMatrix = mat4().bias() * camera.getProjection();
+		glGenFramebuffers(1, &flareFBO);
 	}
 	
 	vec2 FSRenderer::getSunVector(const mat4& matsun)
@@ -74,7 +75,6 @@ namespace cppcraft
 		
 		//  LOW blur sun sphere vertically (low) (final result = texture 1)
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_LENSFLARE2), 0);
-		
 		textureman.bind(0, Textureman::T_LENSFLARE3);
 		
 		blur.sendVec2("dir", vec2(0.0, 1.0 / flareTxH));
@@ -84,7 +84,6 @@ namespace cppcraft
 		
 		//  HIGH blur sun sphere horizontally (high)
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_LENSFLARE), 0);
-		
 		textureman.bind(0, Textureman::T_LENSFLARE2);
 		
 		blur.sendInteger("Width", 4);
@@ -95,7 +94,6 @@ namespace cppcraft
 		
 		//  blur sun sphere vertically (high) (final result = 0)
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_LENSFLARE3), 0);
-		
 		textureman.bind(0, Textureman::T_LENSFLARE);
 		
 		blur.sendVec2("dir", vec2(0.0, 1.0 / flareTxH));
@@ -105,7 +103,6 @@ namespace cppcraft
 		
 		//  blur sun sphere radially, calculate lens flare and halo
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_LENSFLARE), 0);
-		
 		textureman.bind(2, Textureman::T_LENSDIRT);
 		textureman.bind(1, Textureman::T_LENSFLARE3);
 		textureman.bind(0, Textureman::T_LENSFLARE2);

@@ -39,6 +39,7 @@ namespace cppcraft
 		std::vector<inventory_t> itemTiles;
 		
 		int emitQuad(InventoryItem& itm, float x, float y, float size);
+		int emitTallQuad(InventoryItem& itm, float x, float y, float size);
 		int emitBlock(InventoryItem& itm, float x, float y, float size);
 	};
 }

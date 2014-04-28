@@ -1,6 +1,7 @@
 #include "render_fs.hpp"
 
 #include <library/config.hpp>
+#include <library/log.hpp>
 #include <library/opengl/opengl.hpp>
 #include <library/opengl/vao.hpp>
 #include <library/opengl/window.hpp>
@@ -20,6 +21,8 @@ namespace cppcraft
 	
 	void FSRenderer::init(WindowClass& gamescr)
 	{
+		logger << Log::INFO << "* Initializing screenspace renderer" << Log::ENDL;
+		
 		// create screenspace VAO
 		screenVAO.createScreenspaceVAO();
 		
@@ -30,13 +33,12 @@ namespace cppcraft
 		this->blurTxH = gamescr.SH / factor;
 		
 		// lens flare
-		factor = config.get("render.hq_lens", false) ? 2 : 4;
+		factor = config.get("render.hq_lens", false) ? 1 : 2;
 		this->flareTxW = gamescr.SW / factor;
 		this->flareTxH = gamescr.SH / factor;
 		
 		// create screenspace FBOs
 		glGenFramebuffers(1, &blurFBO);
-		glGenFramebuffers(1, &flareFBO);
 		
 		initFlare();
 		

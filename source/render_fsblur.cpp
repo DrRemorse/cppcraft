@@ -1,8 +1,8 @@
 #include "render_fs.hpp"
 
-#include "library/opengl/opengl.hpp"
-#include "library/opengl/vao.hpp"
-#include "library/opengl/window.hpp"
+#include <library/opengl/opengl.hpp>
+#include <library/opengl/vao.hpp>
+#include <library/opengl/window.hpp>
 #include "shaderman.hpp"
 #include "textureman.hpp"
 #include <cmath>
@@ -39,7 +39,6 @@ namespace cppcraft
 		
 		// blur vertically
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_BLURBUFFER2), 0);
-		
 		textureman.bind(0, Textureman::T_BLURBUFFER1);
 		
 		blur.sendVec2("dir", vec2(0.0, 1.0 / blurh));

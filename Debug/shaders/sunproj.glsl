@@ -1,7 +1,6 @@
 #version 130
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
-precision mediump float;
 
 #ifdef VERTEX_PROGRAM
 uniform mat4 matproj;
@@ -37,18 +36,18 @@ in vec2 texCoord;
 in vec3 norm;
 in vec2 screenPos;
 
-const vec3 SUNCOLOR = vec3(0.9, 0.7, 0.5);
-
-const float ZFAR
-const float ZNEAR
+const vec3 SUNCOLOR = vec3(0.9, 0.7, 0.5) * 0.8;
 
 void main(void)
 {
 	vec3 color = texture2D(texture, texCoord).rgb;
-	color *= vec3(0.9, 0.7, 0.5) * 0.6;
+	color *= SUNCOLOR;
+	
+	//float depth = texture2D(depth, screenPos).a;
+	//color.rgb *= pow(depth, 3.0);
 	
 	// discard if something is blocking
-	color.rgb *= step(0.995, texture2D(depth, screenPos).a);
+	color.rgb *= step(0.9, texture2D(depth, screenPos).a);
 	
 	// limit flare to horizon
 	color *= pow( 1.0 - clamp(-norm.y / 0.01,  0.0, 1.0),  3.0 );

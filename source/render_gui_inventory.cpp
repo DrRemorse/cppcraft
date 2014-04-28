@@ -158,10 +158,16 @@ namespace cppcraft
 		}
 		else if (itm.isBlock())
 		{
+			block_t id = itm.getID();
+			
 			// some blocks can be represented by quads
-			if (itm.getID() == _LADDER || isCross(itm.getID()))
+			if (id == _LADDER || isCross(id) || isPole(id))
 			{
 				return quickbarItems.emitQuad(itm, x, y, size);
+			}
+			else if (isDoor(id))
+			{
+				return quickbarItems.emitTallQuad(itm, x, y, size);
 			}
 			// presentable rotated blocks
 			return quickbarItems.emitBlock(itm, x, y, size * 0.8);
@@ -186,6 +192,37 @@ namespace cppcraft
 		dest.emplace_back(
 			x,        y,        0,   0, 1, tile,   BGRA8(255, 255, 255, 128) );
 		return 4;
+	}
+	int GUIInventory::emitTallQuad(InventoryItem& itm, float x, float y, float size)
+	{
+		// face value is "as if" front
+		float tileTop = Block::cubeFaceById(itm.getID(), 0, 2);
+		float tileBot = Block::cubeFaceById(itm.getID(), 0, 0);
+		// emit to itemTiles or blockTiles depending on item type
+		std::vector<inventory_t>& dest = (itm.isItem()) ? itemTiles : blockTiles;
+		
+		float xofs = size * 0.2;
+		
+		// top quad
+		dest.emplace_back(
+			x + xofs,        y + size*1.0, 0,   0, 0, tileTop,   BGRA8(255, 255, 255,   0) );
+		dest.emplace_back(
+			x + size - xofs, y + size*1.0, 0,   1, 0, tileTop,   BGRA8(255, 255, 255,   0) );
+		dest.emplace_back(
+			x + size - xofs, y + size*0.5, 0,   1, 1, tileTop,   BGRA8(255, 255, 255,   0) );
+		dest.emplace_back(
+			x + xofs,        y + size*0.5, 0,   0, 1, tileTop,   BGRA8(255, 255, 255,   0) );
+		// bottom quad
+		dest.emplace_back(
+			x + xofs,        y + size*0.5, 0,   0, 0, tileBot,   BGRA8(255, 255, 255,   0) );
+		dest.emplace_back(
+			x + size - xofs, y + size*0.5, 0,   1, 0, tileBot,   BGRA8(255, 255, 255,   0) );
+		dest.emplace_back(
+			x + size - xofs, y,            0,   1, 1, tileBot,   BGRA8(255, 255, 255,   0) );
+		dest.emplace_back(
+			x + xofs,        y,            0,   0, 1, tileBot,   BGRA8(255, 255, 255, 128) );
+		
+		return 8;
 	}
 	int GUIInventory::emitBlock(InventoryItem& itm, float x, float y, float size)
 	{
