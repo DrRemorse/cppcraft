@@ -23,7 +23,7 @@ namespace cppcraft
 {
 	NetPlayers netplayers;
 	
-	void NetPlayers::remove(unsigned int uid)
+	bool NetPlayers::remove(unsigned int uid)
 	{
 		int index = indexByUID(uid);
 		if (index != -1)
@@ -31,6 +31,7 @@ namespace cppcraft
 			std::swap(players[index], players.back());
 			players.pop_back();
 		}
+		return (index != -1);
 	}
 	
 	int NetPlayers::indexByUID(unsigned int uid) const

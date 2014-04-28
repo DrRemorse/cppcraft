@@ -139,7 +139,14 @@ namespace cppcraft
 		if (np)
 		{
 			logger << Log::INFO << "User quit: " << np->getName() << " (" << &msg->desc << ")" << Log::ENDL;
-			netplayers.remove(userid);
+			if (!netplayers.remove(userid))
+			{
+				logger << Log::INFO << "User quit error: user could not be removed" << Log::ENDL;
+			}
+		}
+		else
+		{
+			logger << Log::INFO << "User quit error: uid not found " << userid << Log::ENDL;
 		}
 	}
 	void userChat(NetPlayer::userid_t userid, const char* text)

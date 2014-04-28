@@ -146,18 +146,20 @@ void main(void)
 	
 	//----- REFLECTIONS -----
 	
-#ifdef REFLECTIONS
-	// world/terrain reflection
-	vec4 wreflection = texture2D(reflectionmap, refcoord);
-#endif
-	
 	//----- SEACOLOR -----
 	// 66, 113, 136
 	const vec3 deepwater    = vec3(42, 73, 87) * vec3(1.0 / 255.0);
 	const vec3 shallowwater = vec3(0.35, 0.55, 0.50);
 	
 	// see above:
-	float wdepth = 0.02 + max(0.0, underw.a - dist);
+	float wdepth = underw.a - dist;
+	
+	// avoid reading inside terrain (note: COSTLY)
+	if (wdepth < 0.0)
+		underw = texture2D(underwatermap, texCoord);
+	
+	// nicer depth, adding a little extra
+	wdepth = 0.02 + max(0.0, wdepth);
 	
 	// above water we want the sky to appear as 100% seafloor
 	float dep = 1.0 - smoothstep(0.0, 0.04, wdepth);
@@ -170,8 +172,10 @@ void main(void)
 	color.rgb = mix(color.rgb, underw.rgb, dep);
 	
 #ifdef REFLECTIONS
-	// add reflections
-	color.rgb = mix(color.rgb, wreflection.rgb, min(1.0, fresnel + 0.5 * dist));
+	// world/terrain reflection
+	vec3 wreflection = texture2D(reflectionmap, refcoord).rgb;
+	// add reflections to final color
+	color.rgb = mix(color.rgb, wreflection, min(1.0, fresnel + 0.5 * dist));
 #endif
 	
 	// fake waves

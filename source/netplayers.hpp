@@ -19,7 +19,7 @@ namespace cppcraft
 		{
 			players.push_back(p);
 		}
-		void remove(userid_t uid);
+		bool remove(userid_t uid);
 		
 		// returns -1 if no matching uid was found
 		int indexByUID(userid_t uid) const;
