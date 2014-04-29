@@ -16,7 +16,7 @@ namespace library
 	public:
 		Integrator(double timestep);
 		
-		void start();
+		void restart();
 		void integrate();
 		
 	protected:

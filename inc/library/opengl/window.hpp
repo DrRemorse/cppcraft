@@ -1,12 +1,12 @@
 /**
- * Window manager
+ * Simple window renderer/manager
+ * 
 **/
 
-#ifndef WINDOW_HPP
-#define WINDOW_HPP
+#ifndef LIBRARY_WINDOW_HPP
+#define LIBRARY_WINDOW_HPP
 
 #include <string>
-
 struct GLFWwindow;
 
 namespace library
@@ -28,6 +28,8 @@ namespace library
 	
 	class WindowClass;
 	
+	// RenderClass: inherit from your Renderer class, so that you can pass 'this'
+	// to the startRenderingLoop function when you want to start rendering.
 	class RenderClass
 	{
 	protected:
@@ -66,7 +68,12 @@ namespace library
 		void setCurrent();
 		// starts a running rendering loop, that executes renderFunc
 		// each frame, until renderFunc returns false
-		void startRenderingLoop(RenderClass& rclass, double granularity);
+		void startRenderingLoop(RenderClass* rclass);
+		// Granularity: What we want delta-time to be measured in.
+		// 1ms granularity, meaning 1.0 dtime is 1ms, 100.0 is 100ms etc.
+		// Examples: 1/1000 = 1ms/frame, 1/60 = 16.7ms/frame (60fps) etc.
+		// And finally, 1.0 means dtime is measured in (whole) seconds
+		void startRenderingLoop(RenderClass* rclass, double granularity);
 	};
 	
 }

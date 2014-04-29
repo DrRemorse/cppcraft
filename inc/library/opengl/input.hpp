@@ -43,15 +43,28 @@ namespace library
 		void release(int);
 		
 		// public mouse functions
+		// set mouse options
+		void mouseOptions(double speed, double sensitivity);
+		// enable FPS-like mouse grabbing
+		void grabMouse(bool grab);
+		// mouse position
+		inline const vec2& getMousePos() const
+		{
+			return mousePos;
+		}
+		inline const vec2& getMouseLastPos() const
+		{
+			return lastMousePos;
+		}
 		const input_t& getMouseEx(int) const;
 		key_t getMouse(int) const;
 		void  holdMouse(int);
 		// rotation functions
-		inline const library::vec2& getRotation() const noexcept
+		inline const vec2& getRotation() const noexcept
 		{
 			return this->rotation;
 		}
-		inline void setRotation(const library::vec2& newRotation)
+		inline void setRotation(const vec2& newRotation)
 		{
 			this->rotation = newRotation;
 		}
@@ -70,13 +83,15 @@ namespace library
 		}
 		
 	private:
-		library::WindowClass* gamescr;
-		double lastmx, lastmy;
+		WindowClass* gamescr;
 		double speed;
 		double sensitivity;
+		vec2   mousePos;
+		vec2   lastMousePos;
+		bool   mousegrab;
 		
 		// pitch & yaw
-		library::vec2 rotation;
+		vec2 rotation;
 		
 		// keyboard keys
 		static const int MAX_KEYS = 512;
