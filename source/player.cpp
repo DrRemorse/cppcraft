@@ -2,11 +2,11 @@
 
 #include <library/log.hpp>
 #include <library/math/vector.hpp>
-#include <library/opengl/input.hpp>
 #include "camera.hpp"
 #include "chat.hpp"
 #include "menu.hpp"
 #include "player_actions.hpp"
+#include "player_inputs.hpp"
 #include "player_logic.hpp"
 #include "player_physics.hpp"
 #include "renderconst.hpp"

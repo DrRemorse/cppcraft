@@ -1,5 +1,5 @@
-#ifndef VAO_HPP
-#define VAO_HPP
+#ifndef LIBRARY_VAO_HPP
+#define LIBRARY_VAO_HPP
 
 /**
  * 1. Create library::VAO vao;

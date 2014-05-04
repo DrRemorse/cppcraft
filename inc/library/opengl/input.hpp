@@ -1,8 +1,9 @@
-#ifndef INPUT_HPP
-#define INPUT_HPP
+#ifndef LIBRARY_INPUT_HPP
+#define LIBRARY_INPUT_HPP
 
 #include <library/math/vector.hpp>
 #include <string>
+#include <vector>
 
 struct GLFWwindow;
 
@@ -13,13 +14,15 @@ namespace library
 	class Input
 	{
 	public:
-		typedef enum
+		static const int MAX_KEYS = 512;
+		static const int MAX_MOUSE = 6;
+		
+		enum keystate_t
 		{
 			KEY_RELEASED,
 			KEY_PRESSED,
 			KEY_LOCKED
-			
-		} keystate_t;
+		};
 		
 		typedef int key_t;
 		
@@ -33,6 +36,7 @@ namespace library
 		
 		// initialize input using the current context
 		void init(library::WindowClass& gamescr, bool keyboard, bool mouse);
+		~Input();
 		
 		// public keyboard functions
 		const input_t& getKeyEx(int) const;
@@ -47,6 +51,8 @@ namespace library
 		void mouseOptions(double speed, double sensitivity);
 		// enable FPS-like mouse grabbing
 		void grabMouse(bool grab);
+		// mouse visibility
+		void showMouse(bool show);
 		// mouse position
 		inline const vec2& getMousePos() const
 		{
@@ -71,7 +77,7 @@ namespace library
 		// returns mousewheel status _AND_ resets it internally
 		int getWheel(); // 0 = no change, down < 0, up > 0
 		
-		
+		// cheap solution for chat/textbox
 		inline const std::string& getText() const
 		{
 			return this->text;
@@ -82,7 +88,7 @@ namespace library
 			this->text.clear();
 		}
 		
-	private:
+	protected:
 		WindowClass* gamescr;
 		double speed;
 		double sensitivity;
@@ -94,23 +100,24 @@ namespace library
 		vec2 rotation;
 		
 		// keyboard keys
-		static const int MAX_KEYS = 512;
 		input_t keys[MAX_KEYS];
 		// mouse buttons
-		static const int MAX_MOUSE = 3;
 		input_t mouse[MAX_MOUSE];
 		// mousewheel
 		int wheel;
 		// typed text
 		std::string text;
 		
-		friend void keyboard(GLFWwindow* window, int key, int action, int a, int b);
-		friend void keyboardType(GLFWwindow* window, unsigned int character);
-		friend void mouseMove(GLFWwindow* window, double x, double y);
-		friend void mouseButton(GLFWwindow* window, int button, int action, int mods);
-		friend void mouseWheel(GLFWwindow* window, double x, double y);
+	private:
+		static Input* inputFromWindow(GLFWwindow*);
+		static std::vector<Input*> workingSet;
+		
+		friend void keyboard(GLFWwindow*, int key, int action, int a, int b);
+		friend void keyboardType(GLFWwindow*, unsigned int character);
+		friend void mouseMove(GLFWwindow*, double x, double y);
+		friend void mouseButton(GLFWwindow*, int button, int action, int mods);
+		friend void mouseWheel(GLFWwindow*, double x, double y);
 	};
-	extern Input input;
 }
 
 #endif

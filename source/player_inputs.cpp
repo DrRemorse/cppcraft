@@ -19,9 +19,12 @@ using namespace library;
 namespace cppcraft
 {
 	keyconf_t keyconf;
+	Input     input;
 	
 	void PlayerClass::initInputs(WindowClass& gameScreen)
 	{
+		logger << Log::INFO << "* Initializing input systems" << Log::ENDL;
+		
 		keyconf.k_forward  = config.get("k_forward",  87); // W
 		keyconf.k_backward = config.get("k_backward", 83); // S
 		keyconf.k_right    = config.get("k_right",    68); // D
@@ -44,8 +47,9 @@ namespace cppcraft
 		// initialize input systems
 		input.init(gameScreen, true, true);
 		input.setRotation(vec2(player.xrotrad, player.yrotrad));
-		input.mouseOptions(mspd, msens);
-		input.grabMouse(true);
+		input.grabMouse(true);  // enable fps-like mouse
+		input.mouseOptions(mspd, msens); // mouse speed & sensitivity
+		input.showMouse(false); // hide mouse
 	}
 	
 	void PlayerClass::handleInputs()

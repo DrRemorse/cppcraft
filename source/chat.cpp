@@ -3,6 +3,7 @@
 #include <library/bitmap/colortools.hpp>
 #include <library/opengl/oglfont.hpp>
 #include <library/opengl/input.hpp>
+#include "player_inputs.hpp"
 #include "network.hpp"
 #include "renderman.hpp"
 #include "shaderman.hpp"

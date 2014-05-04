@@ -1,6 +1,8 @@
 #ifndef PLAYER_INPUTS_HPP
 #define PLAYER_INPUTS_HPP
 
+#include <library/opengl/input.hpp>
+
 namespace cppcraft
 {
 	struct keyconf_t
@@ -23,6 +25,7 @@ namespace cppcraft
 		bool alternateMiningButton;
 	};
 	extern keyconf_t keyconf;
+	extern library::Input input;
 }
 
 #endif

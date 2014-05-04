@@ -1,6 +1,6 @@
 #include "player_actions.hpp"
 
-#include "library/opengl/input.hpp"
+#include "player_inputs.hpp"
 #include <GL/glfw3.h>
 
 using namespace library;
