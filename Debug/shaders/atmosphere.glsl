@@ -41,7 +41,7 @@ float scale(float fCos)
 void main(void)
 {
 	v3x = in_vertex.xyz - v3CameraPos;
-	v3x.y = (v3x.y * above) + 0.01 * (1.0 - above);
+	v3x.y = v3x.y * above + 0.005 * v3x.y * (1.0 - above);
 	
 	v3Direction = v3CameraPos - in_vertex.xyz;
 	

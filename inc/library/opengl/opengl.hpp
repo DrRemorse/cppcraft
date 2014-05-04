@@ -16,10 +16,7 @@ namespace library
 	class OpenGL
 	{
 	public:
-		OpenGL();
-		
-		GLint imageformat;
-		GLint storageformat;
+		OpenGL() { initialized = false; }
 		
 		bool supportsVBO;
 		bool supportsVAO;
@@ -35,6 +32,8 @@ namespace library
 		
 		static bool checkError();
 		
+	private:
+		bool initialized;
 	};
 	extern OpenGL ogl;
 }

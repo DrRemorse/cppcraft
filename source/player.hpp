@@ -48,7 +48,7 @@ namespace cppcraft
 		void handleActions(double frametime);
 		
 		// handles player rotation by following the input rotation vector
-		void handleRotation(double dtime);
+		void handleRotation();
 		// returns the player look vector
 		library::vec3 getLookVector() const;
 		// returns the cube face that would face the player

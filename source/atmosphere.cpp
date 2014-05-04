@@ -147,7 +147,7 @@ namespace cppcraft
 		
 		matview = camera.getRotationMatrix();
 		// multiply with negative-Y scaling matrix
-		matview *= mat4(1.0, -0.8, 1.0);
+		matview *= mat4(1.0, -1.0, 1.0);
 		matview.translate(0.0, -m_fInnerRadius, 0.0);
 		matview = camera.getProjection() * matview;
 		

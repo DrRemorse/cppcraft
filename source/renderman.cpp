@@ -1,8 +1,8 @@
 #include "renderman.hpp"
 
-#include "library/config.hpp"
-#include "library/log.hpp"
-#include "library/opengl/opengl.hpp"
+#include <library/config.hpp>
+#include <library/log.hpp>
+#include <library/opengl/opengl.hpp>
 
 #include "compilers.hpp"
 #include "player.hpp"
@@ -199,9 +199,10 @@ namespace cppcraft
 			// poll for events
 			glfwPollEvents();
 			
-			// handle player rotation
-			player.handleRotation(dtime);
-		}
+			// interpolate player rotation and signals camera refresh
+			player.handleRotation();
+			
+		} // rendering loop
 		
 		// close main window
 		gamescr.close();

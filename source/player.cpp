@@ -166,7 +166,7 @@ namespace cppcraft
 		paction.handle(frametime);
 	}
 	
-	void PlayerClass::handleRotation(double dtime)
+	void PlayerClass::handleRotation()
 	{
 		// measure closeness
 		float dx = fabsf(player.xrotrad - input.getRotation().x);
@@ -176,24 +176,19 @@ namespace cppcraft
 		player.changedRotation = (dx > 0.0001 || dy > 0.0001);
 		if (player.changedRotation)
 		{
-			/*// get old look vector
+			// get old look vector
 			vec3 look1 = lookVector(vec2(player.xrotrad, player.yrotrad));
 			// .. and current look vector
 			vec3 look2 = lookVector(input.getRotation());
 			
 			// interpolate
-			vec3 newLook = look1.mix(look2, 0.20 * dtime);
+			vec3 newLook = look1.mix(look2, 0.50);
 			newLook.normalize();
 			
 			// back to pitch/yaw radians
 			vec2 newRot = newLook.toPitchYaw();
 			player.xrotrad = newRot.x; // pitch
 			player.yrotrad = newRot.y; // yaw
-			*/
-			///
-			player.xrotrad = input.getRotation().x; // pitch
-			player.yrotrad = input.getRotation().y; // yaw
-			///
 			
 			camera.recalc  = true; // rebuild visibility set
 			camera.rotated = true; // resend all rotation matrices
