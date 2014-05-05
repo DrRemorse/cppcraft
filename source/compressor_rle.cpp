@@ -24,28 +24,28 @@ namespace cppcraft
 		data += sizeof(RLEHeader);
 		
 		// get entry data
-		RLEEntry* entries = (RLEEntry*) data;
+		RLEEntry* entry = (RLEEntry*) data;
 		data += rh->getEntries() * sizeof(RLEEntry);
 		
-		// get palette data
+		// first palette (block)
 		Block* palette = (Block*) data;
+		// last entry in palette entries list (used as count)
+		RLEEntry* entries = entry + rh->getEntries();
+		// entry point to sector blocks
+		Block* sblock = sb.b[0][0];
 		
+		for (; entry < entries; entry++)
+		{
+			Block& block = palette[ entry->palid ];
+			while (entry->count--)
+			{
+				*sblock = block; sblock++;
+			}
+		}
 		// set sectorblock info
 		sb.blocks = rh->getBlocks();
 		sb.lights = rh->getLights();
 		sb.hardsolid = rh->getHardsolid();
-		
-		Block* block = sb.b[0][0];
-		
-		// fill sectorblock with palette from entries
-		for (int entry = 0; entry < rh->getEntries(); entry++)
-		{
-			while(entries[entry].count--)
-			{
-				*block = palette[ entries[entry].palid ];
-				block++;
-			}
-		}
 	}
 	
 }

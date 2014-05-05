@@ -23,24 +23,24 @@ namespace cppcraft
 		unsigned short entries;  // number of palette entries
 		
 	public:
-		inline unsigned int getBlocks() const noexcept
+		inline unsigned int getBlocks() const
 		{
 			return commonData & 4095;
 		}
-		inline unsigned int getLights() const noexcept
+		inline unsigned int getLights() const
 		{
 			return (commonData >> 12) & 4095;
 		}
-		inline unsigned int getHardsolid() const noexcept
+		inline unsigned int getHardsolid() const
 		{
 			return commonData >> 24;
 		}
 		
-		inline unsigned short getPalettes() const noexcept
+		inline unsigned short getPalettes() const
 		{
 			return palettes;
 		}
-		inline unsigned short getEntries() const noexcept
+		inline unsigned short getEntries() const
 		{
 			return entries;
 		}
@@ -49,25 +49,27 @@ namespace cppcraft
 	
 	class RLECompressor
 	{
-		RLEHeader* rh;
-		
 	public:
 		void zero();
-		void compress(Sector::sectorblock_t* sb);
+		void compress(Sector::sectorblock_t& sb);
 		
 		bool hasBlocks(unsigned char* data);
 		void decompress(unsigned char* data, Sector::sectorblock_t& sb);
 		
 		// total compressed size
-		int getSize() const noexcept
+		inline int getSize() const
 		{
 			return sizeof(RLEHeader) + getDataSize();
 		}
 		// compressed data size
-		int getDataSize() const noexcept
+		inline int getDataSize() const
 		{
 			return rh->getPalettes() * sizeof(Block) + rh->getEntries() * sizeof(RLEEntry);
 		}
+		
+	private:
+		RLEHeader* rh;
+		
 	};
 	extern RLECompressor rle;
 }

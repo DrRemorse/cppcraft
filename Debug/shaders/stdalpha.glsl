@@ -43,7 +43,7 @@ void main(void)
 	
 	texCoord = vec3(in_texture.st / VERTEX_SCALE, in_texture.p);
 	
-	if (texrange == TX_CROSS && vertdist < ZFAR * 0.2)
+	if (texrange == TX_CROSS) // && vertdist < ZFAR * 0.2)
 	{
 		// fire animation
 		/*if (texCoord.z == 224.0)
