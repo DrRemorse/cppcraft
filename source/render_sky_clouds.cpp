@@ -1,8 +1,9 @@
 #include "render_sky.hpp"
 
-#include "library/opengl/opengl.hpp"
-#include "library/opengl/vao.hpp"
+#include <library/opengl/opengl.hpp>
+#include <library/opengl/vao.hpp>
 #include "camera.hpp"
+#include "gameconf.hpp"
 #include "renderconst.hpp"
 #include "sectors.hpp"
 #include "shaderman.hpp"
@@ -79,7 +80,7 @@ namespace cppcraft
 	
 	void SkyRenderer::renderClouds(float dy, Camera& camera, double frameCounter)
 	{
-		return;
+		if (gameconf.clouds == false) return;
 		// bind cloud shader
 		Shader& shd = shaderman[Shaderman::CLOUDS];
 		shd.bind();

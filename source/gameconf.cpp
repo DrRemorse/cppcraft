@@ -15,12 +15,12 @@ namespace cppcraft
 		multisampling = config.get("render.multisampling", 0);
 		anisotropy    = config.get("render.anisotropy", 1.0f);
 		
-		postprocess   = config.get("render.postprocess", true);
-		highq_blur    = config.get("render.highq_blur",  false);
-		lensflare     = config.get("render.lensflare",   true);
-		
+		clouds        = config.get("render.clouds",  false);
 		reflections   = config.get("render.reflections", true);
 		reflectTerrain= config.get("render.reflect_terrain", false);
+		
+		postprocess   = config.get("render.postprocess", true);
+		lensflare     = config.get("render.lensflare",   true);
 		
 		playerlight   = config.get("playerlight", true);
 		playerhand    = config.get("playerhand", true);
@@ -29,7 +29,6 @@ namespace cppcraft
 		sounds   = config.get("sound.sounds", true);
 		music    = config.get("sound.music", true);
 		ambience = config.get("sound.ambient", true);
-		
 		
 	}
 }

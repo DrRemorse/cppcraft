@@ -137,7 +137,7 @@ void main(void)
 	//----- REFRACTION -----
 	
 	// wave modulation
-	vec2 refcoord = texCoord + Normal.xz * (0.002 + 0.008 * dist);
+	vec2 refcoord = texCoord + vNormal.xz * (0.003 + 0.02 * dist);
 	
 	// read underwater, use as base color
 	vec4 underw = texture2D(underwatermap, refcoord);

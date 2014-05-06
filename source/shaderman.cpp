@@ -62,10 +62,6 @@ namespace cppcraft
 		{
 			text = (config.get("postprocess", true)) ? text : "";
 		}
-		else if (text == "#define HIGHQ_BLUR")
-		{
-			text = (config.get("highq_blur", true)) ? text : "";
-		}
 		else if (text == "#define NOISE_CLOUDS")
 		{
 			text = (config.get("hq_clouds", false)) ? text : "";

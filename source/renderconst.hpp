@@ -25,7 +25,7 @@ namespace cppcraft
 			MAX_UNIQUE_SHADERS
 		};
 		
-		static const short VERTEX_SCALE = 32; // valid: 16, 32, 64  (128 makes the world too tall)
+		static const short VERTEX_SCALE = 32; // valid: 16, 32, 64
 		static const short VERTEX_SHL   = 5;
 		
 		static const short WATER_LEVEL  = 64;

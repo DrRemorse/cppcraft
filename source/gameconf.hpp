@@ -16,16 +16,14 @@ namespace cppcraft
 		int multisampling;
 		float anisotropy;
 		
-		bool postprocess;
-		bool highq_blur;
-		bool lensflare;
+		bool clouds;
 		bool reflections;
 		bool reflectTerrain;
+		bool postprocess;
+		bool lensflare;
 		
 		bool playerlight;
-		bool fog;
 		bool playerhand;
-		
 		
 	};
 	extern GameConfig gameconf;

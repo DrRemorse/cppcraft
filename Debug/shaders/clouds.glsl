@@ -41,7 +41,7 @@ void main()
 	position = matrot * lpos;
 	
 	v_ldir = mat3(matview) * lightVector;
-	v_eye = normalize(-position.xyz);
+	v_eye = -position.xyz;
 	
 	#ifdef NOISE_CLOUDS
 		// size minification
@@ -84,6 +84,8 @@ void main(void)
 {
 	const float maxdist  = ZFAR * 1.6;
 	if (vertdist >= maxdist) discard;
+	
+	vec3 vEye = normalize(v_eye);
 	
 #ifdef NOISE_CLOUDS
 	#define p texCoord.st
@@ -143,7 +145,7 @@ void main(void)
 	color.b += (1.0 - color.b) * 0.15;
 	
 	// darken parts dense to player
-	float away = -dot( reflect(v_eye, normal), v_ldir );
+	float away = -dot( reflect(vEye, normal), v_ldir );
 	color.rgb += min(0.0, away * 0.25);
 	
 #endif
@@ -157,11 +159,9 @@ void main(void)
 	color *= vec4(vec3(daylight * daylight), daylight);
 	
 	// sun -> clouds
-	//vec3 sunBaseColor = color.rgb * vec3(1.0, 0.9, 0.8);
-	//float sunAmount = max( -dot( v_eye, v_ldir ), 0.0 ) * 1.3;
-	
-	// sun -> clouds
-	//color.rgb = mix(color.rgb, sunBaseColor, pow(sunAmount, 4.0) * 0.3);
+	vec3 sunBaseColor = color.rgb * vec3(1.0, 0.9, 0.8);
+	float sunAmount = max( -dot( vEye, v_ldir ), 0.0 ) * 1.3;
+	color.rgb = mix(color.rgb, sunBaseColor, pow(sunAmount, 4.0) * 0.3);
 	
 	#ifdef POSTPROCESS
 		gl_FragData[0] = color;
