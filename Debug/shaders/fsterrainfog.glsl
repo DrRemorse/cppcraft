@@ -37,15 +37,12 @@ void main()
 	float notSky = step(depth, 0.998);
 	
 	const vec3 fogBaseColor = vec3(0.9);
-	const vec3 sunBaseColor = vec3(1.0, 1.0, 0.7);
+	const vec3 sunBaseColor = vec3(1.0, 0.8, 0.5);
 	
-	float sunAmount = max(0.0, sunrad) * notSky;
+	float sunAmount = max(0.0, sunrad) * notSky * sundot * 0.9;
 	float fogAmount = smoothstep(0.5, 1.0, depth);
 	color.rgb = mix(color.rgb, fogBaseColor, fogAmount * fogAmount);
-	color.rgb = mix(color.rgb, sunBaseColor, sunAmount * fogAmount);
-	
-	// sun testing
-	//color.rgb = vec3(sunAmount);
+	color.rgb = mix(color.rgb, sunBaseColor, sunAmount * depth);
 	
 	// mix in fog
 	vec3 skyColor = texture2D(skytexture, texCoord).rgb;

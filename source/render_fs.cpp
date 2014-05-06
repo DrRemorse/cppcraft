@@ -68,6 +68,9 @@ namespace cppcraft
 		
 		// dot for how much we are looking at sun
 		float sundot = thesun.getRealtimeAngle().dot(player.getLookVector());
+		// also pointless at low daylight
+		sundot *= thesun.getRealtimeDaylight();
+		if (sundot < 0.0) sundot = 0.0;
 		shd.sendFloat("sundot", sundot);
 		
 		vec2 sunpos = getSunVector(thesun.getSunMatrix());
