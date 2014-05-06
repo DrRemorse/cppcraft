@@ -14,8 +14,9 @@ using namespace library;
 namespace cppcraft
 {
 	Chatbox chatbox;
-	static const float CHAT_FADEOUT = 512.0;
-	static const float CHAT_FADETIME = 256.0;
+	static const float CHAT_FADEOUT  = 800.0;
+	static const float CHAT_FADETIME = 100.0;
+	static const int   CHAT_MAXLINES = 7;
 	
 	time_t currentTime()
 	{
@@ -42,7 +43,7 @@ namespace cppcraft
 	
 	void Chatbox::init(float width, float height)
 	{
-		fadeout = CHAT_FADEOUT;
+		fadeout   = CHAT_FADEOUT;
 		unsigned int col      = BGRA8(0, 0, 0, 144);
 		unsigned int col_high = BGRA8(0, 0, 0, 192);
 		
@@ -69,14 +70,33 @@ namespace cppcraft
 		
 		delete boxv;
 	}
+	void Chatbox::openChat(bool open)
+	{
+		chatOpen = open;
+		if (open)
+		{
+			// reset fading value
+			fadeout = CHAT_FADEOUT;
+		}
+	}
+	float Chatbox::getAlpha() const
+	{
+		if (fadeout < CHAT_FADETIME)
+			return fadeout / CHAT_FADETIME;
+		return 1.0;
+	}
+	
 	
 	void Chatbox::add(const std::string& src, const std::string& text, chattype_t type)
 	{
 		mtx.lock();
 		lines.emplace_back(src, text, type);
-		if (lines.size() > 7)
+		if (lines.size() > CHAT_MAXLINES)
 		{
+			// remove first index
 			remove(0);
+			// reset fadeout process
+			fadeout = CHAT_FADEOUT;
 		}
 		mtx.unlock();
 	}
@@ -86,77 +106,88 @@ namespace cppcraft
 		lines.erase(i, i+1);
 	}
 	
-	void Chatbox::renderSourcedMessage(SimpleFont& font, const vec3& spos, const vec2& scale, const std::string& time, const std::string& source, const std::string& text, float alpha)
+	void Chatbox::renderSourcedMessage(SimpleFont& font, const vec3& spos, const vec2& scale, const std::string& time, const std::string& source, const std::string& text)
 	{
 		vec3 pos(spos);
 		
 		// print time
-		font.setColor(vec4(0.5, alpha));
+		font.setColor(vec4(0.5, getAlpha()));
 		font.print(pos, scale, time + " <", false);
 		
 		// print source
 		pos.x += scale.x * (time.size() + 2);
-		font.setColor(vec4(1.0, alpha));
+		font.setColor(vec4(1.0, getAlpha()));
 		font.print(pos, scale, source, false);
 		
 		// finish grayed out text
 		pos.x += scale.x * source.size();
-		font.setColor(vec4(0.5, alpha));
+		font.setColor(vec4(0.5, getAlpha()));
 		font.print(pos, scale, "> ", false);
 		
 		// print message
 		pos.x += scale.x * 2;
-		font.setColor(vec4(1.0, alpha));
+		font.setColor(vec4(1.0, getAlpha()));
 		font.print(pos, scale, text, false);
 	}
-	void Chatbox::renderInfoMessage(SimpleFont& font, const vec3& spos, const vec2& scale, const std::string& time, const std::string& from, const std::string& text, float alpha)
+	void Chatbox::renderInfoMessage(SimpleFont& font, const vec3& spos, const vec2& scale, const std::string& time, const std::string& from, const std::string& text)
 	{
 		vec3 pos(spos);
 		
 		// print time
-		font.setColor(vec4(0.5, alpha));
+		font.setColor(vec4(0.5, getAlpha()));
 		font.print(pos, scale, time + " ", false);
 		
 		// print from
 		pos.x += scale.x * (time.size() + 1);
-		font.setColor(vec4(0.0, 0.0, 1.0, alpha));
+		font.setColor(vec4(0.0, 0.0, 1.0, getAlpha()));
 		font.print(pos, scale, from, false);
 		
 		// print message
 		pos.x += scale.x * from.size();
-		font.setColor(vec4(1.0, alpha));
+		font.setColor(vec4(1.0, getAlpha()));
 		font.print(pos, scale, " " + text, false);
 	}
-	void Chatbox::renderMessage(SimpleFont& font, const vec3& spos, const vec2& scale, const std::string& time, const std::string& text, float alpha)
+	void Chatbox::renderMessage(SimpleFont& font, const vec3& spos, const vec2& scale, const std::string& time, const std::string& text)
 	{
 		// print time
-		font.setColor(vec4(0.7, alpha));
+		font.setColor(vec4(0.7, getAlpha()));
 		font.print(spos, scale, time + " ", false);
 		
 		// print message
 		vec3 pos(spos);
 		
 		pos.x += scale.x * (time.size() + 1);
-		font.setColor(vec4(1.0, alpha));
+		font.setColor(vec4(1.0, getAlpha()));
 		font.print(pos, scale, text, false);
 	}
+	void Chatbox::bindFont(SimpleFont& font, const mat4& ortho)
+	{
+		// render chatbox font/text
+		font.bind(0);
+		font.sendMatrix(ortho);
+		font.setBackColor(0.0);
+		font.setColor(vec4(1.0, getAlpha()));
+	}
 	
+	// chatbox main rendering function
 	void Chatbox::render(SimpleFont& font, const mat4& ortho, const vec2& textScale, Renderer& renderer)
 	{
+		float alpha = getAlpha();
+		// a hidden box is hidden   -- albert einstein
+		if (alpha <= 0.0) return;
+		
 		float SH = 1.0 / renderer.getScreen().SA;
 		vec3 cbPos(0.025, SH * 0.85, 0.0);
 		
 		mtx.lock();
 		
-		// fade out text and remove after time has passed
-		if (this->lines.size())
+		// fade out text over time
+		if (this->chatOpen == false)
 		{
 			this->fadeout -= renderer.dtime;
+			// prevent negative
 			if (this->fadeout < 0)
-			{
-				this->fadeout = CHAT_FADEOUT;
-				remove(0);
-			}
+				this->fadeout = 0;
 		}
 		// clone lines before leaving lock
 		std::vector<ChatLine> copy = this->lines;
@@ -177,6 +208,8 @@ namespace cppcraft
 		// chatbox background
 		Shader& shd = shaderman[Shaderman::GUI_COLOR];
 		shd.bind();
+		shd.sendVec4("multcolor", vec4(1.0, alpha));
+		
 		mat4 matbox = ortho;
 		matbox.translate_xy(cbPos.x, cbPos.y - (bgsize-1) * textScale.y);
 		matbox.scale(longest * textScale.x, bgsize * textScale.y, 1.0);
@@ -190,7 +223,7 @@ namespace cppcraft
 			std::string ctext = input.getText() + ((((int) renderer.frametick / 50) % 2 == 0) ? "_" : " ");
 			std::string now = timeString(currentTime());
 			
-			size_t msglen = now.size() + 2 + network.getNickname().size() + 2 + ctext.size() + 1;
+			size_t msglen = now.size() + 2 + network.getNickname().size() + 2 + ctext.size();
 			
 			matbox = ortho;
 			matbox.translate_xy(cbPos.x, cbPos.y + textScale.y + 0.005);
@@ -200,23 +233,18 @@ namespace cppcraft
 			cbvao.render(GL_QUADS);
 			
 			// render text
-			font.bind(0);
-			font.setBackColor(0.0);
+			bindFont(font, ortho);
 			
 			// print actual text typed into chatbox
 			vec3 textPos(cbPos);
 			textPos.y += textScale.y + 0.005;
-			renderSourcedMessage(font, textPos, textScale, now, network.getNickname(), ctext, 1.0);
+			renderSourcedMessage(font, textPos, textScale, now, network.getNickname(), ctext);
+		}
+		else
+		{
+			bindFont(font, ortho);
 		}
 		
-		if (copy.size() == 0) return;
-		
-		// render chatbox text
-		font.bind(0);
-		font.setBackColor(0.0);
-		font.setColor(vec4(1.0, 1.0));
-		
-		float alpha = 1.0;
 		for (size_t i = 0; i < copy.size(); i++)
 		{
 			vec3 textPos(cbPos);
@@ -224,22 +252,16 @@ namespace cppcraft
 			
 			ChatLine& cl = copy[copy.size()-1 - i];
 			
-			if (i == copy.size()-1)
-			{
-				if (fadeout < CHAT_FADETIME)
-					alpha = fadeout / CHAT_FADETIME;
-			}
-			
 			switch (cl.type)
 			{
 			case Chatbox::L_SERVER:
-				renderInfoMessage(font, textPos, textScale, timeString(cl.time), cl.source, cl.text, alpha);
+				renderInfoMessage(font, textPos, textScale, timeString(cl.time), cl.source, cl.text);
 				break;
 			case Chatbox::L_INFO:
-				renderInfoMessage(font, textPos, textScale, timeString(cl.time), cl.source, cl.text, alpha);
+				renderInfoMessage(font, textPos, textScale, timeString(cl.time), cl.source, cl.text);
 				break;
 			case Chatbox::L_CHAT:
-				renderInfoMessage(font, textPos, textScale, timeString(cl.time), cl.source, cl.text, alpha);
+				renderInfoMessage(font, textPos, textScale, timeString(cl.time), cl.source, cl.text);
 				break;
 			}
 		}

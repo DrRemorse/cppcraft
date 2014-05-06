@@ -83,8 +83,6 @@ namespace cppcraft
 		glEnable(GL_BLEND);
 		
 		vec2 textScale(0.01 * 0.6, 0.01);
-		font.bind(0);
-		font.sendMatrix(ortho);
 		
 		chatbox.render(font, ortho, textScale, renderer);
 		

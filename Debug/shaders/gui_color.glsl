@@ -17,11 +17,12 @@ void main()
 }
 #endif
 #ifdef FRAGMENT_PROGRAM
+uniform vec4 multcolor;
 
 in vec4 color;
 
 void main(void)
 {
-	gl_FragData[0] = color;
+	gl_FragData[0] = color * multcolor;
 }
 #endif

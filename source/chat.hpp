@@ -52,14 +52,14 @@ namespace cppcraft
 		void render(library::SimpleFont& font, const library::mat4& ortho, const library::vec2& textScale, Renderer& renderer);
 		void add(const std::string& source, const std::string& text, chattype_t type);
 		
-		inline void openChat(bool open)
-		{
-			chatOpen = open;
-		}
+		void openChat(bool open);
 		inline bool isOpen() const { return chatOpen; }
 		
+		// chat fade/alpha value
+		float getAlpha() const;
+		
 	private:
-		float fadeout;
+		float  fadeout;
 		library::VAO cbvao;
 		
 		std::vector<ChatLine> lines;
@@ -68,6 +68,8 @@ namespace cppcraft
 		
 		void remove(int index);
 		
+		void bindFont(library::SimpleFont& font, const library::mat4& ortho);
+		
 		void renderSourcedMessage
 		(
 			library::SimpleFont& font, 
@@ -75,8 +77,7 @@ namespace cppcraft
 			const library::vec2& scale, 
 			const std::string& time, 
 			const std::string& source, 
-			const std::string& text,
-			float alpha
+			const std::string& text
 		);
 		void renderInfoMessage
 		(
@@ -85,8 +86,7 @@ namespace cppcraft
 			const library::vec2& scale, 
 			const std::string& time, 
 			const std::string& from, 
-			const std::string& text,
-			float alpha
+			const std::string& text
 		);
 		void renderMessage
 		(
@@ -94,8 +94,7 @@ namespace cppcraft
 			const library::vec3& spos, 
 			const library::vec2& scale, 
 			const std::string& time, 
-			const std::string& text,
-			float alpha
+			const std::string& text
 		);
 	};
 	extern Chatbox chatbox;

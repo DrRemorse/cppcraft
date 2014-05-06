@@ -124,20 +124,21 @@ namespace cppcraft
 				menu.quickbarX = (i - 1) % inventory.getWidth();
 			}
 			
-			if (input.getKey(GLFW_KEY_ESCAPE) == Input::KEY_PRESSED)
-			{
-				input.hold(GLFW_KEY_ESCAPE);
-				
-				if (chatbox.isOpen())
-				{
-					chatbox.openChat(false);
-				}
-				else
-				{
-					mtx.terminate = true;
-				}
-			}
 		} // busyControls
+		
+		if (input.getKey(GLFW_KEY_ESCAPE) == Input::KEY_PRESSED)
+		{
+			input.hold(GLFW_KEY_ESCAPE);
+			
+			if (chatbox.isOpen())
+			{
+				chatbox.openChat(false);
+			}
+			else
+			{
+				mtx.terminate = true;
+			}
+		}
 		
 		if (input.getKey(GLFW_KEY_ENTER) == Input::KEY_PRESSED)
 		{
