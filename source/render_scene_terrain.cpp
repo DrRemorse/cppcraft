@@ -520,7 +520,6 @@ namespace cppcraft
 			// bind world-reflection
 			textureman.bind(1, Textureman::T_REFLECTION);
 		}
-		textureman.bind(2, Textureman::T_MAGMA);
 		
 		if (plogic.FullySubmerged)
 		{
@@ -552,6 +551,8 @@ namespace cppcraft
 				switch (i)
 				{
 					case RenderConst::TX_WATER:
+						
+						textureman.bind(2, Textureman::T_WATER_DUDV);
 						// water shader-set
 						handleSceneUniforms(renderer.frametick, 
 											shaderman[Shaderman::BLOCKS_WATER],
@@ -562,7 +563,10 @@ namespace cppcraft
 						if (camera.ref)
 							shaderman[Shaderman::BLOCKS_WATER].sendVec3("worldOffset", camera.getWorldOffset());
 						break;
+						
 					case RenderConst::TX_LAVA:
+						
+						textureman.bind(2, Textureman::T_MAGMA);
 						// lava shader-set
 						handleSceneUniforms(renderer.frametick, 
 											shaderman[Shaderman::BLOCKS_LAVA],

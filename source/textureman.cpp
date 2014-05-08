@@ -167,6 +167,13 @@ namespace cppcraft
 		}
 		else throw std::string("Missing source file: Selection texture");
 		
+		// water du/dv texture
+		if (bmp.load(config.get("textures.waterdudv", "bitmap/default/waterdudv.png"), Bitmap::PNG))
+		{
+			textures[T_WATER_DUDV] = Texture(GL_TEXTURE_2D);
+			textures[T_WATER_DUDV].create(bmp, true, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+		}
+		
 		/// Sky renderer ///
 		
 		// sun texture

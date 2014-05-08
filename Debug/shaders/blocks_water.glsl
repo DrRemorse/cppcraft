@@ -57,8 +57,8 @@ void main(void)
 	// output to fragment shader
 	float timer = frameCounter / 35.0;
 	
-	waves.xy  = w_vertex.xz * vec2(0.10, 0.02) + timer * vec2(0.2, 0.0);
-	waves.zw  = w_vertex.xz * vec2(0.25, 0.05) + timer * vec2(0.2, 0.0);
+	waves.xy = w_vertex.xz * vec2(0.10, 0.02) + timer * vec2(0.2, 0.0);
+	waves.zw = w_vertex.xz * vec2(0.25, 0.05) + timer * vec2(0.2, 0.0);
 	
 	waterColor  = in_biome;
 	lightdata   = in_color;
@@ -71,6 +71,7 @@ void main(void)
 #extension GL_EXT_gpu_shader4 : enable
 uniform sampler2D underwatermap;
 uniform sampler2D reflectionmap;
+uniform sampler2D dudvmap;
 
 uniform mat4 matview;
 uniform vec3 screendata;
@@ -105,12 +106,31 @@ void main(void)
 	srdnoise(waves.xy, 0.0, grad);
 	srdnoise(waves.zw, 0.0, grad2);
 	
-	// average the gradients
-	grad += grad2; grad *= 0.3;
-	
 	vec3 tx = vec3(0.0, grad.x, 2.0);
-	vec3 ty = vec3(2.0, 0.0, grad.y);
-	vec3 Normal = normalize(cross(tx, ty));
+	vec3 tz = vec3(2.0, 0.0, grad.y);
+	vec3 n1 = cross(tx, tz);
+	
+	tx = vec3(0.0, grad2.x, 2.0);
+	tz = vec3(2.0, 0.0, grad2.y);
+	vec3 n2 = cross(tx, tz);
+	
+	// average the gradients
+	vec3 Normal = normalize(n1 + n2);
+	
+	/*
+	const vec3 norm  = vec3(0, 1, 0);
+	const vec3 tang = vec3(1, 0, 0);
+	vec3 binorm = cross(tang, norm);
+	
+	mat3 tbn = mat3(tang.x, binorm.x, norm.x,
+					tang.y, binorm.y, norm.y,
+					tang.z, binorm.z, norm.z);
+	
+	vec3 n1 = texture2D(dudvmap, waves.yx).rgb * 2.0 - vec3(1.0);
+	vec3 n2 = texture2D(dudvmap, waves.wz).rgb * 2.0 - vec3(1.0);
+	vec3 Normal = n1 + n2;
+	Normal = normalize(Normal) * tbn;
+	*/
 	
 	//gl_FragColor = vec4(Normal, vertdist / ZFAR);
 	//return;
@@ -177,7 +197,7 @@ void main(void)
 	//- lighting -//
 	#include "lightw.glsl"
 	
-	// sun / specular
+	//- sun/specular -//
 	const vec3  SUNCOLOR = vec3(1.0, 0.62, 0.23);
 	
 	float shine = max(0.0, dot(vHalf, viewNormal) );

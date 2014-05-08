@@ -138,6 +138,7 @@ namespace cppcraft
 		shaders[BLOCKS_WATER].bind();
 		shaders[BLOCKS_WATER].sendInteger("underwatermap", 0);
 		shaders[BLOCKS_WATER].sendInteger("reflectionmap", 1);
+		shaders[BLOCKS_WATER].sendInteger("dudvmap", 2);
 		
 		// extra textures for lava
 		shaders[BLOCKS_LAVA].bind();

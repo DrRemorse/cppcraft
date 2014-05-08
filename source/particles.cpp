@@ -1,9 +1,9 @@
 #include "particles.hpp"
 
-#include "library/log.hpp"
-#include "library/bitmap/colortools.hpp"
-#include "library/math/toolbox.hpp"
-#include "library/opengl/opengl.hpp"
+#include <library/log.hpp>
+#include <library/bitmap/colortools.hpp>
+#include <library/math/toolbox.hpp>
+#include <library/opengl/opengl.hpp>
 #include "biome.hpp"
 #include "flatlands.hpp"
 #include "player.hpp"
@@ -126,12 +126,12 @@ namespace cppcraft
 					break;
 					
 				case PARTICLE_LAVA:
-					pv->u = 7;
+					pv->u = 8;
 					// lava drops (almost invisible)
 					pv->c = BGRA8(255, 200, 127, 96);
 					break;
 				case PARTICLE_WATER:
-					pv->u = 7;
+					pv->u = 8;
 					// water drops (almost invisible)
 					pv->c = BGRA8(127, 255, 255, 96);
 					break;

@@ -45,7 +45,9 @@ namespace cppcraft
 			T_SUN,
 			T_MOON,
 			T_STARS,
+			
 			T_MAGMA,
+			T_WATER_DUDV,
 			
 			T_NOISE,
 			T_LENSDIRT,
