@@ -62,6 +62,7 @@ namespace cppcraft
 	
 	void FlatlandsContainer::initTextures()
 	{
+		/*
 		const int xz = Sectors.getXZ() * Sector::BLOCKS_XZ;
 		const int VOL = xz * xz * FlatlandSector::FLATCOLORS;
 		
@@ -70,7 +71,6 @@ namespace cppcraft
 		memset(biomeArray, 255, VOL * sizeof(int));
 		
 		// create biome 3d texture
-		#define GL_TEXTURE_3D 0x806F
 		biomeTexture = Texture(GL_TEXTURE_3D);
 		biomeTexture.create3d(0, xz, xz, FlatlandSector::FLATCOLORS);
 		
@@ -79,6 +79,7 @@ namespace cppcraft
 			logger << Log::ERR << "FlatlandsContainer::initTextures(): OpenGL error. Line: " << __LINE__ << Log::ENDL;
 			throw std::string("FlatlandsContainer::initTextures(): OpenGL state error");
 		}
+		*/
 	}
 	
 	// build 3d texture containing all colors

@@ -104,7 +104,7 @@ namespace cppcraft
 	
 	inline int fgetSkylevel(Sector& s, int x, int z)
 	{
-		//return Flatlands::Flatsector::skylevel
+		//     Flatlands::Flatsector::skylevel
 		return flatlands(s.x, s.z)(x, z).skyLevel;
 	}
 	
@@ -120,14 +120,11 @@ namespace cppcraft
 		unsigned char* p = (unsigned char*)&a;
 		unsigned char* q = (unsigned char*)&b;
 		
-		Bitmap::rgba8_t ret;
-		unsigned char* retp = (unsigned char*)&ret;
-		
-		for (unsigned int i = 0; i < sizeof(ret); i++)
+		for (unsigned int i = 0; i < sizeof(a); i++)
 		{
-			retp[i] = (int)(p[i] * (1.0 - mixlevel) + q[i] * mixlevel);
+			p[i] = (int)(p[i] * (1.0 - mixlevel) + q[i] * mixlevel);
 		}	
-		return ret;
+		return a;
 	}
 	
 	Bitmap::rgba8_t lowColor(Bitmap::rgba8_t c)
@@ -136,10 +133,8 @@ namespace cppcraft
 		p[0] /= HEIGHTMAP_FACTOR;
 		p[1] /= HEIGHTMAP_FACTOR;
 		p[2] /= HEIGHTMAP_FACTOR;
-		
-		return p[0] + (p[1] << 8) + (p[2] << 16) + (p[3] << 24);
+		return c;
 	}
-	
 	Bitmap::rgba8_t highColor(Bitmap::rgba8_t c)
 	{
 		unsigned char* p = (unsigned char*)&c;
@@ -147,21 +142,33 @@ namespace cppcraft
 		p[0] = (p[0] * HEIGHTMAP_FACTOR > 255) ? 255 : p[0] * HEIGHTMAP_FACTOR;
 		p[1] = (p[1] * HEIGHTMAP_FACTOR > 255) ? 255 : p[1] * HEIGHTMAP_FACTOR;
 		p[2] = (p[2] * HEIGHTMAP_FACTOR > 255) ? 255 : p[2] * HEIGHTMAP_FACTOR;
-		
-		return p[0] + (p[1] << 8) + (p[2] << 16) + (p[3] << 24);
+		return c;
+	}
+	
+	int getDepth(Sector& s, int x, int y, int z)
+	{
+		int depth = 0;
+		while (true)
+		{
+			const Block& b = Spiders::getBlock(s, x, --y, z);
+			
+			if (b.getID() != _WATER) return depth;
+			depth++;
+		}
+		return depth;
 	}
 	
 	Bitmap::rgba8_t getBlockColor(Sector& s, int x, int y, int z)
 	{
 		if (y == 0) return RGBA8(48, 48, 48, 255);
 		
-		Block b = Spiders::getBlock(s, x, y, z);
+		const Block& b = Spiders::getBlock(s, x, y, z);
 		Bitmap::rgba8_t c;
 		
 		if (isStone(b.getID()))
 		{
 			//c = fgetColor(s, x, z, Biomes::CL_STONE);
-			c = RGBA8(64, 64, 64, 255);
+			c = RGBA8(70, 62, 62, 255);
 		}
 		else if (b.getID() == _SNOWGRASS || b.getID() == _SNOWGRASS_S || b.getID() == _LOWSNOW)
 		{
@@ -169,7 +176,7 @@ namespace cppcraft
 		}
 		else if (b.getID() == _GRAVEL1)
 		{
-			c = RGBA8(148, 100, 64, 255); // brown-grey
+			c = RGBA8(86, 69, 48, 255); // brown-grey
 		}
 		else if (b.getID() == _GRAVEL2)
 		{
@@ -177,7 +184,7 @@ namespace cppcraft
 		}
 		else if (b.getID() == _CLAY)
 		{
-			c = RGBA8(55, 55, 140, 255); // grey-blue
+			c = RGBA8(48, 67, 86, 255); // grey-blue
 		}
 		else if (b.getID() == _CLAYRED)
 		{
@@ -190,22 +197,22 @@ namespace cppcraft
 			else
 			{
 				c = fgetColor(s, x, z, Biomes::CL_GRASS);
-				c = mixColor(c, RGBA8(80, 200, 0, 255), 0.25);
+				c = mixColor(c, RGBA8(70, 180, 0, 255), 0.25);
 			}
 		}
 		else if (isCross(b.getID()))
 		{
 			c = fgetColor(s, x, z, Biomes::CL_GRASS);
-			c = mixColor(c, RGBA8(80, 200, 0, 255), 0.25);
+			c = mixColor(c, RGBA8(70, 180, 0, 255), 0.25);
 		}
-		else if (b.getID() == _LEAF_NEEDLE)
+		/*else if (b.getID() == _LEAF_NEEDLE)
 		{
-			c = RGBA8(20, 80, 20, 255);
-		}
+			c = RGBA8(20, 80, 20, 255); // needle trees
+		}*/
 		else if (isLeaf(b.getID()))
 		{
 			c = fgetColor(s, x, z, Biomes::CL_TREES);
-			c = mixColor(c, RGBA8(80, 200, 0, 255), 0.25);
+			c = mixColor(c, RGBA8(70, 180, 0, 255), 0.25);
 		}
 		else if (isSand(b.getID()))
 		{
@@ -230,7 +237,8 @@ namespace cppcraft
 		}
 		else if (b.getID() == _WATER)
 		{
-			c = RGBA8(42, 106, 177, 255); // deep ocean
+			int depth = getDepth(s, x, y, z); // deep ocean
+			return RGBA8(62-(int)(depth*0.8), (int)(120-depth*1.9), 128-depth, 255);
 		}
 		else if (b.getID() == _AIR)
 		{
@@ -238,7 +246,7 @@ namespace cppcraft
 		}
 		else
 		{
-			c = RGBA8(255, 0, 255, 255); // magenta (error color)
+			c = RGBA8(255, 0, 255, 255); // magenta (unknown id)
 		}
 		
 		// basic height coloring
@@ -247,12 +255,12 @@ namespace cppcraft
 		if (y < HEIGHT_BIAS)
 		{
 			// downwards
-			c = mixColor(c, lowColor(c), 0.0075 * (HEIGHT_BIAS - y));
+			c = mixColor(c, lowColor(c), 0.005 * (HEIGHT_BIAS - y));
 		}
 		else
 		{
 			// upwards
-			c = mixColor(c, highColor(c), 0.0075 * (y - HEIGHT_BIAS));
+			c = mixColor(c, highColor(c), 0.005 * (y - HEIGHT_BIAS));
 		}
 		
 		return c;
