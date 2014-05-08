@@ -21,9 +21,10 @@ namespace cppcraft
 		static const int MAX_SECTOR_REACH  = 6;
 		static const int LIGHT_CULL_SECTOR = 4;
 		
-		static const float DARKNESS; // = 256 * 0.90;
-		static const float SHADOWS;  // = 256 * 0.68;
-		static const float CORNERS;  // = 256 * 0.50;
+		static const float DARKNESS;
+		static const float SHADOWS;
+		static const float AMB_OCC;
+		static const float CORNERS;
 		
 		int ray_length;     // ray length = 48
 		int ray_count;      // ray count  = 2

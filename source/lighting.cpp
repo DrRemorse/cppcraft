@@ -1,8 +1,8 @@
 #include "lighting.hpp"
 
-#include "library/log.hpp"
-#include "library/config.hpp"
-#include "library/math/toolbox.hpp"
+#include <library/log.hpp>
+#include <library/config.hpp>
+#include <library/math/toolbox.hpp>
 #include "blocks.hpp"
 #include "flatlands.hpp"
 #include "lighttable.hpp"
@@ -22,7 +22,8 @@ namespace cppcraft
 	const float LightingClass::DARKNESS = 255;
 	static const float DARK_SHADOWS     = 255 * 0.78;
 	const float LightingClass::SHADOWS  = 255 * 0.68;
-	const float LightingClass::CORNERS  = 255 * 0.48;
+	const float LightingClass::AMB_OCC  = 255 * 0.48;
+	const float LightingClass::CORNERS  = 255 * 0.55;
 	
 	static const float RAY_CRASH_CONSTANT = 64.0f;
 	static const float LIGHT_FULL_DAMAGE  = 24.0f;

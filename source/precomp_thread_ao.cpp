@@ -457,10 +457,10 @@ namespace cppcraft
 			logger << Log::WARN << "Many corner shadow points: " << ao.count << Log::ENDL;
 		}
 		
-		static const int CRASH_CORNER = 255 - (Lighting.CORNERS + 8);
-		static const int CRASH_WALL   = 255 - Lighting.CORNERS;
-		static const int CRASH_PILLAR = 255 - Lighting.CORNERS;
-		static const int OUTER_CORNER = 255 - Lighting.CORNERS;
+		static const unsigned char CRASH_WALL   = 255 - Lighting.AMB_OCC;
+		static const unsigned char CRASH_PILLAR = 255 - Lighting.AMB_OCC;
+		static const unsigned char OUTER_CORNER = 255 - Lighting.AMB_OCC;
+		static const unsigned char CRASH_CORNER = 255 - Lighting.CORNERS;
 		
 		bool weSetSomething = false;
 		
