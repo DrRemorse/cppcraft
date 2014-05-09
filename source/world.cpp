@@ -1,6 +1,6 @@
 #include "world.hpp"
 
-#include "library/config.hpp"
+#include <library/config.hpp>
 #include "sectors.hpp"
 #include "flatlands.hpp"
 #include "player.hpp"
@@ -13,7 +13,7 @@ namespace cppcraft
 	// one and only instance of WorldClass
 	World world;
 	
-	void World::init(std::string& worldFolder)
+	void World::init(const std::string& worldFolder)
 	{
 		/// initialize sectors, blocks & flatlands ///
 		// default world folder
@@ -27,26 +27,29 @@ namespace cppcraft
 		/// load world position from folder ///
 		
 		// initialize world coordinates centering player in the world
-		worldCoords.worldX = WORLD_STARTING_X - sectors_xz / 2; //+ 84; //
-		worldCoords.worldY = 0;
-		worldCoords.worldZ = WORLD_STARTING_Z - sectors_xz / 2; //- 104; //
+		worldCoords.x = WORLD_STARTING_X - sectors_xz / 2; //+ 84; //
+		worldCoords.y = 0;
+		worldCoords.z = WORLD_STARTING_Z - sectors_xz / 2; //- 104; //
 		// finally, world folder, where world-data is located
 		if (worldFolder.size() == 0)
 		{
 			std::string folder = config.get("world", "");
+			
 			if (folder.size() == 0)
-			{
 				this->folder = DEFAULT_WORLD_FOLDER;
-			}
 			else
-			{
 				this->folder = folder;
-			}
 		}
 		else
 		{
 			this->folder = worldFolder;
 		}
+		
+		// initialize internal coordinates
+		world.internal.x = 0;
+		world.internal.y = 0;
+		world.internal.z = 0;
+		
 	}
 	
 	void World::load()
@@ -69,4 +72,11 @@ namespace cppcraft
 		ff.write( (char*) &player, sizeof(player) );
 	}
 	
+	void World::increaseDelta(int dx, int dz)
+	{
+		internal.x += dx;
+		while (internal.x < 0) internal.x += Sectors.getXZ();
+		internal.z += dz;
+		while (internal.z < 0) internal.z += Sectors.getXZ();
+	}
 }

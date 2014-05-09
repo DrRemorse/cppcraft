@@ -376,6 +376,7 @@
     <File Name="makefile"/>
     <File Name="Debug/config.ini"/>
     <File Name="res/cppcraft.rc"/>
+    <File Name="Debug/cppcraft.log"/>
   </VirtualDirectory>
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>

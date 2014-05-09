@@ -11,12 +11,6 @@ namespace cppcraft
 {
 	FlatlandsContainer flatlands;
 	
-	// returns a const flatland_t struct
-	FlatlandSector::flatland_t& FlatlandSector::operator() (int x, int z)
-	{
-		return this->fdata[x][z];
-	}
-	
 	FlatlandSector::flatland_t& FlatlandsContainer::getData(int x, int z)
 	{
 		// find flatland sector
@@ -30,6 +24,12 @@ namespace cppcraft
 		int bz = z & (Sector::BLOCKS_XZ-1);
 		// return data structure
 		return this[0](fx, fz)(bx, bz);
+	}
+	
+	void FlatlandSector::reset()
+	{
+		// zero out flatdata structure
+		memset(fdata, 0, FLATLAND_SIZE);
 	}
 	
 	void FlatlandsContainer::init()

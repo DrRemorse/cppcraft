@@ -3,6 +3,7 @@
 
 #include <library/opengl/texture.hpp>
 #include "sectors.hpp"
+#include "world.hpp"
 #include <deque>
 
 namespace cppcraft
@@ -12,7 +13,7 @@ namespace cppcraft
 	public:
 		static const int FLATCOLORS = 8;
 		
-		struct flatland_t
+		typedef struct
 		{
 			typedef unsigned int flat_color_t;
 			
@@ -20,12 +21,16 @@ namespace cppcraft
 			unsigned char terrain;
 			unsigned char skyLevel;
 			unsigned char groundLevel;
-		};
+		} flatland_t;
 		
 		// returns a reference to flatland_t for the 2D location (x, z)
-		flatland_t& operator() (int x, int z);
-		
+		inline flatland_t& operator() (int x, int z)
+		{
+			return this->fdata[x][z];
+		}
 		inline bool mustRebuild() const { return rebuild; }
+		
+		void reset();
 		
 	private:
 		flatland_t fdata[Sector::BLOCKS_XZ][Sector::BLOCKS_XZ];
@@ -34,7 +39,6 @@ namespace cppcraft
 		// allow chunk compressor direct access for loading
 		friend class FlatlandsContainer;
 		friend class Compressor;
-		friend class Generator;
 		
 	public:
 		// the (decompressed) file record size of a flatland-sector
@@ -49,7 +53,7 @@ namespace cppcraft
 		// returns a FlatlandSector reference from location (x, z)
 		inline FlatlandSector& operator() (int x, int z)
 		{
-			return *this->fsectors[x * Sectors.getXZ() + z];
+			return manipulate(x, z)[0];
 		}
 		
 		// initialize flatlands axis (using sectors axis), called from World::init()
@@ -85,15 +89,17 @@ namespace cppcraft
 		unsigned int*    biomeArray;
 		bool upload;
 		
-		// used by: Seamless
+		// used by: Compressor
 		// returns a FlatlandSector* reference from location (x, z)
-		inline FlatlandSector* & manipulate(int x, int z)
+		inline FlatlandSector*& manipulate(int x, int z)
 		{
+			x = (x + world.getDeltaX()) % Sectors.getXZ();
+			z = (z + world.getDeltaZ()) % Sectors.getXZ();
+			
 			return this->fsectors[x * Sectors.getXZ() + z];
 		}
 		
 		friend class Compressor;
-		friend class Seamless;
 		friend class PrecompThread;
 	};
 	extern FlatlandsContainer flatlands;

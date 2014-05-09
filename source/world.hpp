@@ -36,38 +36,45 @@ namespace cppcraft
 		static const wcoord_t WORLD_STARTING_X = WORLD_CENTER + WORLD_NODESIZE / 2;
 		static const wcoord_t WORLD_STARTING_Z = WORLD_STARTING_X;
 		
-		struct world_t
+		typedef struct world_t
 		{
 		public:
 			world_t() {}
 			world_t(wcoord_t wx, wcoord_t wy, wcoord_t wz)
-				: worldX(wx), worldY(wy), worldZ(wz) {}
+				: x(wx), y(wy), z(wz) {}
 			
-			wcoord_t worldX, worldY, worldZ;
-		};
+			wcoord_t x, y, z;
+		} world_t;
 		
 		// initializes the world
-		void init(std::string& folder);
+		void init(const std::string& folder);
 		// returns current world folder
 		inline const std::string& worldFolder() const
 		{
 			return this->folder;
 		}
 
-		inline wcoord_t getWX() const { return worldCoords.worldX; }
-		inline wcoord_t getWY() const { return worldCoords.worldY; }
-		inline wcoord_t getWZ() const { return worldCoords.worldZ; }
+		inline wcoord_t getWX() const { return worldCoords.x; }
+		inline wcoord_t getWY() const { return worldCoords.y; }
+		inline wcoord_t getWZ() const { return worldCoords.z; }
+		
+		inline wcoord_t getDeltaX() const { return internal.x; }
+		inline wcoord_t getDeltaY() const { return internal.y; }
+		inline wcoord_t getDeltaZ() const { return internal.z; }
 		
 		void load();
 		void save();
 		
-		// seamless transitions the word, and is the only one
-		// allowed to directly modify worldX, worldZ
-		friend Seamless; // special customer
-		
 	private:
 		std::string folder;
 		world_t worldCoords;
+		world_t internal;
+		
+		void increaseDelta(int dx, int dz);
+		
+		// seamless transitions the word, and is the only one
+		// allowed to directly modify worldX, worldZ
+		friend Seamless; // special customer
 	};
 	extern World world;
 }

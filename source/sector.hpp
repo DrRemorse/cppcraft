@@ -24,6 +24,8 @@ namespace cppcraft
 		// sector bitshift size constants
 		static const int BLOCKS_XZ_SH = 4;
 		static const int BLOCKS_Y_SH  = 3;
+		// bitmask for a fully hidden sector
+		static const int MAX_HARDSOLID = 63;
 		
 		// sector-block, a 3D volume of blocks
 		#pragma pack(push, 2)
@@ -103,7 +105,7 @@ namespace cppcraft
 			return this->blockpt->b[x][z][y];
 		}
 		
-		// sector boolean equality test
+		// sector boolean equality tests
 		inline bool operator == (const Sector& sector) const
 		{
 			return (this == &sector);
@@ -118,11 +120,6 @@ namespace cppcraft
 		
 		// torchlight related
 		int countLights(); // recounts lights internally AND returns that count
-		
-		// number of unique block IDs a sector can have
-		static const int UNIQUE_IDS_PER_SECTOR = 64;
-		// bitmak for a fully hidden sector
-		static const int MAX_HARDSOLID = 63;
 	};
 	
 }

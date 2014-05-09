@@ -157,7 +157,7 @@ namespace cppcraft
 					else
 					{
 						// reset flatlands
-						memset(flatlands(x, z).fdata, 0,  FlatlandSector::FLATLAND_SIZE);
+						flatlands(x, z).reset();
 						
 						for (int y = 0; y < Sectors.getY(); y++)
 						{

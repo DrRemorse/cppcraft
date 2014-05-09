@@ -1,9 +1,11 @@
 #ifndef COLUMNS_HPP
 #define COLUMNS_HPP
 
-#include "library/math/vector.hpp"
+#include <library/log.hpp>
+#include <library/math/vector.hpp>
 #include "renderconst.hpp"
 #include "sectors.hpp"
+#include "world.hpp"
 
 namespace cppcraft
 {
@@ -43,17 +45,6 @@ namespace cppcraft
 	
 	class ColumnsContainer
 	{
-	private:
-		Column** columns;
-		
-		// used by: Seamless::seamlessness()
-		inline Column* & manipulate(int x, int y, int z)
-		{
-			#define COLUMN_MEMORY_LAYOUT  (x * Sectors.getXZ() * this->COLUMNS_Y + z * this->COLUMNS_Y + y)
-			
-			return *(this->columns + COLUMN_MEMORY_LAYOUT);
-		}
-		
 	public:
 		// number of columns
 		static const int COLUMNS_Y = 4;
@@ -65,7 +56,21 @@ namespace cppcraft
 		// column index operator
 		inline Column& operator() (int x, int y, int z)
 		{
-			return this->columns[COLUMN_MEMORY_LAYOUT][0];
+			return manipulate(x, y, z)[0];
+		}
+		
+	private:
+		Column** columns;
+		
+		// used by: Seamless::seamlessness()
+		inline Column*& manipulate(int x, int y, int z)
+		{
+			#define COLUMN_MEMORY_LAYOUT  (x * Sectors.getXZ() * this->COLUMNS_Y + z * this->COLUMNS_Y + y)
+			
+			x = (x + world.getDeltaX()) % Sectors.getXZ();
+			z = (z + world.getDeltaZ()) % Sectors.getXZ();
+			
+			return this->columns[COLUMN_MEMORY_LAYOUT];
 		}
 		
 		friend class Seamless;

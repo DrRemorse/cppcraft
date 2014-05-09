@@ -107,7 +107,8 @@ namespace cppcraft
 			player.snapX = player.X;
 			player.JustMoved = true;
 			// offset world x by -1
-			world.worldCoords.worldX -= 1;
+			world.worldCoords.x -= 1;
+			world.increaseDelta(-1, 0);
 			
 			// only 25% left on the negative side
 			for (z = 0; z < Sectors.getXZ(); z++)
@@ -148,29 +149,11 @@ namespace cppcraft
 					
 				} // sectors y
 				
-				// move columns backwards -x
+				// reset edge columns
 				for (y = 0; y < ColumnsContainer::COLUMNS_Y; y++)
 				{
-					Column* tc = Columns.manipulate(Sectors.getXZ() - 1, y, z);
-					
-					for (x = Sectors.getXZ()-1; x >= 1; x--)
-					{
-						Columns.manipulate(x, y, z) = Columns.manipulate(x - 1, y, z);
-					}
-					
-					Columns.manipulate(0, y, z) = tc;
-					tc->reset();
+					Columns(0, y, z).reset();
 				}
-				
-				// move flatlands backwards -x
-				FlatlandSector* flatl = flatlands.manipulate(Sectors.getXZ() - 1, z);
-				
-				for (x = Sectors.getXZ()-1; x >= 1; x--)
-				{
-					flatlands.manipulate(x, z) = flatlands.manipulate(x - 1, z);
-				}
-				// re-set first on x-axis
-				flatlands.manipulate(0, z) = flatl;
 				
 			} // sectors z
 			
@@ -194,7 +177,8 @@ namespace cppcraft
 			player.snapX = player.X;
 			player.JustMoved = true;
 			// offset world x by +1
-			world.worldCoords.worldX += 1;
+			world.worldCoords.x += 1;
+			world.increaseDelta(1, 0);
 			
 			// only 25% left on the positive side
 			for (z = 0; z < Sectors.getXZ(); z++)
@@ -234,27 +218,11 @@ namespace cppcraft
 					
 				} // sectors y
 				
-				// move columns forwards +x
+				// reset edge columns
 				for (y = 0; y < ColumnsContainer::COLUMNS_Y; y++)
 				{
-					Column* tc = Columns.manipulate(0, y, z);
-					
-					for (x = 0; x < Sectors.getXZ()-1; x++)
-					{
-						Columns.manipulate(x, y, z) = Columns.manipulate(x + 1, y, z);
-					}
-					
-					Columns.manipulate(Sectors.getXZ()-1, y, z) = tc;
-					tc->reset();
-				} // columns
-				
-				// move flatlands forwards +x
-				FlatlandSector* flatl = flatlands.manipulate(0, z);
-				for (x = 0; x < Sectors.getXZ()-1; x++)
-				{
-					flatlands.manipulate(x, z) = flatlands.manipulate(x + 1, z);
+					Columns(Sectors.getXZ()-1, y, z).reset();
 				}
-				flatlands.manipulate(Sectors.getXZ()-1, z) = flatl;
 				
 			} // sectors z
 			
@@ -282,7 +250,8 @@ namespace cppcraft
 			player.snapZ = player.Z;
 			player.JustMoved = true;
 			// offset world -z
-			world.worldCoords.worldZ -= 1;
+			world.worldCoords.z -= 1;
+			world.increaseDelta(0, -1);
 			
 			// only 25% left on the negative side
 			for (x = 0; x < Sectors.getXZ(); x++)
@@ -290,7 +259,7 @@ namespace cppcraft
 				for (y = 0; y < Sectors.getY(); y++)
 				{
 					// recursively move the sector
-					Sector* oldpointer = Sectors.getSectorPtr(x, y, Sectors.getXZ() - 1);
+					Sector* oldpointer = Sectors.getSectorPtr(x, y, Sectors.getXZ()-1);
 					
 					#ifdef USE_WORK
 						if (oldpointer->haswork) RemoveWork(oldpointer);
@@ -313,29 +282,11 @@ namespace cppcraft
 					
 				} // sectors y
 				
-				// move columns backwards -z
+				// reset edge columns
 				for (y = 0; y < Columns.COLUMNS_Y; y++)
 				{
-					Column* tc = Columns.manipulate(x, y, Sectors.getXZ()-1);
-					
-					for (z = Sectors.getXZ()-1; z >= 1; z--)
-					{
-						Columns.manipulate(x, y, z) = Columns.manipulate(x, y, z-1);
-					}
-					
-					Columns.manipulate(x, y, 0) = tc;
-					tc->reset();
-					
-				} // columns
-				
-				// move flatlands backwards -z
-				FlatlandSector* flatl = flatlands.manipulate(x, Sectors.getXZ() - 1);
-				
-				for (z = Sectors.getXZ()-1; z >= 1; z--)
-				{
-					flatlands.manipulate(x, z) = flatlands.manipulate(x, z - 1);
+					Columns(x, y, 0).reset();
 				}
-				flatlands.manipulate(x, 0) = flatl;
 				
 			} // sectors x
 			
@@ -359,7 +310,8 @@ namespace cppcraft
 			player.snapZ = player.Z;
 			player.JustMoved = true;
 			// move world forward on the Z axis
-			world.worldCoords.worldZ += 1;
+			world.worldCoords.z += 1;
+			world.increaseDelta(0, 1);
 			
 			// move sectors forwards +z (and rollback last line)
 			for (x = 0; x < Sectors.getXZ(); x++)
@@ -390,29 +342,11 @@ namespace cppcraft
 					
 				} // sectors y
 				
-				// move columns forwards +z
+				// reset edge columns
 				for (y = 0; y < Columns.COLUMNS_Y; y++)
 				{
-					Column* tc = Columns.manipulate(x, y, 0);
-					
-					for (z = 0; z < Sectors.getXZ()-1; z++)
-					{
-						Columns.manipulate(x, y, z) = Columns.manipulate(x, y, z + 1);
-					}
-					
-					Columns.manipulate(x, y, Sectors.getXZ() - 1) = tc;
-					tc->reset();
-					
-				} // columns
-				
-				// move flatlands forwards +z
-				FlatlandSector* flatl = flatlands.manipulate(x, 0);
-				
-				for (z = 0; z < Sectors.getXZ()-1; z++)
-				{
-					flatlands.manipulate(x, z) = flatlands.manipulate(x, z + 1);
+					Columns(x, y, Sectors.getXZ()-1).reset();
 				}
-				flatlands.manipulate(x, Sectors.getXZ()-1) = flatl;
 				
 			} // sectors x
 			
