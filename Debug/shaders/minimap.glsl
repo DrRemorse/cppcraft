@@ -31,6 +31,7 @@ const float visibility = 0.9;
 void main(void)
 {
 	vec4 color = texture2D(texture, texCoord);
+	//color.rgb = pow(color.rgb, vec3(2.2));
 	
 	float dist = 1.0 - min(1.0, length(vertex) / 0.5);
 	// black dot in center of minimap

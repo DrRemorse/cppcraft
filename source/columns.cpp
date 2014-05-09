@@ -22,24 +22,24 @@ namespace cppcraft
 	
 	void ColumnsContainer::init()
 	{
+		logger << Log::INFO << "* Initializing columns" << Log::ENDL;
+		
 		//////////////////////
 		// allocate columns //
 		//////////////////////
-		logger << Log::INFO << "* Initializing columns" << Log::ENDL;
-		
+		int num_columns = Sectors.getXZ() * Sectors.getXZ() * COLUMNS_Y;
 		this->columns = 
-			new Column[Sectors.getXZ() * Sectors.getXZ() * COLUMNS_Y]();
+			new Column[num_columns]();
 		
-		int i = 0;
-		
-		// set Y value for each column
-		for (int x = 0; x < Sectors.getXZ(); x++)
-		for (int z = 0; z < Sectors.getXZ(); z++)
-		for (int y = 0; y < COLUMNS_Y; y++)
+		//////////////////////////////
+		// determine if above water //
+		//////////////////////////////
+		for (int i = 0; i < num_columns; i++)
 		{
+			int y = i % COLUMNS_Y;
 			// the column is above water if the first sector is >= water level
-			this->columns[i++].aboveWater = 
-				(y * Columns.COLUMNS_SIZE * Sector::BLOCKS_Y >= RenderConst::WATER_LEVEL);
+			columns[i].aboveWater = 
+				(y * COLUMNS_SIZE * Sector::BLOCKS_Y >= RenderConst::WATER_LEVEL);
 		}
 	}
 	ColumnsContainer::ColumnsContainer()
@@ -48,12 +48,9 @@ namespace cppcraft
 		// allocate temporary datadumps for compiling columns //
 		////////////////////////////////////////////////////////
 		
-		// colv_size is number of sectors in a column
-		column_dump = new vertex_t[Columns.COLUMNS_SIZE * RenderConst::MAX_FACES_PER_SECTOR * 4];
-		if (column_dump == nullptr)
-		{
-			throw std::string("ColumnQueue::initCompilers(): ERROR: failed to allocate dump");
-		}
+		// COLUMNS_SIZE is the number of sectors in a column
+		column_dump = 
+			new vertex_t[COLUMNS_SIZE * RenderConst::MAX_FACES_PER_SECTOR * 4];
 	}
 	ColumnsContainer::~ColumnsContainer()
 	{

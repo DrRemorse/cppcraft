@@ -3,18 +3,16 @@
 #include <library/log.hpp>
 #include <library/bitmap/bitmap.hpp>
 #include <library/bitmap/colortools.hpp>
-#include <library/opengl/opengl.hpp>
+//#include <library/opengl/opengl.hpp>
 #include <library/opengl/vao.hpp>
 #include <library/opengl/texture.hpp>
 #include "biome.hpp"
-#include "camera.hpp"
 #include "flatlands.hpp"
 #include "player.hpp"
 #include "sectors.hpp"
 #include "seamless.hpp"
 #include "shaderman.hpp"
 #include "spiders.hpp"
-#include "worldbuilder.hpp"
 #include <cstring>
 #include <mutex>
 
@@ -26,9 +24,6 @@ namespace cppcraft
 	Minimap minimap;
 	VAO minimapVAO;
 	std::mutex minimapMutex;
-	
-	// constants
-	const float HEIGHTMAP_FACTOR = 2.5;
 	
 	Minimap::Minimap()
 	{
@@ -46,10 +41,11 @@ namespace cppcraft
 		texture = new Texture(GL_TEXTURE_2D);
 		texture->create(*bitmap, true, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
 		
-		struct minimap_vertex_t
+		typedef struct
 		{
 			GLfloat x, y, z;
-		};
+			
+		} minimap_vertex_t;
 		
 		// vertices
 		minimap_vertex_t vertices[4] =
@@ -102,15 +98,14 @@ namespace cppcraft
 		minimapVAO.render(GL_QUADS);
 	}
 	
-	inline int fgetSkylevel(Sector& s, int x, int z)
+	inline int fgetSkylevel(FlatlandSector& fs, int x, int z)
 	{
-		//     Flatlands::Flatsector::skylevel
-		return flatlands(s.x, s.z)(x, z).skyLevel;
+		return fs(x, z).skyLevel;
 	}
 	
-	inline Bitmap::rgba8_t fgetColor(Sector& s, int x, int z, int clid)
+	inline Bitmap::rgba8_t fgetColor(FlatlandSector& fs, int x, int z, int clid)
 	{
-		return flatlands(s.x, s.z)(x, z).fcolor[clid];
+		return fs(x & (Sector::BLOCKS_XZ-1), z & (Sector::BLOCKS_XZ-1)).fcolor[clid];
 	}
 	
 	Bitmap::rgba8_t mixColor(Bitmap::rgba8_t a, Bitmap::rgba8_t b, float mixlevel)
@@ -127,30 +122,37 @@ namespace cppcraft
 		return a;
 	}
 	
+	// constants
+	static const float HEIGHTMAP_F = 80;
+	static const float HEIGHTMAP_R = HEIGHTMAP_F;
+	static const float HEIGHTMAP_G = HEIGHTMAP_F;
+	static const float HEIGHTMAP_B = HEIGHTMAP_F;
+	
 	Bitmap::rgba8_t lowColor(Bitmap::rgba8_t c)
 	{
 		unsigned char* p = (unsigned char*)&c;
-		p[0] /= HEIGHTMAP_FACTOR;
-		p[1] /= HEIGHTMAP_FACTOR;
-		p[2] /= HEIGHTMAP_FACTOR;
+		// overflow checks
+		p[0] = (p[0] - HEIGHTMAP_R <= 0) ? 0 : p[0] - HEIGHTMAP_R;
+		p[1] = (p[1] - HEIGHTMAP_G <= 0) ? 0 : p[1] - HEIGHTMAP_G;
+		p[2] = (p[2] - HEIGHTMAP_B <= 0) ? 0 : p[2] - HEIGHTMAP_B;
 		return c;
 	}
 	Bitmap::rgba8_t highColor(Bitmap::rgba8_t c)
 	{
 		unsigned char* p = (unsigned char*)&c;
 		// overflow checks
-		p[0] = (p[0] * HEIGHTMAP_FACTOR > 255) ? 255 : p[0] * HEIGHTMAP_FACTOR;
-		p[1] = (p[1] * HEIGHTMAP_FACTOR > 255) ? 255 : p[1] * HEIGHTMAP_FACTOR;
-		p[2] = (p[2] * HEIGHTMAP_FACTOR > 255) ? 255 : p[2] * HEIGHTMAP_FACTOR;
+		p[0] = (p[0] + HEIGHTMAP_R >= 255) ? 255 : p[0] + HEIGHTMAP_R;
+		p[1] = (p[1] + HEIGHTMAP_G >= 255) ? 255 : p[1] + HEIGHTMAP_G;
+		p[2] = (p[2] + HEIGHTMAP_B >= 255) ? 255 : p[2] + HEIGHTMAP_B;
 		return c;
 	}
 	
-	int getDepth(Sector& s, int x, int y, int z)
+	int getDepth(int x, int y, int z)
 	{
 		int depth = 0;
 		while (true)
 		{
-			const Block& b = Spiders::getBlock(s, x, --y, z);
+			const Block& b = Spiders::getBlock(x, --y, z);
 			
 			if (b.getID() != _WATER) return depth;
 			depth++;
@@ -158,17 +160,21 @@ namespace cppcraft
 		return depth;
 	}
 	
-	Bitmap::rgba8_t getBlockColor(Sector& s, int x, int y, int z)
+	Bitmap::rgba8_t getBlockColor(FlatlandSector& fs, int x, int y, int z)
 	{
 		if (y == 0) return RGBA8(48, 48, 48, 255);
 		
-		const Block& b = Spiders::getBlock(s, x, y, z);
+		static const Bitmap::rgba8_t greenGrass = RGBA8(20, 120, 0, 255);
+		
+		// get the block
+		const Block& b = Spiders::getBlock(x, y, z);
+		// the final color
 		Bitmap::rgba8_t c;
 		
 		if (isStone(b.getID()))
 		{
 			//c = fgetColor(s, x, z, Biomes::CL_STONE);
-			c = RGBA8(70, 62, 62, 255);
+			c = RGBA8(68, 62, 62, 255);
 		}
 		else if (b.getID() == _SNOWGRASS || b.getID() == _SNOWGRASS_S || b.getID() == _LOWSNOW)
 		{
@@ -196,14 +202,14 @@ namespace cppcraft
 				c = RGBA8(97, 57, 14, 255); // soil
 			else
 			{
-				c = fgetColor(s, x, z, Biomes::CL_GRASS);
-				c = mixColor(c, RGBA8(70, 180, 0, 255), 0.25);
+				c = fgetColor(fs, x, z, Biomes::CL_GRASS);
+				c = mixColor(c, greenGrass, 0.25);
 			}
 		}
 		else if (isCross(b.getID()))
 		{
-			c = fgetColor(s, x, z, Biomes::CL_GRASS);
-			c = mixColor(c, RGBA8(70, 180, 0, 255), 0.25);
+			c = fgetColor(fs, x, z, Biomes::CL_GRASS);
+			c = mixColor(c, greenGrass, 0.25);
 		}
 		/*else if (b.getID() == _LEAF_NEEDLE)
 		{
@@ -211,8 +217,8 @@ namespace cppcraft
 		}*/
 		else if (isLeaf(b.getID()))
 		{
-			c = fgetColor(s, x, z, Biomes::CL_TREES);
-			c = mixColor(c, RGBA8(70, 180, 0, 255), 0.25);
+			c = fgetColor(fs, x, z, Biomes::CL_TREES);
+			c = mixColor(c, greenGrass, 0.25);
 		}
 		else if (isSand(b.getID()))
 		{
@@ -237,7 +243,8 @@ namespace cppcraft
 		}
 		else if (b.getID() == _WATER)
 		{
-			int depth = getDepth(s, x, y, z); // deep ocean
+			int depth = getDepth(x, y, z); // ocean depth
+			// create gradiented ocean blue
 			return RGBA8(62-(int)(depth*0.8), (int)(120-depth*1.9), 128-depth, 255);
 		}
 		else if (b.getID() == _AIR)
@@ -253,14 +260,12 @@ namespace cppcraft
 		const int HEIGHT_BIAS = 128;
 		
 		if (y < HEIGHT_BIAS)
-		{
-			// downwards
-			c = mixColor(c, lowColor(c), 0.005 * (HEIGHT_BIAS - y));
+		{	// downwards
+			c = mixColor(c, lowColor(c), 0.01 * (HEIGHT_BIAS - y));
 		}
 		else
-		{
-			// upwards
-			c = mixColor(c, highColor(c), 0.005 * (y - HEIGHT_BIAS));
+		{	// upwards
+			c = mixColor(c, highColor(c), 0.01 * (y - HEIGHT_BIAS));
 		}
 		
 		return c;
@@ -277,40 +282,43 @@ namespace cppcraft
 		
 		// read certain blocks from sector, and determine pixel value
 		// set pixel value in the correct 2x2 position on pixel table
+		Sector& s0 = Sectors(sector.x, 0, sector.z);
+		FlatlandSector& fs = flatlands(sector.x, sector.z);
 		
 		// fetch sky levels
 		int skylevel[8];
-		skylevel[0] = fgetSkylevel(sector,  3,  3);
-		skylevel[1] = fgetSkylevel(sector,  3, 12);
-		skylevel[2] = fgetSkylevel(sector, 12,  3);
-		skylevel[3] = fgetSkylevel(sector, 12, 12);
+		skylevel[0] = fgetSkylevel(fs,  3,  3);
+		skylevel[1] = fgetSkylevel(fs,  3, 12);
+		skylevel[2] = fgetSkylevel(fs, 12,  3);
+		skylevel[3] = fgetSkylevel(fs, 12, 12);
 		
-		skylevel[4] = fgetSkylevel(sector,  4,  4);
-		skylevel[5] = fgetSkylevel(sector,  4, 11);
-		skylevel[6] = fgetSkylevel(sector, 11,  4);
-		skylevel[7] = fgetSkylevel(sector, 11, 11);
-		
-		Sector& s0 = Sectors(sector.x, 0, sector.z);
+		skylevel[4] = fgetSkylevel(fs,  4,  4);
+		skylevel[5] = fgetSkylevel(fs,  4, 11);
+		skylevel[6] = fgetSkylevel(fs, 11,  4);
+		skylevel[7] = fgetSkylevel(fs, 11, 11);
 		
 		// fetch blocks at skylevels
+		int bx = s0.x * Sector::BLOCKS_XZ;
+		int bz = s0.z * Sector::BLOCKS_XZ;
+		
 		// determine colors for skylevel blocks
 		Bitmap::rgba8_t colors[4];
 		
-		colors[0] = getBlockColor(s0,  3, skylevel[0],  3);
+		colors[0] = getBlockColor(fs, bx+ 3, skylevel[0], bz+ 3);
 		colors[0] = mixColor(colors[0],
-					getBlockColor(s0,  4, skylevel[4],  4), 0.5);
+					getBlockColor(fs, bx+ 4, skylevel[4], bz+ 4), 0.5);
 		
-		colors[1] = getBlockColor(s0,  3, skylevel[1], 12);
+		colors[1] = getBlockColor(fs, bx+ 3, skylevel[1], bz+12);
 		colors[1] = mixColor(colors[1],
-					getBlockColor(s0,  4, skylevel[5], 11), 0.5);
+					getBlockColor(fs, bx+ 4, skylevel[5], bz+11), 0.5);
 		
-		colors[2] = getBlockColor(s0, 12, skylevel[2],  3);
+		colors[2] = getBlockColor(fs, bx+12, skylevel[2], bz+ 3);
 		colors[2] = mixColor(colors[2],
-					getBlockColor(s0, 11, skylevel[6],  4), 0.5);
+					getBlockColor(fs, bx+11, skylevel[6], bz+ 4), 0.5);
 		
-		colors[3] = getBlockColor(s0, 12, skylevel[3], 12);
+		colors[3] = getBlockColor(fs, bx+12, skylevel[3], bz+12);
 		colors[3] = mixColor(colors[3],
-					getBlockColor(s0, 11, skylevel[7], 11), 0.5);
+					getBlockColor(fs, bx+11, skylevel[7], bz+11), 0.5);
 		
 		// set final color @ pixel (px, pz)
 		int px = bitmap->getWidth()  / 2 - Sectors.getXZ() + 2 * sector.x;
@@ -321,10 +329,10 @@ namespace cppcraft
 		
 		int scan = bitmap->getWidth();
 		
-		pixels[  pz      * scan + px ] = colors[0];
-		pixels[ (pz + 1) * scan + px ] = colors[1];
-		pixels[  pz      * scan + px + 1 ] = colors[2];
-		pixels[ (pz + 1) * scan + px + 1 ] = colors[3];
+		pixels[ pz      * scan + px] = colors[0];
+		pixels[(pz + 1) * scan + px] = colors[1];
+		pixels[ pz      * scan + px + 1] = colors[2];
+		pixels[(pz + 1) * scan + px + 1] = colors[3];
 	}
 	
 	void Minimap::roll(int x, int z)

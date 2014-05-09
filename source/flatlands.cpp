@@ -25,7 +25,6 @@ namespace cppcraft
 		// return data structure
 		return this[0](fx, fz)(bx, bz);
 	}
-	
 	void FlatlandSector::reset()
 	{
 		// zero out flatdata structure
@@ -38,7 +37,6 @@ namespace cppcraft
 		
 		// allocate flatland sectors
 		fsectors = new FlatlandSector[Sectors.getXZ() * Sectors.getXZ()];
-		
 	}
 	FlatlandsContainer::~FlatlandsContainer()
 	{

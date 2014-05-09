@@ -33,12 +33,11 @@ namespace cppcraft
 	private:
 		flatland_t fdata[Sector::BLOCKS_XZ][Sector::BLOCKS_XZ];
 		
-		// allow chunk compressor direct access for loading
-		friend class Compressor;
-		
 	public:
 		// the (decompressed) file record size of a flatland-sector
 		static const int FLATLAND_SIZE = sizeof(fdata);
+		// allow chunk compressor direct access for loading
+		friend class Compressor;
 	};
 	
 	class FlatlandsContainer
