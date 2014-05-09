@@ -6,7 +6,7 @@
 # -Ofast -mfpmath=both -march=native -flto
 # -Ofast -mfpmath=both -march=native
 # -g -Og
-BUILDOPT = -Ofast -mfpmath=both -march=native
+BUILDOPT = -Ofast -mfpmath=both -march=native -flto
 # output file
 OUTPUT   = ./Debug/cppcraft
 

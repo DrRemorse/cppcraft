@@ -17,7 +17,7 @@ namespace cppcraft
 		
 		// initialize column with position (x, z)
 		// position y is used to determine if the column is above the waterline
-		Column(int y);
+		Column();
 		
 		bool renderable; // is renderable
 		bool updated;    // needs update
@@ -51,29 +51,23 @@ namespace cppcraft
 		// size of each column in sectors
 		static const int COLUMNS_SIZE = Sectors.SECTORS_Y / COLUMNS_Y;
 		
+		ColumnsContainer();
+		~ColumnsContainer();
 		void init();
 		
 		// column index operator
 		inline Column& operator() (int x, int y, int z)
-		{
-			return manipulate(x, y, z)[0];
-		}
-		
-	private:
-		Column** columns;
-		
-		// used by: Seamless::seamlessness()
-		inline Column*& manipulate(int x, int y, int z)
 		{
 			#define COLUMN_MEMORY_LAYOUT  (x * Sectors.getXZ() * this->COLUMNS_Y + z * this->COLUMNS_Y + y)
 			
 			x = (x + world.getDeltaX()) % Sectors.getXZ();
 			z = (z + world.getDeltaZ()) % Sectors.getXZ();
 			
-			return this->columns[COLUMN_MEMORY_LAYOUT];
+			return columns[COLUMN_MEMORY_LAYOUT];
 		}
 		
-		friend class Seamless;
+	private:
+		Column* columns;
 	};
 	extern ColumnsContainer Columns;
 }

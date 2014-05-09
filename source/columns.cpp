@@ -1,7 +1,7 @@
 #include "columns.hpp"
 
-#include "library/log.hpp"
-#include "library/opengl/opengl.hpp"
+#include <library/log.hpp>
+#include <library/opengl/opengl.hpp>
 #include "camera.hpp"
 #include "renderconst.hpp"
 #include "threading.hpp"
@@ -27,32 +27,40 @@ namespace cppcraft
 		//////////////////////
 		logger << Log::INFO << "* Initializing columns" << Log::ENDL;
 		
-		this->columns = new Column*[Sectors.getXZ() * Sectors.getXZ() * COLUMNS_Y];
+		this->columns = 
+			new Column[Sectors.getXZ() * Sectors.getXZ() * COLUMNS_Y]();
 		
 		int i = 0;
 		
-		// allocate just as many actual columns
+		// set Y value for each column
 		for (int x = 0; x < Sectors.getXZ(); x++)
 		for (int z = 0; z < Sectors.getXZ(); z++)
 		for (int y = 0; y < COLUMNS_Y; y++)
 		{
-			this->columns[i++] = new Column(y);
+			// the column is above water if the first sector is >= water level
+			this->columns[i++].aboveWater = 
+				(y * Columns.COLUMNS_SIZE * Sector::BLOCKS_Y >= RenderConst::WATER_LEVEL);
 		}
-		
+	}
+	ColumnsContainer::ColumnsContainer()
+	{
 		////////////////////////////////////////////////////////
 		// allocate temporary datadumps for compiling columns //
 		////////////////////////////////////////////////////////
 		
 		// colv_size is number of sectors in a column
-		column_dump = (vertex_t*) calloc(Columns.COLUMNS_SIZE * RenderConst::MAX_FACES_PER_SECTOR, 4 * sizeof(vertex_t));
+		column_dump = new vertex_t[Columns.COLUMNS_SIZE * RenderConst::MAX_FACES_PER_SECTOR * 4];
 		if (column_dump == nullptr)
 		{
 			throw std::string("ColumnQueue::initCompilers(): ERROR: failed to allocate dump");
 		}
-		
+	}
+	ColumnsContainer::~ColumnsContainer()
+	{
+		delete[] column_dump;
 	}
 	
-	Column::Column(int y)
+	Column::Column()
 	{
 		// initialize VAO to 0, signifying a column without valid GL resources
 		this->vao = 0;
@@ -60,8 +68,6 @@ namespace cppcraft
 		this->updated    = false;
 		this->renderable = false;
 		this->hasdata = false;
-		// the column is above water if the first sector is >= water level
-		this->aboveWater = (y * Columns.COLUMNS_SIZE * Sector::BLOCKS_Y >= RenderConst::WATER_LEVEL);
 	}
 	
 	void Column::compile(int x, int y, int z)

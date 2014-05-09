@@ -36,19 +36,8 @@ namespace cppcraft
 	{
 		logger << Log::INFO << "* Initializing flatlands" << Log::ENDL;
 		
-		// allocate sector pointers
-		fsectors = new FlatlandSector*[Sectors.getXZ() * Sectors.getXZ()];
-		// iterate sectors
-		for (int x = 0; x < Sectors.getXZ(); x++)
-		{
-			for (int z = 0; z < Sectors.getXZ(); z++)
-			{
-				// get reference to flatland pointer
-				FlatlandSector*& f = manipulate(x, z);
-				// set reference (FlatlandSector*) to new FlatlandSector(x, z)
-				f = new FlatlandSector;
-			} // z
-		} // x
+		// allocate flatland sectors
+		fsectors = new FlatlandSector[Sectors.getXZ() * Sectors.getXZ()];
 		
 	}
 	FlatlandsContainer::~FlatlandsContainer()

@@ -377,8 +377,7 @@ namespace cppcraft
 		// pre-calculate darkness level
 		// underground additional ray damage
 		const int groundlevel = flatlands.getGroundLevel(position.x, position.z) - 2;
-		static const int darkramp  = 32;
-		static const int underlevel = 64;
+		static const int darkramp  = 64;
 		
 		float maxlight = SHADOWS;
 		float light;
@@ -388,17 +387,8 @@ namespace cppcraft
 			light = (groundlevel - position.y) / darkramp;
 			if (light > 1.0) light = 1.0;
 			maxlight = SHADOWS * (1.0 - light) + light * DARKNESS;
-			// if we are below "depths", amply darkness, otherwise reset it to 0
-			light *= (position.y < underlevel) ? maxlight : 0;
 		}
-		else light = 0.0;
-		
-		/*if (position.y < underlevel)
-		{
-			light = 1.0 - position.y / underlevel;
-			maxlight = maxlight * (1.0 - light) + light * DARKNESS;
-			light *= maxlight * 2.0;
-		}*/
+		light = 0.0;
 		
 		#define sunray   lightRay2D(light, maxlight, position, angle.x, angle.y)
 		#define halfray  lightRay2D(light, maxlight, position, half1.x, half1.y)

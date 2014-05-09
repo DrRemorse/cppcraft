@@ -49,7 +49,10 @@ namespace cppcraft
 		// returns a FlatlandSector reference from location (x, z)
 		inline FlatlandSector& operator() (int x, int z)
 		{
-			return manipulate(x, z)[0];
+			x = (x + world.getDeltaX()) % Sectors.getXZ();
+			z = (z + world.getDeltaZ()) % Sectors.getXZ();
+			
+			return fsectors[x * Sectors.getXZ() + z];
 		}
 		
 		// initialize flatlands axis (using sectors axis), called from World::init()
@@ -72,15 +75,7 @@ namespace cppcraft
 		}
 		
 	private:
-		FlatlandSector** fsectors;
-		
-		inline FlatlandSector*& manipulate(int x, int z)
-		{
-			x = (x + world.getDeltaX()) % Sectors.getXZ();
-			z = (z + world.getDeltaZ()) % Sectors.getXZ();
-			
-			return this->fsectors[x * Sectors.getXZ() + z];
-		}
+		FlatlandSector* fsectors;
 	};
 	extern FlatlandsContainer flatlands;
 }
