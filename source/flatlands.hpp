@@ -1,7 +1,6 @@
 #ifndef FLATLANDS_HPP
 #define FLATLANDS_HPP
 
-#include <library/opengl/texture.hpp>
 #include "sectors.hpp"
 #include "world.hpp"
 #include <deque>
@@ -28,16 +27,13 @@ namespace cppcraft
 		{
 			return this->fdata[x][z];
 		}
-		inline bool mustRebuild() const { return rebuild; }
 		
 		void reset();
 		
 	private:
 		flatland_t fdata[Sector::BLOCKS_XZ][Sector::BLOCKS_XZ];
-		bool rebuild;
 		
 		// allow chunk compressor direct access for loading
-		friend class FlatlandsContainer;
 		friend class Compressor;
 		
 	public:
@@ -75,22 +71,9 @@ namespace cppcraft
 			return getData(x, z).groundLevel;
 		}
 		
-		// interact with biome texture queue
-		void initTextures();
-		void buildTexture(int fx, int fz);
-		void bindTexture(int unit);
-		void uploadTexture();
-		
-		inline bool mustUpload() const { return upload; }
-		
 	private:
 		FlatlandSector** fsectors;
-		library::Texture biomeTexture;
-		unsigned int*    biomeArray;
-		bool upload;
 		
-		// used by: Compressor
-		// returns a FlatlandSector* reference from location (x, z)
 		inline FlatlandSector*& manipulate(int x, int z)
 		{
 			x = (x + world.getDeltaX()) % Sectors.getXZ();
@@ -98,9 +81,6 @@ namespace cppcraft
 			
 			return this->fsectors[x * Sectors.getXZ() + z];
 		}
-		
-		friend class Compressor;
-		friend class PrecompThread;
 	};
 	extern FlatlandsContainer flatlands;
 }

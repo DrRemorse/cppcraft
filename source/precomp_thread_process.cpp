@@ -271,21 +271,14 @@ namespace cppcraft
 					fbiome[0] = flatl[0](bx, bz).fcolor[colorIndex];
 					
 					if (bx < Sector::BLOCKS_XZ-1)
-					{
 						fbiome[1] = flatl[0](bx+1, bz).fcolor[colorIndex];
-					}
-					else if (flatl_x != nullptr)
-					{
+					else
 						fbiome[1] = flatl_x[0](0, bz).fcolor[colorIndex];
-					}
+					
 					if (bz < Sector::BLOCKS_XZ-1)
-					{
 						fbiome[2] = flatl[0](bx, bz+1).fcolor[colorIndex];
-					}
-					else if (flatl_z != nullptr)
-					{
+					else
 						fbiome[2] = flatl_z[0](bx, 0).fcolor[colorIndex];
-					}
 					
 					if ((bx < Sector::BLOCKS_XZ-1) && (bz < Sector::BLOCKS_XZ-1))
 					{
@@ -293,19 +286,13 @@ namespace cppcraft
 					}
 					else if (bx < Sector::BLOCKS_XZ-1)
 					{
-						if (flatl_z != nullptr)
-						{
-							fbiome[3] = flatl_z[0](bx+1, 0).fcolor[colorIndex];
-						}
+						fbiome[3] = flatl_z[0](bx+1, 0).fcolor[colorIndex];
 					}
 					else if (bz < Sector::BLOCKS_XZ-1)
 					{
-						if (flatl_x != nullptr)
-						{
-							fbiome[3] = flatl_x[0](0, bz+1).fcolor[colorIndex];
-						}
+						fbiome[3] = flatl_x[0](0, bz+1).fcolor[colorIndex];
 					}
-					else if (flatl_xz != nullptr)
+					else
 					{
 						fbiome[3] = flatl_xz[0](0, 0).fcolor[colorIndex];
 					}
