@@ -202,7 +202,7 @@ namespace cppcraft
 					if (Block::blockPlacement(top.getID()))
 					{
 						// upper
-						Spiders::addblock(ddx, ddy + 1, ddz, id, facing + (0 << 2), true);
+						Spiders::addblock(ddx, ddy + 1, ddz, id, facing, true);
 						// lower = special bit 0 set to 1
 						Spiders::addblock(ddx, ddy + 0, ddz, id, facing + (1 << 2), true);
 						
