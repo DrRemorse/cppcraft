@@ -2,20 +2,16 @@
  * Seamless transition function
  * 
  * Moves the player back exactly one sector, while adding a new wall of sectors
- * ahead of him, and removing the wall behind him
+ * ahead of him, swapping it with the wall behind him
  * 
- * returns the number of transitions that were completed
 **/
 
 #include "seamless.hpp"
 
 #include "columns.hpp"
-#include "flatlands.hpp"
 #include "camera.hpp"
 #include "minimap.hpp"
 #include "player.hpp"
-#include "player_logic.hpp"
-#include "precompq.hpp"
 #include "sector.hpp"
 #include "sun.hpp"
 #include "threading.hpp"
@@ -126,14 +122,11 @@ namespace cppcraft
 					// move forward on the x-axis
 					for (x = Sectors.getXZ() - 1; x >= 1; x--)
 					{
-						// set sector (x, y, z) to sector (x-1, y, z)
+						// swap sector (x, y, z) with sector (x-1, y, z)
 						Sectors.set(x,y,z, x-1,y,z);
-						// update x-position for each sector
-						Sectors(x, y, z).x = x;
 					}
 					// set first sector on x-axis to old pointer
-					Sectors.set(0, y, z, oldpointer);
-					// update x-position
+					Sectors.getSectorPtr(0, y, z) = oldpointer;
 					oldpointer->x = 0;
 					// reset it completely
 					Seamstress::resetSector(*oldpointer);
@@ -196,14 +189,11 @@ namespace cppcraft
 					for (x = 0; x < Sectors.getXZ()-1; x++)
 					{
 						Sectors.set(x,y,z, x+1,y,z);
-						// update x-position for each sector
-						Sectors(x, y, z).x = x;
 					}
 					
 					// move oldpointer-sector to end of x-axis
-					Sectors.set(Sectors.getXZ()-1, y, z,  oldpointer);
-					// update x-position
-					oldpointer->x = Sectors.getXZ() - 1;
+					Sectors.getSectorPtr(Sectors.getXZ()-1, y, z) = oldpointer;
+					oldpointer->x = Sectors.getXZ()-1;
 					
 					// reset sector completely
 					Seamstress::resetSector(*oldpointer);
@@ -267,11 +257,10 @@ namespace cppcraft
 					
 					for (z = Sectors.getXZ() - 1; z >= 1; z--)
 					{
-						Sectors.set(x, y, z, x, y, z - 1);
-						Sectors(x, y, z).z = z;
+						Sectors.set(x,y,z,  x,y,z-1);
 					}
 					// generate new sector
-					Sectors.set(x, y, 0, oldpointer);
+					Sectors.getSectorPtr(x, y, 0) = oldpointer;
 					oldpointer->z = 0;
 					
 					// reset oldpointer sector
@@ -328,10 +317,9 @@ namespace cppcraft
 					for (z = 0; z < Sectors.getXZ()-1; z++)
 					{
 						Sectors.set(x,y,z, x,y,z+1);
-						Sectors(x, y, z).z = z;
 					}
 					// generate new sector
-					Sectors.set(x, y, Sectors.getXZ()-1, oldpointer);
+					Sectors.getSectorPtr(x, y, Sectors.getXZ()-1) = oldpointer;
 					oldpointer->z = Sectors.getXZ()-1;
 					
 					// reset Sector* oldpointer

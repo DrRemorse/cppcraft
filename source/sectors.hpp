@@ -30,30 +30,29 @@ namespace cppcraft
 		}
 		
 		// returns sector at position (x, y, z), or null
-		Sector* sectorAt(float x, float y, float z);
+		Sector* sectorAt(float x, float y, float z) const;
 		
 		// invalidates all sectors, eg. when sun-position permanently changed
 		void invalidateAll();
 		
 	private:
 		// returns a reference to a pointer to a sector, which is ONLY used by Seamless
-		inline Sector* & getSectorPtr(int x, int y, int z)
+		inline Sector* & getSectorPtr(int x, int y, int z) const
 		{
 			// custom order: (x, z, y)
 			// internal only, outside sources don't care
 			return this->sectors[((x * sectors_XZ + z) << SECTORS_Y_SHL) + y];
 		}
 		
-		// sets a Sector located at (x, y, z) to sector_ptr
-		inline void set(int x, int y, int z, Sector* sector_ptr)
-		{
-			this->getSectorPtr(x, y, z) = sector_ptr;
-		}
-		
-		// sets a Sector located at (x, y, z) to point to (x2, y2, z2)
+		// moved Sector (x2, y2, z2) to (x, y, z)
 		inline void set(int x, int y, int z, int x2, int y2, int z2)
 		{
-			this->getSectorPtr(x, y, z) = this->getSectorPtr(x2, y2, z2);
+			Sector*& s = getSectorPtr(x, y, z);
+			// set to new position
+			s = getSectorPtr(x2, y2, z2);
+			// assumption: not swapping in height
+			s->x = x;
+			s->z = z;
 		}
 		
 		friend class Seamless;

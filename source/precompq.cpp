@@ -1,6 +1,7 @@
 #include "precompq.hpp"
 
 #include <library/log.hpp>
+#include <library/config.hpp>
 #include <library/timing/timer.hpp>
 #include <library/threading/TThreadPool.hpp>
 #include "columns.hpp"
@@ -58,19 +59,19 @@ namespace cppcraft
 			}
 		}
 	};
-	std::vector<PrecompJob*> jobs;
+	std::vector<PrecompJob> jobs;
 	
 	void PrecompQ::init()
 	{
 		// initialize precompiler backend
 		precompiler.init();
 		// create X amount of threads
-		this->threads = precompiler.getThreads();
+		this->threads = config.get("threads", 2);
 		// create dormant thread pool
 		threadpool = new ThreadPool::TPool(this->threads);
-		// create fixed amount of jobs
-		for (int i = 0; i < threads; i++)
-			jobs.push_back(new PrecompJob(i));
+		// create precompiler job count jobs
+		for (size_t i = 0; i < precompiler.getJobCount(); i++)
+			jobs.emplace_back(i);
 	}
 	
 	// stop precompq
@@ -193,8 +194,9 @@ namespace cppcraft
 	bool PrecompQ::startJob(int& t_mod, int job)
 	{
 		// set thread job info
-		PrecompThread& pt = precompiler.getThread(t_mod);
+		PrecompThread& pt = precompiler.getJob(t_mod);
 		pt.precomp = &precompiler[job];
+		// increase progress/stage
 		int stage = ++pt.precomp->sector->progress;
 		
 		bool cont = true;
@@ -205,14 +207,13 @@ namespace cppcraft
 			// then check if the precomp can actually be run (or is needed at all)
 			cont = pt.isolator();
 		}
-		
 		if (cont)
 		{
 			// queue thread job
-			threadpool->run(jobs[t_mod], &pt, false);
+			threadpool->run(&jobs[t_mod], &pt, false);
 			
 			// go to next thread
-			t_mod = (t_mod + 1) % this->threads;
+			t_mod = (t_mod + 1) % precompiler.getJobCount();
 			
 			// if we are back at the start, we may just be exiting
 			if (t_mod == 0) return true;
@@ -250,9 +251,7 @@ namespace cppcraft
 						if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT)
 						{
 							everythingDead = false;
-							
-							i++;
-							// exit for
+							// exit for loop
 							break;
 						}
 					}

@@ -29,7 +29,7 @@ namespace cppcraft
 		
 		// sector-block, a 3D volume of blocks
 		#pragma pack(push, 2)
-		typedef struct
+		typedef struct sectorblock_t
 		{
 			Block b[BLOCKS_XZ][BLOCKS_XZ][BLOCKS_Y] __attribute__((aligned(2)));
 			short blocks;

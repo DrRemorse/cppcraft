@@ -6,7 +6,7 @@ namespace cppcraft
 {
 	SectorContainer Sectors;
 	
-	Sector* SectorContainer::sectorAt(float x, float y, float z)
+	Sector* SectorContainer::sectorAt(float x, float y, float z) const
 	{
 		if (y >= 0 && y < Sector::BLOCKS_Y  * Sectors.getY() &&
 			x >= 0 && x < Sector::BLOCKS_XZ * Sectors.getXZ() &&

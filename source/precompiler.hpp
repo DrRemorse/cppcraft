@@ -54,12 +54,13 @@ namespace cppcraft
 		void init();
 		
 		// number of precompiler threads
-		inline std::size_t getThreads()
+		inline std::size_t getJobCount() const
 		{
 			return pcthread_count;
 		}
 		// returns a precompilation thread object
-		PrecompThread& getThread(int t);
+		PrecompThread& getJob(int job);
+		
 		// executes a round of precompilation
 		void run();
 		

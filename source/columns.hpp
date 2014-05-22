@@ -1,7 +1,6 @@
 #ifndef COLUMNS_HPP
 #define COLUMNS_HPP
 
-#include <library/log.hpp>
 #include <library/math/vector.hpp>
 #include "renderconst.hpp"
 #include "sectors.hpp"
@@ -15,14 +14,7 @@ namespace cppcraft
 		// position below Y-position when column first appearing in world
 		static const float COLUMN_DEPRESSION;
 		
-		// initialize column with position (x, z)
-		// position y is used to determine if the column is above the waterline
 		Column();
-		
-		bool renderable; // is renderable
-		bool updated;    // needs update
-		bool hasdata;    // has uploaded gpu data
-		bool aboveWater; // is above the waterline (reflectable)
 		
 		// used by: Seamless
 		inline void reset()
@@ -32,6 +24,12 @@ namespace cppcraft
 		}
 		// used by: Compiler pipeline
 		void compile(int x, int y, int z);
+		
+		// flags
+		bool renderable; // is renderable
+		bool updated;    // needs update
+		bool hasdata;    // has uploaded gpu data
+		bool aboveWater; // is above the waterline (reflectable)
 		
 	//private:
 		unsigned int vao;

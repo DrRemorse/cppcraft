@@ -1,7 +1,7 @@
 #include "precompiler.hpp"
 
-#include "library/config.hpp"
-#include "library/log.hpp"
+#include <library/log.hpp>
+#include <library/config.hpp>
 #include "blockmodels.hpp"
 #include "precomp_thread.hpp"
 #include "precompq_schedule.hpp"
@@ -32,7 +32,7 @@ namespace cppcraft
 		logger << Log::INFO << "* Initializing precompiler" << Log::ENDL;
 		
 		// create precomiler thread objects
-		this->pcthread_count = config.get("threading", 2);
+		this->pcthread_count = config.get("jobs", 4);
 		this->pcthreads = new PrecompThread[pcthread_count]();
 		
 		// random default values for vertex array sizes
@@ -67,9 +67,9 @@ namespace cppcraft
 		delete[] pcthreads;
 	}
 	
-	PrecompThread& Precompiler::getThread(int t)
+	PrecompThread& Precompiler::getJob(int job)
 	{
-		return pcthreads[t];
+		return pcthreads[job];
 	}
 	
 	Precomp::~Precomp()
