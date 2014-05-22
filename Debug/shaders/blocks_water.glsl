@@ -198,7 +198,7 @@ void main(void)
 	#include "lightw.glsl"
 	
 	//- sun/specular -//
-	const vec3  SUNCOLOR = vec3(1.0, 0.62, 0.23);
+	const vec3  SUNCOLOR = vec3(0.9, 0.7, 0.5);
 	
 	float shine = max(0.0, dot(vHalf, viewNormal) );
 	float specf = max(0.0, dot(reflect(-vLight, viewNormal), vEye));
@@ -206,12 +206,12 @@ void main(void)
 	float specv = max(0.0, spec);
 	
 	// ocean waves + sun highlights
-	vec3 highlights = pow(specv, 20.0) * SUNCOLOR + spec * 0.05;
+	vec3 highlights = pow(specv, 20.0) * vec3(0.4) + spec * 0.04;
 	color.rgb += highlights * shadow * shadow;
 	
 	// shiny/specular sun reflection
-	vec3 specular = SUNCOLOR * 0.8 * pow(specf, 16.0) + pow(specf, 4.0) * 0.3;
-	color.rgb += specular * pow(shine, 16.0) * shadow * shadow;
+	vec3 specular = SUNCOLOR * pow(specf, 20.0) * 1.5 * pow(shine, 8.0);
+	color.rgb += specular * shadow * shadow;
 	
 	//- distance->alpha -//
 	#include "horizonfade.glsl"
