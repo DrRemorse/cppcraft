@@ -15,12 +15,12 @@ namespace cppcraft
 	const float Column::COLUMN_DEPRESSION = 8.0f;
 	
 	// all the columns you'll ever need
-	ColumnsContainer Columns;
+	Columns columns;
 	
 	// column compiler accumulation buffer
 	vertex_t* column_dump;
 	
-	void ColumnsContainer::init()
+	void Columns::init()
 	{
 		logger << Log::INFO << "* Initializing columns" << Log::ENDL;
 		
@@ -42,7 +42,7 @@ namespace cppcraft
 				(y * COLUMNS_SIZE * Sector::BLOCKS_Y >= RenderConst::WATER_LEVEL);
 		}
 	}
-	ColumnsContainer::ColumnsContainer()
+	Columns::Columns()
 	{
 		////////////////////////////////////////////////////////
 		// allocate temporary datadumps for compiling columns //
@@ -52,7 +52,7 @@ namespace cppcraft
 		column_dump = 
 			new vertex_t[COLUMNS_SIZE * RenderConst::MAX_FACES_PER_SECTOR * 4];
 	}
-	ColumnsContainer::~ColumnsContainer()
+	Columns::~Columns()
 	{
 		delete[] column_dump;
 	}
@@ -74,12 +74,12 @@ namespace cppcraft
 		/////////////////////////////////////////////////////////////////////
 		
 		// first sector in column
-		int start_y = y * Columns.COLUMNS_SIZE;
-		int end_y = start_y + Columns.COLUMNS_SIZE;
+		int start_y = y * Columns::COLUMNS_SIZE;
+		int end_y = start_y + Columns::COLUMNS_SIZE;
 		
 		int vboCount = 0;
 		bool ready = true;
-		vbodata_t vboList[Columns.COLUMNS_SIZE];
+		vbodata_t vboList[Columns::COLUMNS_SIZE];
 		
 		for (int sy = end_y-1; sy >= start_y; sy--)
 		{
@@ -223,9 +223,9 @@ namespace cppcraft
 		glBindVertexArray(this->vao);
 		
 		// bind vbo and set to total bytes
-		glBindBuffer(GL_ARRAY_BUFFER_ARB, this->vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
 		// upload data
-		glBufferData(GL_ARRAY_BUFFER_ARB, totalbytes, column_dump, GL_STATIC_DRAW_ARB);
+		glBufferData(GL_ARRAY_BUFFER, totalbytes, column_dump, GL_STATIC_DRAW);
 		
 		if (updateAttribs)
 		{
@@ -256,8 +256,8 @@ namespace cppcraft
 		
 		if (camera.getFrustum().column(x * Sector::BLOCKS_XZ + Sector::BLOCKS_XZ / 2,
 								z * Sector::BLOCKS_XZ + Sector::BLOCKS_XZ / 2,
-								y * Columns.COLUMNS_SIZE * Sector::BLOCKS_Y,
-								Columns.COLUMNS_SIZE * Sector::BLOCKS_Y, 
+								y * Columns::COLUMNS_SIZE * Sector::BLOCKS_Y,
+								Columns::COLUMNS_SIZE * Sector::BLOCKS_Y, 
 								Sector::BLOCKS_XZ / 2))
 		{
 			// update render list

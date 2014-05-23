@@ -41,7 +41,7 @@ namespace cppcraft
 		char          occluded [RenderConst::MAX_UNIQUE_SHADERS];
 	};
 	
-	class ColumnsContainer
+	class Columns
 	{
 	public:
 		// number of columns
@@ -49,8 +49,8 @@ namespace cppcraft
 		// size of each column in sectors
 		static const int COLUMNS_SIZE = Sectors.SECTORS_Y / COLUMNS_Y;
 		
-		ColumnsContainer();
-		~ColumnsContainer();
+		Columns();
+		~Columns();
 		void init();
 		
 		// column index operator
@@ -65,7 +65,7 @@ namespace cppcraft
 	private:
 		Column* columns;
 	};
-	extern ColumnsContainer Columns;
+	extern Columns columns;
 }
 
 #endif

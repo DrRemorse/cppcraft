@@ -143,9 +143,9 @@ namespace cppcraft
 				} // sectors y
 				
 				// reset edge columns
-				for (y = 0; y < ColumnsContainer::COLUMNS_Y; y++)
+				for (y = 0; y < Columns::COLUMNS_Y; y++)
 				{
-					Columns(0, y, z).reset();
+					columns(0, y, z).reset();
 				}
 				
 			} // sectors z
@@ -209,9 +209,9 @@ namespace cppcraft
 				} // sectors y
 				
 				// reset edge columns
-				for (y = 0; y < ColumnsContainer::COLUMNS_Y; y++)
+				for (y = 0; y < Columns::COLUMNS_Y; y++)
 				{
-					Columns(Sectors.getXZ()-1, y, z).reset();
+					columns(Sectors.getXZ()-1, y, z).reset();
 				}
 				
 			} // sectors z
@@ -272,9 +272,9 @@ namespace cppcraft
 				} // sectors y
 				
 				// reset edge columns
-				for (y = 0; y < Columns.COLUMNS_Y; y++)
+				for (y = 0; y < Columns::COLUMNS_Y; y++)
 				{
-					Columns(x, y, 0).reset();
+					columns(x, y, 0).reset();
 				}
 				
 			} // sectors x
@@ -331,9 +331,9 @@ namespace cppcraft
 				} // sectors y
 				
 				// reset edge columns
-				for (y = 0; y < Columns.COLUMNS_Y; y++)
+				for (y = 0; y < Columns::COLUMNS_Y; y++)
 				{
-					Columns(x, y, Sectors.getXZ()-1).reset();
+					columns(x, y, Sectors.getXZ()-1).reset();
 				}
 				
 			} // sectors x

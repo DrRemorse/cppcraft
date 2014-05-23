@@ -17,11 +17,11 @@ namespace cppcraft
 	void PrecompScheduler::add(const Sector& sector)
 	{
 		// add to this scheduler
-		int cy = sector.y / Columns.COLUMNS_SIZE;
+		int cy = sector.y / Columns::COLUMNS_SIZE;
 		
 		for (std::size_t i = 0; i < psched.size(); i++)
 		{
-			int sy = psched[i].sector->y / Columns.COLUMNS_SIZE;
+			int sy = psched[i].sector->y / Columns::COLUMNS_SIZE;
 			
 			// we have to compare against sectors here, because the world is constantly changing
 			if (psched[i].sector->x == sector.x && sy == cy && psched[i].sector->z == sector.z)
@@ -57,8 +57,8 @@ namespace cppcraft
 	{
 		// determine readiness of column before sending to compiler
 		// first sector & end iterator in column
-		int start_y = sector->y - (sector->y & (Columns.COLUMNS_SIZE-1));
-		int end_y   = start_y + Columns.COLUMNS_SIZE;
+		int start_y = sector->y - (sector->y & (Columns::COLUMNS_SIZE-1));
+		int end_y   = start_y + Columns::COLUMNS_SIZE;
 		bool ready = true;
 		
 		for (int y = start_y; y < end_y; y++)
@@ -94,9 +94,9 @@ namespace cppcraft
 		/// add to compiler queue ///
 		mtx.compiler.lock();
 		
-		int cy = sector->y / Columns.COLUMNS_SIZE;
+		int cy = sector->y / Columns::COLUMNS_SIZE;
 		
-		Column& cv = Columns(sector->x, cy, sector->z);
+		Column& cv = columns(sector->x, cy, sector->z);
 		if (cv.updated == false)
 		{
 			cv.updated = true;

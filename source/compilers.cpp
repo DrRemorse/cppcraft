@@ -18,7 +18,7 @@ namespace cppcraft
 	void Compilers::initCompilers()
 	{
 		logger << Log::INFO << "* Initializing compilers" << Log::ENDL;
-		Columns.init();
+		columns.init();
 		colq.clear();
 	}
 	
@@ -31,8 +31,8 @@ namespace cppcraft
 		// also, prune array removing dead columns
 		for (int i = colq.size()-1; i >= 0; i--)
 		{
-			int cy = colq[i]->y / Columns.COLUMNS_SIZE;
-			Column& cv = Columns(colq[i]->x, cy, colq[i]->z);
+			int cy = colq[i]->y / Columns::COLUMNS_SIZE;
+			Column& cv = columns(colq[i]->x, cy, colq[i]->z);
 			
 			if (cv.updated == true)
 			{

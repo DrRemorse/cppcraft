@@ -104,11 +104,11 @@ namespace cppcraft
 		if (rg.ystp == 1)
 		{
 			y0 = 0; //(rg.playerY >= RenderConst::WATER_LEVEL) ? 1 : 0;
-			y1 = Columns.COLUMNS_Y - 1;
+			y1 = Columns::COLUMNS_Y - 1;
 		}
 		else
 		{
-			y0 = Columns.COLUMNS_Y - 1;
+			y0 = Columns::COLUMNS_Y - 1;
 			y1 = 0; //(rg.playerY >= RenderConst::WATER_LEVEL) ? 1 : 0;
 		}
 		
@@ -144,7 +144,7 @@ namespace cppcraft
 		
 		while (true)
 		{	
-			Column& cv = Columns(x, y, z);
+			Column& cv = columns(x, y, z);
 			
 			if (cv.renderable)
 			{
@@ -155,8 +155,8 @@ namespace cppcraft
 					if (rg.frustum->column(
 							x * Sector::BLOCKS_XZ + gs_half,
 							z * Sector::BLOCKS_XZ + gs_half,
-							y * Columns.COLUMNS_SIZE * Sector::BLOCKS_Y,
-							Columns.COLUMNS_SIZE * Sector::BLOCKS_Y, 
+							y * Columns::COLUMNS_SIZE * Sector::BLOCKS_Y,
+							Columns::COLUMNS_SIZE * Sector::BLOCKS_Y, 
 							gs_half
 						))
 					{
