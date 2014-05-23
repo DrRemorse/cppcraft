@@ -43,7 +43,7 @@ namespace cppcraft
 		}
 		else if (isCross(id))
 		{
-			return Biomes::CL_CROSS;
+			return Biomes::CL_GRASS;
 		}
 		else if (id == _DESERTSAND)
 		{

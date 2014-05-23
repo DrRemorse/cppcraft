@@ -56,12 +56,10 @@ namespace cppcraft
 		// column index operator
 		inline Column& operator() (int x, int y, int z)
 		{
-			#define COLUMN_MEMORY_LAYOUT  (x * Sectors.getXZ() * this->COLUMNS_Y + z * this->COLUMNS_Y + y)
-			
 			x = (x + world.getDeltaX()) % Sectors.getXZ();
 			z = (z + world.getDeltaZ()) % Sectors.getXZ();
 			
-			return columns[COLUMN_MEMORY_LAYOUT];
+			return columns[((x * Sectors.getXZ() + z) * COLUMNS_Y) + y];
 		}
 		
 	private:

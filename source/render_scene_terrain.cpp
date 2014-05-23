@@ -17,6 +17,9 @@
 #include "vertex_block.hpp"
 #include <cmath>
 
+#include <library/timing/timer.hpp>
+//#define TIMING
+
 using namespace library;
 
 namespace cppcraft
@@ -235,12 +238,12 @@ namespace cppcraft
 		
 	} // sort render queue
 	
-	void renderColumn(Column* cv, int i, vec3& position, GLint loc_vtrans, double dtime)
+	inline void renderColumn(Column* cv, int i, vec3& position, GLint loc_vtrans)
 	{
 		// make sure we don't resend same position again
 		// around 10k+ skips per second with axis=64
 		if (position.x != cv->pos.x || 
-			position.y != cv->pos.y || 
+			//position.y != cv->pos.y || 
 			position.z != cv->pos.z)
 		{
 			// translate to new position
@@ -250,11 +253,11 @@ namespace cppcraft
 			position = cv->pos;
 			
 			// cool effect
-			if (cv->pos.y < 0.0)
+			/*if (cv->pos.y < 0.0)
 			{
-				cv->pos.y += 0.25 * dtime;
+				cv->pos.y += 0.25; // * dtime;
 				if (cv->pos.y > 0.0) cv->pos.y = 0.0;
-			}
+			}*/
 		}
 		glBindVertexArray(cv->vao);
 		glDrawArrays(GL_QUADS, cv->bufferoffset[i], cv->vertices[i]);
@@ -306,6 +309,11 @@ namespace cppcraft
 	{
 		GLint loc_vtrans, location;
 		vec3  position(-1);
+		
+		#ifdef TIMING
+		Timer timer;
+		timer.startNewRound();
+		#endif
 		
 		// bind terrain colors at unit 2
 		/*flatlands.bindTexture(2);
@@ -406,7 +414,7 @@ namespace cppcraft
 					// start counting samples passed
 					glBeginQuery(GL_ANY_SAMPLES_PASSED, cv->occlusion[i]);
 					
-					renderColumn(cv, i, position, loc_vtrans, renderer.dtime);
+					renderColumn(cv, i, position, loc_vtrans);
 					
 					// end counting
 					glEndQuery(GL_ANY_SAMPLES_PASSED);
@@ -421,7 +429,7 @@ namespace cppcraft
 				for (int j = 0; j < drawq[i].count(); j++)
 				{
 					Column* cv = drawq[i].get(j);
-					renderColumn(cv, i, position, loc_vtrans, renderer.dtime);
+					renderColumn(cv, i, position, loc_vtrans);
 				}
 			}
 			
@@ -432,6 +440,9 @@ namespace cppcraft
 		glActiveTexture(GL_TEXTURE1);
 		textureman[Textureman::T_DIFFUSE].setWrapMode(GL_REPEAT);
 		
+		#ifdef TIMING
+		logger << Log::INFO << "Time spent on terrain: " << timer.getDeltaTime() * 1000.0 << Log::ENDL;
+		#endif
 	}
 	
 	void renderReflectedColumn(Column* cv, int i, vec3& position, GLint loc_vtrans)
@@ -590,7 +601,7 @@ namespace cppcraft
 					// start counting samples passed
 					glBeginQuery(GL_ANY_SAMPLES_PASSED, cv->occlusion[i]);
 					
-					renderColumn(cv, i, position, loc_vtrans, renderer.dtime);
+					renderColumn(cv, i, position, loc_vtrans);
 					
 					// end counting
 					glEndQuery(GL_ANY_SAMPLES_PASSED);
@@ -605,7 +616,7 @@ namespace cppcraft
 				for (int j = 0; j < drawq[i].count(); j++)
 				{
 					Column* cv = drawq[i].get(j);
-					renderColumn(cv, i, position, loc_vtrans, renderer.dtime);
+					renderColumn(cv, i, position, loc_vtrans);
 				}
 			}
 		} // each shader

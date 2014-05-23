@@ -15,11 +15,6 @@ namespace cppcraft
 	
 	class DrawQueueShaderline
 	{
-	private:
-		// queue
-		std::vector<Column*> queue;
-		unsigned int items;
-		
 	public:
 		// adds a column to this draw queue
 		inline void add(Column* cv)
@@ -50,6 +45,11 @@ namespace cppcraft
 		{
 			return this->queue[index];
 		}
+		
+	private:
+		// queue
+		std::vector<Column*> queue;
+		unsigned int items;
 		
 	};
 	

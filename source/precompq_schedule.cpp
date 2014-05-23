@@ -49,7 +49,6 @@ namespace cppcraft
 			{
 				// if the item was passed on to compiler, remove it
 				remove_at(psched, i);
-				//psched.erase(psched.begin() + i);
 			}
 		}
 	}

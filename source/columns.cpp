@@ -267,14 +267,14 @@ namespace cppcraft
 			{
 				// make sure it is added to renderq
 				camera.recalc = true;
-				this->pos.y = -COLUMN_DEPRESSION;
+				//this->pos.y = -COLUMN_DEPRESSION;
 			}
 		}
 		
 		// set as renderable, 
 		this->renderable = true;
 		// and no longer needing update
-		this->updated    = false;
+		this->updated = false;
 		// the vbo has data stored in gpu
 		this->hasdata = true;
 		

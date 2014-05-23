@@ -3,6 +3,7 @@
 #include <library/config.hpp>
 #include <library/log.hpp>
 #include <library/opengl/opengl.hpp>
+#include <library/timing/timer.hpp>
 
 #include "compilers.hpp"
 #include "player.hpp"
@@ -110,11 +111,21 @@ namespace cppcraft
 		
 		// increment framecounter
 		this->frametick += dtime;
-		
+		// interpolate sun position
 		thesun.integrate(0.02 * dtime);
+		
+		#ifdef TIMING
+		Timer timer;
+		timer.startNewRound();
+		#endif
 		
 		// render scene
 		sceneRenderer->render(*this, worldman);
+		
+		#ifdef TIMING
+		logger << Log::INFO << "Time spent rendering: " << timer.getDeltaTime() * 1000.0 << Log::ENDL;
+		#endif
+		
 		// post processing
 		screenspace.render(gamescr, this->frametick);
 		// gui

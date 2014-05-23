@@ -1,7 +1,7 @@
 #version 130
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
-precision mediump float;
+
 #define POSTPROCESS
 
 #ifdef VERTEX_PROGRAM
@@ -22,7 +22,6 @@ flat out vec4 out_color;
 void main(void)
 {
 	vec4 position = matview * vec4(in_vertex, 1.0);
-	
 	gl_Position = matproj * position;
 	
 	// transform size
@@ -49,19 +48,17 @@ void main(void)
 {
 	vec4 color = texture2DArray(texture, vec3(gl_PointCoord.xy, tileID));
 	
-	float alpha = out_normdata.x * color.a;
-	if (alpha < 0.01) discard;
-	
 	#include "degamma.glsl"
 	
 	color.rgb = mix(color.rgb, out_color.rgb, out_color.a);
-	color.rgb *= min(1.0, out_normdata[1] + daylight);
+	color.rgb *= min(1.0, out_normdata.y + daylight);
+	color.a *= out_normdata.x;
 	
 	// gamma ramp
 	#ifdef POSTPROCESS
-		gl_FragColor = vec4(color.rgb, alpha);
+		gl_FragColor = color;
 	#else
-		gl_FragColor = vec4(pow(color.rgb, vec3(2.2)), alpha);
+		gl_FragColor = vec4(pow(color.rgb, vec3(2.2)), color.a);
 	#endif
 }
 #endif

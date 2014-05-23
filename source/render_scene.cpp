@@ -6,6 +6,9 @@
 #include <library/opengl/window.hpp>
 #include <library/opengl/camera.hpp>
 
+#include <library/timing/timer.hpp>
+//#define TIMING
+
 #include "drawq.hpp"
 #include "gameconf.hpp"
 #include "minimap.hpp"
@@ -189,8 +192,18 @@ namespace cppcraft
 				// frustum was updated
 				//camera.updated = true;
 				camera.ref = true;
+				
+				#ifdef TIMING
+				Timer timer;
+				timer.startNewRound();
+				#endif
+				
 				// process columns & modify occlusion
 				recalculateFrustum();
+				
+				#ifdef TIMING
+				logger << Log::INFO << "Time spent calculating: " << timer.getDeltaTime() * 1000.0 << Log::ENDL;
+				#endif
 			}
 			else
 			{
@@ -279,6 +292,11 @@ namespace cppcraft
 		// disable double-sided faces
 		glEnable(GL_CULL_FACE);
 		
+		#ifdef TIMING
+		Timer timerScene;
+		timerScene.startNewRound();
+		#endif
+		
 		// scene
 		renderScene(renderer, camera);
 		
@@ -302,6 +320,10 @@ namespace cppcraft
 		
 		// then water
 		renderSceneWater(renderer);
+		
+		#ifdef TIMING
+		logger << Log::INFO << "Time spent on scene: " << timerScene.getDeltaTime() * 1000.0 << Log::ENDL;
+		#endif
 		
 		glDisable(GL_CULL_FACE);
 		

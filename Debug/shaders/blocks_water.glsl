@@ -118,7 +118,7 @@ void main(void)
 	vec3 Normal = normalize(n1 + n2);
 	
 	/*
-	const vec3 norm  = vec3(0, 1, 0);
+	const vec3 norm = vec3(0, 1, 0);
 	const vec3 tang = vec3(1, 0, 0);
 	vec3 binorm = cross(tang, norm);
 	
@@ -147,7 +147,7 @@ void main(void)
 	//----- fresnel term -----
 	
 	float fresnel = max(0.0, dot(vEye, viewNormal));
-	fresnel = pow(1.0 - fresnel, 5.0);
+	fresnel = 1.0 - sqrt(fresnel);
 	
 	// screenspace tex coords
 	vec2 texCoord = gl_FragCoord.xy / screendata.xy;
@@ -163,7 +163,7 @@ void main(void)
 	vec4 underw = texture2D(underwatermap, refcoord);
 	float wdepth = underw.a - dist;
 	
-	// avoid reading inside terrain (note: COSTLY)
+	// COSTLY re-read to avoid reading inside terrain
 	if (wdepth < 0.0)
 		underw = texture2D(underwatermap, texCoord);
 	
@@ -174,7 +174,6 @@ void main(void)
 	float dep = 1.0 - smoothstep(0.0, 0.04, wdepth);
 	
 	//----- SEACOLOR -----
-	// 66, 113, 136
 	const vec3 deepwater    = vec3(42, 73, 87) * vec3(1.0 / 255.0);
 	const vec3 shallowwater = vec3(0.35, 0.55, 0.50);
 	
@@ -191,7 +190,8 @@ void main(void)
 	// world/terrain reflection
 	vec3 wreflection = texture2D(reflectionmap, refcoord).rgb;
 	// add reflections to final color
-	color.rgb = mix(color.rgb, wreflection, min(1.0, fresnel + 0.5 * dist));
+	color.rgb = mix(color.rgb, wreflection, fresnel);
+	//color.rgb = vec3(fresnel);
 #endif
 	
 	//- lighting -//
