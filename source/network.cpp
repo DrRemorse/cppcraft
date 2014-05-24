@@ -9,6 +9,7 @@
 #include "player_logic.hpp"
 #include "sectors.hpp"
 #include "spiders.hpp"
+#include "sun.hpp"
 #include "world.hpp"
 #include <cstring>
 #include <cmath>
@@ -238,7 +239,12 @@ namespace cppcraft
 			break;
 			
 		case T_SAT:
-			logger << Log::INFO << "SAT angle: " << ((double*) mp->args)[0] << Log::ENDL;
+			while (false)
+			{
+				double angle = ((double*) mp->args)[0];
+				logger << Log::INFO << "SAT angle: " << angle << Log::ENDL;
+				thesun.setRadianAngle(angle);
+			}
 			break;
 			
 		case T_SATSTEP:

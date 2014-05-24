@@ -8,6 +8,7 @@
 #include "flatlands.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
+#include "renderconst.hpp"
 #include "sector.hpp"
 #include "tiles.hpp"
 #include "threading.hpp"

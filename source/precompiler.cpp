@@ -3,6 +3,7 @@
 #include <library/log.hpp>
 #include <library/config.hpp>
 #include "blockmodels.hpp"
+#include "columns.hpp"
 #include "precomp_thread.hpp"
 #include "precompq_schedule.hpp"
 #include "sectors.hpp"
@@ -82,15 +83,10 @@ namespace cppcraft
 	{
 		Sector& sector = *this->sector;
 		
-		// allocate sector vertex data
-		if (sector.vbodata == nullptr)
-		{
-			sector.vbodata = new vbodata_t;
-			sector.vbodata->pcdata = nullptr;
-		}
-		
 		// renderable VBO structure
-		vbodata_t& v = *sector.vbodata;
+		int cy = sector.y & (Columns::COLUMNS_SIZE-1);
+		Column& cv = columns(sector.x, sector.y / Columns::COLUMNS_SIZE, sector.z);
+		vbodata_t& v = cv.vbodata[cy];
 		
 		// ye olde switcharoo
 		delete[] v.pcdata;         // remove old data (if any)

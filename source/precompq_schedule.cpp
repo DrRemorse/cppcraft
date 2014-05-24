@@ -6,6 +6,7 @@
 #include "precompq.hpp"
 #include "sectors.hpp"
 #include "threading.hpp"
+#include "vertex_block.hpp"
 #include <vector>
 
 using namespace library;
@@ -58,12 +59,13 @@ namespace cppcraft
 		// determine readiness of column before sending to compiler
 		// first sector & end iterator in column
 		int start_y = sector->y - (sector->y & (Columns::COLUMNS_SIZE-1));
-		int end_y   = start_y + Columns::COLUMNS_SIZE;
 		bool ready = true;
 		
-		for (int y = start_y; y < end_y; y++)
+		Column& cv = columns(sector->x, sector->y / Columns::COLUMNS_SIZE, sector->z);
+		
+		for (int sy = 0; sy < Columns::COLUMNS_SIZE; sy++)
 		{
-			Sector& s2 = Sectors(sector->x, y, sector->z);
+			Sector& s2 = Sectors(sector->x, start_y + sy, sector->z);
 			
 			if (s2.progress != Sector::PROG_COMPILED)
 			{
@@ -73,18 +75,20 @@ namespace cppcraft
 			else if (s2.render)
 			{
 				// a renderable sector without VBO data, is not renderable!
-				if (s2.vbodata == nullptr)
+				if (cv.vbodata[sy].pcdata == nullptr)
 				{
-					//logger << Log::WARN << "PrecompSchedule::schedule(): rescheduling renderable" << Log::ENDL;
-					s2.progress = Sector::PROG_NEEDRECOMP;
-					ready = false;
-				}
-				else if (s2.vbodata->pcdata == nullptr)
-				{
-					//logger << Log::ERR << "PrecompSchedule::schedule(): vertex data was null" << Log::ENDL;
+					logger << Log::ERR << "PrecompSchedule::schedule(): vertex data was null" << Log::ENDL;
 					// FIXME this is a bug, somewhere
 					s2.progress = Sector::PROG_NEEDRECOMP;
 					ready = false;
+				}
+			}
+			else
+			{
+				if (cv.vbodata[sy].pcdata)
+				{
+					delete[] cv.vbodata[sy].pcdata;
+					cv.vbodata[sy].pcdata = nullptr;
 				}
 			}
 		}
@@ -94,9 +98,6 @@ namespace cppcraft
 		/// add to compiler queue ///
 		mtx.compiler.lock();
 		
-		int cy = sector->y / Columns::COLUMNS_SIZE;
-		
-		Column& cv = columns(sector->x, cy, sector->z);
 		if (cv.updated == false)
 		{
 			cv.updated = true;

@@ -2,19 +2,9 @@
 #define SECTOR_HPP
 
 #include "blocks.hpp"
-#include "renderconst.hpp"
 
 namespace cppcraft
 {
-	struct vertex_t;
-	
-	struct vbodata_t
-	{
-		vertex_t* pcdata;
-		unsigned short bufferoffset[RenderConst::MAX_UNIQUE_SHADERS];
-		unsigned short vertices	[RenderConst::MAX_UNIQUE_SHADERS];
-	};
-	
 	class Sector
 	{
 	public:
@@ -43,8 +33,6 @@ namespace cppcraft
 		
 		// data/blocks
 		sectorblock_t* blockpt;
-		// opengl vbo data
-		vbodata_t* vbodata;
 		// special datablock
 		//specialptr special;
 		

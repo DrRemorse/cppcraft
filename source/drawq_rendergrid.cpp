@@ -186,8 +186,8 @@ namespace cppcraft
 				
 				// free data from VAO/VBO (GPU is going to free or re-use this eventually)
 				glBindVertexArray(cv.vao);
-				glBindBuffer(GL_ARRAY_BUFFER_ARB, cv.vbo);
-				glBufferData(GL_ARRAY_BUFFER_ARB, 0, nullptr, GL_STATIC_DRAW_ARB);
+				glBindBuffer(GL_ARRAY_BUFFER, cv.vbo);
+				glBufferData(GL_ARRAY_BUFFER, 0, nullptr, GL_STATIC_DRAW);
 				
 			} // render test
 			

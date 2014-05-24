@@ -8,6 +8,15 @@
 
 namespace cppcraft
 {
+	struct vertex_t;
+	
+	typedef struct vbodata_t
+	{
+		vertex_t* pcdata;
+		unsigned short bufferoffset[RenderConst::MAX_UNIQUE_SHADERS];
+		unsigned short vertices	[RenderConst::MAX_UNIQUE_SHADERS];
+	} vbodata_t;
+	
 	class Column
 	{
 	public:
@@ -15,6 +24,7 @@ namespace cppcraft
 		static const float COLUMN_DEPRESSION;
 		
 		Column();
+		~Column();
 		
 		// used by: Seamless
 		inline void reset()
@@ -24,6 +34,9 @@ namespace cppcraft
 		}
 		// used by: Compiler pipeline
 		void compile(int x, int y, int z);
+		
+		// opengl vbo data section
+		vbodata_t* vbodata;
 		
 		// flags
 		bool renderable; // is renderable
@@ -38,7 +51,7 @@ namespace cppcraft
 		int	       bufferoffset[RenderConst::MAX_UNIQUE_SHADERS];
 		int           vertices [RenderConst::MAX_UNIQUE_SHADERS];
 		unsigned int  occlusion[RenderConst::MAX_UNIQUE_SHADERS];
-		char          occluded [RenderConst::MAX_UNIQUE_SHADERS];
+		bool          occluded [RenderConst::MAX_UNIQUE_SHADERS];
 	};
 	
 	class Columns
@@ -66,6 +79,7 @@ namespace cppcraft
 		Column* columns;
 	};
 	extern Columns columns;
+	
 }
 
 #endif

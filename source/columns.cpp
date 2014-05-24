@@ -65,72 +65,38 @@ namespace cppcraft
 		this->updated    = false;
 		this->renderable = false;
 		this->hasdata = false;
+		
+		this->vbodata = new vbodata_t[Columns::COLUMNS_SIZE]();
+	}
+	Column::~Column()
+	{
+		delete[] this->vbodata;
 	}
 	
 	void Column::compile(int x, int y, int z)
 	{
-		/////////////////////////////////////////////////////////////////////
-		// assemble entire column from vbodata section of a column sectors //
-		/////////////////////////////////////////////////////////////////////
-		
-		// first sector in column
-		int start_y = y * Columns::COLUMNS_SIZE;
-		int end_y = start_y + Columns::COLUMNS_SIZE;
+		/////////////////////////////////////////////////////////////
+		// assemble entire column from vbodata section of a column //
+		/////////////////////////////////////////////////////////////
 		
 		int vboCount = 0;
-		bool ready = true;
 		vbodata_t vboList[Columns::COLUMNS_SIZE];
 		
-		for (int sy = end_y-1; sy >= start_y; sy--)
+		for (int sy = Columns::COLUMNS_SIZE-1; sy >= 0; sy--)
 		{
-			Sector& sector = Sectors(x, sy, z);
-			
-			if (sector.render)
+			if (vbodata[sy].pcdata != nullptr)
 			{
-				// a renderable without VBO data, is not a renderable!
-				if (sector.vbodata == nullptr)
-				{
-					logger << Log::WARN << "Column::compile(): sector no vbodata" << Log::ENDL;
-					ready = false;
-				}
-				else if (sector.vbodata->pcdata == nullptr)
-				{
-					logger << Log::ERR << "Column::compile(): vertex data was null" << Log::ENDL;
-					ready = false;
-				}
-				else if (ready) // we only care about VBOs if we are still ready
-				{
-					// COPY the VBO data section
-					vboList[vboCount] = *sector.vbodata;
-					// renderable and consistent, add to queue
-					vboCount += 1;
-				}
+				// COPY the VBO data section
+				vboList[vboCount] = vbodata[sy];
+				// renderable and consistent, add to queue
+				vboCount += 1;
 			}
-		}
-		
-		if (ready)
-		{
-			// remove extraneous data from all sectors
-			// NOTE: this could crash any precompilation stage
-			for (int sy = start_y; sy < end_y; sy++)
-			{
-				Sector& sector = Sectors(x, sy, z);
-				
-				if (sector.vbodata)
-				{
-					delete sector.vbodata;
-					sector.vbodata = nullptr;
-				}	
-			}
-		}
-		else // no ready? no continue
-		{
-			return;
 		}
 		
 		// exit if this column isn't renderable at all
 		if (vboCount == 0)
 		{
+			logger << Log::ERR << "Column::compile(): column was not ready" << Log::ENDL;
 			this->updated    = false;
 			this->renderable = false;
 			return;
@@ -145,13 +111,11 @@ namespace cppcraft
 		// go through entire column and find entry points and total bytes
 		for (int vy = 0; vy < vboCount; vy++)
 		{
-			vbodata_t& v = vboList[vy];
-			
 			// count vertices
 			for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 			{
 				// increase by vertices from each path
-				totalverts[i] += v.vertices[i];
+				totalverts[i] += vboList[vy].vertices[i];
 			}
 		}
 		
@@ -197,7 +161,7 @@ namespace cppcraft
 			} // shaders
 			
 			// remove vertex data permanently
-			delete[] v.pcdata;
+			//delete[] v.pcdata;
 			
 		} // next vbo
 		
@@ -243,9 +207,6 @@ namespace cppcraft
 		glVertexAttribPointer(5, 4, GL_UNSIGNED_BYTE,	GL_TRUE,  sizeof(vertex_t), (void*) (offsetof(vertex_t, c) + 4)); // torchlight color
 		glEnableVertexAttribArray(5);
 		}
-		
-		// disable vao & vbo
-		//glBindVertexArray(0);
 		
 		#ifdef DEBUG
 		if (OpenGL::checkError())

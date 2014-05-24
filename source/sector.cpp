@@ -14,10 +14,9 @@ namespace cppcraft
 		this->z = z;
 		// initialize sector to default empty-unknown state
 		this->blockpt = nullptr;
-		this->vbodata = nullptr;
 		// this->special = nullptr;
 		
-		this->render = 0;              // not renderable
+		this->render = false;          // not renderable
 		this->progress = PROG_NEEDGEN; // needs to be generated
 		this->contents = CONT_UNKNOWN; // unknown content
 		
