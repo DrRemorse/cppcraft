@@ -19,7 +19,7 @@ namespace cppcraft
 		// default world folder
 		const std::string DEFAULT_WORLD_FOLDER = "world";
 		
-		int sectors_xz = config.get("sectors_axis", 48);
+		int sectors_xz = config.get("world.viewdist", 48);
 		Sectors.init(sectors_xz);
 		// also, initialize 2D flatlands (fsectors)
 		flatlands.init();

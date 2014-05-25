@@ -1,7 +1,7 @@
 #ifndef SUN_HPP
 #define SUN_HPP
 
-#include "library/math/vector.hpp"
+#include <library/math/vector.hpp>
 
 namespace library
 {
@@ -12,18 +12,6 @@ namespace cppcraft
 {
 	class SunClass
 	{
-	private:
-		float radianAngle;   // target angle
-		library::vec3 angle; // target sun vector from player
-		library::vec3 half1;
-		library::vec3 half2;
-		
-		float realRadian;
-		library::vec3 realAngle;
-		float realAmbience;
-		
-		float renderDist;
-		
 	public:
 		static const float SUN_DEF_ANGLE;
 		
@@ -46,12 +34,30 @@ namespace cppcraft
 		
 		// integrator for realtime sun values
 		void integrate(float step);
+		// travel distance check for updating shadows
+		void travelCheck();
 		// gettesr for realtime sun values
 		const library::vec3& getRealtimeAngle() const;
 		float getRealtimeRadianAngle() const;
 		float getRealtimeDaylight() const;
+		// timestep
+		void setStep(int step);
+		float getStepValue();
 		
 		library::mat4 getSunMatrix() const;
+		
+	private:
+		float step;
+		float radianAngle;   // target angle
+		library::vec3 angle; // target sun vector from player
+		library::vec3 half1;
+		library::vec3 half2;
+		
+		float realRadian;
+		library::vec3 realAngle;
+		float realAmbience;
+		
+		float renderDist;
 		
 		// sky renderer uses this class extensively
 		friend class SkyRenderer;

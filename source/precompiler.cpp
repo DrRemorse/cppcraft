@@ -33,7 +33,7 @@ namespace cppcraft
 		logger << Log::INFO << "* Initializing precompiler" << Log::ENDL;
 		
 		// create precomiler thread objects
-		this->pcthread_count = config.get("jobs", 4);
+		this->pcthread_count = config.get("world.jobs", 4);
 		this->pcthreads = new PrecompThread[pcthread_count]();
 		
 		// random default values for vertex array sizes

@@ -18,6 +18,7 @@ namespace cppcraft
 		
 		// in-sector offset (from seamless transition)
 		library::vec3 worldOffset;
+		library::vec2 nearPlaneHalfSize;
 		
 	public:
 		bool recalc;   // recalculate viewing frustum
@@ -30,6 +31,8 @@ namespace cppcraft
 		
 		int getGridsize() const { return this->gridsize; }
 		const library::mat4& getProjectionLong() const;
+		// deferred helper
+		const library::vec2& getNearPlaneHalfSize() const;
 		
 		inline const library::vec3& getWorldOffset() const
 		{

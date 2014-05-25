@@ -239,7 +239,7 @@ namespace cppcraft
 			break;
 			
 		case T_SAT:
-			while (false)
+			if (true)
 			{
 				double angle = ((double*) mp->args)[0];
 				logger << Log::INFO << "SAT angle: " << angle << Log::ENDL;
@@ -248,7 +248,12 @@ namespace cppcraft
 			break;
 			
 		case T_SATSTEP:
-			logger << Log::INFO << "SAT step: " << ((int*) mp->args)[0] << Log::ENDL;
+			if (true)
+			{
+				int step = ((int*) mp->args)[0];
+				logger << Log::INFO << "SAT step: " << step << Log::ENDL;
+				thesun.setStep(step);
+			}
 			break;
 			
 		case T_P:

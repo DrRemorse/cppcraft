@@ -6,6 +6,7 @@
 #include <library/opengl/vao.hpp>
 #include <library/opengl/window.hpp>
 #include <library/math/vector.hpp>
+#include "camera.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
 #include "shaderman.hpp"
@@ -58,7 +59,7 @@ namespace cppcraft
 		glViewport(0, 0, gamescr.SW, gamescr.SH);
 	}
 	
-	void FSRenderer::fog()
+	void FSRenderer::fog(WindowClass& gamescr)
 	{
 		Shader& shd = shaderman[Shaderman::FSTERRAINFOG];
 		shd.bind();
@@ -73,8 +74,18 @@ namespace cppcraft
 		if (sundot < 0.0) sundot = 0.0;
 		shd.sendFloat("sundot", sundot);
 		
+		// 2D transformed sun vector
 		vec2 sunpos = getSunVector(thesun.getSunMatrix());
 		shd.sendVec2("sunCoord", sunpos);
+		
+		// near plane half size
+		shd.sendVec2("nearPlaneHalfSize", camera.getNearPlaneHalfSize());
+		// camera view matrix
+		shd.sendMatrix("matview", camera.getViewMatrix());
+		// player direction
+		shd.sendVec3("cameraDir", player.getLookVector());
+		// player position
+		shd.sendVec3("cameraPos", vec3(player.X, player.Y, player.Z));
 		
 		// render fullscreen quad
 		screenVAO.render(GL_QUADS);

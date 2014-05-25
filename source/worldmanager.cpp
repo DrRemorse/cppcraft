@@ -9,6 +9,7 @@
 #include "precompq.hpp"
 #include "seamless.hpp"
 #include "soundman.hpp"
+#include "sun.hpp"
 #include "threading.hpp"
 #include "worldbuilder.hpp"
 #include "world.hpp"
@@ -104,7 +105,10 @@ namespace cppcraft
 			if (Seamless::run()) timeout = true;
 			
 			// check for timeout
-			//if (timer.getDeltaTime() > _localtime + MAX_TIMING_WAIT) goto theend;
+			if (timer.getDeltaTime() > _localtime + MAX_TIMING_WAIT) timeout = true;
+			
+			// update shadows if sun travelled far
+			thesun.travelCheck();
 			
 			// ---------- PRECOMPILER ----------- //
 			

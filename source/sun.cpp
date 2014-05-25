@@ -1,7 +1,10 @@
 #include "sun.hpp"
 
-#include "library/math/matrix.hpp"
+#include <library/log.hpp>
+#include <library/math/matrix.hpp>
+#include <library/timing/timer.hpp>
 #include "camera.hpp"
+#include "sectors.hpp"
 #include <cmath>
 
 using namespace library;
@@ -12,6 +15,7 @@ namespace cppcraft
 	const double PI2 = PI * 2;
 	const float SunClass::SUN_DEF_ANGLE = PI / 4.0;
 	SunClass thesun;
+	Timer    suntimer;
 	
 	void SunClass::init(float angle)
 	{
@@ -21,6 +25,9 @@ namespace cppcraft
 		
 		this->realRadian   = angle + PI;
 		this->realAmbience = daylight(realRadian);
+		
+		this->setStep(900);
+		suntimer.startNewRound();
 	}
 	
 	const vec3& SunClass::getAngle() const
@@ -53,15 +60,36 @@ namespace cppcraft
 		half2 = vec3(this->angle.x + direction * 0.12, this->angle.y, 0.0);
 		half2.normalize();
 	}
-	
-	void SunClass::integrate(float step)
+	inline float SunClass::getStepValue()
 	{
-		vec3 newAngle = getRealtimeAngle().mix(getAngle(), step);
-		
+		return suntimer.getDeltaTime() * this->step;
+	}
+	
+	void SunClass::integrate(float timestep)
+	{
+		// create dest angle + time step
+		float rad = radianAngle + getStepValue();
+		vec3 angle = vec3(cos(rad), sin(rad), 0.0);
+		// interpolate with realtime angle
+		vec3 newAngle = getRealtimeAngle().mix(angle, timestep);
+		// extract angle
 		realRadian = atan2(newAngle.y, newAngle.x);
-		
+		// create new realtime angle
 		realAngle = vec3(cos(realRadian), sin(realRadian), 0.0);
+		// recalculate ambience
 		realAmbience = 1.0 - daylight(realAngle.y);
+	}
+	void SunClass::travelCheck()
+	{
+		if (suntimer.getDeltaTime() > 30)
+		{
+			// set new sun angle (before timer reset)
+			setRadianAngle(radianAngle + getStepValue());
+			// reset timer & traveldistance
+			suntimer.startNewRound();
+			// update world
+			Sectors.invalidateAll();
+		}
 	}
 	
 	float SunClass::getRadianAngle() const
@@ -128,6 +156,10 @@ namespace cppcraft
 	float SunClass::getRealtimeDaylight() const
 	{
 		return realAmbience;
+	}
+	void SunClass::setStep(int seconds)
+	{
+		this->step = PI2 / seconds;
 	}
 	
 	mat4 SunClass::getSunMatrix() const
