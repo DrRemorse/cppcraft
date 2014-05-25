@@ -78,7 +78,7 @@ void main()
 	
 	// density calculation
 	float foglevel = fogDensity(cameraPos, tpos, 80.0 + 10 * noise);
-	foglevel *= 0.5 + 0.5 * depth;
+	foglevel = (foglevel * 0.5 + 0.5) * depth;
 	
 	const vec3 fogBaseColor = vec3(0.9);
 	const vec3 sunBaseColor = vec3(1.0, 0.8, 0.5);
