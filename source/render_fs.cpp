@@ -59,7 +59,7 @@ namespace cppcraft
 		glViewport(0, 0, gamescr.SW, gamescr.SH);
 	}
 	
-	void FSRenderer::fog(WindowClass& gamescr)
+	void FSRenderer::fog(double timeElapsed)
 	{
 		Shader& shd = shaderman[Shaderman::FSTERRAINFOG];
 		shd.bind();
@@ -82,10 +82,11 @@ namespace cppcraft
 		shd.sendVec2("nearPlaneHalfSize", camera.getNearPlaneHalfSize());
 		// camera view matrix
 		shd.sendMatrix("matview", camera.getViewMatrix());
-		// player direction
-		shd.sendVec3("cameraDir", player.getLookVector());
 		// player position
 		shd.sendVec3("cameraPos", vec3(player.X, player.Y, player.Z));
+		// world offset for noise
+		shd.sendVec3("worldOffset", camera.getWorldOffset());
+		shd.sendFloat("timeElapsed", timeElapsed);
 		
 		// render fullscreen quad
 		screenVAO.render(GL_QUADS);

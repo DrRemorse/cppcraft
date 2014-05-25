@@ -41,14 +41,11 @@ namespace cppcraft
 		matproj = perspectiveMatrix(this->FOV, wnd.SA, this->znear, this->zfar);
 		matproj_long = perspectiveMatrix(this->FOV, wnd.SA, this->znear, this->zfar * 1.6);
 		
-		// calculate helpful bullshit
+		// calculate half near-plane size
 		const float pio360 = 4.0 * atan(1.0) / 360.0;
 		
-		// 2*near*tan(fovy/2)
 		float halfTan = tan(this->FOV * pio360);
-		
 		nearPlaneHalfSize = vec2(halfTan * wnd.SA, halfTan);
-		logger << Log::INFO << "* nphs: " << nearPlaneHalfSize << Log::ENDL;
 	}
 	
 	const mat4& Camera::getProjectionLong() const
