@@ -36,24 +36,28 @@ in vec3 eye_direction;
 const float ZFAR
 const float ZNEAR
 
-#include "noise.glsl"
+#include "noise3.glsl"
 
-float fogDensity(in vec3  camera,
-                 in vec3  point,
-				 in float fogHeight)
+float fogLength(in vec3  ray,
+                in vec3  point,
+				in float fogHeight)
 {
-	vec3 rayDir = normalize(camera - point);
-	rayDir.y = max(rayDir.y, 0.1);
-	
 	// distance in fog is calculated with a simple intercept theorem
-	float L = max(0.0, (fogHeight - point.y) / rayDir.y);
+	float len = max(0.0, fogHeight - point.y) / max(0.1, ray.y);
+	return min(ZFAR * 0.5, len);
+}
+
+float fogDensity(in vec3  ray,
+				 in vec3  point,
+				 in float fogdepth,
+				 in float depth)
+{
+	vec3 wcoords = vec3(cameraPos.x, 0.0, cameraPos.z) + worldOffset;
 	
-	const float growth = 0.3;
-	const float density = 0.3;
+	vec3 noisePos = point - wcoords;
+	float noise = snoise(noisePos * 0.01) + snoise(noisePos * 0.04);
 	
-	// when dist is 0, log(dist) is 1, so subtract this
-	float fogAmount = (log(L * growth) - 1) * density;
-	return max(0.0, fogAmount);
+	return (noise + 3.0) * 0.2 * fogdepth / (ZFAR * 0.5);
 }
 
 void main()
@@ -61,7 +65,7 @@ void main()
 	// base color
 	vec4 color = texture2D(terrain, texCoord);
 	// depth from alpha
-	float depth = color.a;
+	#define depth  color.a
 	
 	// add fog & sunlight
 	float sunrad = 1.0 - distance(texCoord, sunCoord) / 0.5;
@@ -69,28 +73,27 @@ void main()
 	
 	// volumetric fog
 	vec4 cofs = vec4(eye_direction * depth * ZFAR, 1.0) * matview;
-	vec3 tpos = cameraPos + cofs.xyz;
-	
-	vec3 noisePos = tpos - cameraPos - worldOffset;
-	noisePos.x += timeElapsed * 0.05;
-	
-	float noise = snoise(noisePos.xz * 0.02);
 	
 	// density calculation
-	float foglevel = fogDensity(cameraPos, tpos, 80.0 + 10 * noise);
-	foglevel = (foglevel * 0.5 + 0.5) * depth;
+	vec3 ray = normalize(-cofs.xyz);
+	vec3 tpos = cameraPos + cofs.xyz;
 	
-	const vec3 fogBaseColor = vec3(0.9);
+	float foglength = fogLength(ray, tpos, 90.0);
+	float foglevel  = fogDensity(ray, tpos, foglength, depth);
+	
+	foglevel *= 0.1 + 0.9 * sqrt(depth);
+	
+	const vec3 fogBaseColor = vec3(1.0);
 	const vec3 sunBaseColor = vec3(1.0, 0.8, 0.5);
 	
 	float sunAmount = max(0.0, sunrad) * notSky * sundot * 0.9 * depth;
-	float fogAmount = foglevel;
-	color.rgb = mix(color.rgb, fogBaseColor, fogAmount * (1.0 - sunAmount));
+	float fogAmount = foglevel * (1.0 - sunAmount);
+	//color.rgb = mix(color.rgb, fogBaseColor, fogAmount);
 	color.rgb = mix(color.rgb, sunBaseColor, sunAmount);
 	
 	// mix in fog
 	vec3 skyColor = texture2D(skytexture, texCoord).rgb;
-	color.rgb = mix(color.rgb, skyColor, smoothstep(0.5, 1.0, depth));
+	color.rgb = mix(color.rgb, skyColor, max(fogAmount, smoothstep(0.5, 1.0, depth)));
 	
 	gl_FragData[0] = color;
 }

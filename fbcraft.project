@@ -206,6 +206,7 @@
       <File Name="Debug/shaders/players.glsl"/>
       <File Name="Debug/shaders/gui_color.glsl"/>
       <File Name="Debug/shaders/worldradius.glsl"/>
+      <File Name="Debug/shaders/noise3.glsl"/>
     </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="source">
