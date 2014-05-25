@@ -67,17 +67,7 @@ namespace cppcraft
 		glBindFramebuffer(GL_FRAMEBUFFER, blurFBO);
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_RENDERBUFFER), 0);
 		
-		// dot for how much we are looking at sun
-		float sundot = thesun.getRealtimeAngle().dot(player.getLookVector());
-		// also pointless at low daylight
-		sundot *= thesun.getRealtimeDaylight();
-		if (sundot < 0.0) sundot = 0.0;
-		shd.sendFloat("sundot", sundot);
-		
-		// 2D transformed sun vector
-		vec2 sunpos = getSunVector(thesun.getSunMatrix());
-		shd.sendVec2("sunCoord", sunpos);
-		
+		shd.sendVec3("sunAngle", thesun.getRealtimeAngle());
 		// near plane half size
 		shd.sendVec2("nearPlaneHalfSize", camera.getNearPlaneHalfSize());
 		// camera view matrix

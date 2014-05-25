@@ -22,8 +22,7 @@ void main(void)
 uniform sampler2D terrain;
 uniform sampler2D skytexture;
 
-uniform float sundot;
-uniform vec2 sunCoord;
+uniform vec3 sunAngle;
 
 uniform mat4 matview;
 uniform vec3 cameraPos;
@@ -38,24 +37,16 @@ const float ZNEAR
 
 #include "noise3.glsl"
 
-float fogLength(in vec3  ray,
-                in vec3  point,
-				in float fogHeight)
-{
-	// distance in fog is calculated with a simple intercept theorem
-	float len = max(0.0, fogHeight - point.y) / max(0.1, ray.y);
-	return min(ZFAR * 0.5, len);
-}
-
 float fogDensity(in vec3  ray,
 				 in vec3  point,
-				 in float fogdepth,
-				 in float depth)
+				 in float depth,
+				 in float fogheight)
 {
-	vec3 wcoords = vec3(cameraPos.x, 0.0, cameraPos.z) + worldOffset;
+	// distance in fog is calculated with a simple intercept theorem
+	float len = max(0.0, fogheight - point.y) / max(0.1, ray.y);
+	float fogdepth = min(ZFAR * 0.5, len);
 	
-	vec3 noisePos = point - wcoords;
-	float noise = snoise(noisePos * 0.01) + snoise(noisePos * 0.04);
+	float noise = snoise(point * 0.01) + snoise(point * 0.04);
 	
 	return (noise + 3.0) * 0.2 * fogdepth / (ZFAR * 0.5);
 }
@@ -68,25 +59,23 @@ void main()
 	#define depth  color.a
 	
 	// add fog & sunlight
-	float sunrad = 1.0 - distance(texCoord, sunCoord) / 0.5;
-	float notSky = step(depth, 0.998);
+	//float sunrad = 1.0 - distance(texCoord, sunCoord) / 0.5;
+	//float notSky = step(depth, 0.998);
+	
+	// reconstruct eye coordinates
+	vec4 cofs = vec4(eye_direction * depth * ZFAR, 1.0) * matview;
+	vec3 ray = normalize(-cofs.xyz);
+	// to world coordinates
+	vec3 wpos = cofs.xyz + vec3(0.0, cameraPos.y, 0.0) - worldOffset;
 	
 	// volumetric fog
-	vec4 cofs = vec4(eye_direction * depth * ZFAR, 1.0) * matview;
-	
-	// density calculation
-	vec3 ray = normalize(-cofs.xyz);
-	vec3 tpos = cameraPos + cofs.xyz;
-	
-	float foglength = fogLength(ray, tpos, 90.0);
-	float foglevel  = fogDensity(ray, tpos, foglength, depth);
-	
+	float foglevel  = fogDensity(ray, wpos, depth, 90.0);
 	foglevel *= 0.1 + 0.9 * sqrt(depth);
 	
 	const vec3 fogBaseColor = vec3(1.0);
 	const vec3 sunBaseColor = vec3(1.0, 0.8, 0.5);
 	
-	float sunAmount = max(0.0, sunrad) * notSky * sundot * 0.9 * depth;
+	float sunAmount = max(0.0, dot(-ray, sunAngle)) * 0.8 * depth;
 	float fogAmount = foglevel * (1.0 - sunAmount);
 	//color.rgb = mix(color.rgb, fogBaseColor, fogAmount);
 	color.rgb = mix(color.rgb, sunBaseColor, sunAmount);
