@@ -46,7 +46,7 @@ namespace cppcraft
 		// the FBO we render the main scene to
 		sceneFBO.create();
 		sceneFBO.bind();
-		sceneFBO.createDepthRBO(renderer.gamescr.SW, renderer.gamescr.SH);
+		sceneFBO.createDepthRBO(renderer.gamescr.SW, renderer.gamescr.SH, GL_DEPTH_COMPONENT32);
 		
 		underwaterFBO.create();
 		underwaterFBO.bind();
@@ -63,7 +63,7 @@ namespace cppcraft
 			reflectionFBO.create();
 			reflectionFBO.bind();
 			reflectionFBO.attachColor(0, textureman.get(Textureman::T_REFLECTION));
-			reflectionFBO.createDepthRBO(renderer.gamescr.SW, renderer.gamescr.SH);
+			reflectionFBO.createDepthRBO(renderer.gamescr.SW, renderer.gamescr.SH, GL_DEPTH_COMPONENT16);
 			
 			// initialize reflection camera to be the same as regular camera,
 			// except it will be mirrored on Y-axis from water-plane level

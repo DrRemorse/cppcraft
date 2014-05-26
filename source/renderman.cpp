@@ -48,6 +48,9 @@ namespace cppcraft
 		}
 		wndconf.vsync       = config.get("opengl.vsync", true);
 		
+		wndconf.depthbits = 8;
+		wndconf.stencbits = 0;
+		
 		// open a GLFW ogl context window
 		gamescr.open(wndconf);
 		
@@ -61,7 +64,7 @@ namespace cppcraft
 		ogl.init();
 		
 		// enable custom point sprites
-		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE_ARB);
+		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 		glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
 		
 		// enable seamless cubemaps (globally)

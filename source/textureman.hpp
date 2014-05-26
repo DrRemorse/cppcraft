@@ -47,9 +47,8 @@ namespace cppcraft
 			T_STARS,
 			
 			T_MAGMA,
-			T_WATER_DUDV,
+			//T_WATER_DUDV,
 			
-			T_NOISE,
 			T_LENSDIRT,
 			T_LENSFLARE,
 			T_LENSFLARE2,
@@ -63,6 +62,8 @@ namespace cppcraft
 			T_UNDERWATERMAP,
 			T_RENDERBUFFER,
 			T_REFLECTION,
+			
+			T_DEPTHBUFFER,
 			
 			NUM_TEXTURES
 			

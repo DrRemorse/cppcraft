@@ -563,7 +563,7 @@ namespace cppcraft
 				{
 					case RenderConst::TX_WATER:
 						
-						textureman.bind(2, Textureman::T_WATER_DUDV);
+						//textureman.bind(2, Textureman::T_WATER_DUDV);
 						// water shader-set
 						handleSceneUniforms(renderer.frametick, 
 											shaderman[Shaderman::BLOCKS_WATER],

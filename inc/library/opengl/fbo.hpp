@@ -48,7 +48,7 @@ namespace library
 		void removeDepth();
 		
 		// create depth renderbuffer
-		void createDepthRBO(int width, int height);
+		void createDepthRBO(int width, int height, GLenum internalFormat);
 		void attachDepthRBO(const FBO&);
 		// create multisampling renderbuffer
 		void createMsaaRBO(int width, int height, int samples);

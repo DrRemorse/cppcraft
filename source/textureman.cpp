@@ -150,7 +150,7 @@ namespace cppcraft
 		if (bmp.load(config.get("textures.selection", "bitmap/default/selection.png"), Bitmap::PNG))
 		{
 			textures[T_SELECTION] = Texture(GL_TEXTURE_2D);
-			textures[T_SELECTION].create(bmp, true, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+			textures[T_SELECTION].create(bmp, true, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
 			
 			if (ogl.checkError()) throw std::string("Selection texture2d error");
 		}
@@ -168,11 +168,11 @@ namespace cppcraft
 		else throw std::string("Missing source file: Selection texture");
 		
 		// water du/dv texture
-		if (bmp.load(config.get("textures.waterdudv", "bitmap/default/waterdudv.png"), Bitmap::PNG))
+		/*if (bmp.load(config.get("textures.waterdudv", "bitmap/default/waterdudv.png"), Bitmap::PNG))
 		{
 			textures[T_WATER_DUDV] = Texture(GL_TEXTURE_2D);
 			textures[T_WATER_DUDV].create(bmp, true, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
-		}
+		}*/
 		
 		/// Sky renderer ///
 		
@@ -241,7 +241,7 @@ namespace cppcraft
 		// lens buffers
 		for (int i = 0; i < 3; i++)
 		{
-			textures[(int)T_LENSFLARE + i] = Texture(GL_TEXTURE_2D, GL_RGBA16F_ARB);
+			textures[(int)T_LENSFLARE + i] = Texture(GL_TEXTURE_2D, GL_RGBA16F);
 			textures[(int)T_LENSFLARE + i].create(0, screenspace.flareTxW, screenspace.flareTxH);
 			textures[(int)T_LENSFLARE + i].setInterpolation(true);
 		}
@@ -249,7 +249,7 @@ namespace cppcraft
 		// blur buffers
 		for (int i = 0; i < 2; i++)
 		{
-			textures[(int)T_BLURBUFFER1 + i] = Texture(GL_TEXTURE_2D, GL_RGBA16F_ARB);
+			textures[(int)T_BLURBUFFER1 + i] = Texture(GL_TEXTURE_2D, GL_RGBA16F);
 			textures[(int)T_BLURBUFFER1 + i].create(0, screenspace.blurTxW, screenspace.blurTxH);
 			textures[(int)T_BLURBUFFER1 + i].setInterpolation(true);
 		}
@@ -281,22 +281,22 @@ namespace cppcraft
 		
 		// fullscreen skybuffer
 		textures[T_SKYBUFFER] = Texture(GL_TEXTURE_2D);
-		textures[T_SKYBUFFER].setFormat(GL_RGBA16F_ARB);
+		textures[T_SKYBUFFER].setFormat(GL_RGBA16F);
 		textures[T_SKYBUFFER].create(0, gamescr.SW, gamescr.SH);
 		
 		// fullscreen fog colorbuffer
 		textures[T_FOGBUFFER] = Texture(GL_TEXTURE_2D);
-		textures[T_FOGBUFFER].setFormat(GL_RGBA16F_ARB);
+		textures[T_FOGBUFFER].setFormat(GL_RGBA16F);
 		textures[T_FOGBUFFER].create(0, gamescr.SW, gamescr.SH);
 		
 		// fullscreen underwater texture
 		textures[T_UNDERWATERMAP] = Texture(GL_TEXTURE_2D);
-		textures[T_UNDERWATERMAP].setFormat(GL_RGBA16F_ARB);
+		textures[T_UNDERWATERMAP].setFormat(GL_RGBA16F);
 		textures[T_UNDERWATERMAP].create(0, gamescr.SW, gamescr.SH);
 		
 		// fullscreen colorbuffer
 		textures[T_RENDERBUFFER] = Texture(GL_TEXTURE_2D);
-		textures[T_RENDERBUFFER].setFormat(GL_RGBA16F_ARB);
+		textures[T_RENDERBUFFER].setFormat(GL_RGBA16F);
 		textures[T_RENDERBUFFER].create(0, gamescr.SW, gamescr.SH);
 		textures[T_RENDERBUFFER].setInterpolation(true);
 		
@@ -305,9 +305,14 @@ namespace cppcraft
 			// world reflection buffer
 			textures[T_REFLECTION] = Texture(GL_TEXTURE_2D);
 			textures[T_REFLECTION].create(0, gamescr.SW / 2, gamescr.SH / 2);
-			//textures[T_REFLECTION].setFormat(GL_RGBA16F_ARB);
+			textures[T_REFLECTION].setFormat(GL_RGBA16F);
 			textures[T_REFLECTION].setInterpolation(true);
 		}
+		
+		// fullscreen depth buffer
+		textures[T_DEPTHBUFFER] = Texture(GL_TEXTURE_2D);
+		textures[T_DEPTHBUFFER].createDepth(gamescr.SW, gamescr.SH, GL_DEPTH_COMPONENT32F);
+		
 	}
 	
 	void Textureman::copyScreen(WindowClass& gamescr, named_textures_t tx)
