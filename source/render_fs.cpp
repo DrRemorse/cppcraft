@@ -59,7 +59,7 @@ namespace cppcraft
 		glViewport(0, 0, gamescr.SW, gamescr.SH);
 	}
 	
-	void FSRenderer::fog(double timeElapsed)
+	void FSRenderer::fog(WindowClass& gamescr, double timeElapsed)
 	{
 		Shader& shd = shaderman[Shaderman::FSTERRAINFOG];
 		shd.bind();
@@ -68,8 +68,6 @@ namespace cppcraft
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_RENDERBUFFER), 0);
 		
 		shd.sendVec3("sunAngle", thesun.getRealtimeAngle());
-		// near plane half size
-		shd.sendVec2("nearPlaneHalfSize", camera.getNearPlaneHalfSize());
 		// camera view matrix
 		shd.sendMatrix("matview", camera.getViewMatrix());
 		// player position

@@ -41,8 +41,8 @@ namespace cppcraft
 			glBindVertexArray(vao);
 			
 			// particles vbo
-			glBindBuffer(GL_ARRAY_BUFFER_ARB, vbo);
-			glBufferData(GL_ARRAY_BUFFER_ARB, renderCount * sizeof(particle_vertex_t), vertices, GL_STREAM_DRAW_ARB);
+			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+			glBufferData(GL_ARRAY_BUFFER, renderCount * sizeof(particle_vertex_t), vertices, GL_STREAM_DRAW);
 			
 			for (int i = 0; i < 4; i++)
 				glEnableVertexAttribArray(i);
@@ -57,9 +57,6 @@ namespace cppcraft
 			glVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(particle_vertex_t), (GLvoid*) 20);
 			
 			glBindVertexArray(0);
-			
-			for (int i = 0; i < 4; i++)
-				glDisableVertexAttribArray(i);
 		}
 		mtx.particles.unlock();
 	}

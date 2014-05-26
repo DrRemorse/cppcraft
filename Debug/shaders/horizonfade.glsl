@@ -8,7 +8,7 @@
 
 #ifdef POSTPROCESS
 	
-	color.a = min(1.0, vertdist / ZFAR);
+	color.a = vertdist / ZFAR;
 	
 #else
 	

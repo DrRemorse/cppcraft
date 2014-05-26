@@ -7,6 +7,7 @@
 #include "camera.hpp"
 #include "gameconf.hpp"
 #include "renderconst.hpp"
+#include <cmath>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -74,7 +75,7 @@ namespace cppcraft
 		return text;
 	}
 	
-	void Shaderman::init(WindowClass& gamescr, const mat4& matproj, const mat4& matproj_long)
+	void Shaderman::init(WindowClass& gamescr, const Camera& camera)
 	{
 		logger << Log::INFO << "* Loading & processing shaders" << Log::ENDL;
 		
@@ -125,7 +126,7 @@ namespace cppcraft
 			int sbase = (int)STD_BLOCKS;
 			
 			// projection matrix
-			shaders[sbase + i].sendMatrix("matproj", matproj);
+			shaders[sbase + i].sendMatrix("matproj", camera.getProjection());
 			// texture units
 			shaders[sbase + i].sendInteger("texture", 0);
 			shaders[sbase + i].sendInteger("tonemap", 1);
@@ -151,7 +152,7 @@ namespace cppcraft
 		linkstage.emplace_back("in_texture");
 		
 		shaders[PLAYERMODEL] = Shader("shaders/players.glsl", tokenizer, linkstage);
-		shaders[PLAYERMODEL].sendMatrix("matproj", matproj);
+		shaders[PLAYERMODEL].sendMatrix("matproj", camera.getProjection());
 		shaders[PLAYERMODEL].sendInteger("texture", 0);
 		
 		linkstage.clear();
@@ -183,8 +184,9 @@ namespace cppcraft
 		
 		shaders[PARTICLE] = Shader("shaders/particles.glsl", tokenizer, linkstage);
 		shaders[PARTICLE].sendInteger("texture", 0);
-		shaders[PARTICLE].sendMatrix("matproj", matproj);
-		shaders[PARTICLE].sendVec2("sizemult", vecScreen.xy());
+		shaders[PARTICLE].sendMatrix("matproj", camera.getProjection());
+		shaders[PARTICLE].sendVec2("screensize", vecScreen.xy());
+		shaders[PARTICLE].sendFloat("fovRadians", camera.getFOV() / 180.0 * M_PI);
 		
 		// atmospherics shader
 		linkstage.clear();
@@ -193,27 +195,27 @@ namespace cppcraft
 		shaders[ATMOSPHERE] = Shader("shaders/atmosphere.glsl", tokenizer, linkstage);
 		shaders[ATMOSPHERE].sendInteger("texture", 0);
 		shaders[ATMOSPHERE].sendInteger("stars",   1);
-		shaders[ATMOSPHERE].sendMatrix("matproj", matproj);
+		shaders[ATMOSPHERE].sendMatrix("matproj", camera.getProjection());
 		
 		// sun shader
 		shaders[SUN] = Shader("shaders/sun.glsl", tokenizer, linkstage);
-		shaders[SUN].sendMatrix("matproj", matproj);
+		shaders[SUN].sendMatrix("matproj", camera.getProjection());
 		shaders[SUN].sendInteger("texture", 0);
 		
 		// projected sun shader
 		shaders[SUNPROJ] = Shader("shaders/sunproj.glsl", tokenizer, linkstage);
-		shaders[SUNPROJ].sendMatrix("matproj", matproj);
+		shaders[SUNPROJ].sendMatrix("matproj", camera.getProjection());
 		shaders[SUNPROJ].sendInteger("texture", 0);
 		shaders[SUNPROJ].sendInteger("depth",   1);
 		
 		// moon shader
 		shaders[MOON] = Shader("shaders/moon.glsl", tokenizer, linkstage);
-		shaders[MOON].sendMatrix("matproj", matproj);
+		shaders[MOON].sendMatrix("matproj", camera.getProjection());
 		shaders[MOON].sendInteger("texture", 0);
 		
 		// clouds shader
 		shaders[CLOUDS] = Shader("shaders/clouds.glsl", tokenizer, linkstage);
-		shaders[CLOUDS].sendMatrix("matproj", matproj_long);
+		shaders[CLOUDS].sendMatrix("matproj", camera.getProjectionLong());
 		shaders[CLOUDS].sendInteger("texture", 0);
 		
 		// lensflare
@@ -240,6 +242,8 @@ namespace cppcraft
 		shaders[FSTERRAINFOG].sendInteger("skytexture", 1);
 		shaders[FSTERRAINFOG].sendInteger("normals",    2);
 		shaders[FSTERRAINFOG].sendInteger("noisetex",   3);
+		// near plane half size
+		shaders[FSTERRAINFOG].sendVec2("nearPlaneHalfSize", camera.getNearPlaneHalfSize());
 		
 		// screenspace terrain shader
 		shaders[FSTERRAIN] = Shader("shaders/fsterrain.glsl", tokenizer, linkstage);
@@ -263,12 +267,12 @@ namespace cppcraft
 		
 		shaders[PLAYERHAND] = Shader("shaders/playerhand.glsl", tokenizer, linkstage);
 		shaders[PLAYERHAND].sendInteger("texture", 0);
-		shaders[PLAYERHAND].sendMatrix("matproj", matproj);
+		shaders[PLAYERHAND].sendMatrix("matproj", camera.getProjection());
 		
 		// playerhand held-item, re-using meshobjects
 		shaders[PHAND_HELDITEM] = Shader("shaders/playerhand_helditem.glsl", tokenizer, linkstage);
 		shaders[PHAND_HELDITEM].sendInteger("texture", 0);
-		shaders[PHAND_HELDITEM].sendMatrix("matproj", matproj);
+		shaders[PHAND_HELDITEM].sendMatrix("matproj", camera.getProjection());
 		
 		// Multi-purpose GUI shader
 		linkstage.clear();

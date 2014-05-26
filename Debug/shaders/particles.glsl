@@ -8,7 +8,8 @@
 uniform mat4 matproj;
 uniform mat4 matview;
 
-uniform vec2 sizemult;
+uniform vec2 screensize;
+uniform float fovRadians;
 
 in vec3 in_vertex;
 in vec2 in_data;
@@ -26,7 +27,7 @@ void main(void)
 	
 	// transform size
 	vec4 projsize = matproj * vec4(in_data.xx, position.zw);
-	gl_PointSize = max(2.0, in_data.x / 64.0 * sizemult.x / projsize.z);
+	gl_PointSize = max(2.0, in_data.x / 64.0 * screensize.x / projsize.z);
 	
 	tileID = in_data.y;
 	out_normdata = in_normdata;

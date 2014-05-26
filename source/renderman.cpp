@@ -95,7 +95,7 @@ namespace cppcraft
 		// initialize texture manager
 		textureman.init(gamescr);
 		// initialize shader manager
-		shaderman.init(gamescr, camera.getProjection(), camera.getProjectionLong());
+		shaderman.init(gamescr, camera);
 		
 		// initialize scene renderer
 		sceneRenderer = new SceneRenderer();

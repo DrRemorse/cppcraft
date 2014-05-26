@@ -1,7 +1,7 @@
 #ifndef SHADERMAN_HPP
 #define SHADERMAN_HPP
 
-#include "library/opengl/shader.hpp"
+#include <library/opengl/shader.hpp>
 #include <string>
 
 namespace library
@@ -12,10 +12,12 @@ namespace library
 
 namespace cppcraft
 {
+	class Camera;
+	
 	class Shaderman
 	{
 	public:
-		void init(library::WindowClass& gamescr, const library::mat4& matproj, const library::mat4& matproj_long);
+		void init(library::WindowClass& gamescr, const Camera& camera);
 		
 		typedef enum
 		{

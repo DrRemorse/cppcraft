@@ -336,7 +336,7 @@ namespace cppcraft
 		textureman.bind(0, Textureman::T_FOGBUFFER);
 		textureman.bind(1, Textureman::T_SKYBUFFER);
 		
-		screenspace.fog(renderer.frametick);
+		screenspace.fog(renderer.gamescr, renderer.frametick);
 		
 		// blur the render buffer
 		textureman.bind(0, Textureman::T_RENDERBUFFER);
