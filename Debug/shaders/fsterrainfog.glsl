@@ -84,14 +84,14 @@ void main()
 	vec3 wpos = cofs.xyz + vec3(0.0, cameraPos.y, 0.0) - worldOffset;
 	
 	// volumetric fog
-	float foglevel  = fogDensity(ray, wpos, depth, 76.0);
-	foglevel *= 2.0 * depth;
+	float fogAmount  = fogDensity(ray, wpos, depth, 76.0);
+	fogAmount *= sqrt(depth) + depth;
 	
 	const vec3 fogBaseColor = vec3(0.9);
 	const vec3 sunBaseColor = vec3(1.0, 0.8, 0.5);
 	
 	float sunAmount = max(0.0, dot(-ray, sunAngle)) * 0.8 * depth;
-	float fogAmount = foglevel * (1.0 - sunAmount);
+	fogAmount *= (1.0 - sunAmount);
 	color.rgb = mix(color.rgb, fogBaseColor, fogAmount);
 	color.rgb = mix(color.rgb, sunBaseColor, sunAmount);
 	
