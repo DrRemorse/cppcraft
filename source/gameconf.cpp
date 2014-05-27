@@ -12,6 +12,7 @@ namespace cppcraft
 	void GameConfig::init()
 	{
 		// rendering
+		supersampling = config.get("render.supersampling", 1);
 		multisampling = config.get("render.multisampling", 0);
 		anisotropy    = config.get("render.anisotropy", 1.0f);
 		
@@ -30,5 +31,7 @@ namespace cppcraft
 		music    = config.get("sound.music", true);
 		ambience = config.get("sound.ambient", true);
 		
+		// minimum 1x supersample
+		if (supersampling < 1) supersampling = 1;
 	}
 }

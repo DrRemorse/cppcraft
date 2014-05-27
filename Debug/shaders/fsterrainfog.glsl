@@ -21,6 +21,7 @@ void main(void)
 #ifdef FRAGMENT_PROGRAM
 uniform sampler2D terrain;
 uniform sampler2D skytexture;
+uniform sampler2D depthtexture;
 
 uniform vec3 sunAngle;
 
@@ -48,11 +49,24 @@ float fogDensity(in vec3  ray,
 {
 	// distance in fog is calculated with a simple intercept theorem
 	float len = max(0.0, fogheight - point.y) / max(0.1, ray.y);
-	float fogdepth = min(ZFAR * 0.5, len);
+	float fogdepth = min(ZFAR * 0.5, len) / (ZFAR * 0.5);
+	
+	// how far are we from some arbitrary height?
+	float foglevel = 1.0 - min(1.0, abs(point.y - fogheight) / 64.0);
+	
+	float above = step(point.y, fogheight);
+	foglevel = (1.0 - above) * foglevel + above * pow(foglevel, 4.0);
 	
 	float noise = snoise(point * 0.01) + snoise(point * 0.04);
+	noise = (noise + 2.0) * 0.25;
 	
-	return (noise + 3.0) * 0.2 * fogdepth / (ZFAR * 0.5);
+	return (noise + fogdepth) * 0.5 * foglevel;
+}
+
+float linearizeDepth(in vec2 uv)
+{
+	float d = texture2D(depthtexture, uv).x;
+	return ZNEAR / (ZFAR - d * (ZFAR - ZNEAR)) * ZFAR;
 }
 
 void main()
@@ -64,14 +78,14 @@ void main()
 	
 	// reconstruct eye coordinates
 	vec4 cofs = eye_direction * matview;
-	cofs.xyz *= depth * ZFAR;
+	cofs.xyz *= linearizeDepth(texCoord);
 	vec3 ray = normalize(-cofs.xyz);
 	// to world coordinates
 	vec3 wpos = cofs.xyz + vec3(0.0, cameraPos.y, 0.0) - worldOffset;
 	
 	// volumetric fog
-	float foglevel  = fogDensity(ray, wpos, depth, 90.0);
-	foglevel *= 0.1 + 0.9 * sqrt(depth);
+	float foglevel  = fogDensity(ray, wpos, depth, 76.0);
+	foglevel *= 2.0 * depth;
 	
 	const vec3 fogBaseColor = vec3(0.9);
 	const vec3 sunBaseColor = vec3(1.0, 0.8, 0.5);
@@ -82,6 +96,7 @@ void main()
 	color.rgb = mix(color.rgb, sunBaseColor, sunAmount);
 	
 	//color.rgb = wpos.xyz / ZFAR;
+	//color.rgb = vec3(foglevel);
 	
 	// mix in fog
 	vec3 skyColor = texture2D(skytexture, texCoord).rgb;

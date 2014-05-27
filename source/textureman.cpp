@@ -279,25 +279,28 @@ namespace cppcraft
 		
 		/// Fullscreen Buffers ///
 		
+		int SSW = gamescr.SW * gameconf.supersampling;
+		int SSH = gamescr.SH * gameconf.supersampling;
+		
 		// fullscreen skybuffer
 		textures[T_SKYBUFFER] = Texture(GL_TEXTURE_2D);
 		textures[T_SKYBUFFER].setFormat(GL_RGBA16F);
-		textures[T_SKYBUFFER].create(0, gamescr.SW, gamescr.SH);
+		textures[T_SKYBUFFER].create(0, SSW, SSH);
 		
 		// fullscreen fog colorbuffer
 		textures[T_FOGBUFFER] = Texture(GL_TEXTURE_2D);
 		textures[T_FOGBUFFER].setFormat(GL_RGBA16F);
-		textures[T_FOGBUFFER].create(0, gamescr.SW, gamescr.SH);
+		textures[T_FOGBUFFER].create(0, SSW, SSH);
 		
 		// fullscreen underwater texture
 		textures[T_UNDERWATERMAP] = Texture(GL_TEXTURE_2D);
 		textures[T_UNDERWATERMAP].setFormat(GL_RGBA16F);
-		textures[T_UNDERWATERMAP].create(0, gamescr.SW, gamescr.SH);
+		textures[T_UNDERWATERMAP].create(0, SSW, SSH);
 		
 		// fullscreen colorbuffer
 		textures[T_RENDERBUFFER] = Texture(GL_TEXTURE_2D);
 		textures[T_RENDERBUFFER].setFormat(GL_RGBA16F);
-		textures[T_RENDERBUFFER].create(0, gamescr.SW, gamescr.SH);
+		textures[T_RENDERBUFFER].create(0, SSW, SSH);
 		textures[T_RENDERBUFFER].setInterpolation(true);
 		
 		if (gameconf.reflections)
@@ -311,8 +314,9 @@ namespace cppcraft
 		
 		// fullscreen depth buffer
 		textures[T_DEPTHBUFFER] = Texture(GL_TEXTURE_2D);
-		textures[T_DEPTHBUFFER].createDepth(gamescr.SW, gamescr.SH, GL_DEPTH_COMPONENT32F);
+		textures[T_DEPTHBUFFER].createDepth(SSW, SSH, GL_DEPTH_COMPONENT24);
 		
+		if (ogl.checkError()) throw std::string("Fullscreen textures error");
 	}
 	
 	void Textureman::copyScreen(WindowClass& gamescr, named_textures_t tx)

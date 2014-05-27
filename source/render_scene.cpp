@@ -6,8 +6,10 @@
 #include <library/opengl/window.hpp>
 #include <library/opengl/camera.hpp>
 
-#include <library/timing/timer.hpp>
 //#define TIMING
+#ifdef TIMING
+#include <library/timing/timer.hpp>
+#endif
 
 #include "drawq.hpp"
 #include "gameconf.hpp"
@@ -37,40 +39,62 @@ namespace cppcraft
 	
 	void SceneRenderer::init(Renderer& renderer)
 	{
+		// initialize members
+		this->lastTime = 0.0;
+		this->playerX = this->playerY = this->playerZ = 0.0;
+		
 		// initialize terrain renderer
 		initTerrain();
 		
 		// initialize sky renderer
 		skyrenderer.init();
 		
+		Texture& sceneTex = textureman[Textureman::T_FOGBUFFER];
+		
 		// the FBO we render the main scene to
 		sceneFBO.create();
 		sceneFBO.bind();
-		sceneFBO.createDepthRBO(renderer.gamescr.SW, renderer.gamescr.SH, GL_DEPTH_COMPONENT32);
+		sceneFBO.attachDepth(textureman[Textureman::T_DEPTHBUFFER]);
+		//sceneFBO.createDepthRBO(sceneTex.getWidth(), sceneTex.getHeight(), GL_DEPTH_COMPONENT24);
 		
 		underwaterFBO.create();
 		underwaterFBO.bind();
-		underwaterFBO.attachColor(0, textureman.get(Textureman::T_UNDERWATERMAP));
+		underwaterFBO.attachColor(0, textureman[Textureman::T_UNDERWATERMAP]);
 		
 		screenFBO.create();
 		screenFBO.bind();
 		screenFBO.attachColor(0, textureman.get(Textureman::T_FOGBUFFER));
-		screenFBO.attachDepthRBO(sceneFBO);
+		screenFBO.attachDepth(textureman[Textureman::T_DEPTHBUFFER]);
+		//screenFBO.attachDepthRBO(sceneFBO);
 		
 		if (gameconf.reflections)
 		{
+			Texture& reflections = textureman[Textureman::T_REFLECTION];
+			
 			// the FBO we render reflection to
 			reflectionFBO.create();
 			reflectionFBO.bind();
-			reflectionFBO.attachColor(0, textureman.get(Textureman::T_REFLECTION));
-			reflectionFBO.createDepthRBO(renderer.gamescr.SW, renderer.gamescr.SH, GL_DEPTH_COMPONENT16);
+			reflectionFBO.attachColor(0, reflections);
+			reflectionFBO.createDepthRBO(reflections.getWidth(), reflections.getHeight(), GL_DEPTH_COMPONENT16);
 			
 			// initialize reflection camera to be the same as regular camera,
 			// except it will be mirrored on Y-axis from water-plane level
 			reflectionCamera.init(renderer.gamescr);
 		}
-		lastTime = 0.0;
-		this->playerX = this->playerY = this->playerZ = 0.0;
+		
+		// initialize shaders
+		vec3 sceneSize = vec3(sceneTex.getWidth(), sceneTex.getHeight(), renderer.gamescr.SA);
+		
+		shaderman[Shaderman::BLOCKS_WATER].bind();
+		shaderman[Shaderman::BLOCKS_WATER].sendVec3("screendata", sceneSize);
+		shaderman[Shaderman::BLOCKS_LAVA].bind();
+		shaderman[Shaderman::BLOCKS_LAVA].sendVec3("screendata", sceneSize);
+		
+		if (OpenGL::checkError())
+		{
+			logger << Log::ERR << "SceneRenderer::init(): OpenGL error. Line: " << __LINE__ << Log::ENDL;
+			throw std::string("SceneRenderer::init(): General openGL error");
+		}
 	}
 	
 	// render normal scene
@@ -78,10 +102,12 @@ namespace cppcraft
 	{
 		bool frustumRecalc = false;
 		
+		Texture& sceneTex = textureman[Textureman::T_FOGBUFFER];
+		
 		// bind the FBO that we are rendering the entire scene into
 		sceneFBO.bind();
-		sceneFBO.attachColor(0, textureman.get(Textureman::T_FOGBUFFER));
-		sceneFBO.attachColor(1, textureman.get(Textureman::T_SKYBUFFER));
+		sceneFBO.attachColor(0, sceneTex);
+		sceneFBO.attachColor(1, textureman[Textureman::T_SKYBUFFER]);
 		
 		// add all attachments to rendering output
 		std::vector<int> dbuffers;
@@ -89,10 +115,13 @@ namespace cppcraft
 		dbuffers.emplace_back(GL_COLOR_ATTACHMENT1);
 		sceneFBO.drawBuffers(dbuffers);
 		
+		glViewport(0, 0, sceneTex.getWidth(), sceneTex.getHeight());
+		
+		// clear depth texture (or depth renderbuffer)
 		glDepthMask(GL_TRUE);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		
-		glDisable(GL_CULL_FACE); // because the lower half hemisphere is inverted
+		glDisable(GL_CULL_FACE); // because the lower half hemisphere is rotated
 		glDisable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
 		
@@ -239,8 +268,10 @@ namespace cppcraft
 				// render to reflection texture
 				reflectionFBO.bind();
 				
+				Texture& reflections = textureman[Textureman::T_REFLECTION];
+				
 				// render at half size
-				glViewport(0, 0, renderer.gamescr.SW / 2, renderer.gamescr.SH / 2);
+				glViewport(0, 0, reflections.getWidth(), reflections.getHeight());
 				
 				glDepthMask(GL_TRUE);
 				glClear(GL_DEPTH_BUFFER_BIT);
@@ -264,14 +295,14 @@ namespace cppcraft
 				
 				// unbind and return to normal viewport
 				reflectionFBO.unbind();
-				glViewport(0, 0, renderer.gamescr.SW, renderer.gamescr.SH);
+				glViewport(0, 0, sceneTex.getWidth(), sceneTex.getHeight());
 			}
 		}
 		
 		// we are underwater, blit sky instead of reflection
 		if (underwater)
 		{
-			sceneFBO.blitTo(underwaterFBO, renderer.gamescr.SW, renderer.gamescr.SH, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+			sceneFBO.blitTo(underwaterFBO, sceneTex.getWidth(), sceneTex.getHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST);
 		}
 		else
 		{
@@ -281,7 +312,7 @@ namespace cppcraft
 		
 		sceneFBO.bind();
 		// replace skybuffer with underwater buffer
-		sceneFBO.attachColor(1, textureman.get(Textureman::T_UNDERWATERMAP));
+		sceneFBO.attachColor(1, textureman[Textureman::T_UNDERWATERMAP]);
 		
 		/// render physical scene w/depth ///
 		
@@ -325,22 +356,22 @@ namespace cppcraft
 		logger << Log::INFO << "Time spent on scene: " << timerScene.getDeltaTime() * 1000.0 << Log::ENDL;
 		#endif
 		
-		glDisable(GL_CULL_FACE);
+		sceneFBO.unbind();
 		
+		glDisable(GL_CULL_FACE);
 		glDisable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
-		
-		sceneFBO.unbind();
 		
 		/// create fog based on depth ///
 		textureman.bind(0, Textureman::T_FOGBUFFER);
 		textureman.bind(1, Textureman::T_SKYBUFFER);
+		textureman.bind(2, Textureman::T_DEPTHBUFFER);
 		
-		screenspace.fog(renderer.gamescr, renderer.frametick);
+		screenspace.fog(renderer.gamescr, vec3(playerX, playerY, playerZ), renderer.frametick);
 		
 		// blur the render buffer
 		textureman.bind(0, Textureman::T_RENDERBUFFER);
-		screenspace.blur(renderer.gamescr);
+		screenspace.blur(sceneTex);
 		
 		// without affecting depth, use screenspace renderer to render blurred terrain
 		// and also blend terrain against sky background
@@ -354,8 +385,8 @@ namespace cppcraft
 		///  render clouds & particles  ///
 		
 		glEnable(GL_DEPTH_TEST);
-		glDepthMask(GL_FALSE);
-		glDepthFunc(GL_LEQUAL);
+		//glDepthMask(GL_FALSE);
+		//glDepthFunc(GL_LEQUAL);
 		
 		glEnable(GL_BLEND);
 		glColorMask(1, 1, 1, 0);

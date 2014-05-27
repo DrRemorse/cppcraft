@@ -49,17 +49,17 @@ namespace cppcraft
 		}
 	}
 	
-	void FSRenderer::blur(WindowClass& gamescr)
+	void FSRenderer::blur(Texture& texture)
 	{
 		// downsize to blur-texture size
 		glViewport(0, 0, blurTxW, blurTxH);
 		// create blurred image from scene (current backbuffer image)
-		renderBlur(gamescr.SW, gamescr.SH);
+		renderBlur(texture.getWidth(), texture.getHeight());
 		// upsize to regular screen size
-		glViewport(0, 0, gamescr.SW, gamescr.SH);
+		glViewport(0, 0, texture.getWidth(), texture.getHeight());
 	}
 	
-	void FSRenderer::fog(WindowClass& gamescr, double timeElapsed)
+	void FSRenderer::fog(WindowClass& gamescr, vec3 playerPos, double timeElapsed)
 	{
 		Shader& shd = shaderman[Shaderman::FSTERRAINFOG];
 		shd.bind();
@@ -71,7 +71,7 @@ namespace cppcraft
 		// camera view matrix
 		shd.sendMatrix("matview", camera.getViewMatrix());
 		// player position
-		shd.sendVec3("cameraPos", vec3(player.X, player.Y, player.Z));
+		shd.sendVec3("cameraPos", playerPos);
 		// world offset for noise
 		shd.sendVec3("worldOffset", camera.getWorldOffset());
 		shd.sendFloat("timeElapsed", timeElapsed);

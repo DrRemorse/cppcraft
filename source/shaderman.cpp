@@ -130,16 +130,12 @@ namespace cppcraft
 			// texture units
 			shaders[sbase + i].sendInteger("texture", 0);
 			shaders[sbase + i].sendInteger("tonemap", 1);
-			
-			// send viewport size & aspect
-			shaders[sbase + i].sendVec3("screendata", vecScreen);
 		}
 		
 		// extra textures for water
 		shaders[BLOCKS_WATER].bind();
 		shaders[BLOCKS_WATER].sendInteger("underwatermap", 0);
 		shaders[BLOCKS_WATER].sendInteger("reflectionmap", 1);
-		shaders[BLOCKS_WATER].sendInteger("dudvmap", 2);
 		
 		// extra textures for lava
 		shaders[BLOCKS_LAVA].bind();
@@ -238,10 +234,9 @@ namespace cppcraft
 		
 		// screenspace fog shader
 		shaders[FSTERRAINFOG] = Shader("shaders/fsterrainfog.glsl", tokenizer, linkstage);
-		shaders[FSTERRAINFOG].sendInteger("terrain",    0);
-		shaders[FSTERRAINFOG].sendInteger("skytexture", 1);
-		shaders[FSTERRAINFOG].sendInteger("normals",    2);
-		shaders[FSTERRAINFOG].sendInteger("noisetex",   3);
+		shaders[FSTERRAINFOG].sendInteger("terrain",      0);
+		shaders[FSTERRAINFOG].sendInteger("skytexture",   1);
+		shaders[FSTERRAINFOG].sendInteger("depthtexture", 2);
 		// near plane half size
 		shaders[FSTERRAINFOG].sendVec2("nearPlaneHalfSize", camera.getNearPlaneHalfSize());
 		

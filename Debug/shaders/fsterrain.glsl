@@ -30,7 +30,7 @@ void main()
 	vec4 blur = texture2D(blurtexture, texCoord);
 	
 	// average depth between blurred and original
-	float depth = color.a * (1.0 - blur.a) + blur.a * blur.a;
+	float depth = blur.a; //color.a * (1.0 - blur.a) + blur.a * blur.a;
 	depth = step(depth, 0.98) * depth;
 	
 	// blur distance

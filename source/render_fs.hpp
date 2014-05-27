@@ -4,7 +4,9 @@
 namespace library
 {
 	class WindowClass;
+	class Texture;
 	class vec2;
+	class vec3;
 	class mat4;
 }
 
@@ -26,8 +28,8 @@ namespace cppcraft
 	public:
 		void init(library::WindowClass& gamescr);
 		void initFlare();
-		void blur(library::WindowClass& gamescr);
-		void fog(library::WindowClass& gamescr, double time);
+		void blur(library::Texture& texture);
+		void fog(library::WindowClass& gamescr, library::vec3 playerPos, double time);
 		void terrain();
 		
 		void render(library::WindowClass& gamescr, double frameCounter);

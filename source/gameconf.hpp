@@ -13,6 +13,7 @@ namespace cppcraft
 		bool ambience;
 		float master_volume;
 		
+		int supersampling;
 		int multisampling;
 		float anisotropy;
 		
