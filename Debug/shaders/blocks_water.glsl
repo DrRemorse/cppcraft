@@ -1,4 +1,4 @@
-#version 330
+#version 150
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
 
@@ -27,8 +27,6 @@ out vec4 torchlight;
 out vec3 v_pos;
 out vec3 v_ldir;
 out vec3 v_normal;
-flat out vec3 l_normal;
-
 out vec4 waves;
 
 const float VERTEX_SCALE_INV
@@ -44,7 +42,6 @@ void main(void)
 	v_pos = -position.xyz;
 	v_ldir = mat3(matview) * lightVector;
 	// reflect light in view space using view-normal
-	l_normal = in_normal.xyz;
 	v_normal = mat3(matview) * in_normal.xyz;
 	
 	// galactic coordinates
@@ -68,7 +65,6 @@ void main(void)
 #extension GL_EXT_gpu_shader4 : enable
 uniform sampler2D underwatermap;
 uniform sampler2D reflectionmap;
-uniform sampler2D dudvmap;
 
 uniform mat4 matview;
 uniform vec3 screendata;
@@ -83,15 +79,13 @@ in vec4 lightdata;
 in vec4 torchlight;
 
 in vec3 v_ldir;
-//in vec3 v_eye;
-//in vec3 v_half;
 in vec3 v_pos;
 in vec3 v_normal;
 
-flat in vec3 l_normal;
 in vec4 waves; // wave positions
-
 const float ZFAR
+
+out vec4 color;
 
 #include "srdnoise.glsl"
 
@@ -122,8 +116,8 @@ void main(void)
 					tang.y, binorm.y, norm.y,
 					tang.z, binorm.z, norm.z);
 	
-	vec3 n1 = texture2D(dudvmap, waves.yx).rgb * 2.0 - vec3(1.0);
-	vec3 n2 = texture2D(dudvmap, waves.wz).rgb * 2.0 - vec3(1.0);
+	vec3 n1 = texture(dudvmap, waves.yx).rgb * 2.0 - vec3(1.0);
+	vec3 n2 = texture(dudvmap, waves.wz).rgb * 2.0 - vec3(1.0);
 	vec3 Normal = n1 + n2;
 	Normal = normalize(Normal) * tbn;
 	*/
@@ -138,11 +132,6 @@ void main(void)
 	vec3 vLight = normalize(v_ldir);
 	vec3 vHalf = normalize(vEye + vLight);
 	
-	//----- fresnel term -----
-	
-	float fresnel = max(0.0, dot(vEye, viewNormal));
-	fresnel = 1.0 - sqrt(fresnel);
-	
 	// screenspace tex coords
 	vec2 texCoord = gl_FragCoord.xy / screendata.xy;
 	// normalized distance
@@ -154,13 +143,13 @@ void main(void)
 	vec2 refcoord = texCoord + vNormal.xz * (0.003 + 0.02 * dist);
 	
 	// read underwater, use as base color
-	vec4 underw = texture2D(underwatermap, refcoord);
+	vec4 underw = texture(underwatermap, refcoord);
 	float wdepth = underw.a - dist;
 	
 	// COSTLY re-read to avoid reading inside terrain
 	if (wdepth < 0.0)
 	{
-		underw = texture2D(underwatermap, texCoord);
+		underw = texture(underwatermap, texCoord);
 		wdepth = underw.a - dist;
 	}
 	
@@ -169,14 +158,14 @@ void main(void)
 	
 	// above water we want the sky to appear as 100% seafloor
 	float dep = 1.0 - smoothstep(0.0, 0.04, wdepth);
+	float depthTreshold = min(1.0, wdepth * 12.0);
 	
 	//----- SEACOLOR -----
 	const vec3 deepWater    = vec3(42, 73, 87) * vec3(1.0 / 255.0);
 	const vec3 shallowWater = vec3(0.35, 0.55, 0.50);
 	
 	// create final water color
-	float depthTreshold = min(1.0, wdepth * 12.0);
-	vec4 color = vec4(mix(shallowWater, deepWater, depthTreshold), 1.0);
+	color = vec4(mix(shallowWater, deepWater, depthTreshold), 1.0);
 	
 	// mix watercolor and refraction/seabed
 	color.rgb = mix(color.rgb, underw.rgb, dep);
@@ -185,9 +174,14 @@ void main(void)
 	
 #ifdef REFLECTIONS
 	// world/terrain reflection
-	vec3 wreflection = texture2D(reflectionmap, refcoord).rgb;
+	vec3 wreflection = texture(reflectionmap, refcoord).rgb;
+	
+	//----- fresnel term -----
+	float fresnel = max(0.0, dot(vEye, viewNormal));
+	fresnel = pow(1.0 - fresnel, 3.0);
+	
 	// add reflections to final color
-	color.rgb = mix(color.rgb, wreflection, fresnel);
+	color.rgb = mix(color.rgb, wreflection, fresnel * 0.75);
 	//color.rgb = vec3(fresnel);
 #endif
 	

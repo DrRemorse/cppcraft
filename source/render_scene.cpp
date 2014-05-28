@@ -87,7 +87,7 @@ namespace cppcraft
 			reflectionFBO.create();
 			reflectionFBO.bind();
 			reflectionFBO.attachColor(0, reflections);
-			reflectionFBO.createDepthRBO(reflections.getWidth(), reflections.getHeight(), GL_DEPTH_COMPONENT16);
+			reflectionFBO.createDepthRBO(reflections.getWidth(), reflections.getHeight(), GL_DEPTH_COMPONENT24);
 			
 			// initialize reflection camera to be the same as regular camera,
 			// except it will be mirrored on Y-axis from water-plane level

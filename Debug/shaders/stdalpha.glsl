@@ -30,19 +30,19 @@ const int TX_2SIDED
 const int TX_CROSS
 
 const float ZFAR
-const float VERTEX_SCALE
+const float VERTEX_SCALE_INV
 const float CROSSWIND_STRENGTH  = 0.125;
 const float PI2                 = 6.28318530717;
 
 void main(void)
 {
-	vec4 position = vec4(in_vertex / VERTEX_SCALE + vtrans, 1.0);
+	vec4 position = vec4(in_vertex * VERTEX_SCALE_INV + vtrans, 1.0);
 	position = matview * position;
 	vertdist = length(position.xyz);
 	
-	texCoord = vec3(in_texture.st / VERTEX_SCALE, in_texture.p);
+	texCoord = vec3(in_texture.st * VERTEX_SCALE_INV, in_texture.p);
 	
-	if (texrange == TX_CROSS) // && vertdist < ZFAR * 0.2)
+	if (texrange == TX_CROSS)
 	{
 		// fire animation
 		/*if (texCoord.z == 224.0)
@@ -53,7 +53,7 @@ void main(void)
 		// standing
 		float speed  = frameCounter * 0.01;
 		// crosses waving in the wind
-		vec2 pos = in_vertex.xz / (VERTEX_SCALE * 16.0);
+		vec2 pos = in_vertex.xz * VERTEX_SCALE_INV / 16.0;
 		if (texCoord.z == 94.0)
 		{
 			// hanging
@@ -101,13 +101,15 @@ in vec3 out_normal;
 
 in float vertdist;
 
+out vec4 color;
+
 const float ZFAR
 const int TX_2SIDED
 const int TX_CROSS
 
 void main(void)
 {
-	vec4 color = texture(diffuse, texCoord.stp);
+	color = texture(diffuse, texCoord.stp);
 	if (color.a < 0.05) discard;
 	
 	// read tonecolor from tonemap

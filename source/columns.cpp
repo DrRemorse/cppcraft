@@ -97,7 +97,7 @@ namespace cppcraft
 		// exit if this column isn't renderable at all
 		if (vboCount == 0)
 		{
-			logger << Log::ERR << "Column::compile(): column was not ready" << Log::ENDL;
+			//logger << Log::WARN << "Column::compile(): column was not ready" << Log::ENDL;
 			this->updated    = false;
 			this->renderable = false;
 			return;

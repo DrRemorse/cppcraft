@@ -1,10 +1,8 @@
-#version 130
+#version 150
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
-precision mediump float;
 
 #ifdef VERTEX_PROGRAM
-
 uniform mat4 matproj;
 uniform mat4 matview;
 uniform vec3 vtrans;
@@ -26,16 +24,16 @@ out vec4 biomeColor;
 flat out float worldLight;
 
 out float vertdist;
-const float VERTEX_SCALE
+const float VERTEX_SCALE_INV
 
 void main(void)
 {
-	vec4 position = vec4(in_vertex / VERTEX_SCALE + vtrans, 1.0);
+	vec4 position = vec4(in_vertex * VERTEX_SCALE_INV + vtrans, 1.0);
 	position = matview * position;
 	vertdist = length(position.xyz);
 	gl_Position = matproj * position;
 	
-	texCoord = vec3(in_texture.st / VERTEX_SCALE, in_texture.p);
+	texCoord = vec3(in_texture.st * VERTEX_SCALE_INV, in_texture.p);
 	
 	// dotlight
 	#include "worldlight.glsl"
@@ -50,12 +48,11 @@ void main(void)
 #ifdef FRAGMENT_PROGRAM
 #extension GL_EXT_gpu_shader4 : enable
 
-uniform sampler2DArray texture;
+uniform sampler2DArray diffuse;
 uniform sampler2DArray tonemap;
 
 uniform float daylight;
 uniform float modulation;
-//uniform vec4  playerLight;
 
 in vec3 texCoord;
 in vec4 lightdata;
@@ -64,19 +61,20 @@ in vec4 biomeColor;
 flat in float worldLight;
 
 in float vertdist;
-
 const float ZFAR
+
+out vec4 color;
 
 void main(void)
 {
 	// independent texture reads using inbound variable directly
 	// read tonecolor from tonemap
-	vec4 color = texture2DArray(tonemap, texCoord);
+	color = texture(tonemap, texCoord);
 	color.rgb *= biomeColor.rgb;
 	
 	// mix diffuse map
-	vec4 diffuse = texture2DArray(texture, texCoord);
-	color = mix(diffuse, color, color.a);
+	vec4 reflected = texture(diffuse, texCoord);
+	color = mix(reflected, color, color.a);
 	
 	#include "degamma.glsl"
 	
@@ -85,12 +83,9 @@ void main(void)
 	#include "horizonfade.glsl"
 	
 	// fake fog
-	vec3 fogColor = vec3(0.7) * daylight;
+	vec3 fogColor = vec3(0.6, 0.7, 0.8) * daylight;
 	float dist = vertdist / ZFAR;
 	color.rgb = mix(color.rgb, fogColor, dist*dist * 0.75);
-	
-	// gamma again
-	gl_FragData[0] = color;
 }
 #endif
 

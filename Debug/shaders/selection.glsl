@@ -1,7 +1,6 @@
-#version 130
+#version 150
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
-precision mediump float;
 
 #ifdef VERTEX_PROGRAM
 uniform mat4 matmvp;
@@ -15,24 +14,22 @@ out vec2 texCoord;
 void main()
 {
 	vec4 position = vec4(in_vertex.xyz + vtrans, 1.0);
+	gl_Position = matmvp * position;
 	
 	texCoord = in_texture;
-	
-	gl_Position = matmvp * position;
 }
 #endif
 
 #ifdef FRAGMENT_PROGRAM
-uniform sampler2D texture;
+uniform sampler2D diffuse;
 
-const vec3  selectionColor = vec3(0.0);
+const vec3 selectionColor = vec3(0.0);
 
 in vec2 texCoord;
+out vec4 color;
 
 void main(void)
 {
-	float alpha = texture2D(texture, texCoord).r;
-	
-	gl_FragData[0] = vec4(selectionColor, alpha);
+	color = vec4(vec3(0.0), texture(diffuse, texCoord).r);
 }
 #endif

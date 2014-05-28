@@ -1,4 +1,4 @@
-#version 330
+#version 150
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
 
@@ -19,12 +19,12 @@ in vec4 in_color2;
 out float vertdist;
 out vec2  wave;
 
-const float VERTEX_SCALE
+const float VERTEX_SCALE_INV
 const float ZFAR
 
 void main(void)
 {
-	vec4 position = vec4(in_vertex / VERTEX_SCALE + vtrans, 1.0);
+	vec4 position = vec4(in_vertex * VERTEX_SCALE_INV + vtrans, 1.0);
 	position = matview * position;
 	vertdist = length(position.xyz) / ZFAR;
 	gl_Position = matproj * position;
@@ -45,6 +45,8 @@ uniform float frameCounter;
 in float vertdist;
 in vec2  wave;
 
+out vec4 color;
+
 void main(void)
 {
 	float timer = frameCounter / 50.0;
@@ -59,19 +61,19 @@ void main(void)
 #ifdef UNDERLAVA
 	// under the lava
 	vec2 texCoord =  gl_FragCoord.xy / screendata.xy;
-	vec4 underlava = texture2D(underwater, texCoord);
+	vec4 underlava = texture(underwater, texCoord);
 	
 	float wdepth = 0.02 + max(0.0, underlava.a - vertdist);
 	
 	float dep = smoothstep(0.0, 0.03, wdepth);
 	
 	// mix it all together
-	vec3 color = mix(underlava.rgb, lavaColor, dep);
+	color.rgb = mix(underlava.rgb, lavaColor, dep);
+	color.a   = vertdist;
 #else
-	vec3 color = lavaColor;
+	color = vec4(lavaColor, vertdist);
 #endif
 	
-	gl_FragData[0] = vec4(color, vertdist);
 }
 
 #endif

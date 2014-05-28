@@ -25,16 +25,16 @@ flat out float worldLight;
 
 out float vertdist;
 
-const float VERTEX_SCALE
+const float VERTEX_SCALE_INV
 
 void main(void)
 {
-	vec4 position = vec4(in_vertex / VERTEX_SCALE + vtrans, 1.0);
+	vec4 position = vec4(in_vertex * VERTEX_SCALE_INV + vtrans, 1.0);
 	position = matview * position;
 	vertdist = length(position.xyz);
 	gl_Position = matproj * position;
 	
-	texCoord = vec3(in_texture.st / VERTEX_SCALE, in_texture.p);
+	texCoord = vec3(in_texture.st * VERTEX_SCALE_INV, in_texture.p);
 	
 	// dotlight
 	#include "worldlight.glsl"
@@ -64,9 +64,11 @@ flat in float worldLight;
 in float vertdist;
 const float ZFAR
 
+out vec4 color;
+
 void main(void)
 {
-	vec4 color = texture(diffuse, texCoord.stp);
+	color = texture(diffuse, texCoord.stp);
 	if (color.a < 0.05) discard;
 	
 	// read tonecolor from tonemap

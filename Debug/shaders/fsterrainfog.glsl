@@ -59,8 +59,8 @@ float fogDensity(in vec3  ray,
 	foglevel = 1.0 - foglevel * foglevel;
 	
 	point.x += timeElapsed * 0.02;
-	float noise = snoise(point * 0.02) + snoise(point * 0.05) + snoise(point * 2.0);
-	noise = (noise + 3.0) * 0.167;
+	float noise = snoise(point * 0.02) + snoise(point * 0.05); // + snoise(point * 2.0);
+	noise = (noise + 2.0) * 0.25;
 	
 	return (noise + foglen) * 0.5 * foglevel;
 }

@@ -30,12 +30,12 @@ out vec3 v_reflect;
 const int TX_REPEAT
 const int TX_SOLID
 
-const float VERTEX_SCALE
+const float VERTEX_SCALE_INV
 const float ICE_TILE = 13.f * 16.f + 14.f;
 
 void main(void)
 {
-	vec4 position = vec4(in_vertex / VERTEX_SCALE + vtrans, 1.0);
+	vec4 position = vec4(in_vertex * VERTEX_SCALE_INV + vtrans, 1.0);
 	position = matview * position;
 	gl_Position = matproj * position;
 	
@@ -49,7 +49,7 @@ void main(void)
 		v_reflect = reflect(v_pos * mat3(matview), in_normal);
 	}
 	
-	texCoord = vec3(in_texture.st / VERTEX_SCALE, in_texture.p);
+	texCoord = vec3(in_texture.st * VERTEX_SCALE_INV, in_texture.p);
 	
 	// dotlight
 	#include "worldlight.glsl"
@@ -82,6 +82,8 @@ in vec3 v_pos;
 flat in float reflection;
 in vec3 v_reflect;
 
+out vec4 color;
+
 const float ZFAR
 const int TX_SOLID
 const int TX_CROSS
@@ -92,7 +94,7 @@ void main(void)
 	
 	// independent texture reads using inbound variable directly
 	// read tonecolor from tonemap
-	vec4 color = texture(tonemap, texCoord);
+	color = texture(tonemap, texCoord);
 	color.rgb *= biomeColor.rgb;
 	
 	// mix diffuse map

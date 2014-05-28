@@ -163,10 +163,10 @@ namespace cppcraft
 		
 		// player selection shaders
 		shaders[SELECTION] = Shader("shaders/selection.glsl", tokenizer, linkstage);
-		shaders[SELECTION].sendInteger("texture", 0);
+		shaders[SELECTION].sendInteger("diffuse", 0);
 		
 		shaders[SELECTION_MINING] = Shader("shaders/selection_mine.glsl", tokenizer, linkstage);
-		shaders[SELECTION_MINING].sendInteger("texture", 0);
+		shaders[SELECTION_MINING].sendInteger("diffuse", 0);
 		
 		// voxel shaders
 		linkstage.clear();

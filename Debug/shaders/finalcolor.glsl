@@ -3,17 +3,11 @@
 //
 #define POSTPROCESS
 
-#ifdef POSTPROCESS
-	
-	// postprocess will return color to gamma space
-	gl_FragData[0] = color;
-	
-#else
+#ifndef POSTPROCESS
 	
 	const vec3 gamma = vec3(2.2);
 	
 	// back to gamma space
-	gl_FragData[0] = vec4(pow(color.rgb, gamma), color.a);
-	//gl_FragData[1] = vec4(pow(color.rgb, gamma), color.a);
+	color = vec4(pow(color.rgb, gamma), color.a);
 	
 #endif

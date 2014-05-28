@@ -15,13 +15,12 @@ in vec4 in_color;
 in vec4 in_color2;
 
 out vec3 pos;
-const float VERTEX_SCALE
+const float VERTEX_SCALE_INV
 
 void main(void)
 {
-	vec4 position = vec4(in_vertex / VERTEX_SCALE + vtrans, 1.0);
+	vec4 position = vec4(in_vertex * VERTEX_SCALE_INV + vtrans, 1.0);
 	position = matview * position;
-	//vertdist = length(position.xyz) / ZFAR;
 	gl_Position = matproj * position;
 	
 	pos = position.xyz;
@@ -30,19 +29,20 @@ void main(void)
 #endif
 
 #ifdef FRAGMENT_PROGRAM
-
-uniform sampler2D texture;
+uniform sampler2D diffuse;
 uniform vec3 screensize;
 
 in vec3 pos;
 const float ZFAR
 
+out vec4 color;
+
 void main(void)
 {
 	float vertdist = length(pos) / ZFAR;
 	
-	vec2 texCoord =  gl_FragCoord.xy / screensize.xy;
-	gl_FragData[0] = vec4(texture2D(texture, texCoord).rgb, vertdist);
+	vec2 texCoord = gl_FragCoord.xy / screensize.xy;
+	color = vec4(texture(diffuse, texCoord).rgb, vertdist);
 }
 
 #endif
