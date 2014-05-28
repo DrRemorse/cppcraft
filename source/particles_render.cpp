@@ -33,10 +33,12 @@ namespace cppcraft
 		{
 			particleSystem.updated = false;
 			
+			bool updateAttribs = false;
 			if (vao == 0)
 			{
 				glGenVertexArrays(1, &vao);
 				glGenBuffers(1, &vbo);
+				updateAttribs = true;
 			}
 			glBindVertexArray(vao);
 			
@@ -44,18 +46,20 @@ namespace cppcraft
 			glBindBuffer(GL_ARRAY_BUFFER, vbo);
 			glBufferData(GL_ARRAY_BUFFER, renderCount * sizeof(particle_vertex_t), vertices, GL_STREAM_DRAW);
 			
-			for (int i = 0; i < 4; i++)
-				glEnableVertexAttribArray(i);
-			
-			// position
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(particle_vertex_t), 0);
-			// data
-			glVertexAttribPointer(1, 2, GL_SHORT, GL_FALSE, sizeof(particle_vertex_t), (GLvoid*) 12);
-			// normalized data
-			glVertexAttribPointer(2, 2, GL_SHORT, GL_TRUE, sizeof(particle_vertex_t),  (GLvoid*) 16);
-			// color
-			glVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(particle_vertex_t), (GLvoid*) 20);
-			
+			if (updateAttribs)
+			{
+				for (int i = 0; i < 4; i++)
+					glEnableVertexAttribArray(i);
+				
+				// position
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(particle_vertex_t), 0);
+				// data
+				glVertexAttribPointer(1, 2, GL_SHORT, GL_FALSE, sizeof(particle_vertex_t), (GLvoid*) 12);
+				// normalized data
+				glVertexAttribPointer(2, 2, GL_SHORT, GL_TRUE, sizeof(particle_vertex_t),  (GLvoid*) 16);
+				// color
+				glVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(particle_vertex_t), (GLvoid*) 20);
+			}
 			glBindVertexArray(0);
 		}
 		mtx.particles.unlock();

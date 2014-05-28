@@ -1,7 +1,6 @@
 #version 130
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
-precision mediump float;
 
 #ifdef VERTEX_PROGRAM
 uniform mat4 matproj;
@@ -109,7 +108,7 @@ const int TX_CROSS
 void main(void)
 {
 	vec4 color = texture2DArray(texture, texCoord.stp);
-	if (color.a < 0.1) discard;
+	if (color.a < 0.05) discard;
 	
 	// read tonecolor from tonemap
 	vec4 toneColor = texture2DArray(tonemap, texCoord.stp);

@@ -351,14 +351,10 @@ namespace cppcraft
 		
 		// blit terrain to (downsampled) underwatermap
 		Texture& underwaterTex = textureman[Textureman::T_UNDERWATERMAP];
-		
-		underwaterFBO.bind();
-		glClear(GL_COLOR_BUFFER_BIT);
-		
 		sceneFBO.blitTo(underwaterFBO, 
 						sceneTex.getWidth(), sceneTex.getHeight(), 
 						underwaterTex.getWidth(), underwaterTex.getHeight(), 
-						GL_COLOR_BUFFER_BIT, GL_NEAREST);
+						GL_COLOR_BUFFER_BIT, GL_LINEAR);
 		
 		sceneFBO.bind();
 		

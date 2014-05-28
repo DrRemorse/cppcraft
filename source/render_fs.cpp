@@ -74,14 +74,17 @@ namespace cppcraft
 		glBindFramebuffer(GL_FRAMEBUFFER, blurFBO);
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_RENDERBUFFER), 0);
 		
-		shd.sendVec3("sunAngle", thesun.getRealtimeAngle());
-		// camera view matrix
-		shd.sendMatrix("matview", camera.getViewMatrix());
-		// player position
-		shd.sendVec3("cameraPos", playerPos);
-		// world offset for noise
-		shd.sendVec3("worldOffset", camera.getWorldOffset());
 		shd.sendFloat("timeElapsed", timeElapsed);
+		shd.sendVec3("sunAngle", thesun.getRealtimeAngle());
+		if (camera.ref)
+		{
+			// camera view matrix
+			shd.sendMatrix("matview", camera.getViewMatrix());
+			// player position
+			shd.sendVec3("cameraPos", playerPos);
+			// world offset for noise
+			shd.sendVec3("worldOffset", camera.getWorldOffset());
+		}
 		
 		// render fullscreen quad
 		screenVAO.render(GL_QUADS);

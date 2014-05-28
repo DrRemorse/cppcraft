@@ -87,18 +87,16 @@ namespace cppcraft
 		{
 			for (vertex_t* current = source; current <= position; current += 4)
 			{
-				// while(0) break;
+				// current has same texture as its next
+				if (current->w != next->w) continue;
 				
 				// determine that quad points upwards (+y)
 				if (current->nx != 0 || current->ny != 127 || current->nz != 0)
 					continue;
 				
-				// and that it features the same texture as its next
-				if (current->w != next->w) continue;
-				
 				// now check that the next quad has the same normal
-				#define normalToInt(x) ((unsigned int*)&x.nx)[0]
-				if (normalToInt(current[0]) != normalToInt(next[0]))
+				//if (current[0].nx != next[0].nx || current[0].ny != next[0].ny || current[0].nz != next[0].nz)
+				if (next->nx != 0 || next->ny != 127 || next->nz != 0)
 					continue;
 				
 				// next quad has previous quad position (-z)
@@ -169,8 +167,8 @@ namespace cppcraft
 					continue;
 				
 				// now check that the next quad has the same normal
-				#define normalToInt(x) ((unsigned int*)&x.nx)[0]
-				if (normalToInt(current[0]) != normalToInt(next[0]))
+				//if (current[0].nx != next[0].nx || current[0].ny != next[0].ny || current[0].nz != next[0].nz)
+				if (next->nx != 0 || next->ny != 127 || next->nz != 0)
 					continue;
 				
 				// next quad has previous quad position (-z)
@@ -258,9 +256,8 @@ namespace cppcraft
 				return;
 			}
 		}
-		
 		// try to optimize the water plane manually
-		if (verts >= 8)
+		else if (verts >= 8)
 		{
 			// verts is sent by reference
 			optimizeShaderPlane(verts, water);
