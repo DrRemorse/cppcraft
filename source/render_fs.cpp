@@ -76,6 +76,7 @@ namespace cppcraft
 		
 		shd.sendFloat("timeElapsed", timeElapsed);
 		shd.sendVec3("sunAngle", thesun.getRealtimeAngle());
+		shd.sendFloat("daylight", thesun.getRealtimeDaylight());
 		if (camera.ref)
 		{
 			// camera view matrix

@@ -23,7 +23,8 @@ uniform sampler2D terrain;
 uniform sampler2D skytexture;
 uniform sampler2D depthtexture;
 
-uniform vec3 sunAngle;
+uniform vec3  sunAngle;
+uniform float daylight;
 
 uniform mat4 matview;
 uniform vec3 cameraPos;
@@ -89,8 +90,8 @@ void main()
 	float fogAmount = fogDensity(ray, wpos, depth);
 	fogAmount *= depth;
 	
-	const vec3 fogBaseColor = vec3(0.9);
-	const vec3 sunBaseColor = vec3(1.0, 0.8, 0.5);
+	vec3 fogBaseColor = vec3(0.9) * daylight;
+	vec3 sunBaseColor = vec3(1.0, 0.8, 0.5) * daylight;
 	
 	float sunAmount = max(0.0, dot(-ray, sunAngle));
 	vec3 fogColor = mix(fogBaseColor, sunBaseColor, sunAmount);
