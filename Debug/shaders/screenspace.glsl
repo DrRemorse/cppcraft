@@ -54,7 +54,7 @@ void main()
 		float speed = frameCounter * 0.01;
 		
 		// camera bobbing
-		vec2 waves = sincos(speed) * 0.01; // vec2(sin(speed), cos(speed)) * 0.01;
+		vec2 waves = vec2(sin(speed), cos(speed)) * 0.01;
 		// screen waves
 		vec2 waveCoords = vec2(speed * 5) + texCoord.xy * 6.28 * 32;
 		float wavyDepth = smoothstep(0.0, 0.1, depth);
