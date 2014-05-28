@@ -35,34 +35,7 @@ namespace cppcraft
 		// create precomiler thread objects
 		this->pcthread_count = config.get("world.jobs", 4);
 		this->pcthreads = new PrecompThread[pcthread_count]();
-		
-		// random default values for vertex array sizes
-		// the arrays get automatically resized as needed
-		int pipelineSize[RenderConst::MAX_UNIQUE_SHADERS] =
-		{
-			5000, // TX_REPEAT
-			5000, // TX_SOLID
-			8000, // TX_TRANS
-			1500, // TX_2SIDED
-			1500, // TX_CROSS
-			1500, // TX_LAVA
-			2000, // TX_WATER
-			 500  // TX_RUNNING_WATER
-		};
-		
-		for (int t = 0; t < pcthread_count; t++)
-		{
-			for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
-			{
-				// set initial shaderline sizes
-				pcthreads[t].pcg.pipelineSize[i] = pipelineSize[i];
-				// initialize each shaderline
-				pcthreads[t].pcg.databuffer[i] = new vertex_t[pcthreads[t].pcg.pipelineSize[i]];
-			}
-		}
-		
 	}
-	
 	Precompiler::~Precompiler()
 	{
 		delete[] pcthreads;
@@ -73,6 +46,11 @@ namespace cppcraft
 		return pcthreads[job];
 	}
 	
+	Precomp::Precomp()
+	{
+		this->alive    = false;
+		this->datadump = nullptr;
+	}
 	Precomp::~Precomp()
 	{
 		delete[] this->datadump;

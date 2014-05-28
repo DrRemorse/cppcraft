@@ -10,6 +10,7 @@
 
 namespace cppcraft
 {
+	class AmbientOcclusion;
 	class Precomp;
 	class FlatlandSector;
 	class Sector;
@@ -110,11 +111,12 @@ namespace cppcraft
 		void applyFaceLightingAll(int bx, int by, int bz);
 	};
 	
-	class AmbientOcclusion;
-	
 	class PrecompThread
 	{
 	public:
+		PrecompThread();
+		~PrecompThread();
+		
 		Precomp* precomp;
 		PrecompThreadData pcg;
 		AmbientOcclusion* occ = nullptr;

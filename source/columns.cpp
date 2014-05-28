@@ -55,6 +55,7 @@ namespace cppcraft
 	Columns::~Columns()
 	{
 		delete[] column_dump;
+		delete[] columns;
 	}
 	
 	Column::Column()

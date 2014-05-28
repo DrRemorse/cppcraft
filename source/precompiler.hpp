@@ -16,10 +16,10 @@ namespace cppcraft
 	class Precomp
 	{
 	public:
-		Precomp() {}
+		Precomp();
 		~Precomp();
 		
-		bool alive;
+		bool    alive;
 		Sector* sector;
 		
 		// mesh data
@@ -41,7 +41,7 @@ namespace cppcraft
 	class Precompiler
 	{
 	public:
-		static const int MAX_PRECOMPQ = 256;
+		static const int MAX_PRECOMPQ = 128;
 		
 		~Precompiler();
 		

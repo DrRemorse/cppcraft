@@ -54,7 +54,7 @@ void main()
 		float speed = frameCounter * 0.01;
 		
 		// camera bobbing
-		vec2 waves = vec2(sin(speed), cos(speed)) * 0.01;
+		vec2 waves = sincos(speed) * 0.01; // vec2(sin(speed), cos(speed)) * 0.01;
 		// screen waves
 		vec2 waveCoords = vec2(speed * 5) + texCoord.xy * 6.28 * 32;
 		float wavyDepth = smoothstep(0.0, 0.1, depth);
@@ -73,6 +73,12 @@ void main()
 			color.rgb = mix(color.rgb, SUB_LAVA, 0.6 + 0.4 * wavyDepth);
 		}
 	}
+	
+	const vec3 luma = vec3(0.299, 0.587, 0.114);
+	float luminance = dot(luma, color.rgb);
+	float fadein    = min(1.0, frameCounter / 250.0);
+	
+	color.rgb = mix(vec3(luminance), color.rgb, fadein);
 	
 	color.rgb = pow(color.rgb, vec3(2.2));
 	

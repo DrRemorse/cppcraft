@@ -1,72 +1,23 @@
-#include "precomp_thread.hpp"
+#include "precomp_thread_ao.hpp"
 
 #include <library/log.hpp>
-#include <library/bitmap/colortools.hpp>
-#include <library/storage/bitarray.hpp>
-
 #include "blockmodels.hpp"
 #include "lighting.hpp"
+#include "precomp_thread.hpp"
 #include "precompiler.hpp"
 #include "renderconst.hpp"
 #include "sector.hpp"
 #include "spiders.hpp"
 #include "tiles.hpp"
-#include <cstring>
 
 using namespace library;
 
 namespace cppcraft
 {
-	class AmbientOcclusion
-	{
-	public:
-		static const int CRASH_MAX_POINTS = 2400;
-		static const int POINT_ELEMENTS = CRASH_MAX_POINTS * 8 * 6;
-		
-		// number of corner points set (must be cleared)
-		int count;
-		
-		// lookup table (must be cleared)
-		short t_lookup[Sector::BLOCKS_XZ+1]
-					  [Sector::BLOCKS_Y +1]
-					  [Sector::BLOCKS_XZ+1];
-		// bit array for defining which faces are connected to each point (must be cleared)
-		BitArray pointData;
-		// corner shadow value (does not need to be cleared)
-		unsigned char t_corner[CRASH_MAX_POINTS];
-		// test data (does not need to be cleared)
-		visiblefaces_t testdata;
-		
-		AmbientOcclusion()
-		{
-			pointData = BitArray(POINT_ELEMENTS);
-		}
-		
-		// get/set point bits
-		inline void setPoint(int index, int corner, int face)
-		{
-			pointData.set((index * 8 + corner) * 6 + face);
-		}
-		inline bool getPoint(int index, int corner, int face) const
-		{
-			return pointData[(index * 8 + corner) * 6 + face];
-		}
-		
-		void clear()
-		{
-			count = 0;
-			// clear point bitarray
-			pointData.clear();
-			// clear lookup table
-			memset(t_lookup, 0, sizeof(t_lookup));
-		}
-		
-	};
-	
 	int colorDistance(unsigned int c1, unsigned int c2)
 	{
-		unsigned char* b1 = (unsigned char*)&c1;
-		unsigned char* b2 = (unsigned char*)&c2;
+		unsigned char* b1 = (unsigned char*) &c1;
+		unsigned char* b2 = (unsigned char*) &c2;
 		
 		int d1 = abs(b1[0] - b2[0]);
 		int d2 = abs(b1[1] - b2[1]);

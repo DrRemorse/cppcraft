@@ -1,13 +1,14 @@
 #include "precomp_thread.hpp"
 
 #include <library/log.hpp>
-#include <cstring>
 #include "precompiler.hpp"
+#include "precomp_thread_ao.hpp"
 #include "renderconst.hpp"
 #include "sectors.hpp"
 #include "flatlands.hpp"
 #include "tiles.hpp"
 #include "threading.hpp"
+#include <cstring>
 
 using namespace library;
 
@@ -15,19 +16,45 @@ namespace cppcraft
 {
 	const int PrecompThreadData::repeat_factor = RenderConst::VERTEX_SCALE / tiles.tilesPerBigtile;
 	
+	PrecompThread::PrecompThread()
+	{
+		// random default values for vertex array sizes
+		// the arrays get automatically resized as needed
+		static const int pipelineSize[RenderConst::MAX_UNIQUE_SHADERS] =
+		{
+			5000, // TX_REPEAT
+			5000, // TX_SOLID
+			8000, // TX_TRANS
+			1500, // TX_2SIDED
+			1500, // TX_CROSS
+			1500, // TX_LAVA
+			2000, // TX_WATER
+			 500  // TX_RUNNING_WATER
+		};
+		
+		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
+		{
+			// set initial shaderline sizes
+			pcg.pipelineSize[i] = pipelineSize[i];
+			// initialize each shaderline
+			pcg.databuffer[i] = new vertex_t[pipelineSize[i]];
+		}
+	}
+	PrecompThread::~PrecompThread()
+	{
+		delete this->occ;
+	}
 	// free vertex arrays
 	PrecompThreadData::~PrecompThreadData()
 	{
 		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
-		{
 			delete[] this->databuffer[i];
-		}
 	}
 	
 	void PrecompThread::precompile()
 	{
-		Precomp& pc = precomp[0];
-		Sector&  sector  = pc.sector[0];
+		Precomp& pc     = precomp[0];
+		Sector&  sector = pc.sector[0];
 		
 		// reset light list
 		pcg.ldata.gathered = false;
@@ -126,15 +153,8 @@ namespace cppcraft
 		}
 		
 		// allocate exact number of vertices
-		vertex_t* datadump = new vertex_t[cnt];
-		
-		if (datadump == nullptr)
-		{
-			logger << Log::ERR << "PrecompThread::precompile(): datadump was null" << Log::ENDL;
-			// we cannot continue, kill the precomp
-			killPrecomp();
-			return;
-		}
+		delete[] pc.datadump;
+		pc.datadump = new vertex_t[cnt];
 		
 		int bufferoffset[RenderConst::MAX_UNIQUE_SHADERS];
 		cnt = 0;
@@ -145,13 +165,12 @@ namespace cppcraft
 			bufferoffset[i] = cnt;
 			if (pcg.vertices[i])
 			{
-				memcpy(datadump + cnt, pcg.databuffer[i], pcg.vertices[i] * sizeof(vertex_t));
+				memcpy(pc.datadump + cnt, pcg.databuffer[i], pcg.vertices[i] * sizeof(vertex_t));
 				cnt += pcg.vertices[i];
 			}
 		}
 		
 		// prepare for next stage
-		pc.datadump = datadump;
 		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 		{
 			// copy over to dump, but only if it had faces

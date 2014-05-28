@@ -11,6 +11,8 @@
 #include "sectors.hpp"
 #include "worldbuilder.hpp"
 
+//#define DEBUG
+
 using namespace library;
 
 namespace cppcraft
@@ -31,27 +33,13 @@ namespace cppcraft
 			
 			if (sector.progress == Sector::PROG_RECOMPILING)
 			{
-				try
-				{
-					// first precompiler stage: mesh generation
-					pt.precompile();
-				}
-				catch (std::string exc)
-				{
-					logger << Log::ERR << "pt.precompile(): " << exc << Log::ENDL;
-				}
+				// first precompiler stage: mesh generation
+				pt.precompile();
 			}
 			else if (sector.progress == Sector::PROG_AO)
 			{
-				try
-				{
-					// second stage: AO
-					pt.ambientOcclusion();
-				}
-				catch (std::string exc)
-				{
-					logger << Log::ERR << "pt.ambientOcclusion(): " << exc << Log::ENDL;
-				}
+				// second stage: AO
+				pt.ambientOcclusion();
 			}
 			else
 			{
@@ -87,11 +75,9 @@ namespace cppcraft
 		for (int i = 0; i < Precompiler::MAX_PRECOMPQ; i++)
 		{
 			if (precompiler[i].alive)
+			if (precompiler[i].sector == &sector)
 			{
-				if (precompiler[i].sector == &sector)
-				{
-					return i;
-				}
+				return i;
 			}
 		}
 		return -1;
