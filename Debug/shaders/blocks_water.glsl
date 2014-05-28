@@ -13,8 +13,8 @@ uniform vec3 worldOffset;
 uniform vec3 lightVector;
 uniform float frameCounter;
 
-in vec3 in_vertex;
-in vec3 in_normal;
+in vec4 in_vertex;
+in vec4 in_normal;
 in vec3 in_texture;
 in vec4 in_biome;
 in vec4 in_color;
@@ -24,7 +24,6 @@ out vec4 waterColor;
 out vec4 lightdata;
 out vec4 torchlight;
 
-out float vertdist;
 out vec3 v_pos;
 out vec3 v_ldir;
 out vec3 v_normal;
@@ -32,23 +31,21 @@ flat out vec3 l_normal;
 
 out vec4 waves;
 
-const float VERTEX_SCALE
+const float VERTEX_SCALE_INV
 
 void main(void)
 {
-	vec4 position = vec4(in_vertex / VERTEX_SCALE + vtrans, 1.0);
+	vec4 position = vec4(in_vertex.xyz * VERTEX_SCALE_INV, 1.0);
+	position.xyz += vtrans;
 	position = matview * position;
-	vertdist = length(position.xyz);
 	gl_Position = matproj * position;
 	
 	// light and eye direction in view space
 	v_pos = -position.xyz;
 	v_ldir = mat3(matview) * lightVector;
-	//v_eye = -position.xyz / vertdist;
-	//v_half = normalize(v_eye + v_ldir);
 	// reflect light in view space using view-normal
-	l_normal = in_normal;
-	v_normal = mat3(matview) * in_normal;
+	l_normal = in_normal.xyz;
+	v_normal = mat3(matview) * in_normal.xyz;
 	
 	// galactic coordinates
 	vec3 w_vertex  = position.xyz * mat3(matview) - worldOffset;
@@ -85,7 +82,6 @@ in vec4 waterColor;
 in vec4 lightdata;
 in vec4 torchlight;
 
-in float vertdist;
 in vec3 v_ldir;
 //in vec3 v_eye;
 //in vec3 v_half;
@@ -132,17 +128,15 @@ void main(void)
 	Normal = normalize(Normal) * tbn;
 	*/
 	
-	//gl_FragColor = vec4(Normal, vertdist / ZFAR);
-	//return;
+	float vertdist = length(v_pos);
 	
 	vec3 vNormal = mat3(matview) * Normal;
 	vec3 viewNormal = normalize(v_normal);
 	
 	// normalize inputs (water planes are complex)
-	vec3 vEye   = normalize(v_pos);
+	vec3 vEye   = v_pos / vertdist;
 	vec3 vLight = normalize(v_ldir);
 	vec3 vHalf = normalize(vEye + vLight);
-	//vec3 hNormal = normalize(vNormal + viewNormal);
 	
 	//----- fresnel term -----
 	
@@ -168,18 +162,18 @@ void main(void)
 		underw = texture2D(underwatermap, texCoord);
 	
 	// nicer depth, adding a little extra
-	wdepth = 0.02 + max(0.0, wdepth);
+	wdepth += 0.02; //max(0.0, 0.02 + wdepth);
 	
 	// above water we want the sky to appear as 100% seafloor
 	float dep = 1.0 - smoothstep(0.0, 0.04, wdepth);
 	
 	//----- SEACOLOR -----
-	const vec3 deepwater    = vec3(42, 73, 87) * vec3(1.0 / 255.0);
-	const vec3 shallowwater = vec3(0.35, 0.55, 0.50);
+	const vec3 deepWater    = vec3(42, 73, 87) * vec3(1.0 / 255.0);
+	const vec3 shallowWater = vec3(0.35, 0.55, 0.50);
 	
 	// create final water color
 	float depthTreshold = min(1.0, wdepth * 12.0);
-	vec4 color = vec4(mix(shallowwater, deepwater, depthTreshold), 1.0);
+	vec4 color = vec4(mix(shallowWater, deepWater, depthTreshold), 1.0);
 	
 	// mix watercolor and refraction/seabed
 	color.rgb = mix(color.rgb, underw.rgb, dep);

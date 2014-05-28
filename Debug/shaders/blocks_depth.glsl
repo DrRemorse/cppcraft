@@ -1,10 +1,8 @@
-#version 330
+#version 150
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
 
 #ifdef VERTEX_PROGRAM
-precision mediump float;
-
 uniform mat4 matproj;
 uniform mat4 matview;
 uniform vec3 vtrans;

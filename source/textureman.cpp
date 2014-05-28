@@ -278,7 +278,8 @@ namespace cppcraft
 		// fullscreen skybuffer
 		textures[T_SKYBUFFER] = Texture(GL_TEXTURE_2D);
 		textures[T_SKYBUFFER].setFormat(GL_RGBA16F);
-		textures[T_SKYBUFFER].create(0, gamescr.SW, gamescr.SH);
+		textures[T_SKYBUFFER].create(0, gamescr.SW / 2, gamescr.SH / 2);
+		textures[T_SKYBUFFER].setInterpolation(true);
 		
 		// supersampled scene colorbuffer
 		textures[T_SCENEBUFFER] = Texture(GL_TEXTURE_2D);
@@ -303,11 +304,6 @@ namespace cppcraft
 			textures[T_REFLECTION].setFormat(GL_RGBA16F);
 			textures[T_REFLECTION].setInterpolation(true);
 		}
-		
-		// supersampled fogged scene colorbuffer
-		textures[T_FOGBUFFER] = Texture(GL_TEXTURE_2D);
-		textures[T_FOGBUFFER].setFormat(GL_RGBA16F);
-		textures[T_FOGBUFFER].create(0, SSW, SSH);
 		
 		// fullscreen colorbuffer
 		textures[T_RENDERBUFFER] = Texture(GL_TEXTURE_2D);

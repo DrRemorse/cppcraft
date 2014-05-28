@@ -63,7 +63,6 @@ namespace cppcraft
 			T_UNDERWATERMAP,
 			T_REFLECTION,
 			
-			T_FOGBUFFER,
 			T_RENDERBUFFER,
 			T_FINALBUFFER,
 			

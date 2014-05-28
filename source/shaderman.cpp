@@ -50,6 +50,10 @@ namespace cppcraft
 		{
 			text += " = " + toString(RenderConst::VERTEX_SCALE) + ";";
 		}
+		else if (text == "const float VERTEX_SCALE_INV")
+		{
+			text += " = " + toString(1.0 / RenderConst::VERTEX_SCALE) + ";";
+		}
 		else if (text == "const float ZNEAR")
 		{
 			text += " = " + toString(camera.getZNear()) + ";";

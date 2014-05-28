@@ -120,7 +120,7 @@ namespace cppcraft
 		
 		Texture& skyTex = textureman[Textureman::T_SKYBUFFER];
 		Texture& sceneTex = textureman[Textureman::T_SCENEBUFFER];
-		Texture& screenTex = textureman[Textureman::T_RENDERBUFFER];
+		Texture& renderBuffer = textureman[Textureman::T_RENDERBUFFER];
 		
 		glDisable(GL_CULL_FACE); // because the lower half hemisphere is rotated
 		glDisable(GL_DEPTH_TEST);
@@ -351,10 +351,14 @@ namespace cppcraft
 		
 		// blit terrain to (downsampled) underwatermap
 		Texture& underwaterTex = textureman[Textureman::T_UNDERWATERMAP];
+		
+		underwaterFBO.bind();
+		glClear(GL_COLOR_BUFFER_BIT);
+		
 		sceneFBO.blitTo(underwaterFBO, 
 						sceneTex.getWidth(), sceneTex.getHeight(), 
 						underwaterTex.getWidth(), underwaterTex.getHeight(), 
-						GL_COLOR_BUFFER_BIT, GL_LINEAR);
+						GL_COLOR_BUFFER_BIT, GL_NEAREST);
 		
 		sceneFBO.bind();
 		
@@ -371,45 +375,44 @@ namespace cppcraft
 		glDisable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
 		
-		/// create fog based on depth ///
-		textureman.bind(0, Textureman::T_SCENEBUFFER);
-		textureman.bind(1, Textureman::T_SKYBUFFER);
-		textureman.bind(2, Textureman::T_DEPTHBUFFER);
-		
-		screenspace.fog(vec3(playerX, playerY, playerZ), renderer.frametick);
-		
 		/////////////////////////////////
 		// resolve supersampling
 		/////////////////////////////////
-		
-		Texture& cbuffer = textureman[Textureman::T_FOGBUFFER];
-		Texture* finalTex = nullptr;
-		
 		if (gameconf.supersampling > 1)
 		{
 			// back to normal screen-size
-			glViewport(0, 0, screenTex.getWidth(), screenTex.getHeight());
-			
-			screenspace.renderSuperSampling(cbuffer);
-			finalTex = &screenTex;
+			glViewport(0, 0, renderBuffer.getWidth(), renderBuffer.getHeight());
+			// render from scene texture into T_FINALBUFFER
+			screenspace.renderSuperSampling(sceneTex);
+			textureman.bind(0, Textureman::T_FINALBUFFER);
 		}
 		else
-		{	// just use fog buffer
-			finalTex = &cbuffer;
+		{
+			textureman.bind(0, Textureman::T_SCENEBUFFER);
 		}
+		
+		/////////////////////////////////
+		// create fog based on depth
+		/////////////////////////////////
+		textureman.bind(1, Textureman::T_SKYBUFFER);
+		textureman.bind(2, Textureman::T_DEPTHBUFFER);
+		// --> outputs T_RENDERBUFFER
+		screenspace.fog(vec3(playerX, playerY, playerZ), renderer.frametick);
 		
 		/////////////////////////////////
 		// blur the scene
 		/////////////////////////////////
+		renderBuffer.bind(0);
+		// --> inputs  T_RENDERBUFFER
+		// --> outputs T_BLURBUFFER2
+		screenspace.blur(renderBuffer);
 		
-		finalTex->bind(0);
-		screenspace.blur(screenTex);
-		
-		// without affecting depth, use screenspace renderer to render blurred terrain
-		// and also blend terrain against sky background
 		screenFBO.bind();
 		
-		finalTex->bind(0);
+		/////////////////////////////////
+		// blur background
+		/////////////////////////////////
+		renderBuffer.bind(0);
 		textureman.bind(1, Textureman::T_BLURBUFFER2);
 		
 		// render to final buffer from renderbuffer (screentex)
@@ -418,8 +421,7 @@ namespace cppcraft
 		///  render clouds & particles  ///
 		
 		glEnable(GL_DEPTH_TEST);
-		//glDepthMask(GL_FALSE);
-		//glDepthFunc(GL_LEQUAL);
+		glDepthFunc(GL_LEQUAL);
 		
 		glEnable(GL_BLEND);
 		glColorMask(1, 1, 1, 0);

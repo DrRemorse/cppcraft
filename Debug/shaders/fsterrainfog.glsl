@@ -65,7 +65,7 @@ float fogDensity(in vec3  ray,
 	float noise = snoise(point * 0.01) + snoise(point * 0.04);
 	noise = (noise + 2.0) * 0.25;
 	
-	return (0.2 + noise * 0.4 + foglen * 0.4) * foglevel;
+	return (0.2 + noise * 0.4 + foglen * 0.3) * foglevel;
 }
 
 float linearizeDepth(in vec2 uv)
@@ -89,7 +89,7 @@ void main()
 	vec3 wpos = cofs.xyz + vec3(0.0, cameraPos.y, 0.0) - worldOffset;
 	
 	// volumetric fog
-	float fogAmount  = fogDensity(ray, wpos, depth);
+	float fogAmount = 0.0; //fogDensity(ray, wpos, depth);
 	fogAmount *= sqrt(depth);
 	
 	const vec3 fogBaseColor = vec3(0.9);

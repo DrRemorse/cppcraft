@@ -72,7 +72,7 @@ namespace cppcraft
 		shd.bind();
 		
 		glBindFramebuffer(GL_FRAMEBUFFER, blurFBO);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_FOGBUFFER), 0);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_RENDERBUFFER), 0);
 		
 		shd.sendVec3("sunAngle", thesun.getRealtimeAngle());
 		// camera view matrix
@@ -105,7 +105,7 @@ namespace cppcraft
 		texture.bind(0);
 		
 		supersampler.bind();
-		supersampler.attachColor(0, textureman[Textureman::T_RENDERBUFFER]);
+		supersampler.attachColor(0, textureman[Textureman::T_FINALBUFFER]);
 		// downsample supersampling to screen size
 		screenVAO.render(GL_QUADS);
 		supersampler.unbind();
