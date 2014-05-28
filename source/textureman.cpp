@@ -293,7 +293,7 @@ namespace cppcraft
 		// fullscreen underwater texture
 		textures[T_UNDERWATERMAP] = Texture(GL_TEXTURE_2D);
 		textures[T_UNDERWATERMAP].setFormat(GL_RGBA16F);
-		textures[T_UNDERWATERMAP].create(0, gamescr.SW / 2, gamescr.SH / 2);
+		textures[T_UNDERWATERMAP].create(0, gamescr.SW, gamescr.SH);
 		textures[T_UNDERWATERMAP].setInterpolation(true);
 		
 		if (gameconf.reflections)

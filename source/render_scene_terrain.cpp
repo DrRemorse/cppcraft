@@ -321,7 +321,7 @@ namespace cppcraft
 		{
 			flatlands.uploadTexture();
 		}*/
-		//textureman.bind(4, Textureman::T_SKYBOX);
+		textureman.bind(2, Textureman::T_SKYBOX);
 		
 		// bind standard shader
 		handleSceneUniforms(renderer.frametick, 

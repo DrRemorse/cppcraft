@@ -133,8 +133,9 @@ namespace cppcraft
 			// projection matrix
 			shaders[sbase + i].sendMatrix("matproj", camera.getProjection());
 			// texture units
-			shaders[sbase + i].sendInteger("texture", 0);
+			shaders[sbase + i].sendInteger("diffuse", 0);
 			shaders[sbase + i].sendInteger("tonemap", 1);
+			shaders[sbase + i].sendInteger("skymap", 2);
 		}
 		
 		// extra textures for water

@@ -96,6 +96,7 @@ void main()
 	vec3 fogColor = mix(fogBaseColor, sunBaseColor, sunAmount);
 	
 	color.rgb = mix(color.rgb, fogColor, fogAmount);
+	// additional sun glow on terrain
 	color.rgb = mix(color.rgb, sunBaseColor, sunAmount * 0.5 * depth);
 	
 	//color.rgb = wpos.xyz / ZFAR;

@@ -1,10 +1,8 @@
-#version 130
+#version 150
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
-precision mediump float;
 
 #ifdef VERTEX_PROGRAM
-
 uniform mat4 matproj;
 uniform mat4 matview;
 uniform vec3 vtrans;
@@ -25,9 +23,9 @@ out vec4 lightdata;
 out vec4 torchlight;
 flat out float worldLight;
 
-out float vertdist;
-//flat out float reflection;
-//out vec3 v_reflect;
+out vec3 v_pos;
+flat out float reflection;
+out vec3 v_reflect;
 
 const int TX_REPEAT
 const int TX_SOLID
@@ -39,19 +37,17 @@ void main(void)
 {
 	vec4 position = vec4(in_vertex / VERTEX_SCALE + vtrans, 1.0);
 	position = matview * position;
-	vertdist = length(position.xyz);
 	gl_Position = matproj * position;
 	
+	v_pos = -position.xyz;
+	
 	/* ice reflection */
-	/*reflection = 0.0;
-	v_eye = -position.xyz / vertdist;
-	if (in_texture.p == ICE_TILE)
+	reflection = 0.0;
+	if (in_texture.z == ICE_TILE)
 	{
 		reflection = 1.0;
-		
-		// real reflection vector
-		v_reflect = reflect((-v_eye) * mat3(matview), in_normal);
-	}*/
+		v_reflect = reflect(v_pos * mat3(matview), in_normal);
+	}
 	
 	texCoord = vec3(in_texture.st / VERTEX_SCALE, in_texture.p);
 	
@@ -68,11 +64,9 @@ void main(void)
 #ifdef FRAGMENT_PROGRAM
 #extension GL_EXT_gpu_shader4 : enable
 
-uniform sampler2DArray texture;
+uniform sampler2DArray diffuse;
 uniform sampler2DArray tonemap;
-//uniform samplerCube skymap;
-
-uniform vec3 screendata;
+uniform samplerCube skymap;
 
 uniform float daylight;
 uniform float modulation;
@@ -84,8 +78,7 @@ in vec4 lightdata;
 in vec4 torchlight;
 flat in float worldLight;
 
-in float vertdist;
-
+in vec3 v_pos;
 flat in float reflection;
 in vec3 v_reflect;
 
@@ -95,24 +88,27 @@ const int TX_CROSS
 
 void main(void)
 {
+	float vertdist = length(v_pos);
+	
 	// independent texture reads using inbound variable directly
 	// read tonecolor from tonemap
-	vec4 color = texture2DArray(tonemap, texCoord);
+	vec4 color = texture(tonemap, texCoord);
 	color.rgb *= biomeColor.rgb;
 	
 	// mix diffuse map
-	vec4 diffuse = texture2DArray(texture, texCoord);
+	vec4 diffuse = texture(diffuse, texCoord);
 	color = mix(diffuse, color, color.a);
 	
 	// reflection //
-	/*if (reflection > 0.15)
+	if (reflection > 0.15)
 	{
-		float fresnel = 1.0 - v_reflect.y * v_reflect.y;
+		float fresnel = v_reflect.y / vertdist;
+		fresnel = 1.0 - fresnel * fresnel;
 		
 		// mix in reflection
-		vec3 reflection = mix(textureCube(skymap, v_reflect).rgb, vec3(0.75), 0.75);
-		color.rgb = mix(color.rgb, reflection, fresnel * 0.5);
-	}*/
+		vec3 skyColor = texture(skymap, v_reflect).rgb;
+		color.rgb = mix(color.rgb, skyColor, fresnel * 0.6);
+	}
 	
 	#include "degamma.glsl"
 	

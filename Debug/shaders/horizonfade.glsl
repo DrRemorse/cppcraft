@@ -2,10 +2,6 @@
 // Horizon fade code snippet
 //
 #define POSTPROCESS
-
-//const float fade_dist = 0.85 * ZFAR;
-//1.0 - clamp((vertdist - fade_dist) / (ZFAR - fade_dist), 0.0, 1.0);
-
 #ifdef POSTPROCESS
 	
 	color.a = vertdist / ZFAR;

@@ -1,4 +1,4 @@
-#version 130
+#version 150
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
 
@@ -81,7 +81,7 @@ void main(void)
 #ifdef FRAGMENT_PROGRAM
 #extension GL_EXT_gpu_shader4 : enable
 
-uniform sampler2DArray texture;
+uniform sampler2DArray diffuse;
 uniform sampler2DArray tonemap;
 
 uniform vec3 screendata;
@@ -89,8 +89,8 @@ uniform vec3 lightVector;
 uniform float daylight;
 uniform float modulation;
 
-uniform vec4  playerLight;
-uniform int   texrange;
+uniform vec4 playerLight;
+uniform int  texrange;
 
 in vec3 texCoord;
 in vec4 biomeColor;
@@ -107,11 +107,11 @@ const int TX_CROSS
 
 void main(void)
 {
-	vec4 color = texture2DArray(texture, texCoord.stp);
+	vec4 color = texture(diffuse, texCoord.stp);
 	if (color.a < 0.05) discard;
 	
 	// read tonecolor from tonemap
-	vec4 toneColor = texture2DArray(tonemap, texCoord.stp);
+	vec4 toneColor = texture(tonemap, texCoord.stp);
 	color.rgb = mix(color.rgb, biomeColor.rgb * toneColor.rgb, toneColor.a);
 	
 	#include "degamma.glsl"

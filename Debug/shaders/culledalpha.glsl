@@ -1,7 +1,6 @@
-#version 130
+#version 150
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
-precision mediump float;
 
 #ifdef VERTEX_PROGRAM
 uniform mat4 matproj;
@@ -33,10 +32,9 @@ void main(void)
 	vec4 position = vec4(in_vertex / VERTEX_SCALE + vtrans, 1.0);
 	position = matview * position;
 	vertdist = length(position.xyz);
+	gl_Position = matproj * position;
 	
 	texCoord = vec3(in_texture.st / VERTEX_SCALE, in_texture.p);
-	
-	gl_Position = matproj * position;
 	
 	// dotlight
 	#include "worldlight.glsl"
@@ -50,7 +48,7 @@ void main(void)
 #ifdef FRAGMENT_PROGRAM
 #extension GL_EXT_gpu_shader4 : enable
 
-uniform sampler2DArray texture;
+uniform sampler2DArray diffuse;
 uniform sampler2DArray tonemap;
 
 uniform float daylight;
@@ -68,11 +66,11 @@ const float ZFAR
 
 void main(void)
 {
-	vec4 color = texture2DArray(texture, texCoord.stp);
-	if (color.a < 0.1) discard;
+	vec4 color = texture(diffuse, texCoord.stp);
+	if (color.a < 0.05) discard;
 	
 	// read tonecolor from tonemap
-	vec4 toneColor = texture2DArray(tonemap, texCoord.stp);
+	vec4 toneColor = texture(tonemap, texCoord.stp);
 	color.rgb = mix(color.rgb, biomeColor.rgb * toneColor.rgb, toneColor.a);
 	
 	#include "degamma.glsl"
