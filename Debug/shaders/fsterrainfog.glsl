@@ -46,26 +46,23 @@ float fogDensity(in vec3  ray,
 				 in vec3  point,
 				 in float depth)
 {
-	const float MAXDEPTH = ZFAR * 0.8;
-	const float HEIGHT   = 32.0;
-	const float fogY     = 76.0;
+	const float HEIGHT   = 36.0;
+	const float fogY     = 70.0;
 	const float fogTopY  = fogY + HEIGHT;
 	
 	// distance in fog is calculated with a simple intercept
 	float foglen = max(0.0, fogTopY - point.y) / abs(ray.y);
-	foglen = min(1.0, foglen / MAXDEPTH);
+	foglen = min(1.0, foglen / ZFAR);
 	
-	// how far are we from some arbitrary height?
-	float foglevel = 1.0 - min(1.0, abs(point.y - fogY) / HEIGHT);
+	// how far are we from center of fog?
+	float foglevel = min(1.0, abs(point.y - fogY) / HEIGHT);
+	foglevel = 1.0 - foglevel * foglevel;
 	
-	float above = step(point.y, fogY);
-	foglevel = (1.0 - above) * foglevel + above * foglevel;
-	foglevel = sqrt(foglevel);
+	point.x += timeElapsed * 0.02;
+	float noise = snoise(point * 0.02) + snoise(point * 0.05) + snoise(point * 2.0);
+	noise = (noise + 3.0) * 0.167;
 	
-	float noise = snoise(point * 0.01) + snoise(point * 0.04);
-	noise = (noise + 2.0) * 0.25;
-	
-	return (0.2 + noise * 0.4 + foglen * 0.3) * foglevel;
+	return (noise + foglen) * 0.5 * foglevel;
 }
 
 float linearizeDepth(in vec2 uv)
@@ -89,19 +86,20 @@ void main()
 	vec3 wpos = cofs.xyz + vec3(0.0, cameraPos.y, 0.0) - worldOffset;
 	
 	// volumetric fog
-	float fogAmount = 0.0; //fogDensity(ray, wpos, depth);
-	fogAmount *= sqrt(depth);
+	float fogAmount = fogDensity(ray, wpos, depth);
+	fogAmount *= depth;
 	
 	const vec3 fogBaseColor = vec3(0.9);
 	const vec3 sunBaseColor = vec3(1.0, 0.8, 0.5);
 	
-	float sunAmount = max(0.0, dot(-ray, sunAngle)) * 0.8 * depth;
-	fogAmount *= (1.0 - sunAmount);
-	color.rgb = mix(color.rgb, fogBaseColor, fogAmount);
-	color.rgb = mix(color.rgb, sunBaseColor, sunAmount);
+	float sunAmount = max(0.0, dot(-ray, sunAngle));
+	vec3 fogColor = mix(fogBaseColor, sunBaseColor, sunAmount);
+	
+	color.rgb = mix(color.rgb, fogColor, fogAmount);
+	color.rgb = mix(color.rgb, sunBaseColor, sunAmount * 0.5 * depth);
 	
 	//color.rgb = wpos.xyz / ZFAR;
-	//color.rgb = vec3(foglevel);
+	//color.rgb = vec3(fogAmount*4.0);
 	
 	// mix in fog
 	vec3 skyColor = texture2D(skytexture, texCoord).rgb;
