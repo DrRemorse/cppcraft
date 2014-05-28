@@ -44,23 +44,28 @@ const float ZNEAR
 
 float fogDensity(in vec3  ray,
 				 in vec3  point,
-				 in float depth,
-				 in float fogheight)
+				 in float depth)
 {
-	// distance in fog is calculated with a simple intercept theorem
-	float len = max(0.0, fogheight - point.y) / max(0.1, ray.y);
-	float fogdepth = min(ZFAR * 0.5, len) / (ZFAR * 0.5);
+	const float MAXDEPTH = ZFAR * 0.8;
+	const float HEIGHT   = 32.0;
+	const float fogY     = 76.0;
+	const float fogTopY  = fogY + HEIGHT;
+	
+	// distance in fog is calculated with a simple intercept
+	float foglen = max(0.0, fogTopY - point.y) / abs(ray.y);
+	foglen = min(1.0, foglen / MAXDEPTH);
 	
 	// how far are we from some arbitrary height?
-	float foglevel = 1.0 - min(1.0, abs(point.y - fogheight) / 64.0);
+	float foglevel = 1.0 - min(1.0, abs(point.y - fogY) / HEIGHT);
 	
-	float above = step(point.y, fogheight);
-	foglevel = (1.0 - above) * foglevel + above * pow(foglevel, 4.0);
+	float above = step(point.y, fogY);
+	foglevel = (1.0 - above) * foglevel + above * foglevel;
+	foglevel = sqrt(foglevel);
 	
 	float noise = snoise(point * 0.01) + snoise(point * 0.04);
 	noise = (noise + 2.0) * 0.25;
 	
-	return (noise + fogdepth) * 0.5 * foglevel;
+	return (0.2 + noise * 0.4 + foglen * 0.4) * foglevel;
 }
 
 float linearizeDepth(in vec2 uv)
@@ -84,8 +89,8 @@ void main()
 	vec3 wpos = cofs.xyz + vec3(0.0, cameraPos.y, 0.0) - worldOffset;
 	
 	// volumetric fog
-	float fogAmount  = fogDensity(ray, wpos, depth, 76.0);
-	fogAmount *= sqrt(depth) + depth;
+	float fogAmount  = fogDensity(ray, wpos, depth);
+	fogAmount *= sqrt(depth);
 	
 	const vec3 fogBaseColor = vec3(0.9);
 	const vec3 sunBaseColor = vec3(1.0, 0.8, 0.5);

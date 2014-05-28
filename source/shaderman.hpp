@@ -53,6 +53,7 @@ namespace cppcraft
 			
 			GAUSS,
 			BLUR,
+			SUPERSAMPLING,
 			LENSFLARE,
 			POSTPROCESS,
 			

@@ -106,8 +106,8 @@ namespace cppcraft
 		sunshader.sendMatrix("matrot", camera.getRotationMatrix());
 		
 		// depth used as stencil buffer
-		textureman.bind(1, Textureman::T_FOGBUFFER);
-		textureman.bind(0, Textureman::T_SUN);
+		textureman[Textureman::T_FINALBUFFER].bind(1);
+		textureman[Textureman::T_SUN].bind(0);
 		
 		// rendering call
 		satteliteVAO.render(GL_QUADS);

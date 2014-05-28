@@ -123,7 +123,7 @@ namespace cppcraft
 		#endif
 		
 		// render scene
-		sceneRenderer->render(*this, worldman);
+		sceneRenderer->render(*this);
 		
 		#ifdef TIMING
 		logger << Log::INFO << "Time spent rendering: " << timer.getDeltaTime() * 1000.0 << Log::ENDL;

@@ -42,7 +42,7 @@ namespace cppcraft
 		matproj_long = perspectiveMatrix(this->FOV, wnd.SA, this->znear, this->zfar * 1.6);
 		
 		// calculate half near-plane size
-		const float pio180 = M_PI / 180.0;
+		const double pio180 = 4.0 * atan(1.0) / 180.0;
 		
 		float halfTan = tan(this->FOV * pio180 / 2.0);
 		nearPlaneHalfSize = vec2(halfTan * wnd.SA, halfTan);

@@ -47,7 +47,6 @@ namespace cppcraft
 			T_STARS,
 			
 			T_MAGMA,
-			//T_WATER_DUDV,
 			
 			T_LENSDIRT,
 			T_LENSFLARE,
@@ -57,13 +56,16 @@ namespace cppcraft
 			T_BLURBUFFER1,
 			T_BLURBUFFER2,
 			
-			T_FOGBUFFER,
+			T_SCENEBUFFER,
 			T_SKYBUFFER,
+			T_DEPTHBUFFER,
+			
 			T_UNDERWATERMAP,
-			T_RENDERBUFFER,
 			T_REFLECTION,
 			
-			T_DEPTHBUFFER,
+			T_FOGBUFFER,
+			T_RENDERBUFFER,
+			T_FINALBUFFER,
 			
 			NUM_TEXTURES
 			
@@ -92,8 +94,6 @@ namespace cppcraft
 		{
 			return textures[tx].getHandle();
 		}
-		
-		void copyScreen(library::WindowClass& gamescr, named_textures_t tx);
 		
 	private:
 		library::Texture textures[NUM_TEXTURES];

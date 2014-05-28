@@ -18,7 +18,7 @@ namespace cppcraft
 	{
 	public:
 		void init(Renderer& renderer);
-		void render(Renderer& renderer, WorldManager& worldman);
+		void render(Renderer& renderer);
 		
 	private:
 		double lastTime;

@@ -167,13 +167,6 @@ namespace cppcraft
 		}
 		else throw std::string("Missing source file: Selection texture");
 		
-		// water du/dv texture
-		/*if (bmp.load(config.get("textures.waterdudv", "bitmap/default/waterdudv.png"), Bitmap::PNG))
-		{
-			textures[T_WATER_DUDV] = Texture(GL_TEXTURE_2D);
-			textures[T_WATER_DUDV].create(bmp, true, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
-		}*/
-		
 		/// Sky renderer ///
 		
 		// sun texture
@@ -285,23 +278,22 @@ namespace cppcraft
 		// fullscreen skybuffer
 		textures[T_SKYBUFFER] = Texture(GL_TEXTURE_2D);
 		textures[T_SKYBUFFER].setFormat(GL_RGBA16F);
-		textures[T_SKYBUFFER].create(0, SSW, SSH);
+		textures[T_SKYBUFFER].create(0, gamescr.SW, gamescr.SH);
 		
-		// fullscreen fog colorbuffer
-		textures[T_FOGBUFFER] = Texture(GL_TEXTURE_2D);
-		textures[T_FOGBUFFER].setFormat(GL_RGBA16F);
-		textures[T_FOGBUFFER].create(0, SSW, SSH);
+		// supersampled scene colorbuffer
+		textures[T_SCENEBUFFER] = Texture(GL_TEXTURE_2D);
+		textures[T_SCENEBUFFER].setFormat(GL_RGBA16F);
+		textures[T_SCENEBUFFER].create(0, SSW, SSH);
+		
+		// fullscreen depth buffer
+		textures[T_DEPTHBUFFER] = Texture(GL_TEXTURE_2D);
+		textures[T_DEPTHBUFFER].createDepth(SSW, SSH, GL_DEPTH_COMPONENT24);
 		
 		// fullscreen underwater texture
 		textures[T_UNDERWATERMAP] = Texture(GL_TEXTURE_2D);
 		textures[T_UNDERWATERMAP].setFormat(GL_RGBA16F);
-		textures[T_UNDERWATERMAP].create(0, SSW, SSH);
-		
-		// fullscreen colorbuffer
-		textures[T_RENDERBUFFER] = Texture(GL_TEXTURE_2D);
-		textures[T_RENDERBUFFER].setFormat(GL_RGBA16F);
-		textures[T_RENDERBUFFER].create(0, SSW, SSH);
-		textures[T_RENDERBUFFER].setInterpolation(true);
+		textures[T_UNDERWATERMAP].create(0, gamescr.SW / 2, gamescr.SH / 2);
+		textures[T_UNDERWATERMAP].setInterpolation(true);
 		
 		if (gameconf.reflections)
 		{
@@ -312,16 +304,23 @@ namespace cppcraft
 			textures[T_REFLECTION].setInterpolation(true);
 		}
 		
-		// fullscreen depth buffer
-		textures[T_DEPTHBUFFER] = Texture(GL_TEXTURE_2D);
-		textures[T_DEPTHBUFFER].createDepth(SSW, SSH, GL_DEPTH_COMPONENT24);
+		// supersampled fogged scene colorbuffer
+		textures[T_FOGBUFFER] = Texture(GL_TEXTURE_2D);
+		textures[T_FOGBUFFER].setFormat(GL_RGBA16F);
+		textures[T_FOGBUFFER].create(0, SSW, SSH);
+		
+		// fullscreen colorbuffer
+		textures[T_RENDERBUFFER] = Texture(GL_TEXTURE_2D);
+		textures[T_RENDERBUFFER].setFormat(GL_RGBA16F);
+		textures[T_RENDERBUFFER].create(0, gamescr.SW, gamescr.SH);
+		textures[T_RENDERBUFFER].setInterpolation(true);
+		
+		// resolved from supersampling texture
+		textures[T_FINALBUFFER] = Texture(GL_TEXTURE_2D);
+		textures[T_FINALBUFFER].setFormat(GL_RGBA16F);
+		textures[T_FINALBUFFER].create(0, gamescr.SW, gamescr.SH);
 		
 		if (ogl.checkError()) throw std::string("Fullscreen textures error");
-	}
-	
-	void Textureman::copyScreen(WindowClass& gamescr, named_textures_t tx)
-	{
-		textures[tx].copyScreen(gamescr.SW, gamescr.SH);
 	}
 	
 }

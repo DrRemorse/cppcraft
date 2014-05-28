@@ -81,6 +81,7 @@ namespace cppcraft
 		
 		// "constant" data
 		vec3 vecScreen(gamescr.SW, gamescr.SH, gamescr.SA);
+		vec3 vecSuperScreen(gamescr.SW * gameconf.supersampling, gamescr.SH * gameconf.supersampling, gamescr.SA);
 		
 		// load and initialize all shaders
 		std::vector<std::string> linkstage;
@@ -182,7 +183,6 @@ namespace cppcraft
 		shaders[PARTICLE].sendInteger("texture", 0);
 		shaders[PARTICLE].sendMatrix("matproj", camera.getProjection());
 		shaders[PARTICLE].sendVec2("screensize", vecScreen.xy());
-		shaders[PARTICLE].sendFloat("fovRadians", camera.getFOV() / 180.0 * M_PI);
 		
 		// atmospherics shader
 		linkstage.clear();
@@ -214,6 +214,25 @@ namespace cppcraft
 		shaders[CLOUDS].sendMatrix("matproj", camera.getProjectionLong());
 		shaders[CLOUDS].sendInteger("texture", 0);
 		
+		// screenspace fog shader
+		shaders[FSTERRAINFOG] = Shader("shaders/fsterrainfog.glsl", tokenizer, linkstage);
+		shaders[FSTERRAINFOG].sendInteger("terrain",      0);
+		shaders[FSTERRAINFOG].sendInteger("skytexture",   1);
+		shaders[FSTERRAINFOG].sendInteger("depthtexture", 2);
+		// near plane half size
+		shaders[FSTERRAINFOG].sendVec2("nearPlaneHalfSize", camera.getNearPlaneHalfSize());
+		
+		// screenspace terrain shader
+		shaders[FSTERRAIN] = Shader("shaders/fsterrain.glsl", tokenizer, linkstage);
+		shaders[FSTERRAIN].sendInteger("terrain",      0);
+		shaders[FSTERRAIN].sendInteger("blurtexture",  1);
+		
+		// supersampling (downsampler) shader
+		shaders[SUPERSAMPLING] = Shader("shaders/supersample.glsl", tokenizer, linkstage);
+		shaders[SUPERSAMPLING].sendInteger("colorbuffer", 0);
+		shaders[SUPERSAMPLING].sendInteger("samples",     gameconf.supersampling);
+		shaders[SUPERSAMPLING].sendVec2("offsets",        vec2(1.0) / vecSuperScreen.xy());
+		
 		// lensflare
 		shaders[LENSFLARE] = Shader("shaders/lensflare.glsl", tokenizer, linkstage);
 		
@@ -231,19 +250,6 @@ namespace cppcraft
 		shaders[BLUR].sendInteger("texture", 0);
 		shaders[GAUSS] = Shader("shaders/blurGaussian.glsl", nullptr, linkstage);
 		shaders[GAUSS].sendInteger("texture", 0);
-		
-		// screenspace fog shader
-		shaders[FSTERRAINFOG] = Shader("shaders/fsterrainfog.glsl", tokenizer, linkstage);
-		shaders[FSTERRAINFOG].sendInteger("terrain",      0);
-		shaders[FSTERRAINFOG].sendInteger("skytexture",   1);
-		shaders[FSTERRAINFOG].sendInteger("depthtexture", 2);
-		// near plane half size
-		shaders[FSTERRAINFOG].sendVec2("nearPlaneHalfSize", camera.getNearPlaneHalfSize());
-		
-		// screenspace terrain shader
-		shaders[FSTERRAIN] = Shader("shaders/fsterrain.glsl", tokenizer, linkstage);
-		shaders[FSTERRAIN].sendInteger("terrain",      0);
-		shaders[FSTERRAIN].sendInteger("blurtexture",  1);
 		
 		// screenspace postprocessing shader
 		shaders[POSTPROCESS] = Shader("shaders/screenspace.glsl", tokenizer, linkstage);

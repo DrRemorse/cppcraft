@@ -34,7 +34,7 @@ void main(void)
 #ifdef FRAGMENT_PROGRAM
 
 uniform sampler2D texture;
-uniform vec3 screendata;
+uniform vec3 screensize;
 
 in vec3 pos;
 const float ZFAR
@@ -43,7 +43,7 @@ void main(void)
 {
 	float vertdist = length(pos) / ZFAR;
 	
-	vec2 texCoord =  gl_FragCoord.xy / screendata.xy;
+	vec2 texCoord =  gl_FragCoord.xy / screensize.xy;
 	gl_FragData[0] = vec4(texture2D(texture, texCoord).rgb, vertdist);
 }
 

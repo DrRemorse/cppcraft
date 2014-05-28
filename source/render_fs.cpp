@@ -3,10 +3,12 @@
 #include <library/config.hpp>
 #include <library/log.hpp>
 #include <library/opengl/opengl.hpp>
+#include <library/opengl/fbo.hpp>
 #include <library/opengl/vao.hpp>
 #include <library/opengl/window.hpp>
 #include <library/math/vector.hpp>
 #include "camera.hpp"
+#include "gameconf.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
 #include "shaderman.hpp"
@@ -19,6 +21,7 @@ namespace cppcraft
 {
 	FSRenderer screenspace;
 	VAO screenVAO;
+	FBO supersampler;
 	
 	void FSRenderer::init(WindowClass& gamescr)
 	{
@@ -40,11 +43,15 @@ namespace cppcraft
 		
 		// create screenspace FBOs
 		glGenFramebuffers(1, &blurFBO);
+		supersampler.create();
+		supersampler.bind();
+		supersampler.attachColor(0, textureman[Textureman::T_RENDERBUFFER]);
 		
 		initFlare();
 		
 		if (OpenGL::checkError())
 		{
+			logger << Log::ERR << "FSRenderer::init(): Failed to initialize framebuffers" << Log::ENDL;
 			throw std::string("Failed to initialize screenspace framebuffers");
 		}
 	}
@@ -59,13 +66,13 @@ namespace cppcraft
 		glViewport(0, 0, texture.getWidth(), texture.getHeight());
 	}
 	
-	void FSRenderer::fog(WindowClass& gamescr, vec3 playerPos, double timeElapsed)
+	void FSRenderer::fog(vec3 playerPos, double timeElapsed)
 	{
 		Shader& shd = shaderman[Shaderman::FSTERRAINFOG];
 		shd.bind();
 		
 		glBindFramebuffer(GL_FRAMEBUFFER, blurFBO);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_RENDERBUFFER), 0);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_FOGBUFFER), 0);
 		
 		shd.sendVec3("sunAngle", thesun.getRealtimeAngle());
 		// camera view matrix
@@ -92,17 +99,33 @@ namespace cppcraft
 		screenVAO.render(GL_QUADS);
 	}
 	
+	void FSRenderer::renderSuperSampling(Texture& texture)	{
+		Shader& shd = shaderman[Shaderman::SUPERSAMPLING];
+		shd.bind();
+		texture.bind(0);
+		
+		supersampler.bind();
+		supersampler.attachColor(0, textureman[Textureman::T_RENDERBUFFER]);
+		// downsample supersampling to screen size
+		screenVAO.render(GL_QUADS);
+		supersampler.unbind();
+	}
+	
 	void FSRenderer::render(WindowClass& gamescr, double frameCounter)
 	{
 		glDisable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
 		
+		/////////////////////////////////
 		// render sun flare
+		/////////////////////////////////
 		renderLensflare(gamescr);
 		
+		/////////////////////////////////
 		/// fullscreen postprocessing ///
+		/////////////////////////////////
 		
-		textureman.bind(0, Textureman::T_FOGBUFFER);
+		textureman.bind(0, Textureman::T_FINALBUFFER);
 		textureman.bind(1, Textureman::T_LENSFLARE);
 		
 		// postprocessing shader

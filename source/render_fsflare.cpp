@@ -38,7 +38,7 @@ namespace cppcraft
 	{
 		textureman.unbind(0);
 		
-		//  render sun to texture 0
+		//  render sun to draw buffer 0
 		glBindFramebuffer(GL_FRAMEBUFFER, flareFBO);
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_LENSFLARE), 0);
 		
@@ -46,7 +46,7 @@ namespace cppcraft
 		glViewport(0, 0, flareTxW, flareTxH);
 		glClear(GL_COLOR_BUFFER_BIT);
 		
-		//  render sun (again) to texture 0
+		// render sun-to-be-flare to buffer 0
 		mat4 matsun = skyrenderer.renderSunProj();
 		vec2 sunproj = getSunVector(matsun);
 		
