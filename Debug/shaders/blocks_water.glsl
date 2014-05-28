@@ -159,7 +159,10 @@ void main(void)
 	
 	// COSTLY re-read to avoid reading inside terrain
 	if (wdepth < 0.0)
+	{
 		underw = texture2D(underwatermap, texCoord);
+		wdepth = underw.a - dist;
+	}
 	
 	// nicer depth, adding a little extra
 	wdepth += 0.02; //max(0.0, 0.02 + wdepth);
