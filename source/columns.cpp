@@ -27,7 +27,7 @@ namespace cppcraft
 		//////////////////////
 		// allocate columns //
 		//////////////////////
-		int num_columns = Sectors.getXZ() * Sectors.getXZ() * COLUMNS_Y;
+		int num_columns = Sectors.getXZ() * Sectors.getXZ() * this->height;
 		this->columns = 
 			new Column[num_columns]();
 		
@@ -36,21 +36,27 @@ namespace cppcraft
 		//////////////////////////////
 		for (int i = 0; i < num_columns; i++)
 		{
-			int y = i % COLUMNS_Y;
+			int y = i % this->height;
 			// the column is above water if the first sector is >= water level
 			columns[i].aboveWater = 
-				(y * COLUMNS_SIZE * Sector::BLOCKS_Y >= RenderConst::WATER_LEVEL);
+				(y * this->sizeSectors * Sector::BLOCKS_Y >= RenderConst::WATER_LEVEL);
+			// determine column size (in sectors)
+			columns[i].vbodata = new vbodata_t[getSizeInSectors()]();
 		}
 	}
 	Columns::Columns()
 	{
+		// initialize basic stuff
+		//this->height = 1;
+		//this->sizeSectors = Sectors.SECTORS_Y / height;
+		
 		////////////////////////////////////////////////////////
 		// allocate temporary datadumps for compiling columns //
 		////////////////////////////////////////////////////////
 		
 		// COLUMNS_SIZE is the number of sectors in a column
 		column_dump = 
-			new vertex_t[COLUMNS_SIZE * RenderConst::MAX_FACES_PER_SECTOR * 4];
+			new vertex_t[sizeSectors * RenderConst::MAX_FACES_PER_SECTOR * 4];
 	}
 	Columns::~Columns()
 	{
@@ -66,8 +72,6 @@ namespace cppcraft
 		this->updated    = false;
 		this->renderable = false;
 		this->hasdata = false;
-		
-		this->vbodata = new vbodata_t[Columns::COLUMNS_SIZE]();
 	}
 	Column::~Column()
 	{
@@ -81,9 +85,9 @@ namespace cppcraft
 		/////////////////////////////////////////////////////////////
 		
 		int vboCount = 0;
-		vbodata_t vboList[Columns::COLUMNS_SIZE];
+		vbodata_t* vboList = new vbodata_t[columns.getSizeInSectors()];
 		
-		for (int sy = Columns::COLUMNS_SIZE-1; sy >= 0; sy--)
+		for (int sy = columns.getSizeInSectors()-1; sy >= 0; sy--)
 		{
 			if (vbodata[sy].pcdata != nullptr)
 			{
@@ -97,9 +101,10 @@ namespace cppcraft
 		// exit if this column isn't renderable at all
 		if (vboCount == 0)
 		{
-			//logger << Log::WARN << "Column::compile(): column was not ready" << Log::ENDL;
+			logger << Log::WARN << "Column::compile(): column was not ready" << Log::ENDL;
 			this->updated    = false;
 			this->renderable = false;
+			delete[] vboList;
 			return;
 		}
 		
@@ -166,6 +171,8 @@ namespace cppcraft
 			
 		} // next vbo
 		
+		delete[] vboList;
+		
 		///////////////////////////////////
 		// generate resources for column //
 		///////////////////////////////////
@@ -218,8 +225,8 @@ namespace cppcraft
 		
 		if (camera.getFrustum().column(x * Sector::BLOCKS_XZ + Sector::BLOCKS_XZ / 2,
 								z * Sector::BLOCKS_XZ + Sector::BLOCKS_XZ / 2,
-								y * Columns::COLUMNS_SIZE * Sector::BLOCKS_Y,
-								Columns::COLUMNS_SIZE * Sector::BLOCKS_Y, 
+								y * columns.getSizeInSectors() * Sector::BLOCKS_Y,
+								columns.getSizeInSectors() * Sector::BLOCKS_Y, 
 								Sector::BLOCKS_XZ / 2))
 		{
 			// update render list

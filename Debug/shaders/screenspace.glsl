@@ -1,4 +1,4 @@
-#version 130
+#version 150
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
 #define LENSFLARE
@@ -15,14 +15,14 @@ void main(void)
 #endif
 
 #ifdef FRAGMENT_PROGRAM
-uniform sampler2D texture;
-#ifdef LENSFLARE
+uniform sampler2D terrain;
 uniform sampler2D lensflare;
-#endif
+
 uniform float frameCounter;
 uniform int   submerged;
 
-in vec2 texCoord;
+in  vec2 texCoord;
+out vec4 color;
 
 const vec3 SUB_WATER = vec3(0.01, 0.08, 0.3);
 const vec3 SUB_LAVA  = vec3(0.28, 0.06, 0.0);
@@ -30,22 +30,9 @@ const vec3 SUB_LAVA  = vec3(0.28, 0.06, 0.0);
 const float ZFAR
 const float ZNEAR
 
-const float A = 0.15;
-const float B = 0.50;
-const float C = 0.10;
-const float D = 0.20;
-const float E = 0.02;
-const float F = 0.30;
-const float W = 1.25;
-
-vec3 Uncharted2Tonemap(vec3 x)
-{
-	return ((x * (A*x+C*B) + D * E) / (x * (A*x+B) + D * F)) - E / F;
-}
-
 void main()
 {
-	vec4 color = texture2D(texture, texCoord);
+	color = texture(terrain, texCoord);
 	float depth = color.a;
 	
 	if (submerged != 0)
@@ -60,7 +47,7 @@ void main()
 		float wavyDepth = smoothstep(0.0, 0.1, depth);
 		waves += vec2(cos(waveCoords.x), sin(waveCoords.y)) * wavyDepth * 0.005;
 		
-		color = texture2D(texture, texCoord + waves);
+		color = texture(terrain, texCoord + waves);
 		depth = color.a;
 		wavyDepth = smoothstep(0.0, 0.05, depth);
 		
@@ -74,36 +61,23 @@ void main()
 		}
 	}
 	
+	// fade-in
+	/*
 	const vec3 luma = vec3(0.299, 0.587, 0.114);
 	float luminance = dot(luma, color.rgb);
 	float fadein    = min(1.0, frameCounter / 250.0);
 	
 	color.rgb = mix(vec3(luminance), color.rgb, fadein);
+	*/
 	
+	// degamma ramp
 	color.rgb = pow(color.rgb, vec3(2.2));
 	
 #ifdef LENSFLARE
 	// add lens flare & dirt
-	color.rgb += texture2D(lensflare, texCoord).rgb;
+	color.rgb += texture(lensflare, texCoord).rgb;
 #endif
 	
-	/*
-	// filmic exposure filter
-	float expmult = 0.6 + 0.5 * length(luminance) / 1.73;
-	float expbias = 1.0;
-	
-	color *= expmult; // exposure multiplier
-	vec3 curr = Uncharted2Tonemap(color * expbias);
-	
-	const vec3 wsColor = vec3(W);
-	vec3 whiteScale = 1.0 / Uncharted2Tonemap(wsColor);
-	color = curr * whiteScale;
-	
-	// contract
-	//color = pow(color, vec3(1.0/2.2));
-	*/
-	
-	gl_FragData[0] = color;
 }
 
 #endif

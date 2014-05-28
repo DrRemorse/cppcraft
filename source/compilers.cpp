@@ -1,6 +1,6 @@
 #include "compilers.hpp"
 
-#include "library/log.hpp"
+#include <library/log.hpp>
 #include "columns.hpp"
 #include "precompiler.hpp"
 #include "threading.hpp"
@@ -31,12 +31,11 @@ namespace cppcraft
 		// also, prune array removing dead columns
 		for (int i = colq.size()-1; i >= 0; i--)
 		{
-			int cy = colq[i]->y / Columns::COLUMNS_SIZE;
-			Column& cv = columns(colq[i]->x, cy, colq[i]->z);
+			Column& cv = columns(colq[i]->x, colq[i]->y, colq[i]->z);
 			
 			if (cv.updated == true)
 			{
-				cv.compile(colq[i]->x, cy, colq[i]->z);
+				cv.compile(colq[i]->x, colq[i]->y, colq[i]->z);
 			}
 			if (cv.updated == false)
 			{

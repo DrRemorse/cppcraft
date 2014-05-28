@@ -15,17 +15,16 @@ namespace cppcraft
 {
 	std::vector<PrecompSchedule> psched;
 	
+	// add column to this scheduler
+	// the sector reference is really only for the coordinates (x, cy, z)
 	void PrecompScheduler::add(const Sector& sector)
 	{
-		// add to this scheduler
-		int cy = sector.y / Columns::COLUMNS_SIZE;
-		
-		for (std::size_t i = 0; i < psched.size(); i++)
+		for (size_t i = 0; i < psched.size(); i++)
 		{
-			int sy = psched[i].sector->y / Columns::COLUMNS_SIZE;
-			
 			// we have to compare against sectors here, because the world is constantly changing
-			if (psched[i].sector->x == sector.x && sy == cy && psched[i].sector->z == sector.z)
+			if (psched[i].sector->x == sector.x && 
+				psched[i].sector->y == sector.y && 
+				psched[i].sector->z == sector.z)
 			{
 				// column already exists in scheduler, exit immediately
 				return;
@@ -58,12 +57,13 @@ namespace cppcraft
 	{
 		// determine readiness of column before sending to compiler
 		// first sector & end iterator in column
-		int start_y = sector->y - (sector->y & (Columns::COLUMNS_SIZE-1));
+		int start_y = sector->y * columns.getSizeInSectors();
 		bool ready = true;
+		bool foundData = false;
 		
-		Column& cv = columns(sector->x, sector->y / Columns::COLUMNS_SIZE, sector->z);
+		Column& cv = columns(sector->x, sector->y, sector->z);
 		
-		for (int sy = 0; sy < Columns::COLUMNS_SIZE; sy++)
+		for (int sy = 0; sy < columns.getSizeInSectors(); sy++)
 		{
 			Sector& s2 = Sectors(sector->x, start_y + sy, sector->z);
 			
@@ -82,9 +82,12 @@ namespace cppcraft
 					s2.progress = Sector::PROG_NEEDRECOMP;
 					ready = false;
 				}
+				// yay, at least one sector had data
+				else foundData = true;
 			}
 			else
 			{
+				// sector mesh-data isn't needed at this time
 				if (cv.vbodata[sy].pcdata)
 				{
 					delete[] cv.vbodata[sy].pcdata;
@@ -93,7 +96,14 @@ namespace cppcraft
 			}
 		}
 		
+		// either the column isn't ready to be assembled
 		if (ready == false) return false;
+		// or, there simply wasn't anything to assemble
+		if (foundData == false)
+		{
+			cv.renderable = false;
+			return false;
+		}
 		
 		/// add to compiler queue ///
 		mtx.compiler.lock();

@@ -258,7 +258,7 @@ namespace cppcraft
 		
 		// screenspace postprocessing shader
 		shaders[POSTPROCESS] = Shader("shaders/screenspace.glsl", tokenizer, linkstage);
-		shaders[POSTPROCESS].sendInteger("texture",   0);
+		shaders[POSTPROCESS].sendInteger("terrain",   0);
 		shaders[POSTPROCESS].sendInteger("lensflare", 1);
 		
 		// minimap shader

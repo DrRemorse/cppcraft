@@ -62,9 +62,10 @@ namespace cppcraft
 		Sector& sector = *this->sector;
 		
 		// renderable VBO structure
-		int cy = sector.y & (Columns::COLUMNS_SIZE-1);
-		Column& cv = columns(sector.x, sector.y / Columns::COLUMNS_SIZE, sector.z);
-		vbodata_t& v = cv.vbodata[cy];
+		int columnY = sector.y / columns.getSizeInSectors();
+		int internalY = sector.y & (columns.getSizeInSectors()-1);
+		Column& cv = columns(sector.x, columnY, sector.z);
+		vbodata_t& v = cv.vbodata[internalY];
 		
 		// ye olde switcharoo
 		delete[] v.pcdata;         // remove old data (if any)
@@ -88,6 +89,6 @@ namespace cppcraft
 		// sector was definitely not culled
 		sector.culled = false;
 		
-		PrecompScheduler::add(sector);
+		PrecompScheduler::add(Sectors(sector.x, columnY, sector.z));
 	}
 }

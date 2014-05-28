@@ -24,8 +24,6 @@ namespace cppcraft
 		
 		// mesh data
 		vertex_t* datadump;
-		// fixed size light data
-		//lightdata_t* lightdump;
 		
 		#ifdef USE_INDEXING
 			indice_t*       indidump;
@@ -41,7 +39,7 @@ namespace cppcraft
 	class Precompiler
 	{
 	public:
-		static const int MAX_PRECOMPQ = 128;
+		static const int MAX_PRECOMPQ = 64;
 		
 		~Precompiler();
 		

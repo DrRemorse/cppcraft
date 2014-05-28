@@ -45,8 +45,8 @@ namespace cppcraft
 		bool aboveWater; // is above the waterline (reflectable)
 		
 	//private:
-		unsigned int vao;
-		unsigned int vbo;  // opengl renderable objects
+		unsigned int  vao;
+		unsigned int  vbo; // opengl renderable objects
 		library::vec3 pos; // rendering position
 		int	       bufferoffset[RenderConst::MAX_UNIQUE_SHADERS];
 		int           vertices [RenderConst::MAX_UNIQUE_SHADERS];
@@ -57,14 +57,18 @@ namespace cppcraft
 	class Columns
 	{
 	public:
-		// number of columns
-		static const int COLUMNS_Y = 4;
-		// size of each column in sectors
-		static const int COLUMNS_SIZE = Sectors.SECTORS_Y / COLUMNS_Y;
-		
 		Columns();
 		~Columns();
 		void init();
+		
+		inline int getColumnsY() const
+		{
+			return height;
+		}
+		inline int getSizeInSectors() const
+		{
+			return sizeSectors;
+		}
 		
 		// column index operator
 		inline Column& operator() (int x, int y, int z)
@@ -72,11 +76,15 @@ namespace cppcraft
 			x = (x + world.getDeltaX()) % Sectors.getXZ();
 			z = (z + world.getDeltaZ()) % Sectors.getXZ();
 			
-			return columns[((x * Sectors.getXZ() + z) * COLUMNS_Y) + y];
+			return columns[((x * Sectors.getXZ() + z) * height) + y];
 		}
 		
 	private:
-		Column* columns;
+		Column* columns; // array of all the columns
+		// number of columns on Y-axis
+		static const int height = 4;
+		// size of a single column in sectors
+		static const int sizeSectors = Sectors.SECTORS_Y / height;
 	};
 	extern Columns columns;
 	
