@@ -378,8 +378,9 @@ namespace cppcraft
 		{
 			// back to normal screen-size
 			glViewport(0, 0, renderBuffer.getWidth(), renderBuffer.getHeight());
+			
 			// render from scene texture into T_FINALBUFFER
-			screenspace.renderSuperSampling(sceneTex);
+			screenspace.renderSuperSampling(sceneTex, textureman[Textureman::T_FINALBUFFER]);
 			textureman.bind(0, Textureman::T_FINALBUFFER);
 		}
 		else

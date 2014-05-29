@@ -1,6 +1,6 @@
 #include "precomp_thread.hpp"
 
-#include "library/log.hpp"
+#include <library/log.hpp>
 #include "biome.hpp"
 #include "blockmodels.hpp"
 #include "flatlands.hpp"
@@ -126,7 +126,12 @@ namespace cppcraft
 		else
 		{
 			// normal transparent block
-			sides = currentBlock.visibleFaces(testdata, bx, by, bz);
+			if (((bx + by*2 + bz*4) & 7) == 1)
+			{
+				sides = Block(_STONE).visibleFaces(testdata, bx, by, bz);
+			}
+			else
+				sides = currentBlock.visibleFaces(testdata, bx, by, bz);
 			model  = BlockModels::MI_BLOCK;
 			
 			// check if any are visible

@@ -400,7 +400,7 @@ namespace cppcraft
 		{
 			logger << Log::ERR << "Too many corner shadow points: " << ao.count << Log::ENDL;
 		}
-		else if (ao.count > 2200)
+		else if (ao.count > ao.CRASH_MAX_POINTS * 0.9)
 		{
 			logger << Log::WARN << "Many corner shadow points: " << ao.count << Log::ENDL;
 		}

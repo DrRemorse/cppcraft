@@ -278,13 +278,14 @@ namespace cppcraft
 		// fullscreen skybuffer
 		textures[T_SKYBUFFER] = Texture(GL_TEXTURE_2D);
 		textures[T_SKYBUFFER].setFormat(GL_RGBA16F);
-		textures[T_SKYBUFFER].create(0, gamescr.SW / 2, gamescr.SH / 2);
-		textures[T_SKYBUFFER].setInterpolation(true);
+		textures[T_SKYBUFFER].create(0, gamescr.SW, gamescr.SH);
+		//textures[T_SKYBUFFER].setInterpolation(true);
 		
 		// supersampled scene colorbuffer
 		textures[T_SCENEBUFFER] = Texture(GL_TEXTURE_2D);
 		textures[T_SCENEBUFFER].setFormat(GL_RGBA16F);
 		textures[T_SCENEBUFFER].create(0, SSW, SSH);
+		//textures[T_SCENEBUFFER].setInterpolation(true);
 		
 		// fullscreen depth buffer
 		textures[T_DEPTHBUFFER] = Texture(GL_TEXTURE_2D);
@@ -294,7 +295,7 @@ namespace cppcraft
 		textures[T_UNDERWATERMAP] = Texture(GL_TEXTURE_2D);
 		textures[T_UNDERWATERMAP].setFormat(GL_RGBA16F);
 		textures[T_UNDERWATERMAP].create(0, gamescr.SW, gamescr.SH);
-		textures[T_UNDERWATERMAP].setInterpolation(true);
+		//textures[T_UNDERWATERMAP].setInterpolation(true);
 		
 		if (gameconf.reflections)
 		{
@@ -309,7 +310,7 @@ namespace cppcraft
 		textures[T_RENDERBUFFER] = Texture(GL_TEXTURE_2D);
 		textures[T_RENDERBUFFER].setFormat(GL_RGBA16F);
 		textures[T_RENDERBUFFER].create(0, gamescr.SW, gamescr.SH);
-		textures[T_RENDERBUFFER].setInterpolation(true);
+		//textures[T_RENDERBUFFER].setInterpolation(true);
 		
 		// resolved from supersampling texture
 		textures[T_FINALBUFFER] = Texture(GL_TEXTURE_2D);

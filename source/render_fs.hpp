@@ -31,7 +31,7 @@ namespace cppcraft
 		void blur(library::Texture& texture);
 		void fog(library::vec3 playerPos, double time);
 		void terrain();
-		void renderSuperSampling(library::Texture& texture);
+		void renderSuperSampling(library::Texture& supersampled, library::Texture& texture);
 		
 		void render(library::WindowClass& gamescr, double frameCounter);
 		

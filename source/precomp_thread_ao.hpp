@@ -10,7 +10,7 @@ namespace cppcraft
 	class AmbientOcclusion
 	{
 	public:
-		static const int CRASH_MAX_POINTS = 2400;
+		static const int CRASH_MAX_POINTS = 2800; //2400;
 		static const int POINT_ELEMENTS = CRASH_MAX_POINTS * 8 * 6;
 		
 		AmbientOcclusion()

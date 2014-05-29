@@ -21,7 +21,7 @@ namespace cppcraft
 {
 	FSRenderer screenspace;
 	VAO screenVAO;
-	FBO supersampler;
+	FBO downsampler;
 	
 	void FSRenderer::init(WindowClass& gamescr)
 	{
@@ -43,9 +43,7 @@ namespace cppcraft
 		
 		// create screenspace FBOs
 		glGenFramebuffers(1, &blurFBO);
-		supersampler.create();
-		supersampler.bind();
-		supersampler.attachColor(0, textureman[Textureman::T_RENDERBUFFER]);
+		downsampler.create();
 		
 		initFlare();
 		
@@ -103,16 +101,17 @@ namespace cppcraft
 		screenVAO.render(GL_QUADS);
 	}
 	
-	void FSRenderer::renderSuperSampling(Texture& texture)	{
+	void FSRenderer::renderSuperSampling(Texture& supersampled, Texture& texture)	{
 		Shader& shd = shaderman[Shaderman::SUPERSAMPLING];
 		shd.bind();
-		texture.bind(0);
 		
-		supersampler.bind();
-		supersampler.attachColor(0, textureman[Textureman::T_FINALBUFFER]);
-		// downsample supersampling to screen size
+		downsampler.bind();
+		downsampler.attachColor(0, texture);
+		
+		supersampled.bind(0);
 		screenVAO.render(GL_QUADS);
-		supersampler.unbind();
+		
+		downsampler.unbind();
 	}
 	
 	void FSRenderer::render(WindowClass& gamescr, double frameCounter)

@@ -19,13 +19,13 @@ namespace cppcraft
 		blur.bind();
 		
 		// gaussian blur:
-		//const double PI = 4 * atan(1);
-		//const float sigma = 1.0;
+		//static const double PI = 4 * atan(1);
+		//const float sigma = 2.0;
 		//blur.sendInteger("support", int(sigma * 3.0));
 		//blur.sendVec2("sigma2", vec2(sigma * sigma, 1 / (sqrt(2 * PI) * sigma)));
 		
 		// regular blur:
-		const int BLUR_LEVEL = 2;
+		const int BLUR_LEVEL = 3;
 		blur.sendInteger("Width", BLUR_LEVEL);
 		
 		// blur horizontally

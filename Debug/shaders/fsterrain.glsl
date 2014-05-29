@@ -1,4 +1,4 @@
-#version 130
+#version 150
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
 
@@ -17,15 +17,13 @@ void main(void)
 uniform sampler2D terrain;
 uniform sampler2D blurtexture;
 
-in vec2 texCoord;
-
-const float ZFAR
-const float ZNEAR
+in  vec2 texCoord;
+out vec4 color;
 
 void main()
 {
-	// base color
-	vec4 color = texture2D(terrain, texCoord);
+	// terrain color
+	color = texture2D(terrain, texCoord);
 	// blurred color
 	vec4 blur = texture2D(blurtexture, texCoord);
 	
@@ -34,11 +32,12 @@ void main()
 	depth = step(depth, 0.98) * depth;
 	
 	// blur distance
-	float mixAmount = smoothstep(0.3, 0.9, depth);
+	float mixAmount = smoothstep(0.25, 0.9, depth);
 	color = mix(color, blur, mixAmount);
-	
-	gl_FragData[0] = color;
 }
+
+const float ZFAR
+const float ZNEAR
 
 void linearizeDepth(inout float Z)
 {
