@@ -104,8 +104,8 @@ namespace cppcraft
 		const float transitional_dark  = -0.2;
 		
 		const float noonlight = 0.2;
-		const float nightlight = 0.75;
-		const float moonlight  = 1.0;
+		const float nightlight = 0.6;
+		const float moonlight  = 0.8;
 		
 		float transit = 0.0;
 		

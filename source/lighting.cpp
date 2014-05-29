@@ -358,15 +358,10 @@ namespace cppcraft
 		Sector* s2 = Spiders::spiderwrap(sector, bxx, byy, bzz);
 		if (s2 == nullptr) goto theend;
 		
-	/* scope */;
+	while (true)
 	{
 		vec2 angle = thesun.getAngle().xy();
-		
-		if (angle.y < 0)
-		{
-			angle.x = -angle.x;
-			angle.y = -angle.y;
-		}
+		if (angle.y < 0) break;
 		
 		vec3 position = vec3(
 			s2->x * Sector::BLOCKS_XZ + bxx, 
@@ -443,6 +438,7 @@ namespace cppcraft
 				tmplight = sunray * 0.1 + tmplight * 0.9;
 			}
 		}
+		break;
 		
 	} // end scope
 	
