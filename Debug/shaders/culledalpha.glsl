@@ -75,7 +75,7 @@ const float ZFAR
 void main(void)
 {
 	color = texture(diffuse, texCoord.stp);
-	if (color.a < 0.02) discard;
+	if (color.a < 0.1) discard;
 	
 	// read tonecolor from tonemap
 	vec4 toneColor = texture(tonemap, texCoord.stp);

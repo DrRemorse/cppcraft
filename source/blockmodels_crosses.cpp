@@ -15,11 +15,12 @@ namespace cppcraft
 			1.0, 0.0, 0.0,  0.0, 0.0, 1.0,  0.0, 1.0, 1.0,  1.0, 1.0, 0.0
 		};
 		
-		const vec3 norm = vec3(-1, 2, 0).normalized() * 127;
+		const vec3 norm = vec3(-1, 1, 1).normalized() * 127;
 		
-		char cross_normals[3] =
+		char cross_normals[6] =
 		{
 			(char) norm.x, (char) norm.y, (char) norm.z,
+			(char) norm.x, (char) norm.y, (char)-norm.z,
 		};
 		
 		float cross_texcoords[16] =
@@ -39,9 +40,9 @@ namespace cppcraft
 				bm[vert].z = cross_vertices[vert * 3 + 2] * RenderConst::VERTEX_SCALE; // z
 				bm[vert].face = 0;
 				
-				bm[vert].nx = cross_normals[0]; // nx
-				bm[vert].ny = cross_normals[1]; // ny
-				bm[vert].nz = cross_normals[2]; // nz
+				bm[vert].nx = cross_normals[(vert / 4) * 3 + 0]; // nx
+				bm[vert].ny = cross_normals[(vert / 4) * 3 + 1]; // ny
+				bm[vert].nz = cross_normals[(vert / 4) * 3 + 2]; // nz
 				
 				// texture coordinates
 				bm[vert].u = cross_texcoords[vert * 2 + 0] * RenderConst::VERTEX_SCALE; // u

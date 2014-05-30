@@ -74,8 +74,6 @@ namespace cppcraft
 		shd.sendFloat("daylight", thesun.getRealtimeDaylight());
 		if (camera.ref)
 		{
-			// camera projection matrix
-			//shd.sendMatrix("matproj", camera.getProjection());
 			// camera view matrix
 			shd.sendMatrix("matview", camera.getViewMatrix());
 			// player position

@@ -1,63 +1,53 @@
-vec3 pSphere[16] = vec3[]
-(
-	vec3(0.53812504, 0.18565957, -0.43192),
-	vec3(0.13790712, 0.24864247, 0.44301823),
-	vec3(0.33715037, 0.56794053, -0.005789503),
-	vec3(-0.6999805, -0.04511441, -0.0019965635),
-	vec3(0.06896307, -0.15983082, -0.85477847),
-	vec3(0.056099437, 0.006954967, -0.1843352),
-	vec3(-0.014653638, 0.14027752, 0.0762037),
-	vec3(0.010019933, -0.1924225, -0.034443386),
-	vec3(-0.35775623, -0.5301969, -0.43581226),
-	vec3(-0.3169221, 0.106360726, 0.015860917),
-	vec3(0.010350345, -0.58698344, 0.0046293875),
-	vec3(-0.08972908, -0.49408212, 0.3287904),
-	vec3(0.7119986, -0.0154690035, -0.09183723),
-	vec3(-0.053382345, 0.059675813, -0.5411899),
-	vec3(0.035267662, -0.063188605, 0.54602677),
-	vec3(-0.47761092, 0.2847911, -0.0271716)
-);
-
-#define SAMPLES 16
-
-float getSSAO(float depth)
+float ambientOcclusion(in vec2 coord, in vec3 pos, in vec3 normal)
 {
-	const float totStrength = 1.38;
-	const float strength = 0.07;
-	const float offset = 18.0;
-	const float falloff = 0.000002;
-	const float rad = 0.006;
+	const float g_scale = 0.25;
+	const float g_bias  = 0.0;
+	const float g_intensity = 0.8;
 	
-	vec3 noise  = normalize(texture2D(noisetex, texCoord * offset).xyz * 2.0 - vec3(1.0));
-	vec3 normal = texture2D(normals, texCoord).xyz * 2.0 - vec3(1.0);
+	vec3 samplePos = getPosition(coord);
+	vec3 diff = samplePos - pos;
 	
-	vec3 ep = vec3(texCoord, depth);
+	float d = length(diff);
+	vec3  v = diff / d;
 	
-	float radD = rad / depth;
+	vec3 sampleNorm = getNormal(coord);
+	float dotp = dot(normal, v);
 	
-	vec3 ray;
-	vec3 se;
-	float AO = 0.0;
+	dotp = 1.0 - dot(normal, sampleNorm);
 	
-	for (int i = 0; i < SAMPLES; i++)
+	d = 1.0 / (1.0 + d * g_scale);
+	return max(0.0, dotp - g_bias) * d * g_intensity;
+}
+
+float getAO(vec2 uv)
+{
+	vec3 p = getPosition(uv);
+	vec3 n = getNormal(uv);
+	vec2 rand = texture(randomtex, texCoord * 8.0).rg * 1.0 - 0.5;
+	
+	const float sample_radius = 0.2;
+	const int iterations = 4;
+	
+	const vec2 offsetsAO[4] = vec2[]
+	(
+		vec2(1.0, 0.0), vec2(-1.0, 0.0),
+		vec2(0.0, 1.0), vec2( 0.0,-1.0)
+	);
+	
+	float ao  = 0.0;
+	float rad = sample_radius / p.z;
+	
+	//** SSAO Calculation **//
+	for (int j = 0; j < iterations; ++j)
 	{
-		ray = radD * reflect(pSphere[i], noise);
-		
-		// if the ray is outside the hemisphere then change direction
-		se = ep + sign(dot(ray, normal)) * ray;
-		
-		// get the depth of the occluder fragment
-		vec4 occluder = texture2D(normals, se.xy);
-		occluder.xyz = occluder.xyz * 2.0 - vec3(1.0);
-		
-		// if depthDifference is negative = occluder is behind current fragment
-		float depthDifference = depth - occluder.a;
-		float normDiff = 1.0 - dot(occluder.xyz, normal.xyz);
-		
-		// the falloff equation, starts at falloff and is kind of 1/x^2 falling
-		AO += step(falloff, depthDifference) * normDiff * (1.0 - smoothstep(falloff, strength, depthDifference));
-		
+		vec2 coord1 = reflect(offsetsAO[j], rand) * rad;
+		vec2 coord2 = vec2(coord1.x*0.707 - coord1.y*0.707,
+						   coord1.x*0.707 + coord1.y*0.707);
+	  
+	  ao += ambientOcclusion(uv + coord1*0.25, p, n);
+	  ao += ambientOcclusion(uv + coord2*0.50, p, n);
+	  ao += ambientOcclusion(uv + coord1*0.75, p, n);
+	  ao += ambientOcclusion(uv + coord2, p, n);
 	}
-	
-	return 1.0 - totStrength * AO * (1.0 / SAMPLES);
+	return ao / (float(iterations) * 4.0);
 }

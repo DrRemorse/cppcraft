@@ -14,4 +14,4 @@ float shadow = min(1.0, min(daylight, lightdata.x) + brightness);
 color.rgb *= shadow; //mix(shadowColor * shadow, color.rgb, shadow);
 
 // mix in torchlight
-color.rgb = mix(color.rgb, torchlight.rgb, torchlight.a * modulation );
+color.rgb = mix(color.rgb, torchlight.rgb, torchlight.a * modulation);

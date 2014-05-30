@@ -228,6 +228,8 @@ namespace cppcraft
 		shaders[FSTERRAINFOG].sendInteger("randomtex",    4);
 		// near plane half size
 		shaders[FSTERRAINFOG].sendVec2("nearPlaneHalfSize", camera.getNearPlaneHalfSize());
+		// SSAO filter radius
+		shaders[FSTERRAINFOG].sendVec2("filterRadius", vec2(12.0) / vecScreen.xy());
 		
 		// screenspace terrain shader
 		shaders[FSTERRAIN] = Shader("shaders/fsterrain.glsl", tokenizer, linkstage);

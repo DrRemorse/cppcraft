@@ -10,14 +10,14 @@ float brightness = lightdata.y * modulation;
 float shadow = min(1.0, min(daylight, lightdata.x) + brightness);
 
 // corner shadows and dotlight
-float cornershad = smoothstep(0.2, 0.7, lightdata.z);
-cornershad = min(worldLight + brightness * 0.35, cornershad);
+//float cornershad = smoothstep(0.2, 0.7, lightdata.z);
+//cornershad = min(worldLight + brightness * 0.35, cornershad);
 
 // scaled shadow color
 //vec3 shadowColor = vec3(-0.2, 0.0, 0.2) * shadow;
 
 // apply corner shadows & ambience
-color.rgb *= cornershad * shadow;
+color.rgb *= worldLight * shadow;
 // mix in shadows
 //color.rgb = mix(shadowColor, color.rgb, shadow);
 // mix in torchlight
