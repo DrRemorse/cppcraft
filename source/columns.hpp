@@ -68,11 +68,11 @@ namespace cppcraft
 		inline int getSectorLevel(int y)
 		{
 			// 8 == RenderConst::WATER_SECTOR_LEVEL
-			return (y == 0) ? 0 : 8;
+			return y * 8;
 		}
 		inline int getSizeInSectors(int y) const
 		{
-			return (y == 0) ? 8 : Sectors.getY() - 8;
+			return 8 + (Sectors.getY() - 16) * y;
 		}
 		int fromSectorY(int y)
 		{

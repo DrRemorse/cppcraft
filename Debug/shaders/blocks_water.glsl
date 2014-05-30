@@ -51,8 +51,8 @@ void main(void)
 	// output to fragment shader
 	float timer = frameCounter / 35.0;
 	
-	waves.xy = w_vertex.xz * vec2(0.10, 0.02) + timer * vec2(0.2, 0.0);
-	waves.zw = w_vertex.xz * vec2(0.25, 0.05) + timer * vec2(0.2, 0.0);
+	waves.xy = w_vertex.xz * vec2(0.20, 0.04) + timer * vec2(0.2, 0.0);
+	waves.zw = w_vertex.xz * vec2(0.08, 0.02) + timer * vec2(0.2, 0.0);
 	
 	waterColor  = in_biome;
 	lightdata   = in_color;
@@ -200,7 +200,7 @@ void main(void)
 	float specv = max(0.0, spec);
 	
 	// ocean waves + sun highlights
-	vec3 highlights = pow(specv, 20.0) * vec3(0.4) + spec * 0.04;
+	vec3 highlights = pow(specv, 20.0) * vec3(0.4, 0.35, 0.3) + spec * 0.03;
 	color.rgb += highlights * shadow * shadow;
 	
 	// shiny/specular sun reflection
