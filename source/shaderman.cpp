@@ -223,7 +223,9 @@ namespace cppcraft
 		shaders[FSTERRAINFOG] = Shader("shaders/fsterrainfog.glsl", tokenizer, linkstage);
 		shaders[FSTERRAINFOG].sendInteger("terrain",      0);
 		shaders[FSTERRAINFOG].sendInteger("skytexture",   1);
-		shaders[FSTERRAINFOG].sendInteger("depthtexture", 2);
+		shaders[FSTERRAINFOG].sendInteger("normalstex",   2);
+		shaders[FSTERRAINFOG].sendInteger("depthtexture", 3);
+		shaders[FSTERRAINFOG].sendInteger("randomtex",    4);
 		// near plane half size
 		shaders[FSTERRAINFOG].sendVec2("nearPlaneHalfSize", camera.getNearPlaneHalfSize());
 		

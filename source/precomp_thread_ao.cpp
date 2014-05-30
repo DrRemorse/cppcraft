@@ -244,11 +244,13 @@ namespace cppcraft
 		
 		// ambient occlusion processing stage
 		#ifdef AMBIENT_OCCLUSION_GRADIENTS
+			/*
 			if (this->occ == nullptr)
 			{
 				this->occ = new AmbientOcclusion();
 			}
 			ambientOcclusionGradients(this->occ, precomp->datadump, cnt);
+			*/
 		#endif
 		
 		// optimize repeating textures mesh

@@ -26,6 +26,7 @@ flat out float worldLight;
 out vec3 v_pos;
 flat out float reflection;
 out vec3 v_reflect;
+out vec3 v_normals;
 
 const int TX_REPEAT
 const int TX_SOLID
@@ -39,7 +40,8 @@ void main(void)
 	position = matview * position;
 	gl_Position = matproj * position;
 	
-	v_pos = -position.xyz;
+	v_pos     = -position.xyz;
+	v_normals = mat3(matview) * in_normal.xyz;
 	
 	/* ice reflection */
 	reflection = 0.0;
@@ -63,6 +65,7 @@ void main(void)
 
 #ifdef FRAGMENT_PROGRAM
 #extension GL_EXT_gpu_shader4 : enable
+#extension GL_ARB_explicit_attrib_location : enable
 
 uniform sampler2DArray diffuse;
 uniform sampler2DArray tonemap;
@@ -81,8 +84,10 @@ flat in float worldLight;
 in vec3 v_pos;
 flat in float reflection;
 in vec3 v_reflect;
+in vec3 v_normals;
 
-out vec4 color;
+layout(location = 0) out vec4 color;
+layout(location = 1) out vec4 normals;
 
 const float ZFAR
 const int TX_SOLID
@@ -91,6 +96,7 @@ const int TX_CROSS
 void main(void)
 {
 	float vertdist = length(v_pos);
+	normals = vec4(v_normals, vertdist / ZFAR);
 	
 	// independent texture reads using inbound variable directly
 	// read tonecolor from tonemap

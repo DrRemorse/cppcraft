@@ -63,6 +63,7 @@ void main(void)
 
 #ifdef FRAGMENT_PROGRAM
 #extension GL_EXT_gpu_shader4 : enable
+#extension GL_ARB_explicit_attrib_location : enable
 uniform sampler2D underwatermap;
 uniform sampler2D reflectionmap;
 
@@ -83,9 +84,11 @@ in vec3 v_pos;
 in vec3 v_normal;
 
 in vec4 waves; // wave positions
-const float ZFAR
 
-out vec4 color;
+layout(location = 0) out vec4 color;
+layout(location = 1) out vec4 normals;
+
+const float ZFAR
 
 #include "srdnoise.glsl"
 
@@ -209,6 +212,7 @@ void main(void)
 	
 	// final color
 	#include "finalcolor.glsl"
+	normals = vec4(viewNormal, color.a);
 }
 
 #endif

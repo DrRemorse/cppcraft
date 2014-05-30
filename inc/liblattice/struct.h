@@ -6,8 +6,8 @@
 #include "coordinates.h"
 
 typedef struct block_t {
-    unsigned short id : 10;
-    unsigned short bf : 6;
+    uint16_t id : 10;
+    uint16_t bf : 6;
 } block_t;
 
 #define HAND_TYPE uint16_t
@@ -50,11 +50,20 @@ typedef struct lattice_player_t {
 
 } lattice_player_t;
 
+/*
 struct message {
   char *cmd;
   int (*func)();
   uint32_t flags;
 };
+*/
+
+struct message {
+  int type;
+  int (*func)();
+  uint32_t flags;
+};
+
 
 // Messages
 
@@ -100,6 +109,7 @@ struct message {
 #define T_DELSERVER      39
 #define T_TRACKERFAILURE 40
 #define T_SERVEREOL      41
+#define T_PCHAT          42
 
 
 #define MFLAG_FROM      0x00000001         // Is fromuid set
@@ -164,6 +174,13 @@ typedef struct lattice_chat {
     char chat_text[MTU];
 
 } lattice_chat;
+
+typedef struct lattice_pchat {
+
+    uint32_t uid;
+    char pchat_text[MTU];
+
+} lattice_pchat;
 
 typedef struct lattice_action {
 
@@ -325,5 +342,60 @@ typedef struct sched_header {
     struct sched_sec_link *head;
     struct sched_sec_link *tail;
 } sched_header;
+
+
+// binary protocol stuff
+
+#define PFLAG_FROM      0x0001         // Is fromuid set
+
+#define TstPFlagFrom(p) ((p)->header.flags & PFLAG_FROM)
+#define SetPFlagFrom(p) ((p)->header.flags |= PFLAG_FROM)
+#define ClrPFlagFrom(p) ((p)->header.flags &= (~PFLAG_FROM))
+
+#define PMarker(p)    ((p)->header.marker)
+#define PFromuid(p)   ((p)->header.fromuid)
+#define PFlags(p)     ((p)->header.flags)
+#define PArgc(p)      ((p)->header.payload_argc)
+#define PType(p)      ((p)->header.payload_type)
+#define PLength(p)    ((p)->header.payload_length)
+
+typedef struct lt_packet_h {
+
+    uint32_t marker;
+    uint32_t fromuid;
+    uint16_t flags;
+    uint16_t payload_argc;
+    uint16_t payload_type;
+    uint16_t payload_length;
+
+} lt_packet_h;
+
+typedef struct lt_packet {
+
+    lt_packet_h header;
+    char payload[PAYLOAD_MTU];
+
+} lt_packet;
+
+#define makepacket(packet, type) do {           \
+    (packet)->header.marker = SYNCH_MARKER;     \
+    (packet)->header.fromuid = 0;               \
+    (packet)->header.flags = 0;                 \
+    ClrPFlagFrom((packet));                     \
+    (packet)->header.payload_argc = 0;          \
+    (packet)->header.payload_type = (type);     \
+    (packet)->header.payload_length = 0;        \
+} while(0)
+
+#define makepacketfromuid(packet, type, uid) do {  \
+    (packet)->header.marker = SYNCH_MARKER;        \
+    (packet)->header.fromuid = (uid);              \
+    (packet)->header.flags = 0;                    \
+    SetPFlagFrom((packet));                        \
+    (packet)->header.payload_argc = 0;             \
+    (packet)->header.payload_type = (type);        \
+    (packet)->header.payload_length = 0;           \
+} while(0)
+
 
 #endif

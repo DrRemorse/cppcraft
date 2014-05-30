@@ -24,6 +24,7 @@ out vec4 biomeColor;
 flat out float worldLight;
 
 out float vertdist;
+out vec3  v_normals;
 
 const float VERTEX_SCALE_INV
 
@@ -34,6 +35,7 @@ void main(void)
 	vertdist = length(position.xyz);
 	gl_Position = matproj * position;
 	
+	v_normals = mat3(matview) * in_normal.xyz;
 	texCoord = vec3(in_texture.st * VERTEX_SCALE_INV, in_texture.p);
 	
 	// dotlight
@@ -47,6 +49,7 @@ void main(void)
 
 #ifdef FRAGMENT_PROGRAM
 #extension GL_EXT_gpu_shader4 : enable
+#extension GL_ARB_explicit_attrib_location : enable
 
 uniform sampler2DArray diffuse;
 uniform sampler2DArray tonemap;
@@ -62,9 +65,12 @@ in vec4 biomeColor;
 flat in float worldLight;
 
 in float vertdist;
-const float ZFAR
+in vec3 v_normals;
 
-out vec4 color;
+layout(location = 0) out vec4 color;
+layout(location = 1) out vec4 normals;
+
+const float ZFAR
 
 void main(void)
 {
@@ -82,6 +88,7 @@ void main(void)
 	#include "horizonfade.glsl"
 	
 	#include "finalcolor.glsl"
+	normals = vec4(v_normals, vertdist / ZFAR);
 }
 
 #endif

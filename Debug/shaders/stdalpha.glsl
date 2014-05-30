@@ -25,6 +25,7 @@ out vec4 torchlight;
 out vec3 out_normal;
 
 out float vertdist;
+out vec3  v_normals;
 
 const int TX_2SIDED
 const int TX_CROSS
@@ -70,6 +71,7 @@ void main(void)
 	}
 	
 	gl_Position = matproj * position;
+	v_normals = mat3(matview) * in_normal.xyz;
 	
 	biomeColor = in_biome;
 	lightdata  = in_color;
@@ -80,6 +82,7 @@ void main(void)
 
 #ifdef FRAGMENT_PROGRAM
 #extension GL_EXT_gpu_shader4 : enable
+#extension GL_ARB_explicit_attrib_location : enable
 
 uniform sampler2DArray diffuse;
 uniform sampler2DArray tonemap;
@@ -100,8 +103,10 @@ in vec3 biomeCoords;
 in vec3 out_normal;
 
 in float vertdist;
+in vec3 v_normals;
 
-out vec4 color;
+layout(location = 0) out vec4 color;
+layout(location = 1) out vec4 normals;
 
 const float ZFAR
 const int TX_2SIDED
@@ -125,6 +130,7 @@ void main(void)
 	#include "horizonfade.glsl"
 	
 	#include "finalcolor.glsl"
+	normals = vec4(v_normals, vertdist / ZFAR);
 }
 
 #endif

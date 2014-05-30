@@ -62,6 +62,7 @@ namespace cppcraft
 		sceneFBO.create();
 		sceneFBO.bind();
 		sceneFBO.attachColor(0, sceneTex);
+		sceneFBO.attachColor(1, textureman[Textureman::T_NORMALBUFFER]);
 		sceneFBO.attachDepth(textureman[Textureman::T_DEPTHBUFFER]);
 		
 		// the FBO we copy the main scene to before rendering water
@@ -324,6 +325,11 @@ namespace cppcraft
 		sceneFBO.bind();
 		glViewport(0, 0, sceneTex.getWidth(), sceneTex.getHeight());
 		
+		std::vector<int> dbuffers;
+		dbuffers.push_back(GL_COLOR_ATTACHMENT0);
+		dbuffers.push_back(GL_COLOR_ATTACHMENT1);
+		sceneFBO.drawBuffers(dbuffers);
+		
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		glDepthMask(GL_TRUE);
@@ -398,7 +404,9 @@ namespace cppcraft
 		fogFBO.bind();
 		
 		textureman.bind(1, Textureman::T_SKYBUFFER);
-		textureman.bind(2, Textureman::T_DEPTHBUFFER);
+		textureman.bind(2, Textureman::T_NORMALBUFFER);
+		textureman.bind(3, Textureman::T_DEPTHBUFFER);
+		textureman.bind(4, Textureman::T_NOISE);
 		screenspace.fog(vec3(playerX, playerY, playerZ), renderer.frametick);
 		
 		/////////////////////////////////

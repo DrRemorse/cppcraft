@@ -47,6 +47,7 @@ namespace cppcraft
 			T_STARS,
 			
 			T_MAGMA,
+			T_NOISE,
 			
 			T_LENSDIRT,
 			T_LENSFLARE,
@@ -56,8 +57,9 @@ namespace cppcraft
 			T_BLURBUFFER1,
 			T_BLURBUFFER2,
 			
-			T_SCENEBUFFER,
 			T_SKYBUFFER,
+			T_SCENEBUFFER,
+			T_NORMALBUFFER,
 			T_DEPTHBUFFER,
 			
 			T_UNDERWATERMAP,

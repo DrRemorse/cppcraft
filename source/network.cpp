@@ -394,7 +394,7 @@ namespace cppcraft
 				} // valid coordinates
 				else
 				{
-					logger << Log::WARN << "network: Block coords out of bounds" << Log::ENDL;
+					//logger << Log::WARN << "network: Block coords out of bounds" << Log::ENDL;
 				}
 				ntt.incoming.pop_front();
 				

@@ -220,6 +220,15 @@ namespace cppcraft
 		else throw std::string("Missing source file: Magma texture");
 		if (ogl.checkError()) throw std::string("Magma texture error");
 		
+		// random noise normal texture
+		if (bmp.load(config.get("textures.noise", "bitmap/default/noise.png"), Bitmap::PNG))
+		{
+			textures[T_NOISE] = Texture(GL_TEXTURE_2D);
+			textures[T_NOISE].create(bmp, true, GL_REPEAT, GL_LINEAR, GL_LINEAR);
+		}
+		else throw std::string("Missing source file: Noise texture");
+		if (ogl.checkError()) throw std::string("Noise texture error");
+		
 		/// FS Renderer ///
 		
 		// dirty lens texture
@@ -283,8 +292,11 @@ namespace cppcraft
 		// supersampled scene colorbuffer
 		textures[T_SCENEBUFFER] = Texture(GL_TEXTURE_2D, GL_RGBA16F);
 		textures[T_SCENEBUFFER].create(0, SSW, SSH);
-		textures[T_SCENEBUFFER].setInterpolation(true);
-		// fullscreen depth buffer
+		//textures[T_SCENEBUFFER].setInterpolation(true);
+		// scene normals texture
+		textures[T_NORMALBUFFER] = Texture(GL_TEXTURE_2D, GL_RGBA16F);
+		textures[T_NORMALBUFFER].create(0, SSW, SSH);
+		// scene depth buffer
 		textures[T_DEPTHBUFFER] = Texture(GL_TEXTURE_2D, GL_DEPTH_COMPONENT24);
 		textures[T_DEPTHBUFFER].createDepth(SSW, SSH);
 		
