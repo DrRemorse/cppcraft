@@ -103,10 +103,8 @@ const vec2 poisson16[] = vec2[](
 	vec2(  0.19984126,   0.78641367 ),
 	vec2(  0.14383161,  -0.14100790 ));
 
-float getAO16()
+float getAO16(in vec3 viewPos)
 {
-	// reconstruct position from depth
-	vec3 viewPos = getPosition(texCoord);
 	// get the view space normal
 	vec3 viewNormal = getNormal(texCoord);
 	
@@ -139,9 +137,14 @@ void main()
 	// depth from alpha
 	#define depth  color.a
 	
+	// reconstruct position from depth
+	vec3 viewPos = getPosition(texCoord);
+	
+	// Ambient Occlusion
+	color.rgb *= getAO16(viewPos);
+	
 	// reconstruct view to world coordinates
-	vec4 cofs = eye_direction * matview;
-	cofs.xyz *= linearizeDepth(texCoord);
+	vec4 cofs = vec4(viewPos, 1.0) * matview;
 	// camera->point ray
 	vec3 ray = normalize(-cofs.xyz);
 	// to world coordinates
@@ -162,7 +165,6 @@ void main()
 	color.rgb = mix(color.rgb, sunBaseColor, sunAmount * 0.5 * depth);
 	
 	//color.rgb = wpos.xyz / ZFAR;
-	color.rgb *= getAO16();
 	
 	// mix in sky to fade out the world
 	vec3 skyColor = texture2D(skytexture, texCoord).rgb;

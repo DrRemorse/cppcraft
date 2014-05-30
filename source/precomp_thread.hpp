@@ -119,7 +119,7 @@ namespace cppcraft
 		
 		Precomp* precomp;
 		PrecompThreadData pcg;
-		AmbientOcclusion* occ = nullptr;
+		AmbientOcclusion* occ;
 		
 		// stage 1, gathering info
 		bool isolator();

@@ -18,6 +18,9 @@ namespace cppcraft
 	
 	PrecompThread::PrecompThread()
 	{
+		this->precomp = nullptr;
+		this->occ = nullptr;
+		
 		// random default values for vertex array sizes
 		// the arrays get automatically resized as needed
 		static const int pipelineSize[RenderConst::MAX_UNIQUE_SHADERS] =
