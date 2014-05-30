@@ -31,12 +31,9 @@ uniform vec3 cameraPos;
 uniform vec3 worldOffset;
 uniform float timeElapsed;
 
-uniform mat4 matviewport;
-uniform mat4 matmvp;
-uniform mat4 matproj;
-
-in vec2 texCoord;
-in vec4 eye_direction;
+in  vec2 texCoord;
+in  vec4 eye_direction;
+out vec4 color;
 
 const float ZFAR
 const float ZNEAR
@@ -75,7 +72,7 @@ float linearizeDepth(in vec2 uv)
 void main()
 {
 	// base color
-	vec4 color = texture2D(terrain, texCoord);
+	color = texture2D(terrain, texCoord);
 	// depth from alpha
 	#define depth  color.a
 	
@@ -101,13 +98,10 @@ void main()
 	color.rgb = mix(color.rgb, sunBaseColor, sunAmount * 0.5 * depth);
 	
 	//color.rgb = wpos.xyz / ZFAR;
-	//color.rgb = vec3(fogAmount*4.0);
 	
-	// mix in fog
+	// mix in sky to fade out the world
 	vec3 skyColor = texture2D(skytexture, texCoord).rgb;
 	color.rgb = mix(color.rgb, skyColor, smoothstep(0.5, 1.0, depth));
-	
-	gl_FragData[0] = color;
 }
 
 #endif

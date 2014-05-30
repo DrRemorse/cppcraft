@@ -62,8 +62,8 @@ namespace cppcraft
 		Sector& sector = *this->sector;
 		
 		// renderable VBO structure
-		int columnY = sector.y / columns.getSizeInSectors();
-		int internalY = sector.y & (columns.getSizeInSectors()-1);
+		int columnY = columns.fromSectorY(sector.y);
+		int internalY = columns.internalSectorY(sector.y);
 		Column& cv = columns(sector.x, columnY, sector.z);
 		vbodata_t& v = cv.vbodata[internalY];
 		

@@ -157,7 +157,7 @@ namespace cppcraft
 					else
 					{
 						// reset flatlands
-						flatlands(x, z).reset();
+						//flatlands(x, z).reset();
 						
 						for (int y = 0; y < Sectors.getY(); y++)
 						{

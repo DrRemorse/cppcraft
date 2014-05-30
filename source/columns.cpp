@@ -39,24 +39,21 @@ namespace cppcraft
 			int y = i % this->height;
 			// the column is above water if the first sector is >= water level
 			columns[i].aboveWater = 
-				(y * this->sizeSectors * Sector::BLOCKS_Y >= RenderConst::WATER_LEVEL);
+				(getSectorLevel(y) * Sector::BLOCKS_Y >= RenderConst::WATER_LEVEL);
 			// determine column size (in sectors)
-			columns[i].vbodata = new vbodata_t[getSizeInSectors()]();
+			columns[i].vbodata = new vbodata_t[getSizeInSectors(y)]();
 		}
 	}
 	Columns::Columns()
 	{
-		// initialize basic stuff
-		//this->height = 1;
-		//this->sizeSectors = Sectors.SECTORS_Y / height;
-		
 		////////////////////////////////////////////////////////
 		// allocate temporary datadumps for compiling columns //
 		////////////////////////////////////////////////////////
 		
 		// COLUMNS_SIZE is the number of sectors in a column
+		// NOTE: ASSUMPTION -- TOP COLUMN IS TALLEST
 		column_dump = 
-			new vertex_t[sizeSectors * RenderConst::MAX_FACES_PER_SECTOR * 4];
+			new vertex_t[getSizeInSectors(height - 1) * RenderConst::MAX_FACES_PER_SECTOR * 4];
 	}
 	Columns::~Columns()
 	{
@@ -85,9 +82,9 @@ namespace cppcraft
 		/////////////////////////////////////////////////////////////
 		
 		int vboCount = 0;
-		vbodata_t* vboList = new vbodata_t[columns.getSizeInSectors()];
+		vbodata_t* vboList = new vbodata_t[columns.getSizeInSectors(y)];
 		
-		for (int sy = columns.getSizeInSectors()-1; sy >= 0; sy--)
+		for (int sy = columns.getSizeInSectors(y)-1; sy >= 0; sy--)
 		{
 			if (vbodata[sy].pcdata != nullptr)
 			{
@@ -225,8 +222,8 @@ namespace cppcraft
 		
 		if (camera.getFrustum().column(x * Sector::BLOCKS_XZ + Sector::BLOCKS_XZ / 2,
 								z * Sector::BLOCKS_XZ + Sector::BLOCKS_XZ / 2,
-								y * columns.getSizeInSectors() * Sector::BLOCKS_Y,
-								columns.getSizeInSectors() * Sector::BLOCKS_Y, 
+								columns.getSectorLevel(y) * Sector::BLOCKS_Y,
+								columns.getSizeInSectors(y) * Sector::BLOCKS_Y, 
 								Sector::BLOCKS_XZ / 2))
 		{
 			// update render list

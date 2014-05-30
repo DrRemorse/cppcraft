@@ -153,10 +153,10 @@ namespace cppcraft
 					static const float gs_half = Sector::BLOCKS_XZ * 0.5;
 					
 					if (rg.frustum->column(
-							x * Sector::BLOCKS_XZ + gs_half,
-							z * Sector::BLOCKS_XZ + gs_half,
-							y * columns.getSizeInSectors() * Sector::BLOCKS_Y,
-							columns.getSizeInSectors() * Sector::BLOCKS_Y, 
+							(x << Sector::BLOCKS_XZ_SH) + gs_half,
+							(z << Sector::BLOCKS_XZ_SH) + gs_half,
+							columns.getSectorLevel(y) << Sector::BLOCKS_Y_SH,
+							columns.getSizeInSectors(y) << Sector::BLOCKS_Y_SH, 
 							gs_half
 						))
 					{

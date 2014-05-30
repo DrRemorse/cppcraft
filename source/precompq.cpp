@@ -86,8 +86,9 @@ namespace cppcraft
 	void PrecompQ::addTruckload(Sector& s)
 	{
 		// adds all sectors in this sectors "column" to the queue
-		int start_y = s.y - (s.y & (columns.getSizeInSectors()-1));
-		int end_y   = start_y + columns.getSizeInSectors();
+		int columnY = columns.fromSectorY(s.y);
+		int start_y = columns.getSectorLevel(columnY);
+		int end_y   = start_y + columns.getSizeInSectors(columnY);
 		
 		// put truckload of sectors into queue
 		for (int y = start_y; y < end_y; y++)

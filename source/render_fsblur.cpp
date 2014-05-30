@@ -2,7 +2,6 @@
 
 #include <library/opengl/opengl.hpp>
 #include <library/opengl/vao.hpp>
-#include <library/opengl/window.hpp>
 #include "shaderman.hpp"
 #include "textureman.hpp"
 #include <cmath>
@@ -25,7 +24,7 @@ namespace cppcraft
 		//blur.sendVec2("sigma2", vec2(sigma * sigma, 1 / (sqrt(2 * PI) * sigma)));
 		
 		// regular blur:
-		const int BLUR_LEVEL = 3;
+		const int BLUR_LEVEL = 2;
 		blur.sendInteger("Width", BLUR_LEVEL);
 		
 		// blur horizontally
@@ -33,8 +32,6 @@ namespace cppcraft
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_BLURBUFFER1), 0);
 		
 		blur.sendVec2("dir", vec2(1.0 / blurw, 0.0));
-		
-		// render
 		screenVAO.render(GL_QUADS);
 		
 		// blur vertically
@@ -42,8 +39,6 @@ namespace cppcraft
 		textureman.bind(0, Textureman::T_BLURBUFFER1);
 		
 		blur.sendVec2("dir", vec2(0.0, 1.0 / blurh));
-		
-		// render
 		screenVAO.render(GL_QUADS);
 	}
 	

@@ -1,4 +1,4 @@
-#version 130
+#version 150
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
 
@@ -14,25 +14,25 @@ void main(void)
 #endif
 
 #ifdef FRAGMENT_PROGRAM
-uniform sampler2D texture;
+uniform sampler2D blurTexture;
 uniform int Width; // samples in each direction
-uniform vec2 dir;   // (1 / w, 0.0) etc.
+uniform vec2 dir;  // (1.0 / w, 0.0) and (0.0, 1.0 / h)
 
-in vec2 texCoord;
+in  vec2 texCoord;
+out vec4 color;
 
 void main()
 {
-	vec4 color = vec4(0.0);
+	color = vec4(0.0);
 	float kernel = float(Width + 1);
 	float width, sum = 0.0;
 	
 	for(int i = -Width; i <= Width; i++)
 	{
 		width = kernel - abs(float(i));
-		color += texture2D(texture, texCoord + float(i) * dir) * width;
+		color += texture(blurTexture, texCoord + float(i) * dir) * width;
 		sum += width;
 	}
-	
-	gl_FragData[0] = color / sum;
+	color /= sum;
 }
 #endif

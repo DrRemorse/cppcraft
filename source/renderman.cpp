@@ -46,8 +46,8 @@ namespace cppcraft
 			wndconf.SW = config.get("window.width", 1280);
 			wndconf.SH = config.get("window.height", 720);
 		}
-		wndconf.vsync       = config.get("opengl.vsync", true);
-		
+		wndconf.multisample = 0;
+		wndconf.vsync     = config.get("opengl.vsync", true);
 		wndconf.depthbits = 8;
 		wndconf.stencbits = 0;
 		

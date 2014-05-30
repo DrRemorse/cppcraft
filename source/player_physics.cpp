@@ -17,7 +17,7 @@ namespace cppcraft
 	#define OSF    0.5  // overall speed factor
 	
 	// PlayerPhysics class
-	const double PlayerPhysics::PLAYER_SIZE = 0.16;
+	const double PlayerPhysics::PLAYER_SIZE = 0.2;
 	
 	const double PlayerPhysics::bump_requirement  = 0.2     * OSF; // required momentum for bump
 	const double PlayerPhysics::bump_reflect_treshold = 0.3 * OSF; // if abs(pax) > treshold

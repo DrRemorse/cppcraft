@@ -13,7 +13,6 @@ namespace cppcraft
 	{
 		// rendering
 		supersampling = config.get("render.supersampling", 1);
-		multisampling = config.get("render.multisampling", 0);
 		anisotropy    = config.get("render.anisotropy", 1.0f);
 		
 		clouds        = config.get("render.clouds",  false);
@@ -31,7 +30,9 @@ namespace cppcraft
 		music    = config.get("sound.music", true);
 		ambience = config.get("sound.ambient", true);
 		
-		// minimum 1x supersample
+		// minimum 1x supersampling
 		if (supersampling < 1) supersampling = 1;
+		// minimum 1x anisotropic filter size
+		if (anisotropy < 1.0f) anisotropy = 1.0f;
 	}
 }

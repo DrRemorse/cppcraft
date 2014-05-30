@@ -69,7 +69,7 @@ out vec4 color;
 void main(void)
 {
 	color = texture(diffuse, texCoord.stp);
-	if (color.a < 0.05) discard;
+	if (color.a < 0.02) discard;
 	
 	// read tonecolor from tonemap
 	vec4 toneColor = texture(tonemap, texCoord.stp);

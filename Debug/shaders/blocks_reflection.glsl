@@ -69,12 +69,12 @@ void main(void)
 {
 	// independent texture reads using inbound variable directly
 	// read tonecolor from tonemap
-	color = texture(tonemap, texCoord);
-	color.rgb *= biomeColor.rgb;
+	vec4 tone = texture(tonemap, texCoord);
+	tone.rgb *= biomeColor.rgb;
 	
 	// mix diffuse map
-	vec4 reflected = texture(diffuse, texCoord);
-	color = mix(reflected, color, color.a);
+	color = texture(diffuse, texCoord);
+	color.rgb = mix(color.rgb, tone.rgb, tone.a);
 	
 	#include "degamma.glsl"
 	
@@ -84,8 +84,7 @@ void main(void)
 	
 	// fake fog
 	vec3 fogColor = vec3(0.6, 0.7, 0.8) * daylight;
-	float dist = vertdist / ZFAR;
-	color.rgb = mix(color.rgb, fogColor, dist*dist * 0.75);
+	color.rgb = mix(color.rgb, fogColor, color.a * 0.75);
 }
 #endif
 

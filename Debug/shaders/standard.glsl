@@ -94,12 +94,12 @@ void main(void)
 	
 	// independent texture reads using inbound variable directly
 	// read tonecolor from tonemap
-	color = texture(tonemap, texCoord);
-	color.rgb *= biomeColor.rgb;
+	vec4 tone = texture(tonemap, texCoord);
+	tone.rgb *= biomeColor.rgb;
 	
 	// mix diffuse map
-	vec4 diffuse = texture(diffuse, texCoord);
-	color = mix(diffuse, color, color.a);
+	color = texture(diffuse, texCoord);
+	color.rgb = mix(color.rgb, tone.rgb, tone.a);
 	
 	// reflection //
 	if (reflection > 0.15)

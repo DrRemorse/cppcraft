@@ -65,9 +65,22 @@ namespace cppcraft
 		{
 			return height;
 		}
-		inline int getSizeInSectors() const
+		inline int getSectorLevel(int y)
 		{
-			return sizeSectors;
+			// 8 == RenderConst::WATER_SECTOR_LEVEL
+			return (y == 0) ? 0 : 8;
+		}
+		inline int getSizeInSectors(int y) const
+		{
+			return (y == 0) ? 8 : Sectors.getY() - 8;
+		}
+		int fromSectorY(int y)
+		{
+			return (y < 8) ? 0 : 1;
+		}
+		int internalSectorY(int y)
+		{
+			return (y < 8) ? y : y - 8;
 		}
 		
 		// column index operator
@@ -82,9 +95,9 @@ namespace cppcraft
 	private:
 		Column* columns; // array of all the columns
 		// number of columns on Y-axis
-		static const int height = 4;
+		static const int height = 2;
 		// size of a single column in sectors
-		static const int sizeSectors = Sectors.SECTORS_Y / height;
+		//static const int sizeSectors = Sectors.SECTORS_Y / height;
 	};
 	extern Columns columns;
 	

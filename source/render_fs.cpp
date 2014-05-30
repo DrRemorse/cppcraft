@@ -69,14 +69,13 @@ namespace cppcraft
 		Shader& shd = shaderman[Shaderman::FSTERRAINFOG];
 		shd.bind();
 		
-		glBindFramebuffer(GL_FRAMEBUFFER, blurFBO);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_RENDERBUFFER), 0);
-		
 		shd.sendFloat("timeElapsed", timeElapsed);
 		shd.sendVec3("sunAngle", thesun.getRealtimeAngle());
 		shd.sendFloat("daylight", thesun.getRealtimeDaylight());
 		if (camera.ref)
 		{
+			// camera projection matrix
+			//shd.sendMatrix("matproj", camera.getProjection());
 			// camera view matrix
 			shd.sendMatrix("matview", camera.getViewMatrix());
 			// player position
@@ -87,8 +86,6 @@ namespace cppcraft
 		
 		// render fullscreen quad
 		screenVAO.render(GL_QUADS);
-		
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 	
 	void FSRenderer::terrain()

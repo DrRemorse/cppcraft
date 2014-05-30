@@ -229,8 +229,8 @@ namespace cppcraft
 		
 		// screenspace terrain shader
 		shaders[FSTERRAIN] = Shader("shaders/fsterrain.glsl", tokenizer, linkstage);
-		shaders[FSTERRAIN].sendInteger("terrain",      0);
-		shaders[FSTERRAIN].sendInteger("blurtexture",  1);
+		shaders[FSTERRAIN].sendInteger("terrain",     0);
+		shaders[FSTERRAIN].sendInteger("blurtexture", 1);
 		
 		// supersampling (downsampler) shader
 		shaders[SUPERSAMPLING] = Shader("shaders/supersample.glsl", tokenizer, linkstage);
@@ -252,7 +252,7 @@ namespace cppcraft
 		
 		// blur shaders
 		shaders[BLUR] = Shader("shaders/blur.glsl", nullptr, linkstage);
-		shaders[BLUR].sendInteger("texture", 0);
+		shaders[BLUR].sendInteger("blurTexture", 0);
 		shaders[GAUSS] = Shader("shaders/blurGaussian.glsl", nullptr, linkstage);
 		shaders[GAUSS].sendInteger("texture", 0);
 		

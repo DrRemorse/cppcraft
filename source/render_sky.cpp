@@ -68,8 +68,11 @@ namespace cppcraft
 		// render moon texture
 		renderMoon(camera);
 		
-		// render clouds
-		skyrenderer.renderClouds(cloudLevel, camera, time);
+		if (mode != 1)
+		{
+			// render clouds
+			skyrenderer.renderClouds(cloudLevel, camera, time);
+		}
 		
 		glDisable(GL_BLEND);
 		glColorMask(1, 1, 1, 1);

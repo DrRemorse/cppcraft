@@ -24,27 +24,15 @@ void main()
 {
 	// terrain color
 	color = texture2D(terrain, texCoord);
+	
 	// blurred color
 	vec4 blur = texture2D(blurtexture, texCoord);
-	
-	// average depth between blurred and original
-	float depth = blur.a; //color.a * (1.0 - blur.a) + blur.a * blur.a;
-	depth = step(depth, 0.98) * depth;
+	// depth from blur
+	float depth = blur.a * step(blur.a, 0.996);
 	
 	// blur distance
-	float mixAmount = smoothstep(0.25, 0.9, depth);
+	float mixAmount = min(1.0, depth / 0.9);
 	color = mix(color, blur, mixAmount);
-}
-
-const float ZFAR
-const float ZNEAR
-
-void linearizeDepth(inout float Z)
-{
-	Z = 2.0 * Z - 1.0;
-	
-	// linearize to [0, 1]
-	Z = 2.0 * ZNEAR / (ZFAR + ZNEAR - Z * (ZFAR - ZNEAR));
 }
 
 #endif

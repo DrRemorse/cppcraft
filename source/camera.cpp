@@ -34,7 +34,7 @@ namespace cppcraft
 		this->cameraViewSectors = Sectors.getXZ() / 2 - 2;
 		// unit blocks depth-range
 		this->FOV   = config.get("frustum.fov", 61.0f);
-		this->znear = 0.1;
+		this->znear = 0.135;
 		this->zfar  = cameraViewSectors * Sector::BLOCKS_XZ;
 		
 		// projection matrices

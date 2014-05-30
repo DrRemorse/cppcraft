@@ -18,20 +18,21 @@ uniform sampler2D colorbuffer;
 uniform int       samples;
 uniform vec2      offsets;
 
-in vec2 texCoord;
+in  vec2 texCoord;
+out vec4 color;
 
 void main()
 {
 	// base color
-	vec4 color = vec4(0.0);
+	//color = texture(colorbuffer, texCoord + offsets * 0.5);
+	color = vec4(0.0);
 	
 	for (int y = 0; y < samples; y++)
 	for (int x = 0; x < samples; x++)
 	{
 		color += texture2D(colorbuffer, texCoord + vec2(x, y) * offsets);
 	}
-	
-	gl_FragData[0] = color / float(samples * samples);
+	color /= float(samples * samples);
 }
 
 #endif

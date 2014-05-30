@@ -57,13 +57,13 @@ namespace cppcraft
 	{
 		// determine readiness of column before sending to compiler
 		// first sector & end iterator in column
-		int start_y = sector->y * columns.getSizeInSectors();
+		int start_y = columns.getSectorLevel(sector->y);
 		bool ready = true;
 		bool foundData = false;
 		
 		Column& cv = columns(sector->x, sector->y, sector->z);
 		
-		for (int sy = 0; sy < columns.getSizeInSectors(); sy++)
+		for (int sy = 0; sy < columns.getSizeInSectors(sector->y); sy++)
 		{
 			Sector& s2 = Sectors(sector->x, start_y + sy, sector->z);
 			

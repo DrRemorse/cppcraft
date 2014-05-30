@@ -65,6 +65,7 @@ namespace cppcraft
 			
 			T_RENDERBUFFER,
 			T_FINALBUFFER,
+			T_FINALDEPTH,
 			
 			NUM_TEXTURES
 			
