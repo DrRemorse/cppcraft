@@ -12,6 +12,8 @@
 #include <cmath>
 #include <sstream>
 
+#include "drawq.hpp"
+
 using namespace library;
 
 namespace cppcraft
@@ -94,13 +96,14 @@ namespace cppcraft
 		font.print(vec3(0.01, 0.01, 0.0), textScale, "cppcraft v0.1", false);
 		
 		std::stringstream ss;
-		ss << "fps: " << renderer.FPS;
+		ss << "fps: " << renderer.FPS << " render: " << renderer.scene_elements;
 		font.print(vec3(0.01, 0.02, 0.0), textScale, ss.str(), false);
 		
+		/*
 		ss.str("");
-		ss << "scene: " << renderer.scene_elements;
+		ss << "upd: " << camera.needsupd << " o1: " << drawq.size(1) << " o2: " << drawq.size(2) << " o3: " << drawq.size(3);
 		font.print(vec3(0.01, 0.03, 0.0), textScale, ss.str(), false);
-		
+		*/
 		glDisable(GL_BLEND);
 	}
 	

@@ -19,7 +19,7 @@ namespace cppcraft
 			switch (plogic.movestate)
 			{
 				case PMS_Normal:
-					motionTimed += 0.15 * dtime;
+					motionTimed += 0.17 * dtime;
 					break;
 				case PMS_Crouch:
 					motionTimed += 0.10 * dtime;
@@ -31,7 +31,7 @@ namespace cppcraft
 		}
 		else motionTimed = 0.0;
 		
-		#define NORMAL_CAMERA_DEV()  deviation = sin(motionTimed) * 0.05;
+		#define NORMAL_CAMERA_DEV()  deviation = sin(motionTimed) * 0.03;
 		#define LADDER_CAMERA_DEV()  deviation = (motionTimed != 0) ? sin(motionTimed * 1.5) * 0.07 : sin(frameCounter / 20) * 0.025;
 		
 		double deviation;

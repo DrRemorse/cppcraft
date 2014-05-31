@@ -1,4 +1,8 @@
-#include "camera.hpp"
+/**
+ * 
+ * 
+ * 
+**/
 
 namespace library
 {
@@ -35,8 +39,6 @@ namespace cppcraft
 		
 		// camera bobbing computatron
 		bool cameraDeviation(double frameCounter, double dtime);
-		
-		cppcraft::Camera reflectionCamera;
 		
 		// juggernauts
 		void initTerrain();

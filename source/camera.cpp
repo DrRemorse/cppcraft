@@ -13,6 +13,7 @@ namespace cppcraft
 {
 	// Viewing camera
 	cppcraft::Camera camera;
+	cppcraft::Camera reflectionCamera;
 	
 	void Camera::init(WindowClass& wnd)
 	{

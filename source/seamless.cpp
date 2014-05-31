@@ -100,8 +100,7 @@ namespace cppcraft
 			
 			// move player forward one sector (in blocks)
 			player.X += Sector::BLOCKS_XZ;
-			player.snapX = player.X;
-			player.JustMoved = true;
+			player.snapX += Sector::BLOCKS_XZ;
 			// offset world x by -1
 			world.worldCoords.x -= 1;
 			world.increaseDelta(-1, 0);
@@ -151,9 +150,6 @@ namespace cppcraft
 			// minimap rollover +x
 			minimap.roll(-1, 0);
 			
-			// flag frustum as needing recalculation
-			camera.recalc = true;
-			
 			mtx.sectorseam.unlock();
 			returnvalue = true;
 		}
@@ -165,8 +161,7 @@ namespace cppcraft
 			
 			// move player back one sector (in blocks)
 			player.X -= Sector::BLOCKS_XZ;
-			player.snapX = player.X;
-			player.JustMoved = true;
+			player.snapX -= Sector::BLOCKS_XZ;
 			// offset world x by +1
 			world.worldCoords.x += 1;
 			world.increaseDelta(1, 0);
@@ -215,9 +210,6 @@ namespace cppcraft
 			// minimap rollover -x
 			minimap.roll(1, 0);
 			
-			// flag camera for needing recalculation
-			camera.recalc = true;
-			
 			mtx.sectorseam.unlock();
 			returnvalue = true;
 			
@@ -233,8 +225,7 @@ namespace cppcraft
 			
 			// offset player +z
 			player.Z += Sector::BLOCKS_XZ;
-			player.snapZ = player.Z;
-			player.JustMoved = true;
+			player.snapZ += Sector::BLOCKS_XZ;
 			// offset world -z
 			world.worldCoords.z -= 1;
 			world.increaseDelta(0, -1);
@@ -276,9 +267,6 @@ namespace cppcraft
 			// minimap rollover +z
 			minimap.roll(0, -1);
 			
-			// flag camera for needing recalculation
-			camera.recalc = true;
-			
 			mtx.sectorseam.unlock();
 			return true;
 		}
@@ -290,8 +278,7 @@ namespace cppcraft
 			
 			// move player backward on the Z axis
 			player.Z -= Sector::BLOCKS_XZ;
-			player.snapZ = player.Z;
-			player.JustMoved = true;
+			player.snapZ -= Sector::BLOCKS_XZ;
 			// move world forward on the Z axis
 			world.worldCoords.z += 1;
 			world.increaseDelta(0, 1);
@@ -332,9 +319,6 @@ namespace cppcraft
 			
 			// minimap rollover -z
 			minimap.roll(0, 1);
-			
-			// flag camera for needing recalculation
-			camera.recalc = true;
 			
 			mtx.sectorseam.unlock();
 			return true;

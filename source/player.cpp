@@ -118,26 +118,15 @@ namespace cppcraft
 		// if the player has moved from his snapshot, we need to synch with renderer
 		mtx.playermove.lock();
 		{
-			// player could have been moved twice, the second time causing him to lose the moved flag
-			// so we need to explicitly test all scalars
-			const double min_change = 0.001;
+			// check if the player moved enough to signal to networking to update movement
+			// update networking if position changed by a reasonable amount
 			const double net_change = 0.01;
-			
-			// update renderer with small changes
-			bool precisionChange = (fabs(snapX - X) > min_change || fabs(snapY - Y) > min_change || fabs(snapZ - Z) > min_change);
-			// update networking if position changed by a bigger amount
 			player.changedPosition = (fabs(snapX - X) > net_change || fabs(snapY - Y) > net_change || fabs(snapZ - Z) > net_change);
 			
-			if (precisionChange)
+			// this needs to be a "better" test, ie. if someone added lights nearby
+			if ((int)snapX != (int)X || (int)snapY != (int)Y || (int)snapZ != (int)Z)
 			{
-				camera.recalc = true;
-				
-				// this needs to be a "better" test, ie. if someone added lights nearby
-				if ((int)snapX != (int)X || (int)snapY != (int)Y || (int)snapZ != (int)Z)
-				{
-					updateShadows = true;
-				}
-				
+				updateShadows = true;
 			}
 			
 			snapX = X;
@@ -146,8 +135,7 @@ namespace cppcraft
 			
 			// true if the player is moving (on purpose)
 			// used to modulate player camera giving the effect of movement
-			JustMoved = plogic.Moved == true && (plogic.freefall == false || plogic.Ladderized);
-			
+			JustMoved = (plogic.Moved == true) && (plogic.freefall == false || plogic.Ladderized);
 			//logger << "JustMoved: " << JustMoved << Log::ENDL;
 			
 		}

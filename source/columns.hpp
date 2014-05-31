@@ -100,10 +100,11 @@ namespace cppcraft
 		
 	private:
 		Column* columns; // array of all the columns
+		// arrays simplifying calculations
 		int* sectorLevels;
 		int* sectorSizes;
 		// number of columns on Y-axis
-		static const int height = 3;
+		int height;
 		// size of a single column in sectors
 		//static const int sizeSectors = Sectors.SECTORS_Y / height;
 	};

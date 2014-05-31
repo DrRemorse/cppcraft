@@ -41,8 +41,8 @@ namespace cppcraft
 		
 		keyconf.k_inventory = config.get("k_inventory", 73); // I
 		
-		double mspd  = config.get("m_speed", 120) / 1000.0;
-		double msens = config.get("m_sens",  80)  / 10.0;
+		double mspd  = config.get("mouse.speed", 120) / 1000.0;
+		double msens = config.get("mouse.sens",  80)  / 10.0;
 		
 		// initialize input systems
 		input.init(gameScreen, true, true);

@@ -179,8 +179,9 @@ namespace cppcraft
 	
 	void SceneRenderer::compressRenderingQueue()
 	{
+		if (camera.needsupd == 0) return;
 		// reset after 2nd run
-		if (camera.needsupd == 2) camera.needsupd = 0;
+		else if (camera.needsupd == 2) camera.needsupd = 0;
 		
 		Column* cv;    // queue: shaderline --> mesh index
 		GLuint  occlusion_result;
@@ -211,10 +212,10 @@ namespace cppcraft
 						
 						if (occlusion_result)
 						{
-							// add if any samples passed
-							cv->occluded[i] = 0;
+							// add since there was at least 1 sample visible
+							cv->occluded[i] = 2;
 						}
-						else cv->occluded[i] = 2;
+						else cv->occluded[i] = 4;
 					}
 					else
 					{
@@ -224,7 +225,7 @@ namespace cppcraft
 				}
 				
 				// finally, as long as not completely occluded/discarded
-				if (cv->occluded[i] != 2)
+				if (cv->occluded[i] != 4)
 				{
 					// add to new position, effectively compressing
 					// and linearizing queue internally
@@ -237,7 +238,7 @@ namespace cppcraft
 		
 	} // sort render queue
 	
-	inline void renderColumn(Column* cv, int i, vec3& position, GLint loc_vtrans)
+	void renderColumn(Column* cv, int i, vec3& position, GLint loc_vtrans)
 	{
 		// make sure we don't resend same position again
 		// around 10k+ skips per second with axis=64
@@ -260,6 +261,48 @@ namespace cppcraft
 		}
 		glBindVertexArray(cv->vao);
 		glDrawArrays(GL_QUADS, cv->bufferoffset[i], cv->vertices[i]);
+	}
+	
+	void renderColumnSet(int i, vec3& position, GLint loc_vtrans)
+	{
+		if (camera.needsupd)
+		{
+			// render and count visible samples
+			for (int j = 0; j < drawq[i].count(); j++)
+			{
+				Column* cv = drawq[i].get(j);
+				
+				switch (cv->occluded[i])
+				{
+				case 0:
+					// start counting samples passed
+					glBeginQuery(GL_ANY_SAMPLES_PASSED, cv->occlusion[i]);
+					
+					renderColumn(cv, i, position, loc_vtrans);
+					
+					// end counting
+					glEndQuery(GL_ANY_SAMPLES_PASSED);
+					// set this as having been sampled
+					cv->occluded[i] = 1;
+					break;
+				case 1:
+				case 2:
+					renderColumn(cv, i, position, loc_vtrans);
+					break;
+				default: //case 3:
+					cv->occluded[i] = 0;
+				}
+			}
+		}
+		else
+		{
+			// direct render
+			for (int j = 0; j < drawq[i].count(); j++)
+			{
+				Column* cv = drawq[i].get(j);
+				renderColumn(cv, i, position, loc_vtrans);
+			}
+		}
 	}
 	
 	void handleSceneUniforms(
@@ -403,34 +446,8 @@ namespace cppcraft
 				break;
 			}
 			
-			if (camera.needsupd == 1)
-			{
-				// render and count visible samples
-				for (int j = 0; j < drawq[i].count(); j++)
-				{
-					Column* cv = drawq[i].get(j);
-					
-					// start counting samples passed
-					glBeginQuery(GL_ANY_SAMPLES_PASSED, cv->occlusion[i]);
-					
-					renderColumn(cv, i, position, loc_vtrans);
-					
-					// end counting
-					glEndQuery(GL_ANY_SAMPLES_PASSED);
-					
-					// set this as having been sampled
-					cv->occluded[i] = 1;
-				}
-			}
-			else
-			{
-				// direct render
-				for (int j = 0; j < drawq[i].count(); j++)
-				{
-					Column* cv = drawq[i].get(j);
-					renderColumn(cv, i, position, loc_vtrans);
-				}
-			}
+			// render it all
+			renderColumnSet(i, position, loc_vtrans);
 			
 		} // next shaderline
 		
@@ -590,34 +607,9 @@ namespace cppcraft
 				}
 			}
 			
-			if (camera.needsupd == 1)
-			{
-				// render and count visible samples
-				for (int j = 0; j < drawq[i].count(); j++)
-				{
-					Column* cv = drawq[i].get(j);
-					
-					// start counting samples passed
-					glBeginQuery(GL_ANY_SAMPLES_PASSED, cv->occlusion[i]);
-					
-					renderColumn(cv, i, position, loc_vtrans);
-					
-					// end counting
-					glEndQuery(GL_ANY_SAMPLES_PASSED);
-					
-					// set this as having been sampled
-					cv->occluded[i] = 1;
-				}
-			}
-			else
-			{
-				// direct render
-				for (int j = 0; j < drawq[i].count(); j++)
-				{
-					Column* cv = drawq[i].get(j);
-					renderColumn(cv, i, position, loc_vtrans);
-				}
-			}
+			// render it all
+			renderColumnSet(i, position, loc_vtrans);
+			
 		} // each shader
 		
 	} // renderSceneWater

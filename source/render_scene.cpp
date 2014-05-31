@@ -11,6 +11,7 @@
 #include <library/timing/timer.hpp>
 #endif
 
+#include "camera.hpp"
 #include "drawq.hpp"
 #include "gameconf.hpp"
 #include "minimap.hpp"
@@ -23,6 +24,7 @@
 #include "render_player_selection.hpp"
 #include "render_sky.hpp"
 #include "renderconst.hpp"
+#include "sector.hpp"
 #include "shaderman.hpp"
 #include "textureman.hpp"
 #include "threading.hpp"
@@ -43,7 +45,9 @@ namespace cppcraft
 	{
 		// initialize members
 		this->lastTime = 0.0;
-		this->playerX = this->playerY = this->playerZ = 0.0;
+		this->playerX = player.X;
+		this->playerY = player.Y;
+		this->playerZ = player.Z;
 		
 		// initialize terrain renderer
 		initTerrain();
@@ -175,8 +179,10 @@ namespace cppcraft
 				//          player snapshot           //
 				//------------------------------------//
 				
-				const double WEIGHT = 0.5;
-				//logger << Log::INFO << WEIGHT << " <-- " << renderer.dtime << " / " << 0.0125 << Log::ENDL;
+				double WEIGHT = std::min(1.0, 0.15 / (renderer.FPS / 120.0));
+				//logger << Log::INFO << WEIGHT << " <-- " << 120.0 / renderer.FPS << Log::ENDL;
+				
+				float dist = distance(vec3(playerX, playerY, playerZ), vec3(player.snapX, player.snapY, player.snapZ));
 				
 				// (cheap) movement interpolation
 				playerY = playerY * (1.0 - WEIGHT) + player.snapY * WEIGHT;
@@ -195,12 +201,12 @@ namespace cppcraft
 				}
 				this->playerMoved = player.JustMoved;
 				
-				this->playerSectorX = playerX / 16; //Sector::BLOCKS_XZ;
-				this->playerSectorZ = playerZ / 16; //Sector::BLOCKS_XZ;
+				this->playerSectorX = (int)playerX / Sector::BLOCKS_XZ;
+				this->playerSectorZ = (int)playerZ / Sector::BLOCKS_XZ;
 				
 				underwater = plogic.FullySubmerged != PlayerLogic::PS_None;
 				
-				frustumRecalc = camera.recalc;
+				frustumRecalc = (dist > 0.01) || camera.recalc;
 				camera.recalc = false;
 			}
 			mtx.playermove.unlock();
@@ -273,12 +279,8 @@ namespace cppcraft
 			mtx.sectorseam.unlock();
 		}
 		
-		// render queue needed update
-		if (camera.needsupd == 2)
-		{
-			// compress rendering queue to minimal size by occlusion culling
-			compressRenderingQueue();
-		}
+		// compress rendering queue to minimal size by occlusion culling
+		compressRenderingQueue();
 		
 		/// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
 		

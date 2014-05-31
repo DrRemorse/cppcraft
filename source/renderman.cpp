@@ -5,6 +5,7 @@
 #include <library/opengl/opengl.hpp>
 #include <library/timing/timer.hpp>
 
+#include "camera.hpp"
 #include "compilers.hpp"
 #include "drawq.hpp"
 #include "player.hpp"

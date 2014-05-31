@@ -126,7 +126,7 @@ float getAO16(in vec3 viewPos)
 		
         ambientOcclusion += a * NdotS;
     }
-    return 1.0 - ambientOcclusion / sample_count;
+    return ambientOcclusion / sample_count;
 }
 
 void main()
@@ -140,7 +140,7 @@ void main()
 	vec3 viewPos = getPosition(texCoord);
 	
 	// Ambient Occlusion
-	color.rgb *= getAO16(viewPos);
+	color.rgb *= 1.0 - getAO16(viewPos) * 0.7;
 	
 	// reconstruct view to world coordinates
 	vec4 cofs = vec4(viewPos, 1.0) * matview;

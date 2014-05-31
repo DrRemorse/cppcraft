@@ -42,6 +42,7 @@ namespace cppcraft
 		
 	};
 	extern cppcraft::Camera camera;
+	extern cppcraft::Camera reflectionCamera;
 }
 
 #endif
