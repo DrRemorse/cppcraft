@@ -97,6 +97,10 @@ namespace cppcraft
 		ss << "fps: " << renderer.FPS;
 		font.print(vec3(0.01, 0.02, 0.0), textScale, ss.str(), false);
 		
+		ss.str("");
+		ss << "scene: " << renderer.scene_elements;
+		font.print(vec3(0.01, 0.03, 0.0), textScale, ss.str(), false);
+		
 		glDisable(GL_BLEND);
 	}
 	

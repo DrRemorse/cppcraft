@@ -44,8 +44,7 @@ const float ZNEAR
 //#include "noise3.glsl"
 
 float fogDensity(in vec3  ray,
-				 in vec3  point,
-				 in float depth)
+				 in vec3  point)
 {
 	const float HEIGHT   = 36.0;
 	const float fogY     = 70.0;
@@ -81,7 +80,7 @@ vec3 getPosition(in vec2 uv)
 	return cofs * linearizeDepth(uv);
 }
 
-const   float distanceThreshold = 2.0;
+const   float distanceThreshold = 0.5;
 uniform vec2  filterRadius;
 
 const int sample_count = 16;
@@ -123,7 +122,7 @@ float getAO16(in vec3 viewPos)
         float NdotS = max(0.0, dot(viewNormal, sampleDir));
 		
         // a = distance function
-        float a = 1.0 - smoothstep(distanceThreshold, distanceThreshold * 2, VPdistSP);
+        float a = 1.0 - smoothstep(distanceThreshold, distanceThreshold * 2, VPdistSP / ZFAR);
 		
         ambientOcclusion += a * NdotS;
     }
@@ -151,7 +150,7 @@ void main()
 	vec3 wpos = cofs.xyz + vec3(0.0, cameraPos.y, 0.0) - worldOffset;
 	
 	// volumetric fog
-	float fogAmount = fogDensity(ray, wpos, depth);
+	float fogAmount = fogDensity(ray, wpos);
 	fogAmount *= depth;
 	
 	vec3 fogBaseColor = vec3(0.9) * daylight;

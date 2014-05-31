@@ -72,6 +72,14 @@ namespace cppcraft
 			return lines[shader];
 		}
 		
+		int size() const
+		{
+			int cnt = 0;
+			for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
+				cnt += lines[i].count();
+			return cnt;
+		}
+		
 		/// octtree-like frustum culling ///
 		// building a new draw queue, but ignoring columns that are too far out
 		// the draw queue deals only with columns

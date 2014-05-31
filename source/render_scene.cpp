@@ -244,7 +244,6 @@ namespace cppcraft
 				// do as little as possible this frame
 				camera.needsupd = 1;
 				// frustum was updated
-				//camera.updated = true;
 				camera.ref = true;
 				
 				#ifdef TIMING
@@ -280,6 +279,8 @@ namespace cppcraft
 			// compress rendering queue to minimal size by occlusion culling
 			compressRenderingQueue();
 		}
+		
+		/// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
 		
 		// reflections only happen on the exact water-plane anyways, 
 		// so we just disable them completely when the player is below it
@@ -320,6 +321,7 @@ namespace cppcraft
 			}
 		}
 		
+		/// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
 		/// render physical scene w/depth ///
 		
 		sceneFBO.bind();

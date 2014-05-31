@@ -182,7 +182,6 @@ namespace cppcraft
 		// reset after 2nd run
 		if (camera.needsupd == 2) camera.needsupd = 0;
 		
-		int     count; // number of columns in each draw queue
 		Column* cv;    // queue: shaderline --> mesh index
 		GLuint  occlusion_result;
 		
@@ -190,7 +189,8 @@ namespace cppcraft
 		// by counting visible entries for each shader line, and re-adding as we go
 		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 		{
-			count = drawq[i].count();
+			// number of columns in each draw queue
+			int count = drawq[i].count();
 			// clear, which does only 1 thing: set count = 0
 			drawq[i].clear();
 			
@@ -216,13 +216,12 @@ namespace cppcraft
 						}
 						else cv->occluded[i] = 2;
 					}
-					else camera.needsupd = 2; // we need to update again :(
+					else
+					{
+						// we need to update again :(
+						camera.needsupd = 2;
+					}
 				}
-				/*else if (cv->occluded[i] == 3)
-				{
-					// uncontested from last frame --> 1
-					cv->occluded[i] = 1;
-				}*/
 				
 				// finally, as long as not completely occluded/discarded
 				if (cv->occluded[i] != 2)

@@ -307,7 +307,7 @@ namespace cppcraft
 		if (gameconf.reflections)
 		{
 			// world reflection buffer
-			textures[T_REFLECTION] = Texture(GL_TEXTURE_2D, GL_RGBA16F);
+			textures[T_REFLECTION] = Texture(GL_TEXTURE_2D, GL_RGBA8);
 			textures[T_REFLECTION].create(0, gamescr.SW / 2, gamescr.SH / 2);
 			textures[T_REFLECTION].setInterpolation(true);
 		}

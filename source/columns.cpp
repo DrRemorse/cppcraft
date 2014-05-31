@@ -46,6 +46,16 @@ namespace cppcraft
 	}
 	Columns::Columns()
 	{
+		sectorLevels = new int[this->height];
+		sectorLevels[0] = 0;
+		sectorLevels[1] = 7;
+		sectorLevels[2] = 8;
+		
+		sectorSizes = new int[this->height];
+		sectorSizes[0] = 7;
+		sectorSizes[1] = 1;
+		sectorSizes[2] = Sectors.getY() - 8;
+		
 		////////////////////////////////////////////////////////
 		// allocate temporary datadumps for compiling columns //
 		////////////////////////////////////////////////////////
@@ -53,12 +63,14 @@ namespace cppcraft
 		// COLUMNS_SIZE is the number of sectors in a column
 		// NOTE: ASSUMPTION -- TOP COLUMN IS TALLEST
 		column_dump = 
-			new vertex_t[getSizeInSectors(height - 1) * RenderConst::MAX_FACES_PER_SECTOR * 4];
+			new vertex_t[sectorSizes[height - 1] * RenderConst::MAX_FACES_PER_SECTOR * 4];
 	}
 	Columns::~Columns()
 	{
 		delete[] column_dump;
 		delete[] columns;
+		delete[] sectorLevels;
+		delete[] sectorSizes;
 	}
 	
 	Column::Column()

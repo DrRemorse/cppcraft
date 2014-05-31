@@ -6,6 +6,7 @@
 #include <library/timing/timer.hpp>
 
 #include "compilers.hpp"
+#include "drawq.hpp"
 #include "player.hpp"
 #include "render_fs.hpp"
 #include "render_gui.hpp"
@@ -121,6 +122,7 @@ namespace cppcraft
 		Timer timer;
 		timer.startNewRound();
 		#endif
+		this->scene_elements = 0;
 		
 		// render scene
 		sceneRenderer->render(*this);
@@ -128,6 +130,9 @@ namespace cppcraft
 		#ifdef TIMING
 		logger << Log::INFO << "Time spent rendering: " << timer.getDeltaTime() * 1000.0 << Log::ENDL;
 		#endif
+		
+		// count elements in draw queue
+		this->scene_elements = drawq.size();
 		
 		// post processing
 		screenspace.render(gamescr, this->frametick);

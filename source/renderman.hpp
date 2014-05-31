@@ -11,23 +11,6 @@ namespace cppcraft
 	
 	class Renderer
 	{
-	private:
-		// OpenGL window
-		library::WindowClass gamescr;
-		
-		// elapsed time
-		double frametick;
-		// this frames delta-time
-		double dtime;
-		// average FPS
-		double FPS;
-		
-		// renders a scene
-		void render(double dtime, WorldManager&);
-		
-		// scene renderer object
-		SceneRenderer* sceneRenderer;
-		
 	public:
 		Renderer();
 		// initializes OpenGL & creates OpenGL window
@@ -38,6 +21,25 @@ namespace cppcraft
 		void renderloop(WorldManager&);
 		// <-- until game ends
 		library::WindowClass& getScreen() { return gamescr; }
+		
+	private:
+		// OpenGL window
+		library::WindowClass gamescr;
+		
+		// elapsed time
+		double frametick;
+		// this frames delta-time
+		double dtime;
+		// average FPS
+		double FPS;
+		// rendered terrain elements this frame
+		int scene_elements;
+		
+		// renders a scene
+		void render(double dtime, WorldManager&);
+		
+		// scene renderer object
+		SceneRenderer* sceneRenderer;
 		
 		friend class SceneRenderer;
 		friend class GUIRenderer;

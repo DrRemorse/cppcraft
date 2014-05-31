@@ -5,6 +5,7 @@
 #include "renderconst.hpp"
 #include "sectors.hpp"
 #include "world.hpp"
+#include <string>
 
 namespace cppcraft
 {
@@ -51,7 +52,7 @@ namespace cppcraft
 		int	       bufferoffset[RenderConst::MAX_UNIQUE_SHADERS];
 		int           vertices [RenderConst::MAX_UNIQUE_SHADERS];
 		unsigned int  occlusion[RenderConst::MAX_UNIQUE_SHADERS];
-		bool          occluded [RenderConst::MAX_UNIQUE_SHADERS];
+		char          occluded [RenderConst::MAX_UNIQUE_SHADERS];
 	};
 	
 	class Columns
@@ -65,22 +66,27 @@ namespace cppcraft
 		{
 			return height;
 		}
-		inline int getSectorLevel(int y)
+		inline int getSectorLevel(int y) const
 		{
-			// 8 == RenderConst::WATER_SECTOR_LEVEL
-			return y * 8;
+			return sectorLevels[y];
 		}
 		inline int getSizeInSectors(int y) const
 		{
-			return 8 + (Sectors.getY() - 16) * y;
+			return sectorSizes[y];
 		}
-		int fromSectorY(int y)
+		int fromSectorY(int y) const
 		{
-			return (y < 8) ? 0 : 1;
+			for (int h = height-1; h >= 0; h--)
+				if (y >= getSectorLevel(h))
+					return h;
+			throw std::string("Invalid y value for Columns::fromSectorY(): " + std::to_string(y));
 		}
-		int internalSectorY(int y)
+		int internalSectorY(int y) const
 		{
-			return (y < 8) ? y : y - 8;
+			for (int h = height-1; h >= 0; h--)
+				if (y >= getSectorLevel(h))
+					return y - getSectorLevel(h);
+			throw std::string("Invalid y value for Columns::internalSectorY(): " + std::to_string(y));
 		}
 		
 		// column index operator
@@ -94,8 +100,10 @@ namespace cppcraft
 		
 	private:
 		Column* columns; // array of all the columns
+		int* sectorLevels;
+		int* sectorSizes;
 		// number of columns on Y-axis
-		static const int height = 2;
+		static const int height = 3;
 		// size of a single column in sectors
 		//static const int sizeSectors = Sectors.SECTORS_Y / height;
 	};
