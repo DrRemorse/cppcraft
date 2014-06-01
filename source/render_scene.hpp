@@ -28,6 +28,8 @@ namespace cppcraft
 		double lastTime;
 		
 		// snapshots
+		double iplayerX, iplayerY, iplayerZ;
+		// used when rendering
 		double playerX, playerY, playerZ;
 		bool playerMoved, underwater;
 		int playerSectorX, playerSectorZ;
@@ -38,7 +40,7 @@ namespace cppcraft
 		double lastCameraDeviation = 0.0;
 		
 		// camera bobbing computatron
-		bool cameraDeviation(double frameCounter, double dtime);
+		double cameraDeviation(double frameCounter, double dtime);
 		
 		// juggernauts
 		void initTerrain();

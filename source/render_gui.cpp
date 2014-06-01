@@ -4,10 +4,11 @@
 #include <library/opengl/opengl.hpp>
 #include <library/opengl/window.hpp>
 #include <library/opengl/oglfont.hpp>
+#include "camera.hpp"
 #include "chat.hpp"
 #include "minimap.hpp"
 #include "renderman.hpp"
-#include "render_scene.hpp"
+//#include "render_scene.hpp"
 #include "shaderman.hpp"
 #include <cmath>
 #include <sstream>
@@ -50,6 +51,17 @@ namespace cppcraft
 		
 		// initialize chatbox & chat-transformation station
 		chatbox.init(width, height);
+	}
+	
+	std::string str_tail(std::string const& source, size_t const length)
+	{
+		if (length >= source.size()) { return source; }
+		return source.substr(source.size() - length);
+	}
+	std::string str_front(std::string const& source, size_t const length)
+	{
+		if (length > source.size()) { return source; }
+		return source.substr(0, length);
 	}
 	
 	void GUIRenderer::render(Renderer& renderer)
@@ -95,9 +107,20 @@ namespace cppcraft
 		
 		font.print(vec3(0.01, 0.01, 0.0), textScale, "cppcraft v0.1", false);
 		
-		std::stringstream ss;
-		ss << "fps: " << renderer.FPS << " render: " << renderer.scene_elements;
-		font.print(vec3(0.01, 0.02, 0.0), textScale, ss.str(), false);
+		std::string fps = std::to_string(renderer.FPS);
+		
+		if (fps.size() > 4)
+			fps = str_front(fps, 4);
+		else
+		{
+			std::string wspace;
+			wspace.assign(' ', fps.size()-4);
+			fps = fps + wspace;
+		}
+		
+		std::string debugText = "fps: " + fps + " upd: " + std::to_string(camera.needsupd);
+		
+		font.print(vec3(0.01, 0.02, 0.0), textScale, debugText, false);
 		
 		/*
 		ss.str("");

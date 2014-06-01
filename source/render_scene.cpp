@@ -29,6 +29,7 @@
 #include "textureman.hpp"
 #include "threading.hpp"
 #include "world.hpp"
+#include <cmath>
 
 using namespace library;
 
@@ -45,9 +46,9 @@ namespace cppcraft
 	{
 		// initialize members
 		this->lastTime = 0.0;
-		this->playerX = player.X;
-		this->playerY = player.Y;
-		this->playerZ = player.Z;
+		this->iplayerX = player.X;
+		this->iplayerY = player.Y;
+		this->iplayerZ = player.Z;
 		
 		// initialize terrain renderer
 		initTerrain();
@@ -182,25 +183,28 @@ namespace cppcraft
 				double WEIGHT = std::min(1.0, 0.15 / (renderer.FPS / 120.0));
 				//logger << Log::INFO << WEIGHT << " <-- " << 120.0 / renderer.FPS << Log::ENDL;
 				
-				float dist = distance(vec3(playerX, playerY, playerZ), vec3(player.snapX, player.snapY, player.snapZ));
+				float dist = distance(vec3(iplayerX, iplayerY, iplayerZ), vec3(player.snapX, player.snapY, player.snapZ));
 				
 				// (cheap) movement interpolation
-				playerY = playerY * (1.0 - WEIGHT) + player.snapY * WEIGHT;
+				iplayerY = iplayerY * (1.0 - WEIGHT) + player.snapY * WEIGHT;
 				
 				int dx = snapWX - world.getWX();
 				int dz = snapWZ - world.getWZ();
 				if (abs(dx) + abs(dz) < 3)
 				{
-					playerX = (playerX + dx * 16) * (1.0 - WEIGHT) + player.snapX * WEIGHT;
-					playerZ = (playerZ + dz * 16) * (1.0 - WEIGHT) + player.snapZ * WEIGHT;
+					iplayerX = (iplayerX + dx * 16) * (1.0 - WEIGHT) + player.snapX * WEIGHT;
+					iplayerZ = (iplayerZ + dz * 16) * (1.0 - WEIGHT) + player.snapZ * WEIGHT;
 				}
 				else
 				{
-					playerX = player.snapX;
-					playerZ = player.snapZ;
+					iplayerX = player.snapX;
+					iplayerZ = player.snapZ;
 				}
 				this->playerMoved = player.JustMoved;
 				
+				this->playerX = iplayerX;
+				this->playerY = iplayerY;
+				this->playerZ = iplayerZ;
 				this->playerSectorX = (int)playerX / Sector::BLOCKS_XZ;
 				this->playerSectorZ = (int)playerZ / Sector::BLOCKS_XZ;
 				
@@ -229,10 +233,11 @@ namespace cppcraft
 			netplayers.positionSnapshots(snapWX, snapWZ, renderer.dtime);
 			
 			/// camera deviations ///
-			if (cameraDeviation(renderer.frametick, renderer.dtime))
-			{
-				frustumRecalc = true;
-			}
+			double camDev = cameraDeviation(renderer.frametick, renderer.dtime);
+			// modulate playerY when delta is high enough
+			playerY += camDev;
+			// update frustum if there was a change
+			frustumRecalc |= (camDev != 0.0);
 			
 			//---------------------------------//
 			// Start of frustum recalculations //

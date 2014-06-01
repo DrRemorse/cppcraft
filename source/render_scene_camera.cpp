@@ -1,6 +1,6 @@
 #include "render_scene.hpp"
 
-#include "library/log.hpp"
+#include <library/log.hpp>
 #include "blocks.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"
@@ -12,14 +12,14 @@ namespace cppcraft
 {
 	static const double PI2 = 4 * atan(1) * 2;
 	
-	bool SceneRenderer::cameraDeviation(double frameCounter, double dtime)
+	double SceneRenderer::cameraDeviation(double frameCounter, double dtime)
 	{
 		if (playerMoved)
 		{
 			switch (plogic.movestate)
 			{
 				case PMS_Normal:
-					motionTimed += 0.17 * dtime;
+					motionTimed += 0.15 * dtime;
 					break;
 				case PMS_Crouch:
 					motionTimed += 0.10 * dtime;
@@ -31,10 +31,10 @@ namespace cppcraft
 		}
 		else motionTimed = 0.0;
 		
-		#define NORMAL_CAMERA_DEV()  deviation = sin(motionTimed) * 0.03;
-		#define LADDER_CAMERA_DEV()  deviation = (motionTimed != 0) ? sin(motionTimed * 1.5) * 0.07 : sin(frameCounter / 20) * 0.025;
+		#define NORMAL_CAMERA_DEV()  deviation = sin(motionTimed) * 0.07;
+		#define LADDER_CAMERA_DEV()  deviation = (motionTimed != 0) ? sin(motionTimed * 1.0) * 0.2 : sin(frameCounter / 20) * 0.1;
 		
-		double deviation;
+		double deviation = 0.0;
 		bool deviating = false;
 		
 		if (player.Flying)
@@ -44,7 +44,7 @@ namespace cppcraft
 		else if (plogic.FullySubmerged)
 		{
 			// always if underwater
-			deviation = sin(frameCounter / 40) * 0.05;
+			deviation = sin(frameCounter / 40) * 0.04;
 			deviating = true;
 		}
 		else if (plogic.Submerged)
@@ -83,6 +83,16 @@ namespace cppcraft
 		
 		const double lerp = 0.6;
 		
+		// when crouching we need to lower camera quite a bit
+		if (plogic.movestate == PMS_Crouch)
+		{
+			if (deviating)
+				deviation -= 0.25;
+			else
+				deviation = -0.25;
+			deviating = true;
+		}
+		
 		// interpolate deviation with old
 		if (deviating)
 			deviation = deviation * lerp + lastCameraDeviation * (1.0 - lerp);
@@ -91,23 +101,9 @@ namespace cppcraft
 			deviation = lastCameraDeviation * 0.7;
 		}
 		
-		// modulate playerY when delta is high enough
-		if (fabs(deviation) > 0.001)
-		{
-			playerY += deviation;
-			deviating = true;
-		}
-		else deviating = false;
-		
 		// remember new deviation
 		lastCameraDeviation = deviation;
 		
-		// when crouching we need to lower camera quite a bit
-		if (plogic.movestate == PMS_Crouch)
-		{
-			playerY -= 0.25;
-			return true;
-		}
-		return deviating;
+		return deviation;
 	}
 }
