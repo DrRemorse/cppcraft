@@ -138,16 +138,13 @@ namespace cppcraft
 	
 	void Torchlight::lightGatherer(Sector& sector, LightList& list)
 	{
-		#define L_G_R  LIGHT_GATHER_REACH
-		const int ysize = LIGHT_GATHER_REACH;
-		
 		// create boundries
-		int x0 = (sector.x - L_G_R < 0) ? 0 : sector.x - L_G_R;
-		int x1 = (sector.x + L_G_R >= Sectors.getXZ()) ? Sectors.getXZ()-1 : sector.x + L_G_R;
-		int y0 = (sector.y - ysize < 0) ? 0 : sector.y - ysize;
-		int y1 = (sector.y + ysize >= Sectors.getY() ) ? Sectors.getY()-1  : sector.y + ysize;
-		int z0 = (sector.z - L_G_R < 0) ? 0 : sector.z - L_G_R;
-		int z1 = (sector.z + L_G_R >= Sectors.getXZ()) ? Sectors.getXZ()-1 : sector.z + L_G_R;
+		int x0 = (sector.x - 1 < 0) ? 0 : sector.x - 1;
+		int x1 = (sector.x + 1 >= Sectors.getXZ()) ? Sectors.getXZ()-1 : sector.x + 1;
+		int y0 = (sector.y - 2 < 0) ? 0 : sector.y - 2;
+		int y1 = (sector.y + 2 >= Sectors.getY() ) ? Sectors.getY()-1  : sector.y + 2;
+		int z0 = (sector.z - 1 < 0) ? 0 : sector.z - 1;
+		int z1 = (sector.z + 1 >= Sectors.getXZ()) ? Sectors.getXZ()-1 : sector.z + 1;
 		
 		// clear light list
 		list.lights.clear();

@@ -1,7 +1,5 @@
 #include "torchlight.hpp"
 
-#include "blocks.hpp"
-#include <string>
 #include <cmath>
 
 namespace cppcraft
@@ -27,11 +25,11 @@ namespace cppcraft
 		
 		p = &torchlights[L_TORCH];
 		// torch (_TORCH)
-		p->reach = 8;
+		p->reach = 16;
 		p->curve = 1.2;
 		p->cap   = 1.0;
 		
-		p->colors     = 0.2;
+		p->colors     = 0.15;
 		p->brightness = 0.8;
 		
 		p->r = 1.0;
@@ -92,11 +90,11 @@ namespace cppcraft
 		
 		p = &torchlights[L_LANTERN];
 		// pyramidal lantern (_LANTERN)
-		p->reach = 8;
+		p->reach = 12;
 		p->curve = 1.2;
 		p->cap   = 1.0;
 		
-		p->colors     = 0.25;
+		p->colors     = 0.2;
 		p->brightness = 1.0;
 		
 		p->r = 1.0;
@@ -145,10 +143,8 @@ namespace cppcraft
 			
 		case _MOLTENSTONE:
 			return L_MOLTEN;
-			
-		default:
-			throw std::string("Torchlight::getEmitter(): No existing conversion from block to emitter id");
 		}
+		return 0;
 	}
 	
 	const Torchlight::lightdata_t& Torchlight::getEmitter(int id) const

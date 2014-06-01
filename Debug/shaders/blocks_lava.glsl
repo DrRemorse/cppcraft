@@ -36,9 +36,7 @@ void main(void)
 #endif
 
 #ifdef FRAGMENT_PROGRAM
-uniform sampler2D underwater;
 uniform sampler2D lavatex;
-uniform vec3 screendata;
 
 uniform float frameCounter;
 
@@ -53,27 +51,12 @@ void main(void)
 	vec2 subwave  = sin(timer * vec2(2.0) + wave * 0.5) * sin(timer);
 	vec2 lavawave = wave * 0.25 + subwave * 0.01;
 	
-	// sloppy waving
-	vec3 lavaColor = texture2D(lavatex, lavawave).rgb;
+	// waving lava texture
+	color.rgb = texture2D(lavatex, lavawave).rgb;
+	color.a = vertdist;
+	
 	// cheap sparkling
-	lavaColor.r += pow(lavaColor.r, 1.0 / abs(subwave.x * subwave.y)) * 0.5;
-	
-#ifdef UNDERLAVA
-	// under the lava
-	vec2 texCoord =  gl_FragCoord.xy / screendata.xy;
-	vec4 underlava = texture(underwater, texCoord);
-	
-	float wdepth = 0.02 + max(0.0, underlava.a - vertdist);
-	
-	float dep = smoothstep(0.0, 0.03, wdepth);
-	
-	// mix it all together
-	color.rgb = mix(underlava.rgb, lavaColor, dep);
-	color.a   = vertdist;
-#else
-	color = vec4(lavaColor, vertdist);
-#endif
-	
+	color.r += pow(color.r, 1.0 / abs(subwave.x * subwave.y)) * 0.5;
 }
 
 #endif

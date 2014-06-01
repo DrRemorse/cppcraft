@@ -11,7 +11,7 @@ namespace cppcraft
 	class Torchlight
 	{
 	public:
-		typedef enum
+		typedef enum lights_t
 		{
 			L_FOG,
 			L_TORCH,
@@ -26,7 +26,7 @@ namespace cppcraft
 			
 		} lights_t;
 		
-		struct lightdata_t
+		typedef struct lightdata_t
 		{
 			float reach;
 			float curve;
@@ -35,12 +35,9 @@ namespace cppcraft
 			float colors;
 			float brightness;
 			
-		};
-		
-		static const int LIGHT_GATHER_REACH   = 1;
+		} lightdata_t;
 		
 		void init();
-		
 		int   getEmitterId(block_t id) const;
 		const lightdata_t& getEmitter(int id) const;
 		

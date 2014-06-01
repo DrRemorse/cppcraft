@@ -17,15 +17,13 @@ namespace cppcraft
 {
 	void Torchlight::lightSectorUpdates(Sector& s, bool instant)
 	{
-		#define L_G_R  LIGHT_GATHER_REACH
-		
 		// create boundries
-		int x0 = (s.x - L_G_R < 0) ? 0 : s.x - L_G_R;
-		int x1 = (s.x + L_G_R >= Sectors.getXZ()) ? Sectors.getXZ()-1 : s.x + L_G_R;
-		int y0 = (s.y - L_G_R < 0) ? 0 : s.y - L_G_R;
-		int y1 = (s.y + L_G_R >= Sectors.getY()) ? Sectors.getY()-1 : s.y + L_G_R;
-		int z0 = (s.z - L_G_R < 0) ? 0 : s.z - L_G_R;
-		int z1 = (s.z + L_G_R >= Sectors.getXZ()) ? Sectors.getXZ()-1 : s.z + L_G_R;
+		int x0 = (s.x - 1 < 0) ? 0 : s.x - 1;
+		int x1 = (s.x + 1 >= Sectors.getXZ()) ? Sectors.getXZ()-1 : s.x + 1;
+		int y0 = (s.y - 2 < 0) ? 0 : s.y - 2;
+		int y1 = (s.y + 2 >= Sectors.getY()) ? Sectors.getY()-1 : s.y + 2;
+		int z0 = (s.z - 1 < 0) ? 0 : s.z - 1;
+		int z1 = (s.z + 1 >= Sectors.getXZ()) ? Sectors.getXZ()-1 : s.z + 1;
 		
 		// force regeneration of affected sectors
 		int x = x0, y = y0, z = z0;

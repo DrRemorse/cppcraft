@@ -145,7 +145,6 @@ namespace cppcraft
 		
 		// extra textures for lava
 		shaders[BLOCKS_LAVA].bind();
-		shaders[BLOCKS_LAVA].sendInteger("underwater", 0);
 		shaders[BLOCKS_LAVA].sendInteger("lavatex", 2);
 		
 		linkstage.clear();

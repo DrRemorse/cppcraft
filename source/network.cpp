@@ -250,9 +250,10 @@ namespace cppcraft
 		case T_SATSTEP:
 			if (true)
 			{
-				int step = ((int*) mp->args)[0];
-				logger << Log::INFO << "SAT step: " << step << Log::ENDL;
-				thesun.setStep(step);
+				lattice_satstep& sats = ((lattice_satstep*) mp->args)[0];
+				logger << Log::INFO << "SAT step: " << sats.satstep << " SAT: " << sats.sat << Log::ENDL;
+				thesun.setStep(sats.satstep);
+				thesun.setRadianAngle(sats.sat);
 			}
 			break;
 			
