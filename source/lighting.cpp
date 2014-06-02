@@ -61,11 +61,7 @@ namespace cppcraft
 			ray += LIGHT_MEDI_DAMAGE * distance_curve;
 		}
 		// exit everything if too much damage
-		if (ray >= maxdmg)
-		{
-			ray = maxdmg;
-			return true;
-		}
+		if (ray >= maxdmg) return true;
 		return false;
 	}
 	
@@ -425,7 +421,7 @@ namespace cppcraft
 			
 			for (x = -rad; x <= rad; x++)
 			{
-				if (x*x + radSquared < radiusSquared)
+				if (x*x + radSquared <= radiusSquared)
 				{
 					if (light1D(px+x, py, pz+rad) == false)
 						if (lightSeeker(px, py, pz, px+x, pz+rad)) goto endLight;
@@ -444,6 +440,7 @@ namespace cppcraft
 				}
 			}
 		}
+		return 1.0;
 		endLight:
 		return sqrtf(x*x + z*z) / (float)maxRadius;
 	}
@@ -459,91 +456,78 @@ namespace cppcraft
 			sector.z * Sector::BLOCKS_XZ + bz
 		);
 		
-		// pre-calculate darkness level
-		// underground additional ray damage
-		const int groundlevel = flatlands.getGroundLevel(position.x, position.z) - 2;
-		static const float darkramp  = 64.0;
+		#define sunray   lightRay2D(tmplight, SHADOWS, position, angle.x, angle.y)
+		#define halfray  lightRay2D(tmplight, SHADOWS, position, half1.x, half1.y)
+		#define skyray   lightRay1D(tmplight, SHADOWS, position)
 		
-		float maxlight = SHADOWS;
-		
-		if (position.y < groundlevel)
-		{
-			float light = (groundlevel - position.y) / darkramp;
-			if (light > 1.0) light = 1.0;
-			maxlight = SHADOWS * (1.0 - light) + light * DARKNESS;
-		}
-		
-		#define sunray   lightRay2D(tmplight, maxlight, position, angle.x, angle.y)
-		#define halfray  lightRay2D(tmplight, maxlight, position, half1.x, half1.y)
-		#define skyray   lightRay1D(tmplight, maxlight, position)
-		
-		float tmplight;
+		float tmplight = 0.0;
 		
 		// skylevel searching (light seeking)
 		// used as base shadows for all configurations
 		if (light1D(position.x, position.y, position.z))
 		{
 			float dist = lightSeek(this->seek_radius, position.x, position.y, position.z);
-			tmplight = maxlight * dist * dist;
-		}
-		else
-		{
-			tmplight = 0.0;
+			tmplight = DARKNESS * dist * dist;
+			
+			if (tmplight > DARKNESS) tmplight = DARKNESS;
 		}
 		
-		if (rayCount <= 0)
+		if (tmplight < SHADOWS)
 		{
-			// do nothing!
-		}
-		else if (rayCount == 1)
-		{
-			// towards sun
-			tmplight = sunray;
-		}
-		else if (rayCount == 2)
-		{
-			const vec3& half1 = thesun.getHalfAngle();
-			// towards sun & halfray
-			tmplight = sunray * 0.8 + halfray * 0.2;
-		}
-		else
-		{
-			if (rayCount == 3)
+			if (rayCount <= 0)
+			{
+				// do nothing!
+			}
+			else if (rayCount == 1)
+			{
+				// towards sun
+				tmplight = sunray;
+			}
+			else if (rayCount == 2)
 			{
 				const vec3& half1 = thesun.getHalfAngle();
-				const vec3& half2 = thesun.getHalf2Angle();
-				
-				// additional halfrays
-				#define halfray2 lightRay2D(tmplight, maxlight, position, half2.x, half2.y)
-				
-				tmplight = sunray * 0.6 + halfray * 0.2 + halfray2 * 0.2;
+				// towards sun & halfray
+				tmplight = sunray * 0.8 + halfray * 0.2;
 			}
 			else
 			{
-				const int rays = 4;
-				const int rounds = rayCount / 4;
-				const float phi = PI * 2 / rays;
-				
-				float light = 0.0;
-				for (int j = 1; j <= rounds; j++)
+				if (rayCount == 3)
 				{
-					vec3 a = vec3(angle.x - j * 0.05, angle.y, 0);
-					a.normalize();
+					const vec3& half1 = thesun.getHalfAngle();
+					const vec3& half2 = thesun.getHalf2Angle();
 					
-					for (int i = 0; i < rays; i++)
-					{
-						light += lightRay3D(tmplight, maxlight, position, a);
-						a = a.rotateOnAxis(thesun.getAngle(), phi);
-					}
+					// additional halfrays
+					#define halfray2 lightRay2D(tmplight, SHADOWS, position, half2.x, half2.y)
+					
+					tmplight = sunray * 0.6 + halfray * 0.2 + halfray2 * 0.2;
 				}
-				light /= (float)rays * rounds;
-				// pepper some slight sunray into it all
-				tmplight = sunray * 0.1 + light * 0.9;
+				else
+				{
+					const int rays = 4;
+					const int rounds = rayCount / 4;
+					const float phi = PI * 2 / rays;
+					
+					float light = 0.0;
+					for (int j = 1; j <= rounds; j++)
+					{
+						vec3 a = vec3(angle.x - j * 0.05, angle.y, 0);
+						a.normalize();
+						
+						for (int i = 0; i < rays; i++)
+						{
+							light += lightRay3D(tmplight, SHADOWS, position, a);
+							a = a.rotateOnAxis(thesun.getAngle(), phi);
+						}
+					}
+					light /= (float)rays * rounds;
+					// pepper some slight sunray into it all
+					tmplight = sunray * 0.1 + light * 0.9;
+				}
 			}
-		}
-		
-		// clamp to maximal darkness level
-		if (tmplight > DARKNESS) tmplight = DARKNESS;
+			if (tmplight > SHADOWS)
+				tmplight = SHADOWS;
+			
+		} // raycasting when light < SHADOWS
 		
 		if (list.lights.size() == 0)
 		{
