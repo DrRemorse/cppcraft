@@ -53,11 +53,10 @@ namespace cppcraft
 		{
 			return Biomes::CL_GRAVEL;
 		}
-		else if (id == _WATER)
+		else // if (id == _WATER)
 		{
 			return Biomes::CL_WATER;
 		}
-		return 0;
 	}
 	
 	unsigned int Biomes::getSpecialColorRGBA(block_t clid)

@@ -22,7 +22,7 @@ namespace cppcraft
 			GLfloat x, y, z;
 		};
 		
-		static const int SkyPattern = 32;
+		static const int SkyPattern = 16;
 		static const int CloudVertices = (SkyPattern + 1) * (SkyPattern + 1);
 		
 		VAO vao;
@@ -32,7 +32,7 @@ namespace cppcraft
 	void SkyRenderer::createClouds()
 	{
 		// create cloud VAO
-		float skySize    = camera.cameraViewSectors * Sector::BLOCKS_XZ * 1.6;
+		float skySize    = camera.getZFar() * 1.6;
 		float skyDelta   = skySize / clouds.SkyPattern * 2.0;
 		const float skyLevel = RenderConst::SKY_LEVEL - 0.5;
 		
