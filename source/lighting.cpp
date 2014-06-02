@@ -35,11 +35,13 @@ namespace cppcraft
 		// raycaster method
 		this->ray_length = config.get("light.ray_length", 48);
 		// clamp to some minimum value
-		if (this->ray_length < 40) this->ray_length = 40;
+		if (this->ray_length < 32) this->ray_length = 32;
 		
-		this->ray_count  = config.get("light.ray_count", 3);
-		if (this->ray_count <  0) this->ray_count =  0;
-		if (this->ray_count > 16) this->ray_count = 16;
+		this->ray_count  = config.get("light.ray_count", 1);
+		if (this->ray_count < 0) this->ray_count = 0;
+		
+		this->seek_radius = config.get("light.seek_radius", 4);
+		if (this->seek_radius < 1) this->seek_radius = 1;
 	}
 	
 	bool damageRay(block_t id, float& ray, float& maxdmg, float distance_curve)
@@ -460,7 +462,7 @@ namespace cppcraft
 		// pre-calculate darkness level
 		// underground additional ray damage
 		const int groundlevel = flatlands.getGroundLevel(position.x, position.z) - 2;
-		static const int darkramp  = 64;
+		static const float darkramp  = 64.0;
 		
 		float maxlight = SHADOWS;
 		
@@ -475,14 +477,18 @@ namespace cppcraft
 		#define halfray  lightRay2D(tmplight, maxlight, position, half1.x, half1.y)
 		#define skyray   lightRay1D(tmplight, maxlight, position)
 		
-		float tmplight = 0.0;
+		float tmplight;
 		
 		// skylevel searching (light seeking)
 		// used as base shadows for all configurations
 		if (light1D(position.x, position.y, position.z))
 		{
-			float dist = lightSeek(16, position.x, position.y, position.z);
+			float dist = lightSeek(this->seek_radius, position.x, position.y, position.z);
 			tmplight = maxlight * dist * dist;
+		}
+		else
+		{
+			tmplight = 0.0;
 		}
 		
 		if (rayCount <= 0)
@@ -537,7 +543,7 @@ namespace cppcraft
 		}
 		
 		// clamp to maximal darkness level
-		if (tmplight > Lighting.DARKNESS) tmplight = Lighting.DARKNESS;
+		if (tmplight > DARKNESS) tmplight = DARKNESS;
 		
 		if (list.lights.size() == 0)
 		{

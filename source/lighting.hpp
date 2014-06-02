@@ -26,8 +26,9 @@ namespace cppcraft
 		static const float AMB_OCC;
 		static const float CORNERS;
 		
-		int ray_length;     // ray length = 48
-		int ray_count;      // ray count  = 2
+		int ray_length;     // default 48
+		int ray_count;      // default 1
+		int seek_radius;    // default 4
 		
 		void init();
 		

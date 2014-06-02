@@ -216,7 +216,7 @@ namespace cppcraft
 		// clouds shader
 		shaders[CLOUDS] = Shader("shaders/clouds.glsl", tokenizer, linkstage);
 		shaders[CLOUDS].sendMatrix("matproj", camera.getProjectionLong());
-		shaders[CLOUDS].sendInteger("texture", 0);
+		shaders[CLOUDS].sendInteger("cloudstex", 0);
 		
 		// screenspace fog shader
 		shaders[FSTERRAINFOG] = Shader("shaders/fsterrainfog.glsl", tokenizer, linkstage);

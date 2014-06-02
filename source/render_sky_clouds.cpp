@@ -2,13 +2,13 @@
 
 #include <library/opengl/opengl.hpp>
 #include <library/opengl/vao.hpp>
+#include <library/log.hpp>
 #include "camera.hpp"
-#include "gameconf.hpp"
 #include "renderconst.hpp"
-#include "sectors.hpp"
 #include "shaderman.hpp"
 #include "sun.hpp"
 #include "textureman.hpp"
+#include <cmath>
 
 using namespace library;
 
@@ -23,7 +23,6 @@ namespace cppcraft
 		};
 		
 		static const int SkyPattern = 16;
-		static const int CloudVertices = (SkyPattern + 1) * (SkyPattern + 1);
 		
 		VAO vao;
 	};
@@ -31,56 +30,66 @@ namespace cppcraft
 	
 	void SkyRenderer::createClouds()
 	{
-		// create cloud VAO
-		float skySize    = camera.getZFar() * 1.6;
-		float skyDelta   = skySize / clouds.SkyPattern * 2.0;
-		const float skyLevel = RenderConst::SKY_LEVEL - 0.5;
+		static const int CLOUD_VERTICES = (Clouds::SkyPattern + 1) * (Clouds::SkyPattern + 1);
 		
-		Clouds::cloudvertex_t  cdata[clouds.CloudVertices];
+		// create cloud VAO
+		float skySize    = camera.getZFar() * 1.5;
+		float skyDelta   = skySize * 2.0 / clouds.SkyPattern;
+		const float skyLevel = RenderConst::SKY_LEVEL + 0.5;
+		
+		Clouds::cloudvertex_t  cdata[CLOUD_VERTICES];
 		Clouds::cloudvertex_t* cd = cdata;
 		
-		GLushort  elements[clouds.SkyPattern * clouds.SkyPattern * 4];
-		GLushort* ed = elements;
-		
-		for (int skyX = 0; skyX <= clouds.SkyPattern; skyX++)
+		for (int skyZ = 0; skyZ <= clouds.SkyPattern; skyZ++)
 		{
-			float x = skyDelta * skyX - skySize;
-			
-			for (int skyZ = 0; skyZ <= clouds.SkyPattern; skyZ++)
+			float z = skyDelta * skyZ - skySize;
+			for (int skyX = 0; skyX <= clouds.SkyPattern; skyX++)
 			{
-				float z = skyDelta * skyZ - skySize;
+				float x = skyDelta * skyX - skySize;
+				
+				float rad = std::sqrt(x*x + z*z);
 				
 				// vertex
 				cd->x = x;
-				cd->y = skyLevel;
+				cd->y = skyLevel - rad / skySize * 80.0;
 				cd->z = z;
 				cd += 1;
 			}
 		}
 		
-		for (int skyX = 0; skyX < clouds.SkyPattern; skyX++)
+		GLushort  elements[clouds.SkyPattern * clouds.SkyPattern * 4];
+		GLushort* ed = elements;
+		
+		const int width = Clouds::SkyPattern + 1;
+		const int height = Clouds::SkyPattern;
+		int i = 0;
+		
+		for(int y = 0; y < height; y++)
 		{
-			for (int skyZ = 0; skyZ < clouds.SkyPattern; skyZ++)
+			int base = y * width;
+			
+			for(int x = 0; x < width; x++)
 			{
-				// indices
-				ed[0] = skyX * clouds.SkyPattern + skyZ;
-				ed[1] = skyX * clouds.SkyPattern + skyZ + 1;
-				ed[2] = (skyX + 1) * clouds.SkyPattern + skyZ + 1;
-				ed[3] = (skyX + 1) * clouds.SkyPattern + skyZ;
-				ed += 4;
+				ed[i++] = base + x;
+				ed[i++] = base + width + x;
 			}
-		}
+			// add a degenerate triangle (except in a last row)
+			if (y < height - 1)
+			{
+				ed[i++] = (y + 1) * width + (width-1);
+				ed[i++] = (y + 1) * width;
+			}
+		}		
 		
 		// make vertex array object
-		clouds.vao.begin(sizeof(Clouds::cloudvertex_t), clouds.CloudVertices, cdata);
-		clouds.vao.indexes(elements, clouds.SkyPattern * clouds.SkyPattern * 4);
+		clouds.vao.begin(sizeof(Clouds::cloudvertex_t), CLOUD_VERTICES, cdata);
+		clouds.vao.indexes(elements, i);
 		clouds.vao.attrib(0, 3, GL_FLOAT, GL_FALSE, 0);
 		clouds.vao.end();
 	}
 	
 	void SkyRenderer::renderClouds(float dy, Camera& camera, double frameCounter)
 	{
-		if (gameconf.clouds == false) return;
 		// bind cloud shader
 		Shader& shd = shaderman[Shaderman::CLOUDS];
 		shd.bind();
@@ -100,7 +109,7 @@ namespace cppcraft
 		textureman.bind(0, Textureman::T_CLOUDS);
 		
 		// render
-		clouds.vao.renderIndexed(GL_QUADS);
+		clouds.vao.renderIndexed(GL_TRIANGLE_STRIP);
 		
 	} // render
 }

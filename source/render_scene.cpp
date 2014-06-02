@@ -164,7 +164,7 @@ namespace cppcraft
 					skyTex.getHeight(),
 					sceneTex.getWidth(), 
 					sceneTex.getHeight(), 
-					GL_COLOR_BUFFER_BIT, GL_LINEAR);
+					GL_COLOR_BUFFER_BIT, GL_NEAREST);
 		
 		////////////////////////////////////////////////////
 		/// take snapshots of player state               ///

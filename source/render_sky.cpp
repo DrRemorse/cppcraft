@@ -5,13 +5,12 @@
 #include <library/opengl/vao.hpp>
 #include "atmosphere.hpp"
 #include "camera.hpp"
+#include "gameconf.hpp"
 #include "renderconst.hpp"
 #include "renderman.hpp"
-#include "sectors.hpp"
 #include "shaderman.hpp"
 #include "sun.hpp"
 #include "textureman.hpp"
-#include "world.hpp"
 #include <cmath>
 
 using namespace library;
@@ -68,7 +67,8 @@ namespace cppcraft
 		// render moon texture
 		renderMoon(camera);
 		
-		if (mode != 1)
+		// avoid rendering clouds for reflections
+		if (mode != 1 && gameconf.clouds == true)
 		{
 			// render clouds
 			skyrenderer.renderClouds(cloudLevel, camera, time);
