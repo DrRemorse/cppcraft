@@ -90,20 +90,13 @@ namespace cppcraft
 				deviation -= 0.25;
 			else
 				deviation = -0.25;
-			deviating = true;
 		}
 		
 		// interpolate deviation with old
-		if (deviating)
-			deviation = deviation * lerp + lastCameraDeviation * (1.0 - lerp);
-		else
-		{
-			deviation = lastCameraDeviation * 0.7;
-		}
+		deviation = deviation * lerp + lastCameraDeviation * (1.0 - lerp);
 		
 		// remember new deviation
 		lastCameraDeviation = deviation;
-		
 		return deviation;
 	}
 }

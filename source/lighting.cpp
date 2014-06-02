@@ -6,6 +6,7 @@
 #include "blocks.hpp"
 #include "flatlands.hpp"
 #include "lighttable.hpp"
+#include "renderconst.hpp"
 #include "sectors.hpp"
 #include "spiders.hpp"
 #include "sun.hpp"
@@ -21,7 +22,7 @@ namespace cppcraft
 	
 	const float LightingClass::DARKNESS = 255;
 	static const float DARK_SHADOWS     = 255 * 0.78;
-	const float LightingClass::SHADOWS  = 255 * 0.68;
+	const float LightingClass::SHADOWS  = 255 * 0.70;
 	const float LightingClass::AMB_OCC  = 255 * 0.48;
 	const float LightingClass::CORNERS  = 255 * 0.55;
 	
@@ -277,7 +278,7 @@ namespace cppcraft
 		return tmplight;
 	}
 	
-	float LightingClass::lightRay1D(float tmplight, float maxlight, vec3 position)
+	float LightingClass::lightRay1D(float tmplight, float maxlight, vec3 const& position)
 	{
 		int max_x = Sectors.getXZ() * Sector::BLOCKS_XZ;
 		const int max_y = Sectors.getY() * Sector::BLOCKS_Y;
@@ -288,10 +289,6 @@ namespace cppcraft
 			position.z < 0 || position.z >= max_x-0.5
 		) return tmplight;
 		
-		block_t id;
-		float inv_reach = 1.0 / Lighting.ray_length;
-		float distance_curve = 1.0;
-		
 		int sectorx = (int) position.x;
 		int bxx = sectorx & (Sector::BLOCKS_XZ-1);
 		sectorx >>= Sector::BLOCKS_XZ_SH;
@@ -300,6 +297,11 @@ namespace cppcraft
 		sectorz >>= Sector::BLOCKS_XZ_SH;
 		
 		int skylevel = flatlands(sectorx, sectorz)(bxx, bzz).skyLevel;
+		
+		block_t id;
+		float inv_reach = 1.0 / Lighting.ray_length;
+		float distance_curve = 1.0;
+		
 		int posy = (int) position.y;
 		int byy;
 		
@@ -349,24 +351,110 @@ namespace cppcraft
 		return tmplight;
 	}
 	
+	bool LightingClass::light1D(int x, int y, int z)
+	{
+		int sectorx = x >> Sector::BLOCKS_XZ_SH;
+		int bxx = x & (Sector::BLOCKS_XZ-1);
+		
+		int sectorz = z >> Sector::BLOCKS_XZ_SH;
+		int bzz = z & (Sector::BLOCKS_XZ-1);
+		
+		return (y < flatlands(sectorx, sectorz)(bxx, bzz).skyLevel);
+	}
+	
+	bool lightSeeker(int x1, int y1, int z1, int x2, int z2)
+	{
+		int x = x1, z = z1;
+		bool select_x = true;
+		while (true)
+		{
+			// validate position
+			block_t id = Spiders::getBlock(x, y1, z).getID();
+			if (id == _AIR || isCross(id) || id == _VINES)
+			{
+				x1 = x;
+				z1 = z;
+			}
+			else
+			{
+				block_t id = Spiders::getBlock(x1, y1+1, z1).getID();
+				if (id == _AIR || isCross(id) || id == _VINES)
+				{
+					// move up instead of forward
+					y1 += 1;
+				}
+				else
+				{
+					// bad
+					return false;
+				}
+			}
+			
+			// select next position
+			if (select_x)
+			{
+				if (x1 < x2) x = x1 + 1;
+				else if (x1 > x2) x = x1 - 1;
+				else x = x1;
+			}
+			else
+			{
+				if (z1 < z2) z = z1 + 1;
+				else if (z1 > z2) z = z1 - 1;
+				else z = z1;
+			}
+			select_x = !select_x;
+			
+			// exit condition
+			if (x == x2 && z == z2) return true;
+		}
+	} // lightSeeker
+	
+	float LightingClass::lightSeek(int maxRadius, int px, int py, int pz)
+	{
+		int rad = 0;
+		int x = 0, z = 0;
+		int radiusSquared = maxRadius * maxRadius;
+		int radSquared;
+		
+		for (rad = 1; rad <= maxRadius; rad++)
+		{
+			radSquared = rad*rad;
+			
+			for (x = -rad; x <= rad; x++)
+			{
+				if (x*x + radSquared < radiusSquared)
+				{
+					if (light1D(px+x, py, pz+rad) == false)
+						if (lightSeeker(px, py, pz, px+x, pz+rad)) goto endLight;
+					if (light1D(px+x, py, pz-rad) == false)
+						if (lightSeeker(px, py, pz, px+x, pz-rad)) goto endLight;
+				}
+			}
+			for (z = 1-rad; z < rad; z++)
+			{
+				if (radSquared + z*z <= radiusSquared)
+				{
+					if (light1D(px+rad, py, pz + z) == false)
+						if (lightSeeker(px, py, pz, px+rad, pz+z)) goto endLight;
+					if (light1D(px-rad, py, pz + z) == false)
+						if (lightSeeker(px, py, pz, px-rad, pz+z)) goto endLight;
+				}
+			}
+		}
+		endLight:
+		return sqrtf(x*x + z*z) / (float)maxRadius;
+	}
+	
 	vertex_color_t LightingClass::lightCheck(LightList& list, Sector& sector, int bx, int by, int bz, int rayCount)
 	{
-		float tmplight = 0.0;
-		int bxx = bx, byy = by, bzz = bz;
-		
-		// start from s, and work out possibly new position
-		Sector* s2 = Spiders::spiderwrap(sector, bxx, byy, bzz);
-		if (s2 == nullptr) goto theend;
-		
-	while (true)
-	{
 		vec2 angle = thesun.getAngle().xy();
-		if (angle.y < 0) break;
+		//if (angle.y < 0) break;
 		
 		vec3 position = vec3(
-			s2->x * Sector::BLOCKS_XZ + bxx, 
-			s2->y * Sector::BLOCKS_Y  + byy,
-			s2->z * Sector::BLOCKS_XZ + bzz
+			sector.x * Sector::BLOCKS_XZ + bx, 
+			sector.y * Sector::BLOCKS_Y  + by, 
+			sector.z * Sector::BLOCKS_XZ + bz
 		);
 		
 		// pre-calculate darkness level
@@ -375,23 +463,31 @@ namespace cppcraft
 		static const int darkramp  = 64;
 		
 		float maxlight = SHADOWS;
-		float light;
 		
 		if (position.y < groundlevel)
 		{
-			light = (groundlevel - position.y) / darkramp;
+			float light = (groundlevel - position.y) / darkramp;
 			if (light > 1.0) light = 1.0;
 			maxlight = SHADOWS * (1.0 - light) + light * DARKNESS;
 		}
-		light = 0.0;
 		
-		#define sunray   lightRay2D(light, maxlight, position, angle.x, angle.y)
-		#define halfray  lightRay2D(light, maxlight, position, half1.x, half1.y)
+		#define sunray   lightRay2D(tmplight, maxlight, position, angle.x, angle.y)
+		#define halfray  lightRay2D(tmplight, maxlight, position, half1.x, half1.y)
+		#define skyray   lightRay1D(tmplight, maxlight, position)
+		
+		float tmplight = 0.0;
+		
+		// skylevel searching (light seeking)
+		// used as base shadows for all configurations
+		if (light1D(position.x, position.y, position.z))
+		{
+			float dist = lightSeek(16, position.x, position.y, position.z);
+			tmplight = maxlight * dist * dist;
+		}
 		
 		if (rayCount <= 0)
 		{
-			// towards the sky
-			tmplight = lightRay1D(light, maxlight, position);
+			// do nothing!
 		}
 		else if (rayCount == 1)
 		{
@@ -412,7 +508,7 @@ namespace cppcraft
 				const vec3& half2 = thesun.getHalf2Angle();
 				
 				// additional halfrays
-				#define halfray2 lightRay2D(light, maxlight, position, half2.x, half2.y)
+				#define halfray2 lightRay2D(tmplight, maxlight, position, half2.x, half2.y)
 				
 				tmplight = sunray * 0.6 + halfray * 0.2 + halfray2 * 0.2;
 			}
@@ -422,6 +518,7 @@ namespace cppcraft
 				const int rounds = rayCount / 4;
 				const float phi = PI * 2 / rays;
 				
+				float light = 0.0;
 				for (int j = 1; j <= rounds; j++)
 				{
 					vec3 a = vec3(angle.x - j * 0.05, angle.y, 0);
@@ -429,20 +526,15 @@ namespace cppcraft
 					
 					for (int i = 0; i < rays; i++)
 					{
-						tmplight += lightRay3D(light, maxlight, position, a);
+						light += lightRay3D(tmplight, maxlight, position, a);
 						a = a.rotateOnAxis(thesun.getAngle(), phi);
 					}
 				}
-				tmplight /= (float)rays * rounds;
-				
-				tmplight = sunray * 0.1 + tmplight * 0.9;
+				light /= (float)rays * rounds;
+				// pepper some slight sunray into it all
+				tmplight = sunray * 0.1 + light * 0.9;
 			}
 		}
-		break;
-		
-	} // end scope
-	
-	theend:
 		
 		// clamp to maximal darkness level
 		if (tmplight > Lighting.DARKNESS) tmplight = Lighting.DARKNESS;

@@ -31,9 +31,12 @@ namespace cppcraft
 		
 		void init();
 		
-		float lightRay3D(float slight, float darkness, library::vec3 position, library::vec3 angle);
-		float lightRay2D(float slight, float darkness, library::vec3 position, float stepx, float stepy);
-		float lightRay1D(float slight, float darkness, library::vec3 position);
+		float lightRay3D(float light, float maxlight, library::vec3 position, library::vec3 angle);
+		float lightRay2D(float light, float maxlight, library::vec3 position, float stepx, float stepy);
+		float lightRay1D(float light, float maxlight, library::vec3 const& position);
+		float lightSeek(int maxRadius, int x, int y, int z);
+		float lightSeek2(int maxRadius, int x, int y, int z);
+		bool light1D(int x, int y, int z);
 		vertex_color_t lightCheck(LightList& list, Sector& sector, int bx, int by, int bz, int rayCount);
 		
 	};

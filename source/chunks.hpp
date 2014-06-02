@@ -51,10 +51,10 @@ namespace cppcraft
 		void loadSector(Sector& sector, std::ifstream&, unsigned int position);
 		
 		// special data
-		//int createSectorData(Sector* s, short bx, short by, short bz, int id);
-		//void writeSpecialData(Sector* s, filetoken);
-		//void loadSpecialData(Sector* s, int dx, int dy, int dz);
-		//void removeSpecialData(Sector* s, int id, int index);
+		//int createSpecial(Sector* s, short bx, short by, short bz, int id);
+		//void writeSpecial(Sector* s, filetoken);
+		//void loadSpecial(Sector* s, int dx, int dy, int dz);
+		//void removeSpecial(Sector* s, int id, int index);
 		
 		friend Generator; // Generator can access private functions
 		

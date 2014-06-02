@@ -237,7 +237,7 @@ namespace cppcraft
 			// modulate playerY when delta is high enough
 			playerY += camDev;
 			// update frustum if there was a change
-			frustumRecalc |= (camDev != 0.0);
+			frustumRecalc |= (fabs(camDev) > 0.001);
 			
 			//---------------------------------//
 			// Start of frustum recalculations //
