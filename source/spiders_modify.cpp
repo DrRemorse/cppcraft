@@ -3,6 +3,7 @@
 #include <library/log.hpp>
 #include "blocks.hpp"
 #include "chunks.hpp"
+#include "flatlands.hpp"
 #include "generator.hpp"
 #include "precompq.hpp"
 #include "sectors.hpp"
@@ -36,6 +37,7 @@ namespace cppcraft
 	
 	bool Spiders::addblock(int bx, int by, int bz, block_t id, block_t bitfield, bool immediate)
 	{
+		// don't use addBlock() with _AIR
 		if (id == _AIR) return false;
 		
 		Sector* s = spiderwrap(bx, by, bz);
@@ -49,7 +51,7 @@ namespace cppcraft
 		
 		Block& block = s[0](bx, by, bz);
 		
-		// can't add same block (id) twice
+		// avoid re-setting same block id
 		if (block.getID() == id) return false;
 		
 		// if the previous block was air, then we need to increase the "block count"
@@ -216,8 +218,13 @@ namespace cppcraft
 	
 	void Spiders::skylightReachDown(Sector& sector)
 	{
-		// do natn (yet)
-		int FIXME_unimplemented_function = sector.BLOCKS_XZ;
+		for (int y = 0; y < sector.y; y++)
+		{
+			if (Sectors(sector.x, y, sector.z).render)
+			{
+				Sectors(sector.x, y, sector.z).progress = Sector::PROG_NEEDRECOMP;
+			}
+		}
 	}
 	
 	inline void updateNeighboringSector(Sector& sector, bool immediate)
