@@ -2,7 +2,6 @@
 
 #include <library/opengl/opengl.hpp>
 #include <library/opengl/vao.hpp>
-#include <library/log.hpp>
 #include "camera.hpp"
 #include "renderconst.hpp"
 #include "shaderman.hpp"
@@ -40,21 +39,16 @@ namespace cppcraft
 		Clouds::cloudvertex_t  cdata[CLOUD_VERTICES];
 		Clouds::cloudvertex_t* cd = cdata;
 		
-		for (int skyZ = 0; skyZ <= clouds.SkyPattern; skyZ++)
+		for (float z = -skySize; z <= skySize; z += skyDelta)
+		for (float x = -skySize; x <= skySize; x += skyDelta)
 		{
-			float z = skyDelta * skyZ - skySize;
-			for (int skyX = 0; skyX <= clouds.SkyPattern; skyX++)
-			{
-				float x = skyDelta * skyX - skySize;
-				
-				float rad = std::sqrt(x*x + z*z);
-				
-				// vertex
-				cd->x = x;
-				cd->y = skyLevel - rad / skySize * 80.0;
-				cd->z = z;
-				cd += 1;
-			}
+			float rad = std::sqrt(x*x + z*z);
+			
+			// vertex
+			cd->x = x;
+			cd->y = skyLevel - rad / skySize * 80.0;
+			cd->z = z;
+			cd += 1;
 		}
 		
 		GLushort  elements[clouds.SkyPattern * clouds.SkyPattern * 4];
