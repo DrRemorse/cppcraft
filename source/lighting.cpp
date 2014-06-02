@@ -357,18 +357,20 @@ namespace cppcraft
 		int sectorz = z >> Sector::BLOCKS_XZ_SH;
 		int bzz = z & (Sector::BLOCKS_XZ-1);
 		
-		return (y < flatlands(sectorx, sectorz)(bxx, bzz).skyLevel);
+		return (y < flatlands(sectorx, sectorz)(bxx, bzz).groundLevel);
 	}
 	
 	bool lightSeeker(int x1, int y1, int z1, int x2, int z2)
 	{
+		#define isSeekable(id)  (id == _AIR || isCross(id) || id == _VINES || isFluid(id))
+		
 		int x = x1, z = z1;
 		bool select_x = true;
 		while (true)
 		{
 			// validate position
 			block_t id = Spiders::getBlock(x, y1, z).getID();
-			if (id == _AIR || isCross(id) || id == _VINES)
+			if (isSeekable(id))
 			{
 				x1 = x;
 				z1 = z;
@@ -376,7 +378,7 @@ namespace cppcraft
 			else
 			{
 				block_t id = Spiders::getBlock(x1, y1+1, z1).getID();
-				if (id == _AIR || isCross(id) || id == _VINES)
+				if (isSeekable(id))
 				{
 					// move up instead of forward
 					y1 += 1;
@@ -503,23 +505,23 @@ namespace cppcraft
 				}
 				else
 				{
-					const int rays = 4;
+					static const int ROTATIONS = 4;
+					static const float phi = PI * 2 / ROTATIONS;
 					const int rounds = rayCount / 4;
-					const float phi = PI * 2 / rays;
 					
-					float light = 0.0;
-					for (int j = 1; j <= rounds; j++)
+					float light = SHADOWS;
+					for (int j = 0; j < rounds; j++)
 					{
-						vec3 a = vec3(angle.x - j * 0.05, angle.y, 0);
+						vec3 a(angle.x - j * 0.05, angle.y, 0.15);
 						a.normalize();
 						
-						for (int i = 0; i < rays; i++)
+						for (int i = 0; i < ROTATIONS; i++)
 						{
-							light += lightRay3D(tmplight, SHADOWS, position, a);
+							light = std::min(light, lightRay3D(tmplight, SHADOWS, position, a));
 							a = a.rotateOnAxis(thesun.getAngle(), phi);
 						}
 					}
-					light /= (float)rays * rounds;
+					//light /= (float)rays * rounds;
 					// pepper some slight sunray into it all
 					tmplight = sunray * 0.1 + light * 0.9;
 				}
