@@ -41,7 +41,7 @@ out vec4 color;
 const float ZFAR
 const float ZNEAR
 
-//#include "noise3.glsl"
+#include "noise3.glsl"
 
 float fogDensity(in vec3  ray,
 				 in vec3  point)
@@ -59,7 +59,7 @@ float fogDensity(in vec3  ray,
 	foglevel = 1.0 - foglevel * foglevel;
 	
 	point.x += timeElapsed * 0.02;
-	float noise = 0.0; //snoise(point * 0.02) + snoise(point * 0.05); // + snoise(point * 2.0);
+	float noise = snoise(point * 0.02) + snoise(point * 0.05); // + snoise(point * 2.0);
 	noise = (noise + 2.0) * 0.25;
 	
 	return (noise + foglen) * 0.5 * foglevel;
@@ -76,8 +76,8 @@ vec3 getNormal(in vec2 uv)
 }
 vec3 getPosition(in vec2 uv)
 {
-	vec3 cofs = vec3(uv * nearPlaneHalfSize, -1.0);
-	return cofs * linearizeDepth(uv);
+	vec3 viewPos = vec3((uv * 2.0 - 1.0) * nearPlaneHalfSize, -1.0);
+	return viewPos * linearizeDepth(uv);
 }
 
 const   float distanceThreshold = 0.5;
@@ -137,13 +137,13 @@ void main()
 	#define depth  color.a
 	
 	// reconstruct position from depth
-	vec3 viewPos = getPosition(texCoord);
+	vec4 viewPos = eye_direction * linearizeDepth(texCoord);
 	
 	// Ambient Occlusion
-	color.rgb *= 1.0 - getAO16(viewPos) * 0.7;
+	color.rgb *= 1.0 - getAO16(viewPos.xyz) * 0.8;
 	
 	// reconstruct view to world coordinates
-	vec4 cofs = vec4(viewPos, 1.0) * matview;
+	vec4 cofs = viewPos * matview;
 	// camera->point ray
 	vec3 ray = normalize(-cofs.xyz);
 	// to world coordinates
@@ -151,13 +151,13 @@ void main()
 	
 	// volumetric fog
 	float fogAmount = fogDensity(ray, wpos);
-	fogAmount *= depth;
+	fogAmount *= 0.1 + 0.9 * depth;
 	
-	vec3 fogBaseColor = vec3(0.9) * daylight;
-	vec3 sunBaseColor = vec3(1.0, 0.8, 0.5) * daylight;
+	const vec3 fogBaseColor = vec3(0.9);
+	const vec3 sunBaseColor = vec3(1.0, 0.8, 0.5);
 	
 	float sunAmount = max(0.0, dot(-ray, sunAngle));
-	vec3 fogColor = mix(fogBaseColor, sunBaseColor, sunAmount);
+	vec3 fogColor = mix(fogBaseColor, sunBaseColor, sunAmount) * daylight;
 	
 	color.rgb = mix(color.rgb, fogColor, fogAmount);
 	// additional sun glow on terrain
