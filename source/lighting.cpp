@@ -22,7 +22,7 @@ namespace cppcraft
 	
 	const float LightingClass::DARKNESS = 255;
 	static const float DARK_SHADOWS     = 255 * 0.78;
-	const float LightingClass::SHADOWS  = 255 * 0.70;
+	const float LightingClass::SHADOWS  = 255 * 0.65;
 	const float LightingClass::AMB_OCC  = 255 * 0.48;
 	const float LightingClass::CORNERS  = 255 * 0.55;
 	
@@ -357,39 +357,48 @@ namespace cppcraft
 		int sectorz = z >> Sector::BLOCKS_XZ_SH;
 		int bzz = z & (Sector::BLOCKS_XZ-1);
 		
+		if (y >= 64)
+			return (y < flatlands(sectorx, sectorz)(bxx, bzz).skyLevel);
 		return (y < flatlands(sectorx, sectorz)(bxx, bzz).groundLevel);
+	}
+	
+	inline bool isSeekableID(block_t id)
+	{
+		return id == _AIR || isCross(id) || id == _LADDER || id == _VINES || isFluid(id);
+	}
+	inline bool isSeekable(int x, int y, int z)
+	{
+		return isSeekableID(Spiders::getBlock(x, y, z).getID());
 	}
 	
 	bool lightSeeker(int x1, int y1, int z1, int x2, int z2)
 	{
-		#define isSeekable(id)  (id == _AIR || isCross(id) || id == _VINES || isFluid(id))
+		// select next position
+		// ALSO: avoid checking FIRST position
+		if (x1 < x2) x1 += 1;
+		else if (x1 > x2) x1 -= 1;
 		
-		int x = x1, z = z1;
+		// We also can't avoid advancing both positions
+		// because some blocks self-occlude into (1x, 1z) diagonally
+		if (z1 < z2) z1 += 1;
+		else if (z1 > z2) z1 -= 1;
+		
+		// exit condition
+		if (x1 == x2 && z1 == z2) return true;
+		
+		// validate position
+		if (isSeekable(x1, y1, z1) == false)
+		{
+			return false;
+		}
+		
 		bool select_x = true;
+		bool moved;
+		int x = x1;
+		int z = z1;
+		
 		while (true)
 		{
-			// validate position
-			block_t id = Spiders::getBlock(x, y1, z).getID();
-			if (isSeekable(id))
-			{
-				x1 = x;
-				z1 = z;
-			}
-			else
-			{
-				block_t id = Spiders::getBlock(x1, y1+1, z1).getID();
-				if (isSeekable(id))
-				{
-					// move up instead of forward
-					y1 += 1;
-				}
-				else
-				{
-					// bad
-					return false;
-				}
-			}
-			
 			// select next position
 			if (select_x)
 			{
@@ -403,10 +412,32 @@ namespace cppcraft
 				else if (z1 > z2) z = z1 - 1;
 				else z = z1;
 			}
-			select_x = !select_x;
 			
 			// exit condition
-			if (x == x2 && z == z2) return true;
+			if (x1 == x2 && z1 == z2) return true;
+			moved = false;
+			
+			// validate position
+			if (isSeekable(x, y1, z))
+			{
+				x1 = x;
+				z1 = z;
+				moved = true;
+			}
+			if (isSeekable(x1, y1+1, z1))
+			{
+				// move up instead of toward
+				y1 += 1;
+				moved = true;
+			}
+			
+			if (moved == false)
+			{
+				// bad
+				return false;
+			}
+			
+			select_x = !select_x;
 		}
 	} // lightSeeker
 	
@@ -426,9 +457,11 @@ namespace cppcraft
 				if (x*x + radSquared <= radiusSquared)
 				{
 					if (light1D(px+x, py, pz+rad) == false)
-						if (lightSeeker(px, py, pz, px+x, pz+rad)) goto endLight;
+						goto endLight;
+						//if (lightSeeker(px, py, pz, px+x, pz+rad)) goto endLight;
 					if (light1D(px+x, py, pz-rad) == false)
-						if (lightSeeker(px, py, pz, px+x, pz-rad)) goto endLight;
+						goto endLight;
+						//if (lightSeeker(px, py, pz, px+x, pz-rad)) goto endLight;
 				}
 			}
 			for (z = 1-rad; z < rad; z++)
@@ -436,9 +469,11 @@ namespace cppcraft
 				if (radSquared + z*z <= radiusSquared)
 				{
 					if (light1D(px+rad, py, pz + z) == false)
-						if (lightSeeker(px, py, pz, px+rad, pz+z)) goto endLight;
+						goto endLight;
+						//if (lightSeeker(px, py, pz, px+rad, pz+z)) goto endLight;
 					if (light1D(px-rad, py, pz + z) == false)
-						if (lightSeeker(px, py, pz, px-rad, pz+z)) goto endLight;
+						goto endLight;
+						//if (lightSeeker(px, py, pz, px-rad, pz+z)) goto endLight;
 				}
 			}
 		}
@@ -449,8 +484,7 @@ namespace cppcraft
 	
 	vertex_color_t LightingClass::lightCheck(LightList& list, Sector& sector, int bx, int by, int bz, int rayCount)
 	{
-		vec2 angle = thesun.getAngle().xy();
-		//if (angle.y < 0) break;
+		float tmplight = 0.0;
 		
 		vec3 position = vec3(
 			sector.x * Sector::BLOCKS_XZ + bx, 
@@ -458,18 +492,20 @@ namespace cppcraft
 			sector.z * Sector::BLOCKS_XZ + bz
 		);
 		
+		vec2 angle = thesun.getAngle().xy();
+		if (angle.y < 0.0) tmplight = SHADOWS;
+		
 		#define sunray   lightRay2D(tmplight, SHADOWS, position, angle.x, angle.y)
 		#define halfray  lightRay2D(tmplight, SHADOWS, position, half1.x, half1.y)
 		#define skyray   lightRay1D(tmplight, SHADOWS, position)
 		
-		float tmplight = 0.0;
-		
 		// skylevel searching (light seeking)
 		// used as base shadows for all configurations
+		// if the first block is black we can try to find distance to closest atmospheric light
 		if (light1D(position.x, position.y, position.z))
 		{
 			float dist = lightSeek(this->seek_radius, position.x, position.y, position.z);
-			tmplight = DARKNESS * dist * dist;
+			tmplight += DARKNESS * dist;
 			
 			if (tmplight > DARKNESS) tmplight = DARKNESS;
 		}

@@ -99,14 +99,14 @@ namespace cppcraft
 		
 		// light raytracer & emission functions for each side of a cube
 		
-		void applyFaceLighting_PZ(int bx, int by, int bz, int factor);
-		void applyFaceLighting_NZ(int bx, int by, int bz, int factor);
+		void applyFaceLighting_PZ(int bx, int by, int bz);
+		void applyFaceLighting_NZ(int bx, int by, int bz);
 		
-		void applyFaceLighting_PY(int bx, int by, int bz, int factor);
-		void applyFaceLighting_NY(int bx, int by, int bz, int factor);
+		void applyFaceLighting_PY(int bx, int by, int bz);
+		void applyFaceLighting_NY(int bx, int by, int bz);
 		
-		void applyFaceLighting_PX(int bx, int by, int bz, int factor);
-		void applyFaceLighting_NX(int bx, int by, int bz, int factor);
+		void applyFaceLighting_PX(int bx, int by, int bz);
+		void applyFaceLighting_NX(int bx, int by, int bz);
 		
 		void applyFaceLightingAll(int bx, int by, int bz);
 	};

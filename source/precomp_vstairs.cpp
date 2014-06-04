@@ -144,9 +144,9 @@ namespace cppcraft
 		
 		// apply lighting for side faces
 		indic += 4 * 4;
-		applyFaceLighting_NX(bx, by, bz, 1);
+		applyFaceLighting_NX(bx-1, by, bz);
 		indic -= 4;
-		applyFaceLighting_PX(bx, by, bz, 1);
+		applyFaceLighting_PX(bx+1, by, bz);
 		// top lighting
 		indic -= 4;
 		indic[0].c = c[0];
@@ -154,9 +154,9 @@ namespace cppcraft
 		indic[2].c = c[2]; // depending on stair direction!
 		indic[3].c = c[3];
 		indic -= 4;
-		applyFaceLighting_NZ(bx, by, bz, 1);
+		applyFaceLighting_NZ(bx, by, bz-1);
 		indic -= 4;
-		applyFaceLighting_PZ(bx, by, bz, 1);
+		applyFaceLighting_PZ(bx, by, bz+1);
 		
 		// set texture id
 		short tid = Block::cubeFaceById(currentBlock.getID(), 0, 0);

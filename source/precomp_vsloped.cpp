@@ -13,22 +13,22 @@ namespace cppcraft
 			if ((facing & 1) != 0)
 			{
 				vertices += blockmodels.slopedLeafs[model].copyTo(0, indic);
-				applyFaceLighting_PZ(bx, by, bz, 1);
+				applyFaceLighting_PZ(bx, by, bz+1);
 				indic += 4;
 			}
 			if ((facing & 2) != 0)
 			{
 				vertices += blockmodels.slopedLeafs[model].copyTo(1, indic);
-				applyFaceLighting_NZ(bx, by, bz, 1);
+				applyFaceLighting_NZ(bx, by, bz-1);
 				indic += 4;
 			}
 		}
 		
 		vertices += blockmodels.slopedLeafs[model].copyTo(2, indic);
-		applyFaceLighting_PY(bx, by, bz, 1);
+		applyFaceLighting_PY(bx, by+1, bz);
 		indic += 4;
 		vertices += blockmodels.slopedLeafs[model].copyTo(3, indic);
-		applyFaceLighting_NY(bx, by, bz, 1);
+		applyFaceLighting_NY(bx, by-1, bz);
 		indic += 4;
 		
 		if (model != 2 && model != 3)
@@ -36,13 +36,13 @@ namespace cppcraft
 			if ((facing & 16) != 0)
 			{
 				vertices += blockmodels.slopedLeafs[model].copyTo(4, indic);
-				applyFaceLighting_PX(bx, by, bz, 1);
+				applyFaceLighting_PX(bx+1, by, bz);
 				indic += 4;
 			}
 			if ((facing & 32) != 0)
 			{
 				vertices += blockmodels.slopedLeafs[model].copyTo(5, indic);
-				applyFaceLighting_NX(bx, by, bz, 1);
+				applyFaceLighting_NX(bx-1, by, bz);
 				indic += 4;
 			}
 		}

@@ -30,37 +30,37 @@ namespace cppcraft
 					// emit vertex PZ
 					emitCubeVertexPZ(model, id, bx, by, face);
 					// calculate lighting
-					applyFaceLighting_PZ(bx, by, bz, 1);
+					applyFaceLighting_PZ(bx, by, bz + 1);
 					break;
 				case 2:   // -z
 					// emit vertex NZ
 					emitCubeVertexNZ(model, id, bx, by, face);
 					// calculate lighting
-					applyFaceLighting_NZ(bx, by, bz, 1);
+					applyFaceLighting_NZ(bx, by, bz - 1);
 					break;
 				case 4:   // +y
 					// emit vertex PY
 					emitCubeVertexPY(model, id, bx, by, bz);
 					// calculate lighting
-					applyFaceLighting_PY(bx, by, bz, 1);
+					applyFaceLighting_PY(bx, by + 1, bz);
 					break;
 				case 8:   // -y
 					// emit vertex_NY
 					emitCubeVertexNY(model, id, bx, by, bz);
 					// calculate lighting
-					applyFaceLighting_NY(bx, by, bz, 1);
+					applyFaceLighting_NY(bx, by - 1, bz);
 					break;
 				case 16:  // +x
 					// emit vertex PX
 					emitCubeVertexPX(model, id, by, bz, face);
 					// calculate lighting
-					applyFaceLighting_PX(bx, by, bz, 1);
+					applyFaceLighting_PX(bx + 1, by, bz);
 					break;
 				case 32:  // -x
 					// emit vertex NX
 					emitCubeVertexNX(model, id, by, bz, face);
 					// calculate lighting
-					applyFaceLighting_NX(bx, by, bz, 1);
+					applyFaceLighting_NX(bx - 1, by, bz);
 					break;
 				} // switch (i)
 				
@@ -480,67 +480,67 @@ namespace cppcraft
 	//	6: 1,0,1
 	//	7: 1,1,1
 	
-	void PrecompThreadData::applyFaceLighting_PZ(int bx, int by, int bz, int factor)
+	void PrecompThreadData::applyFaceLighting_PZ(int bx, int by, int bz)
 	{
-		indic->c   = ldata.tableLight(*sector, bx  , by,   bz+factor); //, 3, 0
-		indic[1].c = ldata.tableLight(*sector, bx+1, by,   bz+factor); //, 6, 0
-		indic[2].c = ldata.tableLight(*sector, bx+1, by+1, bz+factor); //, 7, 0
-		indic[3].c = ldata.tableLight(*sector, bx  , by+1, bz+factor); //, 4, 0
+		indic->c   = ldata.tableLight(*sector, bx  , by,   bz); //, 3, 0
+		indic[1].c = ldata.tableLight(*sector, bx+1, by,   bz); //, 6, 0
+		indic[2].c = ldata.tableLight(*sector, bx+1, by+1, bz); //, 7, 0
+		indic[3].c = ldata.tableLight(*sector, bx  , by+1, bz); //, 4, 0
 	}
 	
-	void PrecompThreadData::applyFaceLighting_NZ(int bx, int by, int bz, int factor)
+	void PrecompThreadData::applyFaceLighting_NZ(int bx, int by, int bz)
 	{
-		indic->c   = ldata.tableLight(*sector, bx  , by,   bz-factor); //, 0, 1
-		indic[1].c = ldata.tableLight(*sector, bx  , by+1, bz-factor); //, 2, 1
-		indic[2].c = ldata.tableLight(*sector, bx+1, by+1, bz-factor); //, 5, 1
-		indic[3].c = ldata.tableLight(*sector, bx+1, by,   bz-factor); //, 1, 1
+		indic->c   = ldata.tableLight(*sector, bx  , by,   bz); //, 0, 1
+		indic[1].c = ldata.tableLight(*sector, bx  , by+1, bz); //, 2, 1
+		indic[2].c = ldata.tableLight(*sector, bx+1, by+1, bz); //, 5, 1
+		indic[3].c = ldata.tableLight(*sector, bx+1, by,   bz); //, 1, 1
 	}
 	
-	void PrecompThreadData::applyFaceLighting_PY(int bx, int by, int bz, int factor)
+	void PrecompThreadData::applyFaceLighting_PY(int bx, int by, int bz)
 	{
-		indic->c   = ldata.tableLight(*sector, bx  , by+factor, bz  ); //, 2, 2
-		indic[1].c = ldata.tableLight(*sector, bx  , by+factor, bz+1); //, 4, 2
-		indic[2].c = ldata.tableLight(*sector, bx+1, by+factor, bz+1); //, 7, 2
-		indic[3].c = ldata.tableLight(*sector, bx+1, by+factor, bz  ); //, 5, 2
+		indic->c   = ldata.tableLight(*sector, bx  , by, bz  ); //, 2, 2
+		indic[1].c = ldata.tableLight(*sector, bx  , by, bz+1); //, 4, 2
+		indic[2].c = ldata.tableLight(*sector, bx+1, by, bz+1); //, 7, 2
+		indic[3].c = ldata.tableLight(*sector, bx+1, by, bz  ); //, 5, 2
 	}
 	
-	void PrecompThreadData::applyFaceLighting_NY(int bx, int by, int bz, int factor)
+	void PrecompThreadData::applyFaceLighting_NY(int bx, int by, int bz)
 	{
-		indic->c   = ldata.tableLight(*sector, bx  , by-factor, bz  ); //, 0, 3
-		indic[1].c = ldata.tableLight(*sector, bx+1, by-factor, bz  ); //, 1, 3
-		indic[2].c = ldata.tableLight(*sector, bx+1, by-factor, bz+1); //, 6, 3
-		indic[3].c = ldata.tableLight(*sector, bx  , by-factor, bz+1); //, 3, 3
+		indic->c   = ldata.tableLight(*sector, bx  , by, bz  ); //, 0, 3
+		indic[1].c = ldata.tableLight(*sector, bx+1, by, bz  ); //, 1, 3
+		indic[2].c = ldata.tableLight(*sector, bx+1, by, bz+1); //, 6, 3
+		indic[3].c = ldata.tableLight(*sector, bx  , by, bz+1); //, 3, 3
 	}
 	
-	void PrecompThreadData::applyFaceLighting_PX(int bx, int by, int bz, int factor)
+	void PrecompThreadData::applyFaceLighting_PX(int bx, int by, int bz)
 	{
-		indic->c   = ldata.tableLight(*sector, bx+factor, by,   bz  ); //, 1, 4
-		indic[1].c = ldata.tableLight(*sector, bx+factor, by+1, bz  ); //, 5, 4
-		indic[2].c = ldata.tableLight(*sector, bx+factor, by+1, bz+1); //, 7, 4
-		indic[3].c = ldata.tableLight(*sector, bx+factor, by,   bz+1); //, 6, 4
+		indic->c   = ldata.tableLight(*sector, bx, by,   bz  ); //, 1, 4
+		indic[1].c = ldata.tableLight(*sector, bx, by+1, bz  ); //, 5, 4
+		indic[2].c = ldata.tableLight(*sector, bx, by+1, bz+1); //, 7, 4
+		indic[3].c = ldata.tableLight(*sector, bx, by,   bz+1); //, 6, 4
 	}
 	
-	void PrecompThreadData::applyFaceLighting_NX(int bx, int by, int bz, int factor)
+	void PrecompThreadData::applyFaceLighting_NX(int bx, int by, int bz)
 	{
-		indic->c   = ldata.tableLight(*sector, bx-factor, by,   bz  ); //, 0, 5
-		indic[1].c = ldata.tableLight(*sector, bx-factor, by,   bz+1); //, 3, 5
-		indic[2].c = ldata.tableLight(*sector, bx-factor, by+1, bz+1); //, 4, 5
-		indic[3].c = ldata.tableLight(*sector, bx-factor, by+1, bz  ); //, 2, 5
+		indic->c   = ldata.tableLight(*sector, bx, by,   bz  ); //, 0, 5
+		indic[1].c = ldata.tableLight(*sector, bx, by,   bz+1); //, 3, 5
+		indic[2].c = ldata.tableLight(*sector, bx, by+1, bz+1); //, 4, 5
+		indic[3].c = ldata.tableLight(*sector, bx, by+1, bz  ); //, 2, 5
 	}
 	
 	void PrecompThreadData::applyFaceLightingAll(int bx, int by, int bz)
 	{
-		applyFaceLighting_PZ(bx, by, bz, 1);
+		applyFaceLighting_PZ(bx, by, bz+1);
 		indic += 4;
-		applyFaceLighting_NZ(bx, by, bz, 1);
+		applyFaceLighting_NZ(bx, by, bz-1);
 		indic += 4;
-		applyFaceLighting_PY(bx, by, bz, 1);
+		applyFaceLighting_PY(bx, by+1, bz);
 		indic += 4;
-		applyFaceLighting_NY(bx, by, bz, 1);
+		applyFaceLighting_NY(bx, by-1, bz);
 		indic += 4;
-		applyFaceLighting_PX(bx, by, bz, 1);
+		applyFaceLighting_PX(bx+1, by, bz);
 		indic += 4;
-		applyFaceLighting_NX(bx, by, bz, 1);
+		applyFaceLighting_NX(bx-1, by, bz);
 		indic -= 20; // go back
 	}
 	
