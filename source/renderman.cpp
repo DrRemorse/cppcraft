@@ -50,8 +50,8 @@ namespace cppcraft
 		}
 		wndconf.multisample = 0;
 		wndconf.vsync     = config.get("opengl.vsync", true);
-		wndconf.depthbits = 8;
-		wndconf.stencbits = 0;
+		wndconf.depthbits = 24;
+		wndconf.stencbits =  0;
 		
 		// open a GLFW ogl context window
 		gamescr.open(wndconf);
