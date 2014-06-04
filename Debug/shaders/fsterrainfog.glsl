@@ -33,6 +33,7 @@ uniform vec3 cameraPos;
 uniform vec3 worldOffset;
 uniform float timeElapsed;
 uniform vec2 nearPlaneHalfSize;
+uniform vec2 screenSize;
 
 in  vec2 texCoord;
 in  vec4 eye_direction;
@@ -58,17 +59,17 @@ float fogDensity(in vec3  ray,
 	float foglevel = min(1.0, abs(point.y - fogY) / HEIGHT);
 	foglevel = 1.0 - foglevel * foglevel;
 	
-	point.x += timeElapsed * 0.02;
-	float noise = snoise(point * 0.02) + snoise(point * 0.05); // + snoise(point * 2.0);
-	noise = (noise + 2.0) * 0.25;
+	vec3 np1 = point + vec3(timeElapsed * 0.02, 0.0, 0.0);
+	vec3 np2 = point + vec3(timeElapsed * 0.03, 0.0, 0.0);
+	float noise = snoise(np1 * 0.02) + snoise(np2 * 0.05) + 2.0;
 	
-	return (noise + foglen) * 0.5 * foglevel;
+	return (noise * 0.25 + foglen) * 0.5 * foglevel;
 }
 
-float linearizeDepth(in vec2 uv)
+float linearDepth(in vec2 uv)
 {
-	float d = texture2D(depthtexture, uv).x;
-	return ZNEAR / (ZFAR - d * (ZFAR - ZNEAR)) * ZFAR;
+	float wsDepth = texture(depthtexture, uv).x;
+	return ZNEAR / (ZFAR - wsDepth * (ZFAR - ZNEAR)) * ZFAR;
 }
 vec3 getNormal(in vec2 uv)
 {
@@ -77,11 +78,8 @@ vec3 getNormal(in vec2 uv)
 vec3 getPosition(in vec2 uv)
 {
 	vec3 viewPos = vec3((uv * 2.0 - 1.0) * nearPlaneHalfSize, -1.0);
-	return viewPos * linearizeDepth(uv);
+	return viewPos * linearDepth(uv);
 }
-
-const   float distanceThreshold = 0.5;
-uniform vec2  filterRadius;
 
 const int sample_count = 16;
 const vec2 poisson16[] = vec2[](
@@ -102,13 +100,17 @@ const vec2 poisson16[] = vec2[](
 	vec2(  0.19984126,   0.78641367 ),
 	vec2(  0.14383161,  -0.14100790 ));
 
-float getAO16(in vec3 viewPos)
+float getAO16(in vec3 viewPos, in float depth)
 {
+	vec2 filterRadius = 12.0 / screenSize.xy;
+	const float distanceThreshold = 0.75 / ZFAR;
+	
 	// get the view space normal
 	vec3 viewNormal = getNormal(texCoord);
 	
-    float ambientOcclusion = 0.0;
     // perform AO
+    float ambientOcclusion = 0.0;
+	
     for (int i = 0; i < sample_count; ++i)
     {
         // sample at an offset specified by the current Poisson-Disk sample and scale it by a radius (has to be in Texture-Space)
@@ -137,10 +139,12 @@ void main()
 	#define depth  color.a
 	
 	// reconstruct position from depth
-	vec4 viewPos = eye_direction * linearizeDepth(texCoord);
+	vec4 viewPos = eye_direction * linearDepth(texCoord);
 	
 	// Ambient Occlusion
-	color.rgb *= 1.0 - getAO16(viewPos.xyz) * 0.8;
+	float ao = 1.0 - getAO16(viewPos.xyz, depth);
+	color.rgb *= max(0.6, ao);
+	//color.rgb = vec3(ao * ao);
 	
 	// reconstruct view to world coordinates
 	vec4 cofs = viewPos * matview;
@@ -163,10 +167,10 @@ void main()
 	// additional sun glow on terrain
 	color.rgb = mix(color.rgb, sunBaseColor, sunAmount * 0.5 * depth);
 	
-	//color.rgb = wpos.xyz / ZFAR;
+	//color.rgb = vec3(wsDepth);
 	
 	// mix in sky to fade out the world
-	vec3 skyColor = texture2D(skytexture, texCoord).rgb;
+	vec3 skyColor = texture(skytexture, texCoord).rgb;
 	color.rgb = mix(color.rgb, skyColor, smoothstep(0.5, 1.0, depth));
 }
 
