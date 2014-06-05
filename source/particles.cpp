@@ -31,6 +31,9 @@ namespace cppcraft
 		vertices  = new particle_vertex_t[MAX_PARTICLES]();
 		if (vertices == nullptr) throw std::string("Particles::init(): Failed to allocate vertices");
 		
+		for (int i = 0; i < MAX_PARTICLES; i++)
+			deadParticles.push_back(i);
+		
 		renderCount = 0;
 		count = 0;
 		updated = true;
@@ -73,6 +76,7 @@ namespace cppcraft
 				if (p.TTL <= 0)
 				{
 					p.alive = false;
+					deadParticles.push_back(i);
 				}
 			}
 			// skip to next particle, if this one was dead
@@ -205,11 +209,11 @@ namespace cppcraft
 	
 	int Particles::newParticleID()
 	{
-		for (int i = 0; i < MAX_PARTICLES; i++)
-		{
-			if (particles[i].alive == false) return i;
-		}
-		return -1;
+		if (deadParticles.empty()) return -1;
+		
+		int i = deadParticles.front();
+		deadParticles.pop_front();
+		return i;
 	}
 	
 	int Particles::newParticle(vec3 position, short id, int num)

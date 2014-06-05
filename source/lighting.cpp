@@ -349,17 +349,11 @@ namespace cppcraft
 		return tmplight;
 	}
 	
-	bool LightingClass::light1D(int x, int y, int z)
+	inline bool LightingClass::light1D(int x, int y, int z)
 	{
-		int sectorx = x >> Sector::BLOCKS_XZ_SH;
-		int bxx = x & (Sector::BLOCKS_XZ-1);
-		
-		int sectorz = z >> Sector::BLOCKS_XZ_SH;
-		int bzz = z & (Sector::BLOCKS_XZ-1);
-		
-		if (y >= 64)
-			return (y < flatlands(sectorx, sectorz)(bxx, bzz).skyLevel);
-		return (y < flatlands(sectorx, sectorz)(bxx, bzz).groundLevel);
+		//if (y >= 64)
+		//	return y < flatlands.getSkyLevel(x, z);
+		return y < flatlands.getGroundLevel(x, z);
 	}
 	
 	inline bool isSeekableID(block_t id)

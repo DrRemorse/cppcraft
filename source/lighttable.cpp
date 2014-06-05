@@ -1,6 +1,6 @@
 #include "lighttable.hpp"
 
-#include "library/log.hpp"
+#include <library/log.hpp>
 #include "lighting.hpp"
 #include "sector.hpp"
 #include <cstring>
@@ -11,7 +11,7 @@ namespace cppcraft
 {
 	PrecompScratchTable::PrecompScratchTable()
 	{
-		this->elements = (Sector::BLOCKS_XZ + 2) * (Sector::BLOCKS_Y + 2) * (Sector::BLOCKS_XZ + 2);
+		this->elements = ST_AXIS_XZ * ST_AXIS_Y * ST_AXIS_XZ;
 		
 		inuse = BitArray(elements);
 		value = new vertex_color_t[elements];
@@ -27,11 +27,6 @@ namespace cppcraft
 		inuse.clear();
 	}
 	
-	inline int element(int x, int y, int z)
-	{
-		return ((x + 1) * (Sector::BLOCKS_Y + 2) + (y + 1)) * (Sector::BLOCKS_XZ + 2) + (z + 1);
-	}
-	
 	void PrecompScratchTable::set(int x, int y, int z, vertex_color_t vcolor)
 	{
 		int index = element(x, y, z);
@@ -39,16 +34,6 @@ namespace cppcraft
 		inuse.set(index);
 		// and set vertex color
 		this->value[index] = vcolor;
-	}
-	
-	bool PrecompScratchTable::isset(int x, int y, int z) const
-	{
-		return inuse[element(x, y, z)];
-	}
-	
-	vertex_color_t PrecompScratchTable::color(int x, int y, int z) const
-	{
-		return this->value[element(x, y, z)];
 	}
 	
 	vertex_color_t LightList::tableLight(Sector& sector, int x, int y, int z)

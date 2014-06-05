@@ -2,31 +2,45 @@
 #define LIGHTTABLE_HPP
 
 #include <vector>
-#include "library/storage/bitarray.hpp"
+#include <library/storage/bitarray.hpp>
+#include "sector.hpp"
 
 namespace cppcraft
 {
 	typedef unsigned long long vertex_color_t;
-	class Sector;
 	
 	class PrecompScratchTable
 	{
+	public:
 		// NOTE: bounds from (-1, -1, -1) to (BLOCKS_X, BLOCKS_Y, BLOCKS_Z) inclusive
+		static const int ST_AXIS_XZ = Sector::BLOCKS_XZ + 2;
+		static const int ST_AXIS_Y  = Sector::BLOCKS_XZ + 2;
+		
+		PrecompScratchTable();
+		~PrecompScratchTable();
+		
+		void clear();
+		void set(int, int, int, vertex_color_t);
+		inline bool isset(int x, int y, int z) const
+		{
+			return inuse[element(x, y, z)];
+		}
+		inline vertex_color_t color(int x, int y, int z) const
+		{
+			return this->value[element(x, y, z)];
+		}
+		
+	private:
+		inline int element(int x, int y, int z) const
+		{
+			return ((x + 1) * ST_AXIS_Y + (y + 1)) * ST_AXIS_XZ + (z + 1);
+		}
 		
 		int elements;
 		// bool for setting "slot is used" flag
 		library::BitArray inuse;
 		// complex color, containing shadow + fake AO + emissive color (8 channels)
 		vertex_color_t* value;
-		
-	public:
-		PrecompScratchTable();
-		~PrecompScratchTable();
-		
-		void clear();
-		void set(int, int, int, vertex_color_t);
-		bool           isset(int, int, int) const;
-		vertex_color_t color(int, int, int) const;
 		
 	}; // ltable2
 	

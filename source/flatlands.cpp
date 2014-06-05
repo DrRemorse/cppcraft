@@ -14,8 +14,8 @@ namespace cppcraft
 	FlatlandSector::flatland_t& FlatlandsContainer::getData(int x, int z)
 	{
 		// find flatland sector
-		int fx = x / Sector::BLOCKS_XZ;
-		int fz = z / Sector::BLOCKS_XZ;
+		int fx = x >> Sector::BLOCKS_XZ_SH;
+		int fz = z >> Sector::BLOCKS_XZ_SH;
 		// clamp to within local grid
 		fx = toolbox::clamp(0, Sectors.getXZ()-1, fx);
 		fz = toolbox::clamp(0, Sectors.getXZ()-1, fz);

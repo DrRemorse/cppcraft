@@ -103,7 +103,7 @@ const vec2 poisson16[] = vec2[](
 float getAO16(in vec3 viewPos, in float depth)
 {
 	vec2 filterRadius = 12.0 / screenSize.xy;
-	const float distanceThreshold = 0.75 / ZFAR;
+	const float distanceThreshold = 2.75 / ZFAR;
 	
 	// get the view space normal
 	vec3 viewNormal = getNormal(texCoord);
@@ -160,7 +160,7 @@ void main()
 	const vec3 fogBaseColor = vec3(0.9);
 	const vec3 sunBaseColor = vec3(1.0, 0.8, 0.5);
 	
-	float sunAmount = max(0.0, dot(-ray, sunAngle));
+	float sunAmount = max(0.0, dot(-ray, sunAngle)) * daylight;
 	vec3 fogColor = mix(fogBaseColor, sunBaseColor, sunAmount) * daylight;
 	
 	color.rgb = mix(color.rgb, fogColor, fogAmount);

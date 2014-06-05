@@ -99,8 +99,7 @@ namespace cppcraft
 					rle.decompress(cpos, *sector.blockpt);
 					
 					// set sector flags (based on sectorblock flags)
-					sector.hasLight   = 0; // flag as needing light gathering
-					
+					sector.hasLight = 0; // flag as needing light gathering
 					// set sector-has-data flag
 					sector.contents = Sector::CONT_SAVEDATA;
 					// flag sector for mesh assembly (next stage in pipeline)

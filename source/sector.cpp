@@ -1,9 +1,12 @@
 #include "sector.hpp"
 
+#include <library/log.hpp>
 #include "generator.hpp"
 #include "vertex_block.hpp"
 #include <cstring>
 #include <cmath>
+
+using namespace library;
 
 namespace cppcraft
 {
@@ -27,6 +30,12 @@ namespace cppcraft
 	
 	void Sector::createBlocks()
 	{
+		if (this->blockpt)
+		{
+			logger << Log::ERR << "Sector::createBlocks(): Block ptr already existed: " << blockpt << Log::ENDL;
+			return;
+		}
+		
 		this->blockpt = new sectorblock_t;
 	}
 	

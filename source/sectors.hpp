@@ -8,10 +8,6 @@ namespace cppcraft
 
 	class SectorContainer
 	{
-	private:
-		Sector** sectors;
-		int sectors_XZ; // sectors XZ-axes size
-		
 	public:
 		static const int SECTORS_Y = 32;
 		static const int SECTORS_Y_SHL = 5;
@@ -44,7 +40,7 @@ namespace cppcraft
 			return this->sectors[((x * sectors_XZ + z) << SECTORS_Y_SHL) + y];
 		}
 		
-		// moved Sector (x2, y2, z2) to (x, y, z)
+		// moves sector (x2, y2, z2) to (x, y, z)
 		inline void set(int x, int y, int z, int x2, int y2, int z2)
 		{
 			Sector*& s = getSectorPtr(x, y, z);
@@ -54,6 +50,9 @@ namespace cppcraft
 			s->x = x;
 			s->z = z;
 		}
+		
+		Sector** sectors;
+		int sectors_XZ; // sectors XZ-axes size
 		
 		friend class Seamless;
 		friend class Spiders;

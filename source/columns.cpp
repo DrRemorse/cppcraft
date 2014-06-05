@@ -17,8 +17,10 @@ namespace cppcraft
 	// all the columns you'll ever need
 	Columns columns;
 	
+	// list of metadata that add up to a complete column VBO
+	vbodata_t* vboList;
 	// column compiler accumulation buffer
-	vertex_t* column_dump;
+	vertex_t*  column_dump;
 	
 	void Columns::init()
 	{
@@ -31,9 +33,9 @@ namespace cppcraft
 		this->columns = 
 			new Column[num_columns]();
 		
-		//////////////////////////////
-		// determine if above water //
-		//////////////////////////////
+		//////////////////////////////////////////////////////////////
+		// determine if above water and allocate metadata container //
+		//////////////////////////////////////////////////////////////
 		for (int i = 0; i < num_columns; i++)
 		{
 			int y = i % this->height;
@@ -65,11 +67,15 @@ namespace cppcraft
 		// allocate temporary datadumps for compiling columns //
 		////////////////////////////////////////////////////////
 		
+		vboList = new vbodata_t[tallest];
+		
 		column_dump = 
 			new vertex_t[tallest * RenderConst::MAX_FACES_PER_SECTOR * 4];
+		
 	}
 	Columns::~Columns()
 	{
+		delete[] vboList;
 		delete[] column_dump;
 		delete[] columns;
 		delete[] sectorLevels;
@@ -97,7 +103,6 @@ namespace cppcraft
 		/////////////////////////////////////////////////////////////
 		
 		int vboCount = 0;
-		vbodata_t* vboList = new vbodata_t[columns.getSizeInSectors(y)];
 		
 		for (int sy = columns.getSizeInSectors(y)-1; sy >= 0; sy--)
 		{
@@ -116,7 +121,6 @@ namespace cppcraft
 			logger << Log::WARN << "Column::compile(): column was not ready" << Log::ENDL;
 			this->updated    = false;
 			this->renderable = false;
-			delete[] vboList;
 			return;
 		}
 		
@@ -178,12 +182,8 @@ namespace cppcraft
 				}
 			} // shaders
 			
-			// remove vertex data permanently
-			//delete[] v.pcdata;
-			
 		} // next vbo
 		
-		delete[] vboList;
 		
 		///////////////////////////////////
 		// generate resources for column //

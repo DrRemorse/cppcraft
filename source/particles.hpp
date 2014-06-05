@@ -1,7 +1,8 @@
 #ifndef PARTICLES_HPP
 #define PARTICLES_HPP
 
-#include "library/math/vector.hpp"
+#include <library/math/vector.hpp>
+#include <deque>
 
 using namespace library;
 
@@ -89,10 +90,12 @@ namespace cppcraft
 		// one round of updates, as an integrator
 		void update();
 		
+		// returns a new particle ID from queue, or -1
 		int newParticleID();
 		
 		int particleExplosion(vec3 position, short id, int count);
 		
+		std::deque<int> deadParticles;
 		Particle* particles;
 		int count;
 	};
