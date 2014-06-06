@@ -1,7 +1,7 @@
 #include "gameconf.hpp"
 
-#include "library/log.hpp"
-#include "library/config.hpp"
+#include <library/log.hpp>
+#include <library/config.hpp>
 
 using namespace library;
 

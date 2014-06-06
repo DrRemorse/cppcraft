@@ -5,6 +5,11 @@
 
 namespace cppcraft
 {
+	inline short randomHeight(int bx, int bz)
+	{
+		return (((bx + bz * 3) & 7) - 4) * 4;
+	}
+	
 	int PrecompThreadData::emitCross(block_t id, int bx, int by, int bz)
 	{
 		// copy cross-mesh object 0 (cross)
@@ -20,6 +25,7 @@ namespace cppcraft
 		indic[6].c = indic[5].c;
 		indic[7].c = indic[4].c;
 		
+		// terrain color
 		indic[0].biome = fbiome[0]; // (0, 0)
 		indic[3].biome = fbiome[0];
 		
@@ -29,8 +35,15 @@ namespace cppcraft
 		indic[6].biome = fbiome[2]; // (0, 1)
 		indic[7].biome = fbiome[2];
 		
-		indic[1].biome = fbiome[3]; // (1, 1)
-		indic[2].biome = fbiome[3];
+		indic[2].biome = fbiome[3]; // (1, 1)
+		indic[1].biome = fbiome[3];
+		
+		// random height
+		short height = randomHeight(bx, bz);
+		indic[2].y += height;
+		indic[3].y += height;
+		indic[6].y += height;
+		indic[7].y += height;
 		
 		// set first vertex tile id
 		indic->w = Block::cubeFaceById(id, 0, 0);
