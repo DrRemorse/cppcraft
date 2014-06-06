@@ -50,12 +50,11 @@ namespace library
 		template <class R, class S, class T>
 		inline R clamp(const R min, const S max, const T v)
 		{
-			if (v < min)
+			if (v >= min && v <= max)
+				return v;
+			else if (v < min)
 				return min;
-			else if (v > max)
-				return max;
-			
-			return v;
+			return max;
 		}
 		
 		// exponentiates a number, unless it would

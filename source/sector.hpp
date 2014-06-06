@@ -21,6 +21,8 @@ namespace cppcraft
 		#pragma pack(push, 2)
 		typedef struct sectorblock_t
 		{
+			sectorblock_t() {}
+			
 			Block b[BLOCKS_XZ][BLOCKS_XZ][BLOCKS_Y] __attribute__((aligned(2)));
 			short blocks;
 			short lights;
