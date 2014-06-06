@@ -1,6 +1,9 @@
 #include "blockmodels.hpp"
 
+#include <library/math/vector.hpp>
 #include "renderconst.hpp"
+
+using namespace library;
 
 namespace cppcraft
 {
@@ -51,6 +54,17 @@ namespace cppcraft
 			{0, 127, 0}, { 0, -128,  0}, // top   bottom
 			{127, 0, 0}, {-128,  0,  0}  // right left
 		};
+		vec3 top_front = vec3( 0.0, 1.0,  1.0).normalized() * 127.0;
+		vec3 top_back  = vec3( 0.0, 1.0, -1.0).normalized() * 127.0;
+		vec3 top_right = vec3( 1.0, 1.0,  0.0).normalized() * 127.0;
+		vec3 top_left  = vec3(-1.0, 1.0,  0.0).normalized() * 127.0;
+		
+		float top_normals[6][3] =
+		{
+			{top_front.x, top_front.y, top_front.z}, { top_back.x, top_back.y, top_back.z},
+			{0, 127, 0}, { 0, -128,  0}, // top   bottom
+			{top_right.x, top_right.y, top_right.z}, {top_left.x, top_left.y, top_left.z}
+		};
 		
 		const short VERTEX_SCALE = RenderConst::VERTEX_SCALE;
 		
@@ -90,9 +104,9 @@ namespace cppcraft
 			bm2[index].face = 0;
 			
 			// nx ny nz
-			bm2[index].nx = cube_normals[face][0];
-			bm2[index].ny = cube_normals[face][1];
-			bm2[index].nz = cube_normals[face][2];
+			bm2[index].nx = top_normals[face][0];
+			bm2[index].ny = top_normals[face][1];
+			bm2[index].nz = top_normals[face][2];
 			
 			// uvw
 			bm2[index].u = cube_texcoords[face][vert * 2 + 0] * VERTEX_SCALE;

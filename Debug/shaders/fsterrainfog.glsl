@@ -126,8 +126,8 @@ float getAO16(in vec3 viewPos, in float depth)
 		
         // a = distance function
         //float a = 1.0 - clamp(distanceThreshold, distanceThreshold * 1.5, VPdistSP / ZFAR);
-        //ambientOcclusion += a * NdotS;
-		ambientOcclusion += NdotS;
+		float a = 1.0 - step(5.0, VPdistSP);
+        ambientOcclusion += a * NdotS;
     }
     return ambientOcclusion / SAMPLE_COUNT;
 }
