@@ -73,7 +73,7 @@ float linearDepth(in vec2 uv)
 }
 vec3 getNormal(in vec2 uv)
 {
-	return texture(normalstex, uv).xyz;
+	return normalize(texture(normalstex, uv).xyz);
 }
 vec3 getPosition(in vec2 uv)
 {
@@ -81,7 +81,7 @@ vec3 getPosition(in vec2 uv)
 	return viewPos * linearDepth(uv);
 }
 
-const int sample_count = 16;
+const int SAMPLE_COUNT = 16;
 const vec2 poisson16[] = vec2[](
 	vec2( -0.94201624,  -0.39906216 ),
 	vec2(  0.94558609,  -0.76890725 ),
@@ -103,7 +103,7 @@ const vec2 poisson16[] = vec2[](
 float getAO16(in vec3 viewPos, in float depth)
 {
 	vec2 filterRadius = 12.0 / screenSize.xy;
-	const float distanceThreshold = 2.75 / ZFAR;
+	float distanceThreshold = 0.2 / ZFAR;
 	
 	// get the view space normal
 	vec3 viewNormal = getNormal(texCoord);
@@ -111,10 +111,11 @@ float getAO16(in vec3 viewPos, in float depth)
     // perform AO
     float ambientOcclusion = 0.0;
 	
-    for (int i = 0; i < sample_count; ++i)
+    for (int i = 0; i < SAMPLE_COUNT; ++i)
     {
+        vec2 sampleUV = texCoord + poisson16[i] * filterRadius;
         // sample at an offset specified by the current Poisson-Disk sample and scale it by a radius (has to be in Texture-Space)
-        vec3 samplePos = getPosition(texCoord + poisson16[i] * filterRadius);
+		vec3 samplePos = getPosition(sampleUV);
         // distance between SURFACE-POSITION and SAMPLE-POSITION
 		float VPdistSP = distance(samplePos, viewPos);
         // direction between SURFACE-POSITION and SAMPLE-POSITION
@@ -124,27 +125,25 @@ float getAO16(in vec3 viewPos, in float depth)
         float NdotS = max(0.0, dot(viewNormal, sampleDir));
 		
         // a = distance function
-        float a = 1.0 - smoothstep(distanceThreshold, distanceThreshold * 2, VPdistSP / ZFAR);
-		
-        ambientOcclusion += a * NdotS;
+        //float a = 1.0 - clamp(distanceThreshold, distanceThreshold * 1.5, VPdistSP / ZFAR);
+        //ambientOcclusion += a * NdotS;
+		ambientOcclusion += NdotS;
     }
-    return ambientOcclusion / sample_count;
+    return ambientOcclusion / SAMPLE_COUNT;
 }
 
 void main()
 {
 	// base color
 	color = texture2D(terrain, texCoord);
-	// depth from alpha
-	#define depth  color.a
 	
-	// reconstruct position from depth
+	// reconstruct position from window-space depth
 	vec4 viewPos = eye_direction * linearDepth(texCoord);
+	// viewspace/linear depth
+	float depth = length(viewPos.xyz) / ZFAR;
 	
 	// Ambient Occlusion
-	float ao = 1.0 - getAO16(viewPos.xyz, depth);
-	color.rgb *= max(0.6, ao);
-	//color.rgb = vec3(ao * ao);
+	color.rgb *= max(0.5, 1.1 - getAO16(viewPos.xyz, depth));
 	
 	// reconstruct view to world coordinates
 	vec4 cofs = viewPos * matview;
