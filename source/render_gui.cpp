@@ -33,7 +33,7 @@ namespace cppcraft
 	void GUIRenderer::init(Renderer& renderer)
 	{
 		width  = 1.0;
-		height = 1.0 / renderer.gamescr.SA;
+		height = 1.0 / renderer.getScreen().getAspect();
 		
 		// orthographic projection
 		ortho = orthoMatrix(width, height, 0, 2);

@@ -113,7 +113,7 @@ int main(int argc, char* argv[])
 	logger << Log::INFO << "* Starting renderer..." << Log::ENDL;
 	
 	// get stuck in rendering-loop
-	renderer.renderloop(worldman);
+	renderer.renderloop();
 	
 	logger << Log::INFO << "Ending..." << Log::ENDL;
 	

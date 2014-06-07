@@ -84,8 +84,8 @@ namespace cppcraft
 		logger << Log::INFO << "* Loading & processing shaders" << Log::ENDL;
 		
 		// "constant" data
-		vec3 vecScreen(gamescr.SW, gamescr.SH, gamescr.SA);
-		vec3 vecSuperScreen(gamescr.SW * gameconf.supersampling, gamescr.SH * gameconf.supersampling, gamescr.SA);
+		vec3 vecScreen(gamescr.getWidth(), gamescr.getHeight(), gamescr.getAspect());
+		vec3 vecSuperScreen(gamescr.getWidth() * gameconf.supersampling, gamescr.getHeight() * gameconf.supersampling, gamescr.getAspect());
 		
 		// load and initialize all shaders
 		std::vector<std::string> linkstage;

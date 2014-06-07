@@ -113,7 +113,7 @@ namespace cppcraft
 		}
 		
 		// initialize some shaders with (late) texture sizes
-		vec3 sceneSize = vec3(sceneTex.getWidth(), sceneTex.getHeight(), renderer.gamescr.SA);
+		vec3 sceneSize = vec3(sceneTex.getWidth(), sceneTex.getHeight(), renderer.getScreen().getAspect());
 		
 		shaderman[Shaderman::BLOCKS_WATER].bind();
 		shaderman[Shaderman::BLOCKS_WATER].sendVec3("screendata", sceneSize);

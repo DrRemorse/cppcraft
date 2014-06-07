@@ -176,7 +176,7 @@ namespace cppcraft
 		// a hidden box is hidden   -- albert einstein
 		if (alpha <= 0.0) return;
 		
-		float SH = 1.0 / renderer.getScreen().SA;
+		float SH = 1.0 / renderer.getScreen().getAspect();
 		vec3 cbPos(0.025, SH * 0.85, 0.0);
 		
 		mtx.lock();

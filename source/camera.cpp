@@ -38,24 +38,10 @@ namespace cppcraft
 		this->znear = 0.135;
 		this->zfar  = cameraViewSectors * Sector::BLOCKS_XZ;
 		
-		// projection matrices
-		matproj = perspectiveMatrix(this->FOV, wnd.SA, this->znear, this->zfar);
-		matproj_long = perspectiveMatrix(this->FOV, wnd.SA, this->znear, this->zfar * 1.6);
+		setProjection(this->FOV, wnd.getAspect(), this->znear, this->zfar);
 		
-		// calculate half near-plane size
-		const double pio180 = 4.0 * atan(1.0) / 180.0;
-		
-		float halfTan = tan(this->FOV * pio180 / 2.0);
-		nearPlaneHalfSize = vec2(halfTan * wnd.SA, halfTan);
-	}
-	
-	const mat4& Camera::getProjectionLong() const
-	{
-		return matproj_long;
-	}
-	const vec2& Camera::getNearPlaneHalfSize() const
-	{
-		return nearPlaneHalfSize;
+		// long projection matrix
+		matproj_long = perspectiveMatrix(this->FOV, wnd.getAspect(), this->znear, this->zfar * 1.6);
 	}
 	
 	void Camera::setWorldOffset(double posX, double posZ)

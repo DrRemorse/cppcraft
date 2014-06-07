@@ -28,7 +28,7 @@ namespace library
 		bool supportsGenMipmap;
 		bool supportsTextureArrays;
 		
-		void init();
+		void init(bool core_context);
 		
 		static bool checkError();
 		

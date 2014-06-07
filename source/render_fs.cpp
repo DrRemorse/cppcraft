@@ -33,13 +33,13 @@ namespace cppcraft
 		// set texture sizes
 		// fs blur
 		int factor = config.get("render.hq_blur", false) ? 1 : 2;
-		this->blurTxW = gamescr.SW / factor;
-		this->blurTxH = gamescr.SH / factor;
+		this->blurTxW = gamescr.getWidth() / factor;
+		this->blurTxH = gamescr.getHeight() / factor;
 		
 		// lens flare
 		factor = config.get("render.hq_lens", false) ? 1 : 2;
-		this->flareTxW = gamescr.SW / factor;
-		this->flareTxH = gamescr.SH / factor;
+		this->flareTxW = gamescr.getWidth() / factor;
+		this->flareTxH = gamescr.getHeight() / factor;
 		
 		// create screenspace FBOs
 		glGenFramebuffers(1, &blurFBO);

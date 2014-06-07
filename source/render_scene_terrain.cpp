@@ -3,6 +3,7 @@
 #include <library/log.hpp>
 #include <library/opengl/opengl.hpp>
 #include <library/opengl/fbo.hpp>
+//#include <glm/glm.hpp>
 #include "columns.hpp"
 #include "drawq.hpp"
 #include "camera.hpp"
@@ -246,16 +247,15 @@ namespace cppcraft
 			position.y != cv->pos.y || 
 			position.z != cv->pos.z)
 		{
-			// translate to new position
-			glUniform3fv(loc_vtrans, 1, &cv->pos.x);
-			
-			// remember position
+			// set new position
 			position = cv->pos;
+			// send new position to shader
+			glUniform3fv(loc_vtrans, 1, &position.x);
 			
 			// cool effect
 			if (cv->pos.y < 0.0)
 			{
-				cv->pos.y += 0.25; // * dtime;
+				cv->pos.y += 0.25;
 				if (cv->pos.y > 0.0) cv->pos.y = 0.0;
 			}
 		}
@@ -341,7 +341,7 @@ namespace cppcraft
 		
 		// translation uniform location
 		loc_vtrans = shd.getUniform("vtrans");
-		position.x = -1; // invalidate position
+		position.x = -1.0; // invalidate position
 		
 		// texrange, because too lazy to create all shaders
 		location = shd.getUniform("texrange");
@@ -350,7 +350,7 @@ namespace cppcraft
 	void SceneRenderer::renderScene(Renderer& renderer, library::Camera& renderCam)
 	{
 		GLint loc_vtrans, location;
-		vec3  position(-1);
+		vec3 position(-1.0f);
 		
 		#ifdef TIMING
 		Timer timer;
@@ -414,7 +414,7 @@ namespace cppcraft
 			case RenderConst::TX_2SIDED: // 2-sided faces (torches, vines etc.)
 				
 				// change to small, clamped textures
-				textureman[Textureman::T_DIFFUSE].setWrapMode(GL_CLAMP_TO_EDGE);
+				textureman[Textureman::T_TONEMAP].setWrapMode(GL_CLAMP_TO_EDGE);
 				glActiveTexture(GL_TEXTURE0);
 				textureman[Textureman::T_DIFFUSE].setWrapMode(GL_CLAMP_TO_EDGE);
 				
@@ -429,10 +429,7 @@ namespace cppcraft
 									position, renderCam.getViewMatrix());
 				
 				// safe to increase step from this -->
-				if (drawq[i].count() == 0)
-				{
-					continue;
-				}
+				if (drawq[i].count() == 0) continue;
 				// <-- safe to increase step from this
 				
 				// set texrange
@@ -467,7 +464,7 @@ namespace cppcraft
 			position.z != cv->pos.z)
 		{
 			// remember position
-			position = vec3(cv->pos.x, 0, cv->pos.z);
+			position = vec3(cv->pos.x, 0.0f, cv->pos.z);
 			// translate to new position
 			glUniform3fv(loc_vtrans, 1, &position.x);
 		}
@@ -577,33 +574,40 @@ namespace cppcraft
 			{
 				switch (i)
 				{
-					case RenderConst::TX_WATER:
-						
-						//textureman.bind(2, Textureman::T_WATER_DUDV);
-						// water shader-set
-						handleSceneUniforms(renderer.frametick, 
-											shaderman[Shaderman::BLOCKS_WATER],
-											location,
-											loc_vtrans,
-											position, camera.getViewMatrix());
-						// update world offset
-						if (camera.ref)
-							shaderman[Shaderman::BLOCKS_WATER].sendVec3("worldOffset", camera.getWorldOffset());
-						break;
-						
-					case RenderConst::TX_LAVA:
-						
-						textureman.bind(2, Textureman::T_MAGMA);
-						// lava shader-set
-						handleSceneUniforms(renderer.frametick, 
-											shaderman[Shaderman::BLOCKS_LAVA],
-											location,
-											loc_vtrans,
-											position, camera.getViewMatrix());
-						// update world offset
-						if (camera.ref)
-							shaderman[Shaderman::BLOCKS_LAVA].sendVec3("worldOffset", camera.getWorldOffset());
-						break;
+				case RenderConst::TX_WATER:
+					
+					// safe to increase step from this -->
+					if (drawq[i].count() == 0) continue;
+					// <-- safe to increase step from this
+					
+					// water shader-set
+					handleSceneUniforms(renderer.frametick, 
+										shaderman[Shaderman::BLOCKS_WATER],
+										location,
+										loc_vtrans,
+										position, camera.getViewMatrix());
+					// update world offset
+					if (camera.ref)
+						shaderman[Shaderman::BLOCKS_WATER].sendVec3("worldOffset", camera.getWorldOffset());
+					break;
+					
+				case RenderConst::TX_LAVA:
+					
+					// safe to increase step from this -->
+					if (drawq[i].count() == 0) continue;
+					// <-- safe to increase step from this
+					
+					textureman.bind(2, Textureman::T_MAGMA);
+					// lava shader-set
+					handleSceneUniforms(renderer.frametick, 
+										shaderman[Shaderman::BLOCKS_LAVA],
+										location,
+										loc_vtrans,
+										position, camera.getViewMatrix());
+					// update world offset
+					if (camera.ref)
+						shaderman[Shaderman::BLOCKS_LAVA].sendVec3("worldOffset", camera.getWorldOffset());
+					break;
 				}
 			}
 			

@@ -61,8 +61,7 @@ namespace cppcraft
 			ray += LIGHT_MEDI_DAMAGE * distance_curve;
 		}
 		// exit everything if too much damage
-		if (ray >= maxdmg) return true;
-		return false;
+		return ray >= maxdmg;
 	}
 	
 	inline int rayStep(float angle, int vv, int maxv)
@@ -473,7 +472,7 @@ namespace cppcraft
 		}
 		return 1.0;
 		endLight:
-		return sqrtf(x*x + z*z) / (float)maxRadius;
+		return std::min(1.0f, sqrtf(x*x + z*z) / (float)maxRadius);
 	}
 	
 	vertex_color_t LightingClass::lightCheck(LightList& list, Sector& sector, int bx, int by, int bz, int rayCount)
@@ -499,9 +498,7 @@ namespace cppcraft
 		if (light1D(position.x, position.y, position.z))
 		{
 			float dist = lightSeek(this->seek_radius, position.x, position.y, position.z);
-			tmplight += DARKNESS * dist;
-			
-			if (tmplight > DARKNESS) tmplight = DARKNESS;
+			tmplight = DARKNESS * dist;
 		}
 		
 		if (tmplight < SHADOWS)
@@ -551,9 +548,8 @@ namespace cppcraft
 							a = a.rotateOnAxis(thesun.getAngle(), phi);
 						}
 					}
-					//light /= (float)rays * rounds;
 					// pepper some slight sunray into it all
-					tmplight = sunray * 0.1 + light * 0.9;
+					tmplight = sunray * 0.2 + light * 0.8;
 				}
 			}
 			if (tmplight > SHADOWS)
@@ -564,7 +560,7 @@ namespace cppcraft
 		if (list.lights.size() == 0)
 		{
 			// shadows only, since there are no lights
-			return vertex_color_t(255 - tmplight) + (255 << 16);
+			return vertex_color_t(255 - tmplight) | (255 << 16);
 		}
 		else
 		{

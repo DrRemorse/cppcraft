@@ -12,13 +12,10 @@ namespace cppcraft
 		
 		// the viewing frustum
 		library::Frustum frustum;
-		
 		// camera matrices
 		library::mat4 matproj_long; // PL
-		
 		// in-sector offset (from seamless transition)
 		library::vec3 worldOffset;
-		library::vec2 nearPlaneHalfSize;
 		
 	public:
 		bool recalc;   // recalculate viewing frustum
@@ -30,9 +27,10 @@ namespace cppcraft
 		void init(library::WindowClass& wnd);
 		
 		int getGridsize() const { return this->gridsize; }
-		const library::mat4& getProjectionLong() const;
-		// deferred helper
-		const library::vec2& getNearPlaneHalfSize() const;
+		const library::mat4& getProjectionLong() const
+		{
+			return matproj_long;
+		}
 		
 		inline const library::vec3& getWorldOffset() const
 		{

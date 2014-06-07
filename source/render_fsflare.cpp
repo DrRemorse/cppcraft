@@ -56,7 +56,7 @@ namespace cppcraft
 			// NOTE: We need to exit here, so that the flare buffer is cleared properly
 			// go back to main framebuffer & restore viewport
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			glViewport(0, 0, gamescr.SW, gamescr.SH);
+			glViewport(0, 0, gamescr.getWidth(), gamescr.getHeight());
 			return;
 		}
 		
@@ -117,7 +117,7 @@ namespace cppcraft
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		
 		// restore viewport
-		glViewport(0, 0, gamescr.SW, gamescr.SH);
+		glViewport(0, 0, gamescr.getWidth(), gamescr.getHeight());
 		
 		#ifdef DEBUG
 		if (OpenGL::checkError())

@@ -6,7 +6,6 @@
 
 namespace cppcraft
 {
-	class WorldManager;
 	class SceneRenderer;
 	
 	class Renderer
@@ -18,7 +17,7 @@ namespace cppcraft
 		// prepares for rendering, initializing subsystems
 		void prepare();
 		// running forever -->
-		void renderloop(WorldManager&);
+		void renderloop();
 		// <-- until game ends
 		library::WindowClass& getScreen() { return gamescr; }
 		
@@ -36,7 +35,7 @@ namespace cppcraft
 		int scene_elements;
 		
 		// renders a scene
-		void render(double dtime, WorldManager&);
+		void render(double dtime);
 		
 		// scene renderer object
 		SceneRenderer* sceneRenderer;

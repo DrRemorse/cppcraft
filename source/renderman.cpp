@@ -18,6 +18,7 @@
 #include "tiles.hpp"
 #include "threading.hpp"
 #include <cmath>
+#include <deque>
 
 //#define DEBUG
 
@@ -61,9 +62,6 @@ namespace cppcraft
 		{
 			gamescr.setPosition(config.get("window.x", 64), config.get("window.y", 64));
 		}
-		
-		// initialize openGL extensions
-		ogl.init();
 		
 		// enable custom point sprites
 		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
@@ -110,7 +108,7 @@ namespace cppcraft
 		rendergui.init(*this);
 	}
 	
-	void Renderer::render(double time_d_factor, WorldManager& worldman)
+	void Renderer::render(double time_d_factor)
 	{
 		this->dtime = time_d_factor;
 		
@@ -160,10 +158,14 @@ namespace cppcraft
 	 * Runs forever until game ends
 	**/
 	
-	void Renderer::renderloop(WorldManager& worldman)
+	void Renderer::renderloop()
 	{
 		const double render_granularity = 0.01; // 10ms granularity
-		double t1 = glfwGetTime();
+		double t1 = 0.0;
+		
+		int framesCounter = 0;
+		const int framesMax = 15;
+		double framesTime = 0.0;
 		
 		this->FPS = 0.0;
 		
@@ -176,7 +178,16 @@ namespace cppcraft
 			dtime = (t1 - t0) / render_granularity;
 			
 			/// FPS COUNTER ///
-			this->FPS = this->FPS * 0.9 + (1.0 / (t1 - t0)) * 0.1;
+			if (framesCounter == framesMax)
+			{
+				this->FPS = framesMax / (t1 - framesTime);
+				// round to one decimal
+				this->FPS = std::round(this->FPS * 10.0) / 10.0;
+				// reset
+				framesTime = t1;
+				framesCounter = 1;
+			}
+			else framesCounter++;
 			
 			// compiling columns
 		#ifdef DEBUG
@@ -205,7 +216,7 @@ namespace cppcraft
 		#ifdef DEBUG
 			try
 			{
-				render(dtime, worldman);
+				render(dtime);
 			}
 			catch (std::string errorstring)
 			{
@@ -214,7 +225,7 @@ namespace cppcraft
 				break;
 			}
 		#else
-			render(dtime, worldman);
+			render(dtime);
 		#endif
 			// poll for events
 			glfwPollEvents();
