@@ -4,7 +4,7 @@
 #define POSTPROCESS
 #ifdef POSTPROCESS
 	
-	color.a = vertdist / ZFAR;
+	//color.a = vertdist / ZFAR;
 	
 #else
 	

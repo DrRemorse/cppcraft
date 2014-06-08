@@ -44,7 +44,7 @@ namespace cppcraft
 		matproj_long = perspectiveMatrix(this->FOV, wnd.getAspect(), this->znear, this->zfar * 1.6);
 	}
 	
-	void Camera::setWorldOffset(double posX, double posZ)
+	void Camera::setWorldOffset(double posX, double posY, double posZ)
 	{
 		// calculate sectoral offsets
 		int halfWorld = Sectors.getXZ() * Sector::BLOCKS_XZ / 2;
@@ -57,7 +57,7 @@ namespace cppcraft
 		
 		// position.xz - center of local area (posX and posZ is NEGATIVE)
 		worldOffset.x = dwx - posX;
-		worldOffset.y = 0.0;
+		worldOffset.y = 0   - posY;
 		worldOffset.z = dwz - posZ;
 	}
 	

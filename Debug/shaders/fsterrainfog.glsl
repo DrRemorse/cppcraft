@@ -7,14 +7,14 @@ uniform vec2 nearPlaneHalfSize;
 
 in  vec2 in_vertex;
 out vec2 texCoord;
-out vec4 eye_direction;
+out vec3 eye_direction;
 
 void main(void)
 {
 	texCoord = in_vertex;
 	gl_Position = vec4(in_vertex * 2.0 - 1.0, 0.0, 1.0);
 	
-	eye_direction = vec4(gl_Position.xy * nearPlaneHalfSize, -1.0, 1.0);
+	eye_direction = vec3(gl_Position.xy * nearPlaneHalfSize, -1.0);
 }
 #endif
 
@@ -29,14 +29,13 @@ uniform vec3  sunAngle;
 uniform float daylight;
 
 uniform mat4 matview;
-uniform vec3 cameraPos;
 uniform vec3 worldOffset;
 uniform float timeElapsed;
 uniform vec2 nearPlaneHalfSize;
 uniform vec2 screenSize;
 
 in  vec2 texCoord;
-in  vec4 eye_direction;
+in  vec3 eye_direction;
 out vec4 color;
 
 const float ZFAR
@@ -102,7 +101,8 @@ const vec2 poisson16[] = vec2[](
 
 float getAO16(in vec3 viewPos, in float depth)
 {
-	vec2 filterRadius = 12.0 / screenSize.xy;
+	float pixelSize = max(4.0, pow(1.0 - depth, 8.0) * 16.0);
+	vec2 filterRadius = pixelSize / screenSize.xy;
 	float distanceThreshold = 0.2 / ZFAR;
 	
 	// get the view space normal
@@ -125,8 +125,8 @@ float getAO16(in vec3 viewPos, in float depth)
         float NdotS = max(0.0, dot(viewNormal, sampleDir));
 		
         // a = distance function
-        //float a = 1.0 - clamp(distanceThreshold, distanceThreshold * 1.5, VPdistSP / ZFAR);
-		float a = 1.0 - step(5.0, VPdistSP);
+        float a = 1.0 - smoothstep(0.5 / ZFAR, 1.0 / ZFAR, VPdistSP / ZFAR);
+		//float a = 1.0 - step(5.0, VPdistSP);
         ambientOcclusion += a * NdotS;
     }
     return ambientOcclusion / SAMPLE_COUNT;
@@ -138,22 +138,22 @@ void main()
 	color = texture2D(terrain, texCoord);
 	
 	// reconstruct position from window-space depth
-	vec4 viewPos = eye_direction * linearDepth(texCoord);
+	vec3 viewPos = eye_direction * linearDepth(texCoord);
 	// viewspace/linear depth
-	float depth = length(viewPos.xyz) / ZFAR;
+	float depth = min(1.0, length(viewPos.xyz) / ZFAR);
 	
 	// Ambient Occlusion
-	color.rgb *= max(0.5, 1.1 - getAO16(viewPos.xyz, depth));
+	color.rgb *= 1.0 - getAO16(viewPos.xyz, depth);
 	
 	// reconstruct view to world coordinates
-	vec4 cofs = viewPos * matview;
+	vec4 wpos = vec4(viewPos, 1.0) * matview;
 	// camera->point ray
-	vec3 ray = normalize(-cofs.xyz);
+	vec3 ray = normalize(-wpos.xyz);
 	// to world coordinates
-	vec3 wpos = cofs.xyz + vec3(0.0, cameraPos.y, 0.0) - worldOffset;
+	wpos.xyz -= worldOffset;
 	
 	// volumetric fog
-	float fogAmount = fogDensity(ray, wpos);
+	float fogAmount = fogDensity(ray, wpos.xyz);
 	fogAmount *= depth;
 	
 	const vec3 fogBaseColor = vec3(0.9);
@@ -171,6 +171,8 @@ void main()
 	// mix in sky to fade out the world
 	vec3 skyColor = texture(skytexture, texCoord).rgb;
 	color.rgb = mix(color.rgb, skyColor, smoothstep(0.5, 1.0, depth));
+	// use alpha-channel as depth
+	color.a   = depth;
 }
 
 #endif

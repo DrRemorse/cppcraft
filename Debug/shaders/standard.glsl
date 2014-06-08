@@ -95,9 +95,6 @@ const int TX_CROSS
 
 void main(void)
 {
-	float vertdist = length(v_pos);
-	normals = vec4(v_normals, vertdist / ZFAR);
-	
 	// independent texture reads using inbound variable directly
 	// read tonecolor from tonemap
 	vec4 tone = texture(tonemap, texCoord);
@@ -110,7 +107,7 @@ void main(void)
 	// reflection //
 	if (reflection > 0.15)
 	{
-		float fresnel = v_reflect.y / vertdist;
+		float fresnel = v_reflect.y / length(v_pos);
 		fresnel = 1.0 - fresnel * fresnel;
 		
 		// mix in reflection
@@ -125,5 +122,7 @@ void main(void)
 	#include "horizonfade.glsl"
 	
 	#include "finalcolor.glsl"
+	
+	normals = vec4(v_normals, 1.0);
 }
 #endif

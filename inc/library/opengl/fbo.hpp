@@ -60,10 +60,12 @@ namespace library
 			return this->fbo;
 		}
 		
-		// select which attachments to draw to
+		//! \brief select which attachments to draw to
 		static void drawBuffers(std::vector<int> buffers);
-		// back to normal (default = attachment 0)
-		static void drawBuffers();
+		//! \brief select one attachment to draw to
+		static void drawBuffer(GLenum attachmentId);
+		//! \brief back to normal drawbuffer (color attachment 0)
+		static void drawBuffer();
 		
 		// blit from one framebuffer to another
 		void blitTo(FBO& dest_fbo, int w, int h, int mask, int filter);

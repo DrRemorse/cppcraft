@@ -220,7 +220,6 @@ namespace cppcraft
 					{
 						// shortcut to light list
 						LightList& list = ldata;
-						
 						// clear light scratch table
 						list.table.clear();
 						
@@ -269,6 +268,10 @@ namespace cppcraft
 					fbiome[2] = fbiome[0];
 					fbiome[3] = fbiome[0];
 					fbicrc = 256;
+				}
+				else if (colorIndex == -1)
+				{
+					fbiome[3] = fbiome[2] = fbiome[1] = fbiome[0] = 0;
 				}
 				else if (fbicrc != BIOME_CRC())
 				{

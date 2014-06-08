@@ -19,7 +19,11 @@ namespace cppcraft
 		PrecompScratchTable();
 		~PrecompScratchTable();
 		
-		void clear();
+		void clear()
+		{
+			// clear in-use array, but NOT value array
+			inuse.clear();
+		}
 		void set(int, int, int, vertex_color_t);
 		inline bool isset(int x, int y, int z) const
 		{

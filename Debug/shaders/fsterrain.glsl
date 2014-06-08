@@ -24,15 +24,15 @@ void main()
 {
 	// terrain color
 	color = texture2D(terrain, texCoord);
-	
 	// blurred color
 	vec4 blur = texture2D(blurtexture, texCoord);
-	// depth from blur
-	float depth = blur.a * step(blur.a, 0.996);
 	
-	// blur distance
-	float mixAmount = min(1.0, depth / 0.9);
-	color = mix(color, blur, mixAmount);
+	// depth from blur
+	float depth = blur.a;// min(blur.a, color.a);
+	depth = smoothstep(0.3, 1.0, depth) * step(depth, 0.99);
+	
+	// blur based on depth
+	color = mix(color, blur, depth);
 }
 
 #endif

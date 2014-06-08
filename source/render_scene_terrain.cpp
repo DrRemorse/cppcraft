@@ -3,7 +3,6 @@
 #include <library/log.hpp>
 #include <library/opengl/opengl.hpp>
 #include <library/opengl/fbo.hpp>
-//#include <glm/glm.hpp>
 #include "columns.hpp"
 #include "drawq.hpp"
 #include "camera.hpp"
@@ -322,6 +321,8 @@ namespace cppcraft
 		{
 			// modelview matrix
 			shd.sendMatrix("matview", matview);
+			// mvp matrix
+			shd.sendMatrix("matmvp", camera.getMVP());
 		}
 		
 		/*static int lastref = 9;
@@ -539,10 +540,11 @@ namespace cppcraft
 		
 		// bind underwater scene
 		textureman.bind(0, Textureman::T_UNDERWATERMAP);
+		textureman.bind(1, Textureman::T_UNDERWDEPTH);
 		if (gameconf.reflections)
 		{
 			// bind world-reflection
-			textureman.bind(1, Textureman::T_REFLECTION);
+			textureman.bind(2, Textureman::T_REFLECTION);
 		}
 		
 		if (plogic.FullySubmerged)

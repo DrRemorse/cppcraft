@@ -33,8 +33,7 @@ const float VERTEX_SCALE_INV
 
 void main(void)
 {
-	vec4 position = vec4(in_vertex.xyz * VERTEX_SCALE_INV, 1.0);
-	position.xyz += vtrans;
+	vec4 position = vec4(in_vertex.xyz * VERTEX_SCALE_INV + vtrans, 1.0);
 	position = matview * position;
 	gl_Position = matproj * position;
 	
@@ -65,10 +64,12 @@ void main(void)
 #extension GL_EXT_gpu_shader4 : enable
 #extension GL_ARB_explicit_attrib_location : enable
 uniform sampler2D underwatermap;
+uniform sampler2D depthtexture;
 uniform sampler2D reflectionmap;
 
 uniform mat4 matview;
 uniform vec3 screendata;
+uniform vec2 nearPlaneHalfSize;
 
 uniform float frameCounter;
 uniform float daylight;
@@ -88,9 +89,18 @@ in vec4 waves; // wave positions
 layout(location = 0) out vec4 color;
 layout(location = 1) out vec4 normals;
 
+const float ZNEAR
 const float ZFAR
 
 #include "srdnoise.glsl"
+
+float getDepth(in vec2 uv)
+{
+	float wsDepth = texture(depthtexture, uv).x;
+	wsDepth = ZNEAR / (ZFAR - wsDepth * (ZFAR - ZNEAR));
+	
+	return wsDepth * length(vec3((uv * 2.0 - 1.0) * nearPlaneHalfSize, -1.0));
+}
 
 void main(void)
 {
@@ -132,7 +142,7 @@ void main(void)
 	
 	// normalize inputs (water planes are complex)
 	vec3 vEye   = v_pos / vertdist;
-	vec3 vLight = normalize(v_ldir);
+	vec3 vLight = v_ldir;
 	vec3 vHalf = normalize(vEye + vLight);
 	
 	// screenspace tex coords
@@ -147,13 +157,13 @@ void main(void)
 	
 	// read underwater, use as base color
 	vec4 underw = texture(underwatermap, refcoord);
-	float wdepth = underw.a - dist;
+	// read underwater depth
+	float wdepth = getDepth(refcoord) - dist;
 	
 	// COSTLY re-read to avoid reading inside terrain
 	if (wdepth < 0.0)
 	{
-		underw = texture(underwatermap, texCoord);
-		wdepth = underw.a - dist;
+		wdepth = getDepth(texCoord) - dist;
 	}
 	
 	// nicer depth, adding a little extra

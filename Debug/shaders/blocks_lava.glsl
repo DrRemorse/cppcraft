@@ -16,7 +16,6 @@ in vec4 in_biome;
 in vec4 in_color;
 in vec4 in_color2;
 
-out float vertdist;
 out vec2  wave;
 
 const float VERTEX_SCALE_INV
@@ -26,7 +25,6 @@ void main(void)
 {
 	vec4 position = vec4(in_vertex * VERTEX_SCALE_INV + vtrans, 1.0);
 	position = matview * position;
-	vertdist = length(position.xyz) / ZFAR;
 	gl_Position = matproj * position;
 	
 	// transformed wave coordinates
@@ -40,9 +38,7 @@ uniform sampler2D lavatex;
 
 uniform float frameCounter;
 
-in float vertdist;
-in vec2  wave;
-
+in  vec2  wave;
 out vec4 color;
 
 void main(void)
@@ -52,8 +48,7 @@ void main(void)
 	vec2 lavawave = wave * 0.25 + subwave * 0.01;
 	
 	// waving lava texture
-	color.rgb = texture2D(lavatex, lavawave).rgb;
-	color.a = vertdist;
+	color = texture2D(lavatex, lavawave);
 	
 	// cheap sparkling
 	color.r += pow(color.r, 1.0 / abs(subwave.x * subwave.y)) * 0.5;

@@ -141,7 +141,10 @@ namespace cppcraft
 		// extra textures for water
 		shaders[BLOCKS_WATER].bind();
 		shaders[BLOCKS_WATER].sendInteger("underwatermap", 0);
-		shaders[BLOCKS_WATER].sendInteger("reflectionmap", 1);
+		shaders[BLOCKS_WATER].sendInteger("depthtexture",  1);
+		shaders[BLOCKS_WATER].sendInteger("reflectionmap", 2);
+		// near plane half size
+		shaders[BLOCKS_WATER].sendVec2("nearPlaneHalfSize", camera.getNearPlaneHalfSize());
 		
 		// extra textures for lava
 		shaders[BLOCKS_LAVA].bind();

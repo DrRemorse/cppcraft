@@ -21,12 +21,6 @@ namespace cppcraft
 		delete[] value;
 	}
 	
-	void PrecompScratchTable::clear()
-	{
-		// clear inuse array, but NOT value array
-		inuse.clear();
-	}
-	
 	void PrecompScratchTable::set(int x, int y, int z, vertex_color_t vcolor)
 	{
 		int index = element(x, y, z);

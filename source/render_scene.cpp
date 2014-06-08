@@ -39,7 +39,8 @@ namespace cppcraft
 	FBO sceneFBO;
 	FBO reflectionFBO;
 	FBO underwaterFBO;
-	FBO resolveFBO;
+	FBO fboResolveColor;
+	FBO fboResolveNormals;
 	FBO fogFBO, finalFBO;
 	
 	void SceneRenderer::init(Renderer& renderer)
@@ -74,14 +75,20 @@ namespace cppcraft
 		underwaterFBO.create();
 		underwaterFBO.bind();
 		underwaterFBO.attachColor(0, textureman[Textureman::T_UNDERWATERMAP]);
+		underwaterFBO.attachDepth(textureman[Textureman::T_UNDERWDEPTH]);
 		
 		// multisampling resolver
 		if (gameconf.multisampling)
 		{
-			resolveFBO.create();
-			resolveFBO.bind();
-			resolveFBO.attachColor(0, textureman[Textureman::T_FINALBUFFER]);
-			resolveFBO.attachDepth(textureman[Textureman::T_FINALDEPTH]);
+			logger << Log::INFO << "* Multisampling: " << gameconf.multisampling << "x" << Log::ENDL;
+			fboResolveColor.create();
+			fboResolveColor.bind();
+			fboResolveColor.attachColor(0, textureman[Textureman::T_FINALBUFFER]);
+			fboResolveColor.attachDepth(textureman[Textureman::T_FINALDEPTH]);
+			
+			fboResolveNormals.create();
+			fboResolveNormals.bind();
+			fboResolveNormals.attachColor(0, textureman[Textureman::T_FINALNORMALS]);
 		}
 		
 		fogFBO.create();
@@ -91,6 +98,7 @@ namespace cppcraft
 		finalFBO.create();
 		finalFBO.bind();
 		finalFBO.attachColor(0, textureman[Textureman::T_FINALBUFFER]);
+		
 		if (gameconf.multisampling)
 			finalFBO.attachDepth(textureman[Textureman::T_FINALDEPTH]);
 		else
@@ -218,8 +226,8 @@ namespace cppcraft
 			if (frustumRecalc)
 			{
 				/// update matview matrix using player snapshot ///
-				camera.setWorldOffset(playerX, playerZ);
-				reflectionCamera.setWorldOffset(playerX, playerZ);
+				camera.setWorldOffset(playerX, playerY, playerZ);
+				reflectionCamera.setWorldOffset(playerX, playerY, playerZ);
 			}
 			
 			/// world coordinate snapshots ///
@@ -372,12 +380,17 @@ namespace cppcraft
 			glDisable(GL_CULL_FACE);
 		
 		// blit terrain to (downsampled) underwatermap
-		Texture& underwaterTex = textureman[Textureman::T_UNDERWATERMAP];
-		sceneFBO.blitTo(underwaterFBO, 
+		;{
+			Texture& underwaterTex = textureman[Textureman::T_UNDERWATERMAP];
+			sceneFBO.blitTo(underwaterFBO, 
 						sceneTex.getWidth(), sceneTex.getHeight(), 
 						underwaterTex.getWidth(), underwaterTex.getHeight(), 
-						GL_COLOR_BUFFER_BIT, GL_NEAREST);
-		
+						GL_COLOR_BUFFER_BIT, GL_LINEAR);
+			sceneFBO.blitTo(underwaterFBO, 
+						sceneTex.getWidth(), sceneTex.getHeight(), 
+						underwaterTex.getWidth(), underwaterTex.getHeight(), 
+						GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+		}
 		sceneFBO.bind();
 		
 		// finally, render scene water
@@ -392,31 +405,56 @@ namespace cppcraft
 		glDepthMask(GL_FALSE);
 		
 		/////////////////////////////////
-		// resolve supersampling
+		// resolve super/multisampling
 		/////////////////////////////////
 		if (gameconf.supersampling > 1)
 		{
 			glViewport(0, 0, renderBuffer.getWidth(), renderBuffer.getHeight());
-			screenspace.renderSuperSampling(sceneTex, textureman[Textureman::T_FINALBUFFER]);
+			screenspace.renderSuperSampling(textureman[Textureman::T_SCENEBUFFER], textureman[Textureman::T_FINALBUFFER]);
+			screenspace.renderSuperSampling(textureman[Textureman::T_NORMALBUFFER], textureman[Textureman::T_FINALNORMALS]);
 			textureman.bind(0, Textureman::T_FINALBUFFER);
+			textureman.bind(1, Textureman::T_SKYBUFFER);
+			textureman.bind(2, Textureman::T_FINALNORMALS);
+			textureman.bind(3, Textureman::T_DEPTHBUFFER);
+		}
+		else if (gameconf.multisampling)
+		{
+			sceneFBO.blitTo(fboResolveColor, sceneTex.getWidth(), sceneTex.getHeight(), GL_COLOR_BUFFER_BIT, GL_LINEAR);
+			sceneFBO.blitTo(fboResolveColor, sceneTex.getWidth(), sceneTex.getHeight(), GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+			
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, sceneFBO.getHandle());
+			glReadBuffer(GL_COLOR_ATTACHMENT0 + 1);
+			
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboResolveNormals.getHandle());
+			glBlitFramebuffer(0, 0, sceneTex.getWidth(), sceneTex.getHeight(), 0, 0, sceneTex.getWidth(), sceneTex.getHeight(), GL_COLOR_BUFFER_BIT, GL_LINEAR);
+			
+			glReadBuffer(GL_COLOR_ATTACHMENT0);
+			
+			textureman.bind(0, Textureman::T_FINALBUFFER);
+			textureman.bind(1, Textureman::T_SKYBUFFER);
+			textureman.bind(2, Textureman::T_FINALNORMALS);
+			textureman.bind(3, Textureman::T_FINALDEPTH);
 		}
 		else
 		{
 			textureman.bind(0, Textureman::T_SCENEBUFFER);
+			textureman.bind(1, Textureman::T_SKYBUFFER);
+			textureman.bind(2, Textureman::T_NORMALBUFFER);
+			textureman.bind(3, Textureman::T_DEPTHBUFFER);
+		}
+		
+		if (OpenGL::checkError())
+		{
+			throw std::string("Error after multisampling resolve");
 		}
 		
 		/////////////////////////////////
 		// create fog based on depth
 		/////////////////////////////////
-		// --> inputs  T_SCENEBUFFER (or FINAL)
+		// --> inputs  T_SCENEBUFFER (or T_FINALBUFFER)
 		// --> outputs T_RENDERBUFFER
 		fogFBO.bind();
-		
-		textureman.bind(1, Textureman::T_SKYBUFFER);
-		textureman.bind(2, Textureman::T_NORMALBUFFER);
-		textureman.bind(3, Textureman::T_DEPTHBUFFER);
-		textureman.bind(4, Textureman::T_NOISE);
-		screenspace.fog(vec3(playerX, playerY, playerZ), renderer.frametick);
+		screenspace.fog(renderer.frametick);
 		
 		/////////////////////////////////
 		// blur the scene

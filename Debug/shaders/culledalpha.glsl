@@ -3,7 +3,7 @@
 #define FRAGMENT_PROGRAM
 
 #ifdef VERTEX_PROGRAM
-uniform mat4 matproj;
+uniform mat4 matmvp;
 uniform mat4 matview;
 uniform vec3 vtrans;
 
@@ -22,18 +22,14 @@ out vec4 lightdata;
 out vec4 torchlight;
 out vec4 biomeColor;
 flat out float worldLight;
-
-out float vertdist;
-out vec3  v_normals;
+out vec3 v_normals;
 
 const float VERTEX_SCALE_INV
 
 void main(void)
 {
 	vec4 position = vec4(in_vertex * VERTEX_SCALE_INV + vtrans, 1.0);
-	position = matview * position;
-	vertdist = length(position.xyz);
-	gl_Position = matproj * position;
+	gl_Position = matmvp * position;
 	
 	v_normals = mat3(matview) * in_normal.xyz;
 	texCoord = vec3(in_texture.st * VERTEX_SCALE_INV, in_texture.p);
@@ -63,8 +59,6 @@ in vec4 lightdata;
 in vec4 torchlight;
 in vec4 biomeColor;
 flat in float worldLight;
-
-in float vertdist;
 in vec3 v_normals;
 
 layout(location = 0) out vec4 color;
@@ -85,10 +79,8 @@ void main(void)
 	
 	#include "stdlight.glsl"
 	
-	#include "horizonfade.glsl"
-	
 	#include "finalcolor.glsl"
-	normals = vec4(v_normals, vertdist / ZFAR);
+	normals = vec4(v_normals, 1.0);
 }
 
 #endif

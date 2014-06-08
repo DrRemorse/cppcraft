@@ -64,7 +64,7 @@ namespace cppcraft
 		glViewport(0, 0, texture.getWidth(), texture.getHeight());
 	}
 	
-	void FSRenderer::fog(vec3 playerPos, double timeElapsed)
+	void FSRenderer::fog(double timeElapsed)
 	{
 		Shader& shd = shaderman[Shaderman::FSTERRAINFOG];
 		shd.bind();
@@ -76,8 +76,6 @@ namespace cppcraft
 		{
 			// camera view matrix
 			shd.sendMatrix("matview", camera.getViewMatrix());
-			// player position
-			shd.sendVec3("cameraPos", playerPos);
 			// world offset for noise
 			shd.sendVec3("worldOffset", camera.getWorldOffset());
 		}

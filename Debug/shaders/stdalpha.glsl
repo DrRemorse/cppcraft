@@ -23,9 +23,7 @@ out vec4 biomeColor;
 out vec4 lightdata;
 out vec4 torchlight;
 out vec3 out_normal;
-
-out float vertdist;
-out vec3  v_normals;
+out vec3 v_normals;
 
 const int TX_2SIDED
 const int TX_CROSS
@@ -39,7 +37,6 @@ void main(void)
 {
 	vec4 position = vec4(in_vertex * VERTEX_SCALE_INV + vtrans, 1.0);
 	position = matview * position;
-	vertdist = length(position.xyz);
 	
 	texCoord = vec3(in_texture.st * VERTEX_SCALE_INV, in_texture.p);
 	
@@ -62,9 +59,7 @@ void main(void)
 		}
 		else
 		{
-			//             pow(min(1.0, vertdist / 2.0), 3.0) * 
 			float factor = CROSSWIND_STRENGTH * texCoord.t;
-			
 			position.x += sin(PI2 * (2.0*pos.x + pos.y) + speed) * factor;
 			
 		} // hanging & standing
@@ -102,7 +97,6 @@ in vec4 torchlight;
 in vec3 biomeCoords;
 in vec3 out_normal;
 
-in float vertdist;
 in vec3 v_normals;
 
 layout(location = 0) out vec4 color;
@@ -127,10 +121,8 @@ void main(void)
 	
 	#include "stdlight.glsl"
 	
-	#include "horizonfade.glsl"
-	
 	#include "finalcolor.glsl"
-	normals = vec4(v_normals, vertdist / ZFAR);
+	normals = vec4(v_normals, 1.0);
 }
 
 #endif

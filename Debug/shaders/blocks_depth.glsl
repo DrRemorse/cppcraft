@@ -3,8 +3,7 @@
 #define FRAGMENT_PROGRAM
 
 #ifdef VERTEX_PROGRAM
-uniform mat4 matproj;
-uniform mat4 matview;
+uniform mat4 matmvp;
 uniform vec3 vtrans;
 
 in vec3 in_vertex;
@@ -20,8 +19,7 @@ const float VERTEX_SCALE_INV
 void main(void)
 {
 	vec4 position = vec4(in_vertex * VERTEX_SCALE_INV + vtrans, 1.0);
-	position = matview * position;
-	gl_Position = matproj * position;
+	gl_Position = matmvp * position;
 	
 	pos = position.xyz;
 }
@@ -39,10 +37,8 @@ out vec4 color;
 
 void main(void)
 {
-	float vertdist = length(pos) / ZFAR;
-	
 	vec2 texCoord = gl_FragCoord.xy / screensize.xy;
-	color = vec4(texture(diffuse, texCoord).rgb, vertdist);
+	color = texture(diffuse, texCoord);
 }
 
 #endif

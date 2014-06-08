@@ -214,17 +214,18 @@ namespace cppcraft
 		if (updateAttribs)
 		{
 		// attribute pointers
-		glVertexAttribPointer(0, 3, GL_SHORT,			GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, x )); // vertex
+		const vertex_t* vrt = nullptr;
+		glVertexAttribPointer(0, 3, GL_SHORT,		  GL_FALSE, sizeof(vertex_t), &vrt->x); // vertex
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 3, GL_BYTE,			GL_TRUE,  sizeof(vertex_t), (void*) offsetof(vertex_t, nx)); // normal
+		glVertexAttribPointer(1, 3, GL_BYTE,		  GL_TRUE,  sizeof(vertex_t), &vrt->nx); // normal
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(2, 4, GL_SHORT,			GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, u )); // texture
+		glVertexAttribPointer(2, 4, GL_SHORT,		  GL_FALSE, sizeof(vertex_t), &vrt->u); // texture
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE,	GL_TRUE,  sizeof(vertex_t), (void*) offsetof(vertex_t, biome)); // biome color
+		glVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE, GL_TRUE,  sizeof(vertex_t), &vrt->biome); // biome color
 		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(4, 4, GL_UNSIGNED_BYTE,	GL_TRUE,  sizeof(vertex_t), (void*) offsetof(vertex_t, c));  // shadow and brightness
+		glVertexAttribPointer(4, 4, GL_UNSIGNED_BYTE, GL_TRUE,  sizeof(vertex_t), &vrt->c);  // shadow and brightness
 		glEnableVertexAttribArray(4);
-		glVertexAttribPointer(5, 4, GL_UNSIGNED_BYTE,	GL_TRUE,  sizeof(vertex_t), (void*) (offsetof(vertex_t, c) + 4)); // torchlight color
+		glVertexAttribPointer(5, 4, GL_UNSIGNED_BYTE, GL_TRUE,  sizeof(vertex_t), (char*) (&vrt->c) + 4); // torchlight color
 		glEnableVertexAttribArray(5);
 		}
 		

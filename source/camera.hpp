@@ -36,7 +36,7 @@ namespace cppcraft
 		{
 			return this->worldOffset;
 		}
-		void setWorldOffset(double posX, double posZ);
+		void setWorldOffset(double posX, double posY, double posZ);
 		
 	};
 	extern cppcraft::Camera camera;
