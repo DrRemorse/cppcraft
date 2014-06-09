@@ -49,7 +49,6 @@ namespace cppcraft
 		world.internal.x = 0;
 		world.internal.y = 0;
 		world.internal.z = 0;
-		
 	}
 	
 	void World::load()

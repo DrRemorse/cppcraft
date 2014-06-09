@@ -7,11 +7,11 @@ float brightness = lightdata.y * modulation;
 //#include "playerlight.glsl"
 
 // shadow is smallest between shadow-value and daylight level
-float shadow = min(1.0, daylight * lightdata.x * worldLight + brightness);
+float shadow = min(1.0, daylight * lightdata.x + brightness);
 
 // corner shadows and dotlight
 float cornershad = smoothstep(0.2, 0.7, lightdata.z);
-cornershad = min(1.0, cornershad + brightness * 0.35);
+cornershad = min(1.0, cornershad * worldLight + brightness * 0.15);
 
 // scaled shadow color
 //vec3 shadowColor = vec3(-0.2, 0.0, 0.2) * shadow;
