@@ -24,7 +24,7 @@ uniform int   submerged;
 in  vec2 texCoord;
 out vec4 color;
 
-const vec3 SUB_WATER = vec3(0.01, 0.08, 0.3);
+const vec3 SUB_WATER = vec3(0.01, 0.05, 0.14);
 const vec3 SUB_LAVA  = vec3(0.28, 0.06, 0.0);
 
 const float ZFAR
@@ -44,7 +44,7 @@ void main()
 		vec2 waves = vec2(sin(speed), cos(speed)) * 0.01;
 		// screen waves
 		vec2 waveCoords = vec2(speed * 5) + texCoord.xy * 6.28 * 32;
-		float wavyDepth = smoothstep(0.0, 0.1, depth);
+		highp float wavyDepth = smoothstep(0.0, 0.1, depth);
 		waves += vec2(cos(waveCoords.x), sin(waveCoords.y)) * wavyDepth * 0.005;
 		
 		color = texture(terrain, texCoord + waves);
@@ -71,7 +71,7 @@ void main()
 	*/
 	
 	// degamma ramp
-	color.rgb = pow(color.rgb, vec3(2.2));
+	//color.rgb = pow(color.rgb, vec3(2.2));
 	
 #ifdef LENSFLARE
 	// add lens flare & dirt

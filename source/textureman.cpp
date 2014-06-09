@@ -253,6 +253,7 @@ namespace cppcraft
 		{
 			textures[(int)T_BLURBUFFER1 + i] = Texture(GL_TEXTURE_2D, GL_RGBA8);
 			textures[(int)T_BLURBUFFER1 + i].create(0, screenspace.blurTxW, screenspace.blurTxH);
+			// DON'T REMOVE ME -->
 			textures[(int)T_BLURBUFFER1 + i].setInterpolation(true);
 		}
 		

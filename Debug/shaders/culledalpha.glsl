@@ -31,15 +31,17 @@ void main(void)
 	vec4 position = vec4(in_vertex * VERTEX_SCALE_INV + vtrans, 1.0);
 	gl_Position = matmvp * position;
 	
+#ifdef VIEW_NORMALS
 	v_normals = mat3(matview) * in_normal.xyz;
+#endif
+	
 	texCoord = vec3(in_texture.st * VERTEX_SCALE_INV, in_texture.p);
-	
-	// dotlight
-	#include "worldlight.glsl"
-	
 	biomeColor = in_biome;
 	lightdata  = in_color;
 	torchlight = in_color2;
+	
+	// dotlight
+	#include "worldlight.glsl"
 }
 #endif
 
@@ -62,7 +64,9 @@ flat in float worldLight;
 in vec3 v_normals;
 
 layout(location = 0) out vec4 color;
+#ifdef VIEW_NORMALS
 layout(location = 1) out vec4 normals;
+#endif
 
 const float ZFAR
 
@@ -76,11 +80,12 @@ void main(void)
 	color.rgb = mix(color.rgb, biomeColor.rgb * toneColor.rgb, toneColor.a);
 	
 	#include "degamma.glsl"
-	
 	#include "stdlight.glsl"
-	
 	#include "finalcolor.glsl"
+	
+#ifdef VIEW_NORMALS
 	normals = vec4(v_normals, 1.0);
+#endif
 }
 
 #endif

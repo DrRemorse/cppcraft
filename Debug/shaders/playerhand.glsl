@@ -1,4 +1,4 @@
-#version 130
+#version 150
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
 
@@ -42,6 +42,7 @@ uniform float modulation;
 
 in vec3 texCoord;
 flat in float worldLight;
+out vec4 color;
 
 void main(void)
 {
@@ -56,7 +57,7 @@ void main(void)
 	// scaled shadow color
 	vec3 shadowColor = vec3(-0.2, 0.0, 0.2) * shadow;
 	
-	vec3 color = texture2DArray(texture, texCoord).rgb;
+	color = texture2DArray(texture, texCoord);
 	#include "degamma.glsl"
 	
 	color.rgb *= worldLight; // min(1.0, worldLight + 0.35 * brightness)
@@ -65,10 +66,7 @@ void main(void)
 	// mix in torchlight
 	color.rgb = mix(color.rgb, torchlight.rgb, torchlight.a * modulation);
 	
-	const vec3 gamma = vec3(2.2);
-	
-	// back to gamma space
-	gl_FragColor = vec4(pow(color.rgb, gamma), 1.0);
+	#include "finalcolor.glsl"
 }
 
 #endif

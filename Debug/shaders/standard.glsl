@@ -73,7 +73,6 @@ uniform samplerCube skymap;
 
 uniform float daylight;
 uniform float modulation;
-uniform vec4  playerLight;
 
 in vec3 texCoord;
 in vec4 biomeColor;
@@ -116,13 +115,11 @@ void main(void)
 	}
 	
 	#include "degamma.glsl"
-	
 	#include "stdlight.glsl"
-	
-	#include "horizonfade.glsl"
-	
 	#include "finalcolor.glsl"
 	
+#ifdef VIEW_NORMALS
 	normals = vec4(v_normals, 1.0);
+#endif
 }
 #endif

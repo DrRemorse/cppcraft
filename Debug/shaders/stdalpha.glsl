@@ -82,13 +82,10 @@ void main(void)
 uniform sampler2DArray diffuse;
 uniform sampler2DArray tonemap;
 
-uniform vec3 screendata;
-uniform vec3 lightVector;
+uniform vec3  lightVector;
 uniform float daylight;
 uniform float modulation;
-
-uniform vec4 playerLight;
-uniform int  texrange;
+uniform int   texrange;
 
 in vec3 texCoord;
 in vec4 biomeColor;
@@ -100,11 +97,11 @@ in vec3 out_normal;
 in vec3 v_normals;
 
 layout(location = 0) out vec4 color;
+#ifdef VIEW_NORMALS
 layout(location = 1) out vec4 normals;
+#endif
 
 const float ZFAR
-const int TX_2SIDED
-const int TX_CROSS
 
 void main(void)
 {
@@ -116,13 +113,13 @@ void main(void)
 	color.rgb = mix(color.rgb, biomeColor.rgb * toneColor.rgb, toneColor.a);
 	
 	#include "degamma.glsl"
-	
 	#include "worldlight_frag.glsl"
-	
 	#include "stdlight.glsl"
-	
 	#include "finalcolor.glsl"
+	
+#ifdef VIEW_NORMALS
 	normals = vec4(v_normals, 1.0);
+#endif
 }
 
 #endif

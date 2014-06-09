@@ -49,6 +49,7 @@ void main(void)
 	
 	// waving lava texture
 	color = texture2D(lavatex, lavawave);
+	color.rgb *= 0.4;
 	
 	// cheap sparkling
 	color.r += pow(color.r, 1.0 / abs(subwave.x * subwave.y)) * 0.5;

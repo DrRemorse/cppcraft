@@ -404,6 +404,9 @@ namespace cppcraft
 				
 			case RenderConst::TX_TRANS: // culled alpha (tree leafs etc.)
 				
+				// disable face culling (for 2-sidedness)
+				glDisable(GL_CULL_FACE);
+				
 				// change shader-set
 				handleSceneUniforms(renderer.frametick, 
 									shaderman[Shaderman::CULLED_BLOCKS], 
@@ -418,9 +421,6 @@ namespace cppcraft
 				textureman[Textureman::T_TONEMAP].setWrapMode(GL_CLAMP_TO_EDGE);
 				glActiveTexture(GL_TEXTURE0);
 				textureman[Textureman::T_DIFFUSE].setWrapMode(GL_CLAMP_TO_EDGE);
-				
-				// disable face culling (for 2-sidedness)
-				glDisable(GL_CULL_FACE);
 				
 				// change shader-set
 				handleSceneUniforms(renderer.frametick, 

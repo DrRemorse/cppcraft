@@ -222,7 +222,10 @@ void main(void)
 	
 	// final color
 	#include "finalcolor.glsl"
-	normals = vec4(viewNormal, color.a);
+	
+#ifdef VIEW_NORMALS
+	normals = vec4(viewNormal, 1.0);
+#endif
 }
 
 #endif

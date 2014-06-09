@@ -104,8 +104,8 @@ void main()
 	wpos.xyz -= worldOffset;
 	
 	// volumetric fog
-	float fogAmount = fogDensity(ray, wpos.xyz);
-	fogAmount *= depth;
+	float fogAmount = fogDensity(ray, wpos.xyz) * 0.5;
+	fogAmount *= max(0.0, depth - 0.2);
 	
 	const vec3 fogBaseColor = vec3(0.9);
 	const vec3 sunBaseColor = vec3(1.0, 0.8, 0.5);
@@ -122,7 +122,8 @@ void main()
 	// mix in sky to fade out the world
 	vec3 skyColor = texture(skytexture, texCoord).rgb;
 	const float SKY_EDGE = 0.7;
-	color.rgb = mix(color.rgb, skyColor, max(0.0, (depth - SKY_EDGE) / (1.0 - SKY_EDGE)));
+	float edge = max(0.0, (depth - SKY_EDGE) / (1.0 - SKY_EDGE));
+	color.rgb = mix(color.rgb, skyColor, edge * edge);
 	// use alpha-channel as depth
 	color.a   = depth;
 }

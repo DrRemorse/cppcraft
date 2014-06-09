@@ -186,7 +186,7 @@ namespace cppcraft
 				{
 					shaderLine = RenderConst::TX_SOLID;
 				}
-				else if (id == _TORCH || id == _VINES) // || isLeaf(id))
+				else if (id == _TORCH || id == _VINES)
 				{
 					shaderLine = RenderConst::TX_2SIDED;
 				}

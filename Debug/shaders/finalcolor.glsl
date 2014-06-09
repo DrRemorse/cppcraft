@@ -1,13 +1,13 @@
 //
 // Final color code snippet
 //
-#define POSTPROCESS
+#define USE_GAMMA
 
-#ifndef POSTPROCESS
+#ifdef USE_GAMMA
 	
 	const vec3 gamma = vec3(2.2);
 	
 	// back to gamma space
-	color = vec4(pow(color.rgb, gamma), color.a);
+	color.rgb = pow(color.rgb, gamma);
 	
 #endif

@@ -1,4 +1,4 @@
-#version 130
+#version 150
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
 
@@ -17,7 +17,7 @@ in vec2 in_normdata;
 in vec4 in_color;
 
 flat out float tileID;
-out vec2 out_normdata;
+flat out vec2 out_normdata;
 flat out vec4 out_color;
 
 void main(void)
@@ -42,12 +42,14 @@ uniform sampler2DArray texture;
 uniform float daylight;
 
 flat in float tileID;
-in vec2 out_normdata;
+flat in vec2 out_normdata;
 flat in vec4 out_color;
+
+out vec4 color;
 
 void main(void)
 {
-	vec4 color = texture2DArray(texture, vec3(gl_PointCoord.xy, tileID));
+	color = texture2DArray(texture, vec3(gl_PointCoord.xy, tileID));
 	
 	#include "degamma.glsl"
 	
@@ -55,11 +57,6 @@ void main(void)
 	color.rgb *= min(1.0, out_normdata.y + daylight);
 	color.a *= out_normdata.x;
 	
-	// gamma ramp
-	#ifdef POSTPROCESS
-		gl_FragColor = color;
-	#else
-		gl_FragColor = vec4(pow(color.rgb, vec3(2.2)), color.a);
-	#endif
+	#include "finalcolor.glsl"
 }
 #endif
