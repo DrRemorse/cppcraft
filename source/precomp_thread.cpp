@@ -19,7 +19,7 @@ namespace cppcraft
 	PrecompThread::PrecompThread()
 	{
 		this->precomp = nullptr;
-		this->occ = nullptr;
+		this->occ = new AmbientOcclusion();
 		
 		// random default values for vertex array sizes
 		// the arrays get automatically resized as needed

@@ -20,6 +20,7 @@ namespace cppcraft
 		bool clouds;
 		bool reflections;
 		bool reflectTerrain;
+		bool ssao;
 		bool postprocess;
 		bool lensflare;
 		

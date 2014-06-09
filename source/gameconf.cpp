@@ -20,6 +20,7 @@ namespace cppcraft
 		reflections   = config.get("render.reflections", true);
 		reflectTerrain= config.get("render.reflect_terrain", false);
 		
+		ssao          = config.get("render.ssao", false);
 		postprocess   = config.get("render.postprocess", true);
 		lensflare     = config.get("render.lensflare",   true);
 		

@@ -68,7 +68,10 @@ namespace cppcraft
 		sceneFBO.create();
 		sceneFBO.bind();
 		sceneFBO.attachColor(0, sceneTex);
-		sceneFBO.attachColor(1, textureman[Textureman::T_NORMALBUFFER]);
+		if (gameconf.ssao)
+		{
+			sceneFBO.attachColor(1, textureman[Textureman::T_NORMALBUFFER]);
+		}
 		sceneFBO.attachDepth(textureman[Textureman::T_DEPTHBUFFER]);
 		
 		// the FBO we copy the main scene to before rendering water
@@ -86,9 +89,12 @@ namespace cppcraft
 			fboResolveColor.attachColor(0, textureman[Textureman::T_FINALBUFFER]);
 			fboResolveColor.attachDepth(textureman[Textureman::T_FINALDEPTH]);
 			
-			fboResolveNormals.create();
-			fboResolveNormals.bind();
-			fboResolveNormals.attachColor(0, textureman[Textureman::T_FINALNORMALS]);
+			if (gameconf.ssao)
+			{
+				fboResolveNormals.create();
+				fboResolveNormals.bind();
+				fboResolveNormals.attachColor(0, textureman[Textureman::T_FINALNORMALS]);
+			}
 		}
 		
 		fogFBO.create();
@@ -173,6 +179,32 @@ namespace cppcraft
 					sceneTex.getWidth(), 
 					sceneTex.getHeight(), 
 					GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		
+		
+		/// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
+		/// render physical scene w/depth
+		/// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
+		
+		sceneFBO.bind();
+		glViewport(0, 0, sceneTex.getWidth(), sceneTex.getHeight());
+		
+		if (gameconf.ssao)
+		{
+			std::vector<int> dbuffers;
+			dbuffers.push_back(GL_COLOR_ATTACHMENT0);
+			dbuffers.push_back(GL_COLOR_ATTACHMENT1);
+			sceneFBO.drawBuffers(dbuffers);
+		}
+		
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
+		glDepthMask(GL_TRUE);
+		
+		// clear depth texture (or depth renderbuffer)
+		glClear(GL_DEPTH_BUFFER_BIT);
+		
+		// disable double-sided faces
+		glEnable(GL_CULL_FACE);
 		
 		////////////////////////////////////////////////////
 		/// take snapshots of player state               ///
@@ -336,31 +368,13 @@ namespace cppcraft
 			}
 		}
 		
-		/// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
-		/// render physical scene w/depth ///
-		
-		sceneFBO.bind();
-		glViewport(0, 0, sceneTex.getWidth(), sceneTex.getHeight());
-		
-		std::vector<int> dbuffers;
-		dbuffers.push_back(GL_COLOR_ATTACHMENT0);
-		dbuffers.push_back(GL_COLOR_ATTACHMENT1);
-		sceneFBO.drawBuffers(dbuffers);
-		
-		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LEQUAL);
-		glDepthMask(GL_TRUE);
-		
-		// clear depth texture (or depth renderbuffer)
-		glClear(GL_DEPTH_BUFFER_BIT);
-		
-		// disable double-sided faces
-		glEnable(GL_CULL_FACE);
-		
 		#ifdef TIMING
 		Timer timerScene;
 		timerScene.startNewRound();
 		#endif
+		
+		//glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+		//glEnable(GL_SAMPLE_COVERAGE);
 		
 		// scene
 		renderScene(renderer, camera);
@@ -411,41 +425,46 @@ namespace cppcraft
 		{
 			glViewport(0, 0, renderBuffer.getWidth(), renderBuffer.getHeight());
 			screenspace.renderSuperSampling(textureman[Textureman::T_SCENEBUFFER], textureman[Textureman::T_FINALBUFFER]);
-			screenspace.renderSuperSampling(textureman[Textureman::T_NORMALBUFFER], textureman[Textureman::T_FINALNORMALS]);
 			textureman.bind(0, Textureman::T_FINALBUFFER);
 			textureman.bind(1, Textureman::T_SKYBUFFER);
-			textureman.bind(2, Textureman::T_FINALNORMALS);
-			textureman.bind(3, Textureman::T_DEPTHBUFFER);
+			textureman.bind(2, Textureman::T_DEPTHBUFFER);
+			if (gameconf.ssao)
+			{
+				screenspace.renderSuperSampling(textureman[Textureman::T_NORMALBUFFER], textureman[Textureman::T_FINALNORMALS]);
+				textureman.bind(3, Textureman::T_FINALNORMALS);
+			}
 		}
 		else if (gameconf.multisampling)
 		{
 			sceneFBO.blitTo(fboResolveColor, sceneTex.getWidth(), sceneTex.getHeight(), GL_COLOR_BUFFER_BIT, GL_LINEAR);
 			sceneFBO.blitTo(fboResolveColor, sceneTex.getWidth(), sceneTex.getHeight(), GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 			
-			glBindFramebuffer(GL_READ_FRAMEBUFFER, sceneFBO.getHandle());
-			glReadBuffer(GL_COLOR_ATTACHMENT0 + 1);
-			
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboResolveNormals.getHandle());
-			glBlitFramebuffer(0, 0, sceneTex.getWidth(), sceneTex.getHeight(), 0, 0, sceneTex.getWidth(), sceneTex.getHeight(), GL_COLOR_BUFFER_BIT, GL_LINEAR);
-			
-			glReadBuffer(GL_COLOR_ATTACHMENT0);
-			
 			textureman.bind(0, Textureman::T_FINALBUFFER);
 			textureman.bind(1, Textureman::T_SKYBUFFER);
-			textureman.bind(2, Textureman::T_FINALNORMALS);
-			textureman.bind(3, Textureman::T_FINALDEPTH);
+			textureman.bind(2, Textureman::T_FINALDEPTH);
+			
+			if (gameconf.ssao)
+			{
+				glBindFramebuffer(GL_READ_FRAMEBUFFER, sceneFBO.getHandle());
+				glReadBuffer(GL_COLOR_ATTACHMENT0 + 1);
+				
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboResolveNormals.getHandle());
+				glBlitFramebuffer(0, 0, sceneTex.getWidth(), sceneTex.getHeight(), 0, 0, sceneTex.getWidth(), sceneTex.getHeight(), GL_COLOR_BUFFER_BIT, GL_LINEAR);
+				
+				glReadBuffer(GL_COLOR_ATTACHMENT0);
+				// add normals to slot 3
+				textureman.bind(3, Textureman::T_FINALNORMALS);
+			}
 		}
 		else
 		{
 			textureman.bind(0, Textureman::T_SCENEBUFFER);
 			textureman.bind(1, Textureman::T_SKYBUFFER);
-			textureman.bind(2, Textureman::T_NORMALBUFFER);
-			textureman.bind(3, Textureman::T_DEPTHBUFFER);
-		}
-		
-		if (OpenGL::checkError())
-		{
-			throw std::string("Error after multisampling resolve");
+			textureman.bind(2, Textureman::T_DEPTHBUFFER);
+			if (gameconf.ssao)
+			{
+				textureman.bind(3, Textureman::T_NORMALBUFFER);
+			}
 		}
 		
 		/////////////////////////////////
@@ -459,7 +478,6 @@ namespace cppcraft
 		/////////////////////////////////
 		// blur the scene
 		/////////////////////////////////
-		renderBuffer.bind(0);
 		// --> inputs  T_RENDERBUFFER
 		// --> outputs T_BLURBUFFER2
 		screenspace.blur(renderBuffer);

@@ -110,6 +110,8 @@ namespace cppcraft
 			{
 				// COPY the VBO data section
 				vboList[vboCount] = vbodata[sy];
+				// unassign vertex data pointer from source
+				vbodata[sy].pcdata = nullptr;
 				// renderable and consistent, add to queue
 				vboCount += 1;
 			}
@@ -182,6 +184,8 @@ namespace cppcraft
 				}
 			} // shaders
 			
+			delete[] v.pcdata;
+			
 		} // next vbo
 		
 		
@@ -205,10 +209,8 @@ namespace cppcraft
 		
 		// bind vao
 		glBindVertexArray(this->vao);
-		
-		// bind vbo and set to total bytes
+		// bind vbo and upload data
 		glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-		// upload data
 		glBufferData(GL_ARRAY_BUFFER, totalbytes, column_dump, GL_STATIC_DRAW);
 		
 		if (updateAttribs)
@@ -228,6 +230,9 @@ namespace cppcraft
 		glVertexAttribPointer(5, 4, GL_UNSIGNED_BYTE, GL_TRUE,  sizeof(vertex_t), (char*) (&vrt->c) + 4); // torchlight color
 		glEnableVertexAttribArray(5);
 		}
+		
+		// delete vertex data
+		
 		
 		#ifdef DEBUG
 		if (OpenGL::checkError())

@@ -2,6 +2,7 @@
 
 #include <library/log.hpp>
 #include "blockmodels.hpp"
+#include "gameconf.hpp"
 #include "lighting.hpp"
 #include "precomp_thread.hpp"
 #include "precompiler.hpp"
@@ -244,13 +245,10 @@ namespace cppcraft
 		
 		// ambient occlusion processing stage
 		#ifdef AMBIENT_OCCLUSION_GRADIENTS
-			/*
-			if (this->occ == nullptr)
+			if (gameconf.ssao == false)
 			{
-				this->occ = new AmbientOcclusion();
+				ambientOcclusionGradients(this->occ, precomp->datadump, cnt);
 			}
-			ambientOcclusionGradients(this->occ, precomp->datadump, cnt);
-			*/
 		#endif
 		
 		// optimize repeating textures mesh
