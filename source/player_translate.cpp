@@ -19,7 +19,7 @@ namespace cppcraft
 	void PlayerLogic::translatePlayer()
 	{
 		bool moved = false;
-		bool jumpKey = input.getKey(keyconf.k_jump) != 0 && player.busyControls() == false;
+		bool jumpKey = (input.getKey(keyconf.k_jump) || keyconf.jbuttons[0]) && player.busyControls() == false;
 		
 		const double PLAYER_GROUND_LEVEL = 1.51;
 		const double fw_feettest   = 1.45; // feet level, used for gravity and landing tests
@@ -131,7 +131,7 @@ namespace cppcraft
 			if (jumpKey)
 			{
 				// if the jump key isnt held yet
-				if (input.getKey(keyconf.k_jump) != Input::KEY_LOCKED)
+				if (this->jumplock == false)
 				{
 					// check if player is allowed to escape water
 					EscapeAttempt = Block::fluidAndCrossToAir( Spiders::testAreaEx(player.X,player.Y-1.6,player.Z) ) != _AIR;
@@ -139,7 +139,7 @@ namespace cppcraft
 					if (EscapeAttempt)
 					{
 						// hold it
-						input.hold(keyconf.k_jump);
+						this->jumplock = true;
 					}
 				}
 				
@@ -523,7 +523,8 @@ namespace cppcraft
 			player.pay = 0;
 			// special case for landing in water
 			// we can release the jump key (but only if its locked)
-			input.release(keyconf.k_jump);
+			this->jumplock = false;
+			//input.release(keyconf.k_jump);
 		}
 		else if (freefall)
 		{
@@ -543,9 +544,9 @@ namespace cppcraft
 	
 	void PlayerLogic::handlePlayerJumping()
 	{
-		bool jumpKey = input.getKey(keyconf.k_jump) && player.busyControls() == false;
+		bool jumpKey = (input.getKey(keyconf.k_jump) || keyconf.jbuttons[0]) && player.busyControls() == false;
 		
-		if (jumpKey) // keyconf.jbuttons(0)
+		if (jumpKey)
 		{
 			// it's disallowed to try to continue to jump when the eye-height + 0.10 is non-air
 			if (Block::fluidAndCrossToAir( Spiders::testAreaEx(player.X,player.Y+0.10,player.Z) ) == _AIR)
@@ -567,13 +568,13 @@ namespace cppcraft
 						Jetpacking = false;
 					#endif
 					
-					input.hold(keyconf.k_jump); // enable jump trigger
+					this->jumplock = true; // enable jump trigger
 				}
 				// if the player is free-falling, we can check if he wants to jetpack
 				else if (freefall == true)
 				{
 					// jump key pressed, but not held
-					if (input.getKey(keyconf.k_jump) == Input::KEY_PRESSED && player.busyControls() == false)
+					if (input.getKey(keyconf.k_jump) && player.busyControls() == false)
 					{
 						#ifdef USE_JETPACK
 						if (jetpackFuel != 0)
@@ -618,6 +619,8 @@ namespace cppcraft
 		{
 			// no longer able to escape water
 			EscapeAttempt = false;
+			// no longer jumplocked
+			this->jumplock = false;
 			
 			#ifdef USE_JETPACK
 				// jetpack replenish

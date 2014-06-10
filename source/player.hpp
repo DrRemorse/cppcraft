@@ -42,6 +42,8 @@ namespace cppcraft
 		void initInputs(library::WindowClass& scr);
 		// first we run this, to get inputs
 		void handleInputs();
+		// handle any Joystick
+		void handleJoystick();
 		// then, for each tick passed we run this
 		void handlePlayerTicks();
 		// then finally, we finish by running this once

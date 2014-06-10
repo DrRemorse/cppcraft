@@ -86,7 +86,7 @@ namespace cppcraft
 		}
 		else
 		{
-			if (input.getKey(keyconf.k_crouch)) // || keyconf.jbuttons(5) <> 0 Then
+			if (input.getKey(keyconf.k_crouch) || keyconf.jbuttons[3])
 			{
 				// as long as currently not in freefall
 				if (plogic.freefall == false)
@@ -110,7 +110,7 @@ namespace cppcraft
 			// allowed: jetpacking, jumping, ladderwalk (probably not slowfall)
 			if (movestate != PMS_Crouch)
 			{
-				if (input.getKey(keyconf.k_sprint))
+				if (input.getKey(keyconf.k_sprint) || keyconf.jbuttons[2])
 				{
 					movestate = PMS_Sprint;
 				}
@@ -131,7 +131,7 @@ namespace cppcraft
 		
 		if (player.Flying)
 		{
-			if (input.getKey(keyconf.k_sprint))
+			if (input.getKey(keyconf.k_sprint) || keyconf.jbuttons[2])
 			{
 				this->curspeed = (this->curspeed * intrpol + PlayerPhysics::spdFlying * invintr);
 			}
@@ -186,32 +186,50 @@ namespace cppcraft
 		
 		if (player.busyControls() == false)
 		{
-			if (input.getKey(keyconf.k_left))   // A
+			/// JOYSTICK MOVEMENT
+			// left/right
+			if (std::abs(keyconf.jaxis[0]) > keyconf.joy_deadzone)
+			{
+				float vz = tresholdValue(keyconf.jaxis[0]);
+				
+				dx += cos(player.yrotrad) * vz;
+				dz += sin(player.yrotrad) * vz;
+			}
+			// forward/backward
+			if (std::abs(keyconf.jaxis[1]) > keyconf.joy_deadzone)
+			{
+				float vz = tresholdValue(keyconf.jaxis[1]);
+				
+				dx -= sin(player.yrotrad) * vz;
+				dz += cos(player.yrotrad) * vz;
+			}
+			
+			/// KEYBOARD MOVEMENT
+			if (input.getKey(keyconf.k_left))   // left
 			{
 				dx -= cos(player.yrotrad);
 				dz -= sin(player.yrotrad);
 			}
-			if (input.getKey(keyconf.k_right))  // D
+			if (input.getKey(keyconf.k_right))  // right
 			{
 				dx += cos(player.yrotrad);
 				dz += sin(player.yrotrad);
 			}
-			if (input.getKey(keyconf.k_forward)) // W
+			if (input.getKey(keyconf.k_forward)) // up
 			{
 				dx += sin(player.yrotrad);
 				dz -= cos(player.yrotrad);
 				plogic.Motion = 1;
 			}
-			if (input.getKey(keyconf.k_backward)) // S
+			if (input.getKey(keyconf.k_backward)) // down
 			{
 				dx -= sin(player.yrotrad);
 				dz += cos(player.yrotrad);
 				plogic.Motion = 2;
 			}
 			
-			double length = sqrt(dx*dx + dz*dz);
-			
-			if (length > 0.0000001)
+			double length = std::sqrt(dx*dx + dz*dz);
+			if (length > 0.000001)
 			{
 				dx *= this->curspeed / length;
 				dz *= this->curspeed / length;

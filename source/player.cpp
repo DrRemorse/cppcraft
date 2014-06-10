@@ -99,8 +99,6 @@ namespace cppcraft
 	
 	void PlayerClass::handlePlayerTicks()
 	{
-		// handle player rotation
-		//handleRotation();
 		// acceleration & movement inputs
 		playerPhysics.handleMomentum();
 		// jumping, big enough to get its own module
@@ -156,6 +154,13 @@ namespace cppcraft
 	
 	void PlayerClass::handleRotation()
 	{
+		if (keyconf.joy_enabled)
+		{
+				float dx = tresholdValue(keyconf.jaxis[3]);
+				float dy = tresholdValue(keyconf.jaxis[4]);
+				input.addRotation(vec2(dx, dy) * keyconf.joy_speed);
+		}
+		
 		// measure closeness
 		float dx = fabsf(player.xrotrad - input.getRotation().x);
 		float dy = fabsf(player.yrotrad - input.getRotation().y);

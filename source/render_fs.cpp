@@ -54,18 +54,6 @@ namespace cppcraft
 		}
 	}
 	
-	void FSRenderer::blur(Texture& texture)
-	{
-		// downsize to blur-texture size
-		glViewport(0, 0, blurTxW, blurTxH);
-		// bind texture in slot 0
-		texture.bind(0);
-		// create blurred image from scene (current backbuffer image)
-		renderBlur(texture.getWidth(), texture.getHeight());
-		// upsize to regular screen size
-		glViewport(0, 0, texture.getWidth(), texture.getHeight());
-	}
-	
 	void FSRenderer::fog(double timeElapsed)
 	{
 		Shader& shd = shaderman[Shaderman::FSTERRAINFOG];

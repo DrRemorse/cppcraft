@@ -105,13 +105,13 @@ void main()
 	
 	// volumetric fog
 	float fogAmount = fogDensity(ray, wpos.xyz) * 0.5;
-	fogAmount *= max(0.0, depth - 0.2);
+	fogAmount *= max(0.0, depth - 0.2) * daylight;
 	
 	const vec3 fogBaseColor = vec3(0.9);
 	const vec3 sunBaseColor = vec3(1.0, 0.8, 0.5);
 	
-	float sunAmount = max(0.0, dot(-ray, sunAngle)) * daylight;
-	vec3 fogColor = mix(fogBaseColor, sunBaseColor, sunAmount) * daylight;
+	float sunAmount = max(0.0, dot(-ray, sunAngle)) * daylight * daylight;
+	vec3 fogColor = mix(fogBaseColor, sunBaseColor, sunAmount);
 	
 	color.rgb = mix(color.rgb, fogColor, fogAmount);
 	// additional sun glow on terrain

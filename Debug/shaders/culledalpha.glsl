@@ -21,8 +21,9 @@ out vec3 texCoord;
 out vec4 lightdata;
 out vec4 torchlight;
 out vec4 biomeColor;
-flat out float worldLight;
+//flat out float worldLight;
 out vec3 v_normals;
+out vec3 out_normal;
 
 const float VERTEX_SCALE_INV
 
@@ -39,9 +40,10 @@ void main(void)
 	biomeColor = in_biome;
 	lightdata  = in_color;
 	torchlight = in_color2;
+	out_normal = in_normal;
 	
 	// dotlight
-	#include "worldlight.glsl"
+	//#include "worldlight.glsl"
 }
 #endif
 
@@ -53,15 +55,16 @@ uniform sampler2DArray diffuse;
 uniform sampler2DArray tonemap;
 
 uniform float daylight;
-uniform vec4  playerLight;
+uniform vec3  lightVector;
 uniform float modulation;
 
 in vec3 texCoord;
 in vec4 lightdata;
 in vec4 torchlight;
 in vec4 biomeColor;
-flat in float worldLight;
+//flat in float worldLight;
 in vec3 v_normals;
+in vec3 out_normal;
 
 layout(location = 0) out vec4 color;
 #ifdef VIEW_NORMALS
@@ -78,6 +81,8 @@ void main(void)
 	// read tonecolor from tonemap
 	vec4 toneColor = texture(tonemap, texCoord.stp);
 	color.rgb = mix(color.rgb, biomeColor.rgb * toneColor.rgb, toneColor.a);
+	
+	#include "worldlight_frag.glsl"
 	
 	#include "degamma.glsl"
 	#include "stdlight.glsl"

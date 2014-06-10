@@ -7,12 +7,14 @@
 #include "menu.hpp"
 #include "network.hpp"
 #include "player_inputs.hpp"
+#include "player_logic.hpp"
 #include "sectors.hpp"
 #include "sun.hpp"
 #include "threading.hpp"
 #include "worldbuilder.hpp"
 #include <GL/glfw3.h>
 #include <cmath>
+#include <string>
 
 using namespace library;
 
@@ -41,6 +43,9 @@ namespace cppcraft
 		
 		keyconf.k_inventory = config.get("k_inventory", 73); // I
 		
+		keyconf.joy_enabled = config.get("joy.enabled", false);
+		keyconf.joy_index   = config.get("joy.index", 0);
+		
 		double mspd  = config.get("mouse.speed", 120) / 1000.0;
 		double msens = config.get("mouse.sens",  80)  / 10.0;
 		
@@ -50,10 +55,88 @@ namespace cppcraft
 		input.grabMouse(true);  // enable fps-like mouse
 		input.mouseOptions(mspd, msens); // mouse speed & sensitivity
 		input.showMouse(false); // hide mouse
+		
+		// initialize joystick support
+		if (keyconf.joy_enabled)
+		{
+			keyconf.joy_enabled = glfwJoystickPresent(keyconf.joy_index) != 0;
+			
+			if (keyconf.joy_enabled)
+			{
+				std::string jname = glfwGetJoystickName(keyconf.joy_index);
+				logger << Log::INFO << "* Joystick: " << jname << Log::ENDL;
+				
+				keyconf.joy_deadzone = config.get("joy.deadzone", 0.12);
+				keyconf.joy_speed    = config.get("joy.speed", 2.0);
+			}
+			else
+			{
+				logger << Log::INFO << "* Joystick with index " << keyconf.joy_index << " did not exist." << Log::ENDL;
+			}
+		}
+		if (keyconf.joy_enabled == false)
+		{
+			keyconf.jbuttons = new unsigned char[14]();
+		}
+		
+	} // PlayerClass::initInputs
+	
+	void PlayerClass::handleJoystick()
+	{
+		/// BUTTONS
+		
+		// 0 = A button
+		// 1 = B button
+		// 2 = X button
+		// 3 = Y button
+		
+		// 4 = left bumper
+		// 5 = right bumper
+		
+		// 6 = select/back
+		// 7 = start
+		
+		// 8 = left rotator button
+		// 9 = right rotator button
+		
+		// 10 = dpad up
+		// 11 = dpad right
+		// 12 = dpad down
+		// 13 = dpad left
+		
+		keyconf.jbuttons = glfwGetJoystickButtons(keyconf.joy_index, &keyconf.joy_button_count);
+		
+		/*for (int i = 0; i < keyconf.joy_button_count; i++)
+		{
+			if (keyconf.jbuttons[i])
+				logger << Log::INFO << "Button pressed: " << i << Log::ENDL;
+		}*/
+		
+		/// AXES
+		
+		// 0 = left rotator (left/right)
+		// 1 = left rotator (up/down)
+		
+		// 2 = trigger left/right
+		
+		// 3 = right rotator (left/right)
+		// 4 = right rotator (up/down)
+		
+		keyconf.jaxis = glfwGetJoystickAxes(keyconf.joy_index, &keyconf.joy_axis_count);
+		
+		/*for (int i = 0; i < keyconf.joy_axis_count; i++)
+		{
+			if (std::abs(keyconf.jaxis[i]) > 0.1)
+				logger << Log::INFO << "Axis " << i << " value: " << keyconf.jaxis[i] << Log::ENDL;
+		}*/
 	}
 	
 	void PlayerClass::handleInputs()
 	{
+		// handle joystick if existing
+		if (keyconf.joy_enabled) handleJoystick();
+		
+		// testing/cheats
 		if (busyControls() == false)
 		{
 			if (input.getKey(GLFW_KEY_F1))
@@ -92,30 +175,45 @@ namespace cppcraft
 				}
 			}
 			
-			if (input.getKey(keyconf.k_flying))
+			if (input.getKey(keyconf.k_flying) || keyconf.jbuttons[9])
 			{
-				if (input.getKey(keyconf.k_flying) != Input::KEY_LOCKED)
+				if (plogic.flylock == false)
 				{
 					// lock key
-					input.hold(keyconf.k_flying);
+					plogic.flylock = true;
 					// toggle flying
 					player.Flying = ! player.Flying;
 				}
 			}
+			else plogic.flylock = false;
+			
+			static bool lock_quickbar_scroll = false;
 			
 			int wheel = input.getWheel();
-			if (wheel > 0)
+			if (wheel > 0 || keyconf.jbuttons[4])
 			{
-				// previous quickbar item
-				menu.quickbarX = (menu.quickbarX + 1) % inventory.getWidth();
+				if (lock_quickbar_scroll == false)
+				{
+					// previous quickbar item
+					menu.quickbarX = (menu.quickbarX + 1) % inventory.getWidth();
+					lock_quickbar_scroll = true;
+				}
 			}
-			else if (wheel < 0)
+			else if (wheel < 0 || keyconf.jbuttons[5])
 			{
-				// go to next inventory item in quickbar
-				if (menu.quickbarX)
-					menu.quickbarX -= 1;
-				else
-					menu.quickbarX = inventory.getWidth()-1;
+				if (lock_quickbar_scroll == false)
+				{
+					// go to next inventory item in quickbar
+					if (menu.quickbarX)
+						menu.quickbarX -= 1;
+					else
+						menu.quickbarX = inventory.getWidth()-1;
+					lock_quickbar_scroll = true;
+				}
+			}
+			else
+			{
+				lock_quickbar_scroll = false;
 			}
 			// number keys (1-9) to directly select on quickbar
 			for (int i = 1; i < 10; i++)
@@ -126,7 +224,7 @@ namespace cppcraft
 			
 		} // busyControls
 		
-		if (input.getKey(GLFW_KEY_ESCAPE) == Input::KEY_PRESSED)
+		if (input.getKey(GLFW_KEY_ESCAPE) == Input::KEY_PRESSED || keyconf.jbuttons[6])
 		{
 			input.hold(GLFW_KEY_ESCAPE);
 			

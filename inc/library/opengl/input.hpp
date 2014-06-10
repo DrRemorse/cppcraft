@@ -70,10 +70,12 @@ namespace library
 		{
 			return this->rotation;
 		}
-		inline void setRotation(const vec2& newRotation)
+		void setRotation(const vec2& newRotation)
 		{
 			this->rotation = newRotation;
 		}
+		void addRotation(const vec2& degrees);
+		
 		// returns mousewheel status _AND_ resets it internally
 		int getWheel(); // 0 = no change, down < 0, up > 0
 		

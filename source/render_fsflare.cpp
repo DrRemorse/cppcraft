@@ -86,7 +86,6 @@ namespace cppcraft
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureman.get(Textureman::T_LENSFLARE), 0);
 		textureman.bind(0, Textureman::T_LENSFLARE2);
 		
-		blur.sendInteger("Width", 4);
 		blur.sendVec2("dir", vec2(1.0 / flareTxW, 0.0));
 		
 		//  render

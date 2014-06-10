@@ -476,23 +476,14 @@ namespace cppcraft
 		screenspace.fog(renderer.frametick);
 		
 		/////////////////////////////////
-		// blur the scene
-		/////////////////////////////////
-		// --> inputs  T_RENDERBUFFER
-		// --> outputs T_BLURBUFFER2
-		screenspace.blur(renderBuffer);
-		
-		finalFBO.bind();
-		
-		/////////////////////////////////
 		// apply blur to background
 		/////////////////////////////////
 		renderBuffer.bind(0);
-		textureman.bind(1, Textureman::T_BLURBUFFER2);
 		
 		// render to final buffer from renderbuffer
 		// --> inputs  T_RENDERBUFFER
 		// --> outputs T_FINALBUFFER
+		finalFBO.bind();
 		screenspace.terrain();
 		
 		///  render clouds & particles  ///

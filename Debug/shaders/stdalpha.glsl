@@ -8,8 +8,7 @@ uniform mat4 matview;
 uniform vec3 vtrans;
 
 uniform float frameCounter;
-uniform vec3 lightVector;
-uniform int  texrange;
+uniform int texrange;
 
 in vec3 in_vertex;
 in vec3 in_normal;
@@ -113,7 +112,7 @@ void main(void)
 	color.rgb = mix(color.rgb, biomeColor.rgb * toneColor.rgb, toneColor.a);
 	
 	#include "degamma.glsl"
-	#include "worldlight_frag.glsl"
+	#include "worldlight_cross.glsl"
 	#include "stdlight.glsl"
 	#include "finalcolor.glsl"
 	

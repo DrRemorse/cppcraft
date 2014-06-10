@@ -150,7 +150,6 @@ namespace cppcraft
 		return _AIR;
 	}
 	
-	Sector* lastGatheredSector = nullptr;
 	LightList lightNowList;
 	
 	vertex_color_t Spiders::getLightNow(double x, double y, double z)
@@ -164,14 +163,11 @@ namespace cppcraft
 		// but whatever, we exit when out of bounds
 		if (sector == nullptr) return 0;
 		
-		if (lastGatheredSector != sector)
-		{
-			lastGatheredSector = sector;
-			// clear lights
-			lightNowList.lights.clear();
-			// gather torchlights for sector
-			torchlight.lightGatherer(*sector, lightNowList);
-		}
+		// clear lights
+		lightNowList.lights.clear();
+		// gather torchlights for sector
+		torchlight.lightGatherer(*sector, lightNowList);
+		
 		// return calculated shadows & lighting
 		return Lighting.lightCheck(lightNowList, *sector, ix, iy, iz, 1);
 	}

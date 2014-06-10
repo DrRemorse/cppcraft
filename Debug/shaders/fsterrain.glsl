@@ -15,7 +15,7 @@ void main(void)
 
 #ifdef FRAGMENT_PROGRAM
 uniform sampler2D terrain;
-uniform sampler2D blurtexture;
+uniform vec2 offset;
 
 in  vec2 texCoord;
 out vec4 color;
@@ -24,8 +24,25 @@ void main()
 {
 	// terrain color
 	color = texture(terrain, texCoord);
-	// blurred color
-	vec4 blur = texture(blurtexture, texCoord);
+	
+	const int   WIDTH = 3;
+	const float MAXW = length(vec2(WIDTH));
+	vec4  blur = vec4(0.0);
+	float sum  = 0.0;
+	
+	for (int x = -WIDTH; x <= WIDTH; x++)
+	for (int y = -WIDTH; y <= WIDTH; y++)
+	{
+		vec2 pos = vec2(float(x), float(y));
+		vec4 c = texture(terrain, texCoord + offset * pos);
+		
+		float width = MAXW - length(pos);
+		width *= 1.0 - abs(color.a - c.a);
+		
+		blur += c * width;
+		sum += width;
+	}
+	blur /= sum;
 	
 	// depth from blur
 	float depth = blur.a;

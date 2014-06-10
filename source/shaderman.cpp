@@ -232,13 +232,13 @@ namespace cppcraft
 		}
 		// near plane half size
 		shaders[FSTERRAINFOG].sendVec2("nearPlaneHalfSize", camera.getNearPlaneHalfSize());
-		// SSAO filter radius
+		// screen size
 		shaders[FSTERRAINFOG].sendVec2("screenSize", vecScreen.xy());
 		
 		// screenspace terrain shader
 		shaders[FSTERRAIN] = Shader("shaders/fsterrain.glsl", tokenizer, linkstage);
 		shaders[FSTERRAIN].sendInteger("terrain",     0);
-		shaders[FSTERRAIN].sendInteger("blurtexture", 1);
+		shaders[FSTERRAIN].sendVec2("offset", vec2(1.0) / vecScreen.xy());
 		
 		// supersampling (downsampler) shader
 		shaders[SUPERSAMPLING] = Shader("shaders/supersample.glsl", tokenizer, linkstage);
@@ -261,8 +261,9 @@ namespace cppcraft
 		// blur shaders
 		shaders[BLUR] = Shader("shaders/blur.glsl", nullptr, linkstage);
 		shaders[BLUR].sendInteger("blurTexture", 0);
-		shaders[GAUSS] = Shader("shaders/blurGaussian.glsl", nullptr, linkstage);
-		shaders[GAUSS].sendInteger("texture", 0);
+		shaders[BLUR].sendInteger("Width", 4);
+		//shaders[GAUSS] = Shader("shaders/blurGaussian.glsl", nullptr, linkstage);
+		//shaders[GAUSS].sendInteger("texture", 0);
 		
 		// screenspace postprocessing shader
 		shaders[POSTPROCESS] = Shader("shaders/screenspace.glsl", tokenizer, linkstage);

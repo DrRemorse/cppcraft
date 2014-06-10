@@ -1,7 +1,7 @@
 #ifndef PLAYER_LOGIC_HPP
 #define PLAYER_LOGIC_HPP
 
-#include "library/math/vector.hpp"
+#include <library/math/vector.hpp>
 
 namespace cppcraft
 {
@@ -56,10 +56,14 @@ namespace cppcraft
 		// selection
 		playerselect_t selection;
 		
+		// temporary for jump-locking
+		bool jumplock;
 		// temporary for fall testing
 		bool freefall;
 		// water escape mechanism
 		bool EscapeAttempt;
+		// locks
+		bool flylock;
 		// status flags
 		bool Falling;
 		bool Ladderized;

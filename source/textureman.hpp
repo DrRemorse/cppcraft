@@ -54,9 +54,6 @@ namespace cppcraft
 			T_LENSFLARE2,
 			T_LENSFLARE3,
 			
-			T_BLURBUFFER1,
-			T_BLURBUFFER2,
-			
 			T_SKYBUFFER,
 			T_SCENEBUFFER,
 			T_NORMALBUFFER,

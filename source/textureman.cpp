@@ -248,15 +248,6 @@ namespace cppcraft
 			textures[(int)T_LENSFLARE + i].setInterpolation(true);
 		}
 		
-		// blur buffers
-		for (int i = 0; i < 2; i++)
-		{
-			textures[(int)T_BLURBUFFER1 + i] = Texture(GL_TEXTURE_2D, GL_RGBA8);
-			textures[(int)T_BLURBUFFER1 + i].create(0, screenspace.blurTxW, screenspace.blurTxH);
-			// DON'T REMOVE ME -->
-			textures[(int)T_BLURBUFFER1 + i].setInterpolation(true);
-		}
-		
 		/// GUI Renderer ///
 		
 		// compass
@@ -337,6 +328,7 @@ namespace cppcraft
 		// fullscreen underwater texture
 		textures[T_UNDERWATERMAP] = Texture(GL_TEXTURE_2D, GL_RGBA8);
 		textures[T_UNDERWATERMAP].create(0, gamescr.getWidth(), gamescr.getHeight());
+		textures[T_UNDERWATERMAP].setInterpolation(true);
 		// underwater depth texture
 		textures[T_UNDERWDEPTH] = Texture(GL_TEXTURE_2D, GL_DEPTH_COMPONENT24);
 		textures[T_UNDERWDEPTH].createDepth(gamescr.getWidth(), gamescr.getHeight());
