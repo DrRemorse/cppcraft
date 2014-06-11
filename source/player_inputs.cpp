@@ -27,6 +27,8 @@ namespace cppcraft
 	{
 		logger << Log::INFO << "* Initializing input systems" << Log::ENDL;
 		
+		/// Keyboard configuration
+		
 		keyconf.k_forward  = config.get("k_forward",  87); // W
 		keyconf.k_backward = config.get("k_backward", 83); // S
 		keyconf.k_right    = config.get("k_right",    68); // D
@@ -43,8 +45,14 @@ namespace cppcraft
 		
 		keyconf.k_inventory = config.get("k_inventory", 73); // I
 		
+		/// Mouse configuration
+		
 		double mspd  = config.get("mouse.speed", 120) / 1000.0;
 		double msens = config.get("mouse.sens",  80)  / 10.0;
+		
+		keyconf.alternateMiningButton = config.get("mouse.swap_buttons", false);
+		keyconf.mouse_btn_place = (keyconf.alternateMiningButton) ? GLFW_MOUSE_BUTTON_2 : GLFW_MOUSE_BUTTON_1;
+		keyconf.mouse_btn_mine = (keyconf.alternateMiningButton) ? GLFW_MOUSE_BUTTON_1 : GLFW_MOUSE_BUTTON_2;
 		
 		// initialize input systems
 		input.init(gameScreen, true, true);
@@ -66,7 +74,7 @@ namespace cppcraft
 				logger << Log::INFO << "* Joystick: " << jname << Log::ENDL;
 				
 				keyconf.joy_deadzone = config.get("joy.deadzone", 0.12);
-				keyconf.joy_speed    = config.get("joy.speed", 2.0);
+				keyconf.joy_speed    = config.get("joy.rotspeed", 2.0);
 				
 				/// joystick configuration ///
 				keyconf.joy_axis_sidestep = config.get("joy.axis_sides", 0);
@@ -76,7 +84,17 @@ namespace cppcraft
 				keyconf.joy_axis_look_yrot = config.get("joy.axis_yrot", 4);
 				
 				keyconf.joy_axis_place = config.get("joy.axis_place", 2);
-				keyconf.joy_axis_mine  = config.get("joy.axis_mine", 2);
+				
+				keyconf.joy_dual_axis_mining = config.get("joy.dual_axis_mining", true);
+				if (keyconf.joy_dual_axis_mining)
+				{
+					// dual axis, so placement has same axis as mining
+					keyconf.joy_axis_mine = keyconf.joy_axis_place;
+				}
+				else
+				{
+					keyconf.joy_axis_mine = config.get("joy.axis_mine", 2);
+				}
 				
 				keyconf.joy_btn_jump   = config.get("joy.btn_jump", 0);
 				keyconf.joy_btn_sprint = config.get("joy.btn_sprint", 2);

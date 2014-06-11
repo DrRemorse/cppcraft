@@ -27,9 +27,13 @@ namespace cppcraft
 		/// Mouse related ///
 		
 		bool alternateMiningButton;
+		int  mouse_btn_mine;
+		int  mouse_btn_place;
 		
 		/// Joystick related ///
 		bool joy_enabled;
+		bool joy_dual_axis_mining;
+		
 		char joy_index;
 		float joy_deadzone;
 		float joy_speed;
