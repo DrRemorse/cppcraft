@@ -86,7 +86,7 @@ namespace cppcraft
 		}
 		else
 		{
-			if (input.getKey(keyconf.k_crouch) || keyconf.jbuttons[3])
+			if (input.getKey(keyconf.k_crouch) || keyconf.jbuttons[keyconf.joy_btn_crouch])
 			{
 				// as long as currently not in freefall
 				if (plogic.freefall == false)
@@ -110,7 +110,7 @@ namespace cppcraft
 			// allowed: jetpacking, jumping, ladderwalk (probably not slowfall)
 			if (movestate != PMS_Crouch)
 			{
-				if (input.getKey(keyconf.k_sprint) || keyconf.jbuttons[2])
+				if (input.getKey(keyconf.k_sprint) || keyconf.jbuttons[keyconf.joy_btn_sprint])
 				{
 					movestate = PMS_Sprint;
 				}
@@ -131,7 +131,7 @@ namespace cppcraft
 		
 		if (player.Flying)
 		{
-			if (input.getKey(keyconf.k_sprint) || keyconf.jbuttons[2])
+			if (input.getKey(keyconf.k_sprint) || keyconf.jbuttons[keyconf.joy_btn_sprint])
 			{
 				this->curspeed = (this->curspeed * intrpol + PlayerPhysics::spdFlying * invintr);
 			}
@@ -188,17 +188,17 @@ namespace cppcraft
 		{
 			/// JOYSTICK MOVEMENT
 			// left/right
-			if (std::abs(keyconf.jaxis[0]) > keyconf.joy_deadzone)
+			if (std::abs(keyconf.jaxis[keyconf.joy_axis_sidestep]) > keyconf.joy_deadzone)
 			{
-				float vz = tresholdValue(keyconf.jaxis[0]);
+				float vz = tresholdValue(keyconf.jaxis[keyconf.joy_axis_sidestep]);
 				
 				dx += cos(player.yrotrad) * vz;
 				dz += sin(player.yrotrad) * vz;
 			}
 			// forward/backward
-			if (std::abs(keyconf.jaxis[1]) > keyconf.joy_deadzone)
+			if (std::abs(keyconf.jaxis[keyconf.joy_axis_forward]) > keyconf.joy_deadzone)
 			{
-				float vz = tresholdValue(keyconf.jaxis[1]);
+				float vz = tresholdValue(keyconf.jaxis[keyconf.joy_axis_forward]);
 				
 				dx -= sin(player.yrotrad) * vz;
 				dz += cos(player.yrotrad) * vz;

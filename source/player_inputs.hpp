@@ -8,6 +8,7 @@ namespace cppcraft
 {
 	typedef struct keyconf_t
 	{
+		/// Keyboard related ///
 		int k_forward;
 		int k_backward;
 		int k_right;
@@ -23,11 +24,13 @@ namespace cppcraft
 		int k_flyup;
 		int k_flydown;
 		
+		/// Mouse related ///
+		
 		bool alternateMiningButton;
 		
-		
+		/// Joystick related ///
 		bool joy_enabled;
-		int  joy_index;
+		char joy_index;
 		float joy_deadzone;
 		float joy_speed;
 		
@@ -35,6 +38,24 @@ namespace cppcraft
 		unsigned char const* jbuttons;
 		int joy_axis_count;
 		float const* jaxis;
+		
+		unsigned char joy_axis_forward;
+		unsigned char joy_axis_sidestep;
+		unsigned char joy_axis_look_xrot;
+		unsigned char joy_axis_look_yrot;
+		
+		unsigned char joy_axis_mine;
+		unsigned char joy_axis_place;
+		
+		unsigned char joy_btn_jump;
+		unsigned char joy_btn_crouch;
+		unsigned char joy_btn_sprint;
+		
+		unsigned char joy_btn_previtem;
+		unsigned char joy_btn_nextitem;
+		
+		unsigned char joy_btn_flying;
+		unsigned char joy_btn_exit;
 		
 	} keyconf_t;
 	

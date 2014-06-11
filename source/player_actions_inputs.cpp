@@ -9,8 +9,7 @@ namespace cppcraft
 {
 	void PlayerActions::handleInputs()
 	{
-		static bool lock_left_axis = false;
-		static bool lock_right_axis = false;
+		static bool lock_hand_axes = false;
 		
 		// left mouse button
 		if (input.getMouse(GLFW_MOUSE_BUTTON_1))
@@ -40,12 +39,12 @@ namespace cppcraft
 			}
 		}
 		// left trigger axis
-		else if (keyconf.jaxis[2] > 0.5)
+		else if (keyconf.jaxis[keyconf.joy_axis_place] > 0.5)
 		{
-			if (lock_left_axis == false)
+			if (lock_hand_axes == false)
 			{
 				// lock axis
-				lock_left_axis = true;
+				lock_hand_axes = true;
 				
 				// add block
 				handWave();
@@ -53,12 +52,12 @@ namespace cppcraft
 			}
 		}
 		// right trigger axis
-		else if (keyconf.jaxis[2] < -0.5)
+		else if (keyconf.jaxis[keyconf.joy_axis_mine] < -0.5)
 		{
-			if (lock_right_axis == false)
+			if (lock_hand_axes == false)
 			{
 				// lock this button
-				lock_right_axis = true;
+				lock_hand_axes = true;
 				// enable mining
 				handWave();
 				mineTimer = 2000;
@@ -69,8 +68,7 @@ namespace cppcraft
 		}
 		else
 		{
-			lock_left_axis = false;
-			lock_right_axis = false;
+			lock_hand_axes = false;
 			// cancel stuff
 			cancelDig();
 		}

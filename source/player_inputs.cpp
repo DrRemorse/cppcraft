@@ -43,9 +43,6 @@ namespace cppcraft
 		
 		keyconf.k_inventory = config.get("k_inventory", 73); // I
 		
-		keyconf.joy_enabled = config.get("joy.enabled", false);
-		keyconf.joy_index   = config.get("joy.index", 0);
-		
 		double mspd  = config.get("mouse.speed", 120) / 1000.0;
 		double msens = config.get("mouse.sens",  80)  / 10.0;
 		
@@ -57,8 +54,10 @@ namespace cppcraft
 		input.showMouse(false); // hide mouse
 		
 		// initialize joystick support
+		keyconf.joy_enabled = config.get("joy.enabled", false);
 		if (keyconf.joy_enabled)
 		{
+			keyconf.joy_index   = config.get("joy.index", 0);
 			keyconf.joy_enabled = glfwJoystickPresent(keyconf.joy_index) != 0;
 			
 			if (keyconf.joy_enabled)
@@ -68,6 +67,26 @@ namespace cppcraft
 				
 				keyconf.joy_deadzone = config.get("joy.deadzone", 0.12);
 				keyconf.joy_speed    = config.get("joy.speed", 2.0);
+				
+				/// joystick configuration ///
+				keyconf.joy_axis_sidestep = config.get("joy.axis_sides", 0);
+				keyconf.joy_axis_forward = config.get("joy.axis_forw", 1);
+				
+				keyconf.joy_axis_look_xrot = config.get("joy.axis_xrot", 3);
+				keyconf.joy_axis_look_yrot = config.get("joy.axis_yrot", 4);
+				
+				keyconf.joy_axis_place = config.get("joy.axis_place", 2);
+				keyconf.joy_axis_mine  = config.get("joy.axis_mine", 2);
+				
+				keyconf.joy_btn_jump   = config.get("joy.btn_jump", 0);
+				keyconf.joy_btn_sprint = config.get("joy.btn_sprint", 2);
+				keyconf.joy_btn_crouch = config.get("joy.btn_crouch", 3);
+				
+				keyconf.joy_btn_previtem = config.get("joy.btn_previtem", 4);
+				keyconf.joy_btn_nextitem = config.get("joy.btn_nextitem", 5);
+				
+				keyconf.joy_btn_flying = config.get("joy.btn_flying", 9);
+				keyconf.joy_btn_exit   = config.get("joy.btn_exit", 6);
 			}
 			else
 			{
@@ -76,7 +95,8 @@ namespace cppcraft
 		}
 		if (keyconf.joy_enabled == false)
 		{
-			keyconf.jbuttons = new unsigned char[14]();
+			keyconf.jbuttons = new unsigned char[16]();
+			keyconf.jaxis = new float[8]();
 		}
 		
 	} // PlayerClass::initInputs
@@ -175,7 +195,7 @@ namespace cppcraft
 				}
 			}
 			
-			if (input.getKey(keyconf.k_flying) || keyconf.jbuttons[9])
+			if (input.getKey(keyconf.k_flying) || keyconf.jbuttons[keyconf.joy_btn_flying])
 			{
 				if (plogic.flylock == false)
 				{
@@ -190,20 +210,20 @@ namespace cppcraft
 			static bool lock_quickbar_scroll = false;
 			
 			int wheel = input.getWheel();
-			if (wheel > 0 || keyconf.jbuttons[5])
+			if (wheel > 0 || keyconf.jbuttons[keyconf.joy_btn_nextitem])
 			{
 				if (lock_quickbar_scroll == false)
 				{
-					// previous quickbar item
+					// next quickbar item
 					menu.quickbarX = (menu.quickbarX + 1) % inventory.getWidth();
 					lock_quickbar_scroll = true;
 				}
 			}
-			else if (wheel < 0 || keyconf.jbuttons[4])
+			else if (wheel < 0 || keyconf.jbuttons[keyconf.joy_btn_previtem])
 			{
 				if (lock_quickbar_scroll == false)
 				{
-					// go to next inventory item in quickbar
+					// previous quickbar item
 					if (menu.quickbarX)
 						menu.quickbarX -= 1;
 					else
@@ -224,7 +244,7 @@ namespace cppcraft
 			
 		} // busyControls
 		
-		if (input.getKey(GLFW_KEY_ESCAPE) == Input::KEY_PRESSED || keyconf.jbuttons[6])
+		if (input.getKey(GLFW_KEY_ESCAPE) == Input::KEY_PRESSED || keyconf.jbuttons[keyconf.joy_btn_exit])
 		{
 			input.hold(GLFW_KEY_ESCAPE);
 			

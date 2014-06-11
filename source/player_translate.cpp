@@ -19,7 +19,7 @@ namespace cppcraft
 	void PlayerLogic::translatePlayer()
 	{
 		bool moved = false;
-		bool jumpKey = (input.getKey(keyconf.k_jump) || keyconf.jbuttons[0]) && player.busyControls() == false;
+		bool jumpKey = (input.getKey(keyconf.k_jump) || keyconf.jbuttons[keyconf.joy_btn_jump]) && player.busyControls() == false;
 		
 		const double PLAYER_GROUND_LEVEL = 1.51;
 		const double fw_feettest   = 1.45; // feet level, used for gravity and landing tests
@@ -546,7 +546,7 @@ namespace cppcraft
 	
 	void PlayerLogic::handlePlayerJumping()
 	{
-		bool jumpKey = (input.getKey(keyconf.k_jump) || keyconf.jbuttons[0]) && player.busyControls() == false;
+		bool jumpKey = (input.getKey(keyconf.k_jump) || keyconf.jbuttons[keyconf.joy_btn_jump]) && player.busyControls() == false;
 		
 		if (jumpKey)
 		{
@@ -576,7 +576,7 @@ namespace cppcraft
 				else if (freefall == true)
 				{
 					// jump key pressed, but not held
-					if (input.getKey(keyconf.k_jump) && player.busyControls() == false)
+					if (jumpKey)
 					{
 						#ifdef USE_JETPACK
 						if (jetpackFuel != 0)

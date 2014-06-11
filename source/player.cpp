@@ -156,9 +156,10 @@ namespace cppcraft
 	{
 		if (keyconf.joy_enabled)
 		{
-				float dx = tresholdValue(keyconf.jaxis[3]);
-				float dy = tresholdValue(keyconf.jaxis[4]);
-				input.addRotation(vec2(dx, dy) * keyconf.joy_speed);
+			float dx = tresholdValue(keyconf.jaxis[keyconf.joy_axis_look_xrot]);
+			float dy = tresholdValue(keyconf.jaxis[keyconf.joy_axis_look_yrot]);
+			
+			input.addRotation(vec2(dx, dy) * keyconf.joy_speed);
 		}
 		
 		// measure closeness
