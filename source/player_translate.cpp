@@ -100,7 +100,9 @@ namespace cppcraft
 			if (fabs(lookVector.y) > 0.75)
 			{
 				// lock x/z when sprinting or holding crouch key
-				if (movestate == PMS_Sprint || input.getKey(keyconf.k_crouch) != 0)
+				if (movestate == PMS_Sprint || 
+					input.getKey(keyconf.k_crouch) != 0 || 
+					keyconf.jbuttons[3])
 				{
 					player.pax = 0.0;
 					player.paz = 0.0;

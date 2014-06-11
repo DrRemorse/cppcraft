@@ -190,7 +190,7 @@ namespace cppcraft
 			static bool lock_quickbar_scroll = false;
 			
 			int wheel = input.getWheel();
-			if (wheel > 0 || keyconf.jbuttons[4])
+			if (wheel > 0 || keyconf.jbuttons[5])
 			{
 				if (lock_quickbar_scroll == false)
 				{
@@ -199,7 +199,7 @@ namespace cppcraft
 					lock_quickbar_scroll = true;
 				}
 			}
-			else if (wheel < 0 || keyconf.jbuttons[5])
+			else if (wheel < 0 || keyconf.jbuttons[4])
 			{
 				if (lock_quickbar_scroll == false)
 				{

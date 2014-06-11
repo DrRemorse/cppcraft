@@ -202,6 +202,7 @@ namespace cppcraft
 				
 				dx -= sin(player.yrotrad) * vz;
 				dz += cos(player.yrotrad) * vz;
+				plogic.Motion = (vz < 0.0) ? 1 : 2;
 			}
 			
 			/// KEYBOARD MOVEMENT
@@ -215,13 +216,13 @@ namespace cppcraft
 				dx += cos(player.yrotrad);
 				dz += sin(player.yrotrad);
 			}
-			if (input.getKey(keyconf.k_forward)) // up
+			if (input.getKey(keyconf.k_forward)) // forward
 			{
 				dx += sin(player.yrotrad);
 				dz -= cos(player.yrotrad);
 				plogic.Motion = 1;
 			}
-			if (input.getKey(keyconf.k_backward)) // down
+			if (input.getKey(keyconf.k_backward)) // backward
 			{
 				dx -= sin(player.yrotrad);
 				dz += cos(player.yrotrad);
