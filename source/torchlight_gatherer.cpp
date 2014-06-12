@@ -22,9 +22,9 @@ namespace cppcraft
 	{
 		if (bx == 0) // facing = 5
 		{
-			if (sector.x > 0)
+			if (sector.getX() > 0)
 			{
-				Sector& s = Sectors(sector.x-1, sector.y, sector.z);
+				Sector& s = Sectors(sector.getX()-1, sector.getY(), sector.getZ());
 				if (s.contents > Sector::CONT_UNKNOWN)
 				{
 					if (LightidityComp(s(Sector::BLOCKS_XZ-1, by, bz).getID()))
@@ -41,9 +41,9 @@ namespace cppcraft
 		
 		if (bx == Sector::BLOCKS_XZ-1) // facing = 4
 		{
-			if (sector.x < Sectors.getXZ()-1)
+			if (sector.getX() < Sectors.getXZ()-1)
 			{
-				Sector& s = Sectors(sector.x+1, sector.y, sector.z);
+				Sector& s = Sectors(sector.getX()+1, sector.getY(), sector.getZ());
 				if (s.contents > Sector::CONT_UNKNOWN)
 				{
 					if (LightidityComp(s(0, by, bz).getID()))
@@ -60,9 +60,9 @@ namespace cppcraft
 		
 		if (by == 0)
 		{
-			if (sector.y > 0)
+			if (sector.getY() > 0)
 			{
-				Sector& s = Sectors(sector.x, sector.y-1, sector.z);
+				Sector& s = Sectors(sector.getX(), sector.getY()-1, sector.getZ());
 				if (s.contents > Sector::CONT_UNKNOWN)
 				{
 					if (LightidityComp(s(bx, Sector::BLOCKS_Y-1, bz).getID()))
@@ -79,9 +79,9 @@ namespace cppcraft
 		
 		if (by == Sector::BLOCKS_Y-1)
 		{
-			if (sector.y < Sectors.getY()-1)
+			if (sector.getY() < Sectors.getY()-1)
 			{
-				Sector& s = Sectors(sector.x, sector.y+1, sector.z);
+				Sector& s = Sectors(sector.getX(), sector.getY()+1, sector.getZ());
 				if (s.contents > Sector::CONT_UNKNOWN)
 				{
 					if (LightidityCompTop(s(bx, 0, bz).getID()))
@@ -98,9 +98,9 @@ namespace cppcraft
 		
 		if (bz == 0)
 		{
-			if (sector.z > 0)
+			if (sector.getZ() > 0)
 			{
-				Sector& s = Sectors(sector.x, sector.y, sector.z-1);
+				Sector& s = Sectors(sector.getX(), sector.getY(), sector.getZ()-1);
 				if (s.contents > Sector::CONT_UNKNOWN)
 				{
 					if (LightidityComp(s(bx, by, Sector::BLOCKS_XZ-1).getID()))
@@ -117,9 +117,9 @@ namespace cppcraft
 		
 		if (bz == Sector::BLOCKS_XZ-1)
 		{
-			if (sector.z < Sectors.getXZ()-1)
+			if (sector.getZ() < Sectors.getXZ()-1)
 			{
-				Sector& s = Sectors(sector.x, sector.y, sector.z+1);
+				Sector& s = Sectors(sector.getX(), sector.getY(), sector.getZ()+1);
 				if (s.contents > Sector::CONT_UNKNOWN)
 				{
 					if (LightidityComp(s(bx, by, 0).getID()))
@@ -139,12 +139,12 @@ namespace cppcraft
 	void Torchlight::lightGatherer(Sector& sector, LightList& list)
 	{
 		// create boundries
-		int x0 = (sector.x - 1 < 0) ? 0 : sector.x - 1;
-		int x1 = (sector.x + 1 >= Sectors.getXZ()) ? Sectors.getXZ()-1 : sector.x + 1;
-		int y0 = (sector.y - 2 < 0) ? 0 : sector.y - 2;
-		int y1 = (sector.y + 2 >= Sectors.getY() ) ? Sectors.getY()-1  : sector.y + 2;
-		int z0 = (sector.z - 1 < 0) ? 0 : sector.z - 1;
-		int z1 = (sector.z + 1 >= Sectors.getXZ()) ? Sectors.getXZ()-1 : sector.z + 1;
+		int x0 = (sector.getX() - 1 < 0) ? 0 : sector.getX() - 1;
+		int x1 = (sector.getX() + 1 >= Sectors.getXZ()) ? Sectors.getXZ()-1 : sector.getX() + 1;
+		int y0 = (sector.getY() - 2 < 0) ? 0 : sector.getY() - 2;
+		int y1 = (sector.getY() + 2 >= Sectors.getY() ) ? Sectors.getY()-1  : sector.getY() + 2;
+		int z0 = (sector.getZ() - 1 < 0) ? 0 : sector.getZ() - 1;
+		int z1 = (sector.getZ() + 1 >= Sectors.getXZ()) ? Sectors.getXZ()-1 : sector.getZ() + 1;
 		
 		// clear light list
 		list.lights.clear();

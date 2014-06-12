@@ -9,6 +9,8 @@ namespace cppcraft
 	class SectorContainer
 	{
 	public:
+		~SectorContainer();
+		
 		static const int SECTORS_Y = 32;
 		static const int SECTORS_Y_SHL = 5;
 		static const int MAX_SECTORS_XZ_GRIDSIZE = 128;
@@ -33,20 +35,23 @@ namespace cppcraft
 		
 	private:
 		// returns a reference to a pointer to a sector, which is ONLY used by Seamless
-		inline Sector* & getSectorPtr(int x, int y, int z) const
+		inline Sector*& getSectorColumn(int x, int z)
+		{
+			return this->sectors[x * sectors_XZ + z];
+		}
+		inline Sector* getSectorPtr(int x, int y, int z) const
 		{
 			// custom order: (x, z, y)
 			// internal only, outside sources don't care
-			return this->sectors[((x * sectors_XZ + z) << SECTORS_Y_SHL) + y];
+			return this->sectors[x * sectors_XZ + z] + y;
 		}
 		
-		// moves sector (x2, y2, z2) to (x, y, z)
-		inline void set(int x, int y, int z, int x2, int y2, int z2)
+		// moves sector (x2, z2) to (x, z)
+		inline void move(int x, int z, int x2, int z2)
 		{
-			Sector*& s = getSectorPtr(x, y, z);
-			// set to new position
-			s = getSectorPtr(x2, y2, z2);
-			// assumption: not swapping in height
+			Sector*& s = getSectorColumn(x, z);
+			// move to new position
+			s = getSectorColumn(x2, z2);
 			s->x = x;
 			s->z = z;
 		}

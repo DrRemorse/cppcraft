@@ -65,9 +65,9 @@ namespace cppcraft
 		// prepare testdata for determining visible faces
 		pcg.testdata.sector = pc.sector;
 		
-		if (sector.x) // -x
+		if (sector.getX()) // -x
 		{
-			Sector& testsector = Sectors(sector.x-1, sector.y, sector.z);
+			Sector& testsector = Sectors(sector.getX()-1, sector.getY(), sector.getZ());
 			
 			if (testsector.contents == Sector::CONT_NULLSECTOR)
 			{
@@ -94,9 +94,9 @@ namespace cppcraft
 			pcg.testdata.test_x_m = 0;
 		} // -x
 		
-		if (sector.x != Sectors.getXZ()-1) // test +x
+		if (sector.getX() != Sectors.getXZ()-1) // test +x
 		{
-			Sector& testsector = Sectors(sector.x+1, sector.y, sector.z);
+			Sector& testsector = Sectors(sector.getX()+1, sector.getY(), sector.getZ());
 			
 			if (testsector.contents == Sector::CONT_NULLSECTOR)
 			{
@@ -123,9 +123,9 @@ namespace cppcraft
 			pcg.testdata.test_x_p = 0;
 		} // test +x
 		
-		if (sector.y) // test -y
+		if (sector.getY()) // test -y
 		{
-			Sector& testsector = Sectors(sector.x, sector.y-1, sector.z);
+			Sector& testsector = Sectors(sector.getX(), sector.getY()-1, sector.getZ());
 			
 			if (testsector.contents == Sector::CONT_NULLSECTOR)
 			{
@@ -152,9 +152,9 @@ namespace cppcraft
 			pcg.testdata.test_y_m = 0;
 		} // test -y
 		
-		if (sector.y != Sectors.getY()-1) // test +y
+		if (sector.getY() != Sectors.getY()-1) // test +y
 		{
-			Sector& testsector = Sectors(sector.x, sector.y+1, sector.z);
+			Sector& testsector = Sectors(sector.getX(), sector.getY()+1, sector.getZ());
 			
 			if (testsector.contents == Sector::CONT_NULLSECTOR)
 			{
@@ -180,9 +180,9 @@ namespace cppcraft
 			pcg.testdata.test_y_p = 0;
 		} // test +y
 		
-		if (sector.z) // test -z
+		if (sector.getZ()) // test -z
 		{
-			Sector& testsector = Sectors(sector.x, sector.y, sector.z-1);
+			Sector& testsector = Sectors(sector.getX(), sector.getY(), sector.getZ()-1);
 			
 			if (testsector.contents == Sector::CONT_NULLSECTOR)
 			{
@@ -209,9 +209,9 @@ namespace cppcraft
 			pcg.testdata.test_z_m = 0;
 		} // test -z
 		
-		if (sector.z != Sectors.getXZ()-1) // test +z
+		if (sector.getZ() != Sectors.getXZ()-1) // test +z
 		{
-			Sector& testsector = Sectors(sector.x, sector.y, sector.z+1);
+			Sector& testsector = Sectors(sector.getX(), sector.getY(), sector.getZ()+1);
 			
 			if (testsector.contents == Sector::CONT_NULLSECTOR)
 			{

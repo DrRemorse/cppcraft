@@ -85,14 +85,16 @@ namespace cppcraft
 	
 	bool wrunPrecomp(int xx, int zz)
 	{
-		for (int yy = Sectors.getY()-1; yy >= 0; yy--)
+		Sector* sector = &Sectors(xx, 0, zz);
+		Sector* topsector = sector + Sectors.getY();
+		while (sector < topsector)
 		{
-			Sector& s = Sectors(xx, yy, zz);
-			if (s.progress == Sector::PROG_NEEDRECOMP)
+			if (sector->progress == Sector::PROG_NEEDRECOMP)
 			{
 				// stop if adding to precompq fails
-				if (precompq.addPrecomp(s) == false) return true;
+				if (precompq.addPrecomp(*sector) == false) return true;
 			}
+			sector++;
 		}
 		return false;
 	}

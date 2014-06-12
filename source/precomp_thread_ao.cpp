@@ -339,7 +339,7 @@ namespace cppcraft
 		Sector& sector = precomp->sector[0];
 		
 		// world height in block units
-		short worldY = sector.y * Sector::BLOCKS_Y;
+		short worldY = sector.getY() * Sector::BLOCKS_Y;
 		
 		// calculate face counts for each integral vertex position
 		vertex_t* vt = datadump; // first vertex

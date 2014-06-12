@@ -134,9 +134,9 @@ namespace cppcraft
 		// left side -x
 		if (bx == 0) // facing = 5
 		{
-			if (sector.x > 0)
+			if (sector.getX() > 0)
 			{
-				Sector& s = Sectors(sector.x-1, sector.y, sector.z);
+				Sector& s = Sectors(sector.getX()-1, sector.getY(), sector.getZ());
 				if (s.contents > Sector::CONT_UNKNOWN)
 				{
 					if (visibilityComp(s(Sector::BLOCKS_XZ-1, by, bz), 3))
@@ -154,9 +154,9 @@ namespace cppcraft
 		// right side +x
 		if (bx == Sector::BLOCKS_XZ-1) // facing = 4
 		{
-			if (sector.x < Sectors.getXZ()-1)
+			if (sector.getX() < Sectors.getXZ()-1)
 			{
-				Sector& s = Sectors(sector.x+1, sector.y, sector.z);
+				Sector& s = Sectors(sector.getX()+1, sector.getY(), sector.getZ());
 				if (s.contents > Sector::CONT_UNKNOWN)
 				{
 					if (visibilityComp(s(0, by, bz), 2))
@@ -174,9 +174,9 @@ namespace cppcraft
 		// bottom -y
 		if (by == 0)
 		{
-			if (sector.y > 0)
+			if (sector.getY() > 0)
 			{
-				Sector& s = Sectors(sector.x, sector.y-1, sector.z);
+				Sector& s = Sectors(sector.getX(), sector.getY()-1, sector.getZ());
 				if (s.contents > Sector::CONT_UNKNOWN)
 				{
 					if (visibilityCompBottom(s(bx, Sector::BLOCKS_Y-1, bz)))
@@ -194,9 +194,9 @@ namespace cppcraft
 		// top +y
 		if (by == Sector::BLOCKS_Y-1)
 		{
-			if (sector.y < Sectors.getY()-1)
+			if (sector.getY() < Sectors.getY()-1)
 			{
-				Sector& s = Sectors(sector.x, sector.y+1, sector.z);
+				Sector& s = Sectors(sector.getX(), sector.getY()+1, sector.getZ());
 				if (s.contents > Sector::CONT_UNKNOWN)
 				{
 					if (visibilityCompTop(s(bx, 0, bz)))
@@ -214,9 +214,9 @@ namespace cppcraft
 		// back -z
 		if (bz == 0)
 		{
-			if (sector.z > 0)
+			if (sector.getZ() > 0)
 			{
-				Sector& s = Sectors(sector.x, sector.y, sector.z-1);
+				Sector& s = Sectors(sector.getX(), sector.getY(), sector.getZ()-1);
 				if (s.contents > Sector::CONT_UNKNOWN)
 				{
 					if (visibilityComp(s(bx, by, Sector::BLOCKS_XZ-1), 1))
@@ -233,9 +233,9 @@ namespace cppcraft
 		
 		if (bz == Sector::BLOCKS_XZ-1)
 		{
-			if (sector.z < Sectors.getXZ()-1)
+			if (sector.getZ() < Sectors.getXZ()-1)
 			{
-				Sector& s = Sectors(sector.x, sector.y, sector.z+1);
+				Sector& s = Sectors(sector.getX(), sector.getY(), sector.getZ()+1);
 				if (s.contents > Sector::CONT_UNKNOWN)
 				{
 					if (visibilityComp(s(bx, by, 0), 0))

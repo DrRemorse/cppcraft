@@ -48,33 +48,41 @@ namespace cppcraft
 	class Seamstress
 	{
 	public:
-		static void resetSector(Sector& oldpointer);
-		static void updateSector(int x, int y, int z);
+		static void resetSectorColumn(int x, int z);
+		static void updateSectorColumn(int x, int z);
 	};
 	
-	inline void Seamstress::resetSector(Sector& oldpointer)
+	inline void Seamstress::resetSectorColumn(int x, int z)
 	{
 		// NOTE: GRIDTESTING DEALLOCATES VBO DATA
 		//       IN ANOTHER THREAD! DONT REMOVE VBODATA!
 		
-		// invalidate sector, which makes it regenerate
-		oldpointer.invalidate();
-	}
-	
-	void Seamstress::updateSector(int x, int y, int z)
-	{
-		// sectors are on the heap, nonetheless returning as reference
-		Sector& s = Sectors(x, y, z);
-		// if this sector is beyond needing generation
-		if (s.contents == Sector::CONT_SAVEDATA)
+		// for each sector in column,
+		Sector* base = &Sectors(x, 0, z);
+		for (int y = 0; y < SectorContainer::SECTORS_Y; y++)
 		{
-			// newly introduced sectors can have additional torchlight
-			// this sector has NEW exposure to lights it didn't have before
-			s.hasLight = 0;
-			// recompile sector mesh
-			s.progress = Sector::PROG_NEEDRECOMP;
+			// invalidate sector, which makes it regenerate
+			base[y].invalidate();
 		}
 	}
+	
+	void Seamstress::updateSectorColumn(int x, int z)
+	{
+		// for each sector in column,
+		Sector* base = &Sectors(x, 0, z);
+		for (int y = 0; y < SectorContainer::SECTORS_Y; y++)
+		{
+			// if this sector is beyond needing generation
+			if (base[y].contents == Sector::CONT_SAVEDATA)
+			{
+				// newly introduced sectors can have additional torchlight
+				// this sector has NEW exposure to lights it didn't have before
+				base[y].hasLight = 0;
+				// recompile sector mesh
+				base[y].progress = Sector::PROG_NEEDRECOMP;
+			}
+		}
+	} // updateSectorColumn
 	
 	// things that must be done prior to moving the world
 	void Seamless::seamless_preconditions()
@@ -108,38 +116,31 @@ namespace cppcraft
 			// only 25% left on the negative side
 			for (z = 0; z < Sectors.getXZ(); z++)
 			{
-				for (y = 0; y < Sectors.getY(); y++)
+				// remember old sector, at the end of x-axis
+				Sector* oldpointer = Sectors.getSectorColumn(Sectors.getXZ()-1, z);
+				
+				// move forward on the x-axis
+				for (x = Sectors.getXZ() - 1; x >= 1; x--)
 				{
-					// remember old sector, at the end of x-axis
-					Sector* oldpointer = Sectors.getSectorPtr(Sectors.getXZ()-1, y, z);
-					
-					#ifdef USE_WORK
-						// remove all jobs currently running on this sector
-						if (oldpointer->haswork) workq.removeWork(oldpointer);
-					#endif
-					
-					// move forward on the x-axis
-					for (x = Sectors.getXZ() - 1; x >= 1; x--)
-					{
-						// swap sector (x, y, z) with sector (x-1, y, z)
-						Sectors.set(x,y,z, x-1,y,z);
-					}
-					// set first sector on x-axis to old pointer
-					Sectors.getSectorPtr(0, y, z) = oldpointer;
-					oldpointer->x = 0;
-					// reset it completely
-					Seamstress::resetSector(*oldpointer);
-					// flag neighboring sector as dirty, if necessary
-					Seamstress::updateSector(1, y, z);
-					
-					// fuck if i know
-					if (thesun.getAngle().x < 0.0)
-					{
-						Seamstress::updateSector(2, y, z);
-						Seamstress::updateSector(3, y, z);
-					}
-					
-				} // sectors y
+					// move sector columns on x
+					Sectors.move(x,z, x-1,z);
+				}
+				
+				// set first column on x-axis to old pointer
+				Sectors.getSectorColumn(0, z) = oldpointer;
+				oldpointer->x = 0;
+				
+				// reset it completely
+				Seamstress::resetSectorColumn(0, z);
+				// flag neighboring sector as dirty, if necessary
+				Seamstress::updateSectorColumn(1, z);
+				
+				// fuck if i know
+				if (thesun.getAngle().x < 0.0)
+				{
+					Seamstress::updateSectorColumn(2, z);
+					Seamstress::updateSectorColumn(3, z);
+				}
 				
 				// reset edge columns
 				for (y = 0; y < columns.getColumnsY(); y++)
@@ -169,37 +170,28 @@ namespace cppcraft
 			// only 25% left on the positive side
 			for (z = 0; z < Sectors.getXZ(); z++)
 			{
-				for (y = 0; y < Sectors.getY(); y++)
+				// remember first sector on x-axis
+				Sector* oldpointer = Sectors.getSectorColumn(0, z);
+				
+				for (x = 0; x < Sectors.getXZ()-1; x++)
 				{
-					// remember first sector on x-axis
-					Sector* oldpointer = Sectors.getSectorPtr(0, y, z);
-					
-					#ifdef USE_WORK
-						// remove all jobs currently running on this sector
-						if (oldpointer->haswork) Work::removeWork(oldpointer);
-					#endif
-					
-					for (x = 0; x < Sectors.getXZ()-1; x++)
-					{
-						Sectors.set(x,y,z, x+1,y,z);
-					}
-					
-					// move oldpointer-sector to end of x-axis
-					Sectors.getSectorPtr(Sectors.getXZ()-1, y, z) = oldpointer;
-					oldpointer->x = Sectors.getXZ()-1;
-					
-					// reset sector completely
-					Seamstress::resetSector(*oldpointer);
-					// update neighbor
-					Seamstress::updateSector(Sectors.getXZ() - 2, y, z);
-					
-					if (thesun.getAngle().x > 0.0)
-					{
-						Seamstress::updateSector(Sectors.getXZ() - 3, y, z);
-						Seamstress::updateSector(Sectors.getXZ() - 4, y, z);
-					}
-					
-				} // sectors y
+					Sectors.move(x,z, x+1,z);
+				}
+				
+				// move oldpointer-sector to end of x-axis
+				Sectors.getSectorColumn(Sectors.getXZ()-1, z) = oldpointer;
+				oldpointer->x = Sectors.getXZ()-1;
+				
+				// reset sector completely
+				Seamstress::resetSectorColumn(Sectors.getXZ()-1, z);
+				// update neighbor
+				Seamstress::updateSectorColumn(Sectors.getXZ()-2, z);
+				
+				if (thesun.getAngle().x > 0.0)
+				{
+					Seamstress::updateSectorColumn(Sectors.getXZ()-3, z);
+					Seamstress::updateSectorColumn(Sectors.getXZ()-4, z);
+				}
 				
 				// reset edge columns
 				for (y = 0; y < columns.getColumnsY(); y++)
@@ -233,30 +225,21 @@ namespace cppcraft
 			// only 25% left on the negative side
 			for (x = 0; x < Sectors.getXZ(); x++)
 			{
-				for (y = 0; y < Sectors.getY(); y++)
+				// recursively move the sector
+				Sector* oldpointer = Sectors.getSectorColumn(x, Sectors.getXZ()-1);
+				
+				for (z = Sectors.getXZ()-1; z >= 1; z--)
 				{
-					// recursively move the sector
-					Sector* oldpointer = Sectors.getSectorPtr(x, y, Sectors.getXZ()-1);
-					
-					#ifdef USE_WORK
-						if (oldpointer->haswork) RemoveWork(oldpointer);
-					#endif
-					
-					for (z = Sectors.getXZ() - 1; z >= 1; z--)
-					{
-						Sectors.set(x,y,z,  x,y,z-1);
-					}
-					// generate new sector
-					Sectors.getSectorPtr(x, y, 0) = oldpointer;
-					oldpointer->z = 0;
-					
-					// reset oldpointer sector
-					Seamstress::resetSector(*oldpointer);
-					
-					// only need to update 1 row for Z
-					Seamstress::updateSector(x, y, 1);
-					
-				} // sectors y
+					Sectors.move(x,z,  x,z-1);
+				}
+				// move old pointer to beginning of z axis
+				Sectors.getSectorColumn(x, 0) = oldpointer;
+				oldpointer->z = 0;
+				
+				// reset oldpointer column
+				Seamstress::resetSectorColumn(x, 0);
+				// only need to update 1 row for Z
+				Seamstress::updateSectorColumn(x, 1);
 				
 				// reset edge columns
 				for (y = 0; y < columns.getColumnsY(); y++)
@@ -286,30 +269,21 @@ namespace cppcraft
 			// move sectors forwards +z (and rollback last line)
 			for (x = 0; x < Sectors.getXZ(); x++)
 			{
-				for (y = 0; y < Sectors.getY(); y++)
+				Sector* oldpointer = Sectors.getSectorColumn(x, 0);
+				
+				// recursively move sectors
+				for (z = 0; z < Sectors.getXZ()-1; z++)
 				{
-					Sector* oldpointer = Sectors.getSectorPtr(x, y, 0);
-					
-					#ifdef USE_WORK
-						if (oldpointer->haswork) RemoveWork(oldpointer);
-					#endif
-					
-					// recursively move sectors
-					for (z = 0; z < Sectors.getXZ()-1; z++)
-					{
-						Sectors.set(x,y,z, x,y,z+1);
-					}
-					// generate new sector
-					Sectors.getSectorPtr(x, y, Sectors.getXZ()-1) = oldpointer;
-					oldpointer->z = Sectors.getXZ()-1;
-					
-					// reset Sector* oldpointer
-					Seamstress::resetSector(*oldpointer);
-					
-					// only need to update 1 row for Z
-					Seamstress::updateSector(x, y, Sectors.getXZ() - 2);
-					
-				} // sectors y
+					Sectors.move(x,z, x,z+1);
+				}
+				// move sector to end of z axis
+				Sectors.getSectorColumn(x, Sectors.getXZ()-1) = oldpointer;
+				oldpointer->z = Sectors.getXZ()-1;
+				
+				// reset oldpointer column
+				Seamstress::resetSectorColumn(x, Sectors.getXZ()-1);
+				// only need to update 1 row for Z
+				Seamstress::updateSectorColumn(x, Sectors.getXZ()-2);
 				
 				// reset edge columns
 				for (y = 0; y < columns.getColumnsY(); y++)

@@ -109,16 +109,16 @@ namespace cppcraft
 		//   NO EARLY EXITS HERE    //
 		// NOTE NOTE NOTE NOTE NOTE //
 		
-		int dx = (sector.x + world.getWX()) & (Chunks::CHUNK_SIZE-1);
-		int dz = (sector.z + world.getWZ()) & (Chunks::CHUNK_SIZE-1);
+		int dx = (sector.getX() + world.getWX()) & (Chunks::CHUNK_SIZE-1);
+		int dz = (sector.getZ() + world.getWZ()) & (Chunks::CHUNK_SIZE-1);
 		
-		int x1 = sector.x - dx;
+		int x1 = sector.getX() - dx;
 		int x2 = x1 + Chunks::CHUNK_SIZE;
 		
 		if (x1 < 0) x1 = 0;            // CLAMP AFTER x2 IS SET!!!
 		if (x2 > Sectors.getXZ()) x2 = Sectors.getXZ();
 		
-		int z1 = sector.z - dz;
+		int z1 = sector.getZ() - dz;
 		int z2 = z1 + Chunks::CHUNK_SIZE;
 		
 		if (z1 < 0) z1 = 0;            // CLAMP AFTER z2 IS SET!!!

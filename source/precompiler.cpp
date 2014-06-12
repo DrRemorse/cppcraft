@@ -62,9 +62,9 @@ namespace cppcraft
 		Sector& sector = *this->sector;
 		
 		// renderable VBO structure
-		int columnY = columns.fromSectorY(sector.y);
-		int internalY = columns.internalSectorY(sector.y);
-		Column& cv = columns(sector.x, columnY, sector.z);
+		int columnY = columns.fromSectorY(sector.getY());
+		int internalY = columns.internalSectorY(sector.getY());
+		Column& cv = columns(sector.getX(), columnY, sector.getZ());
 		vbodata_t& v = cv.vbodata[internalY];
 		
 		// ye olde switcharoo
@@ -89,6 +89,6 @@ namespace cppcraft
 		// sector was definitely not culled
 		sector.culled = false;
 		
-		PrecompScheduler::add(Sectors(sector.x, columnY, sector.z));
+		PrecompScheduler::add(Sectors(sector.getX(), columnY, sector.getZ()));
 	}
 }

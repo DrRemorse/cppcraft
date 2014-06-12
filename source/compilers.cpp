@@ -31,11 +31,11 @@ namespace cppcraft
 		// also, prune array removing dead columns
 		for (int i = colq.size()-1; i >= 0; i--)
 		{
-			Column& cv = columns(colq[i]->x, colq[i]->y, colq[i]->z);
+			Column& cv = columns(colq[i]->getX(), colq[i]->getY(), colq[i]->getZ());
 			
 			if (cv.updated == true)
 			{
-				cv.compile(colq[i]->x, colq[i]->y, colq[i]->z);
+				cv.compile(colq[i]->getX(), colq[i]->getY(), colq[i]->getZ());
 			}
 			if (cv.updated == false)
 			{

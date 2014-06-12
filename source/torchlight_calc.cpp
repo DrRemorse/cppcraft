@@ -18,12 +18,12 @@ namespace cppcraft
 	void Torchlight::lightSectorUpdates(Sector& s, bool instant)
 	{
 		// create boundries
-		int x0 = (s.x - 1 < 0) ? 0 : s.x - 1;
-		int x1 = (s.x + 1 >= Sectors.getXZ()) ? Sectors.getXZ()-1 : s.x + 1;
-		int y0 = (s.y - 2 < 0) ? 0 : s.y - 2;
-		int y1 = (s.y + 2 >= Sectors.getY()) ? Sectors.getY()-1 : s.y + 2;
-		int z0 = (s.z - 1 < 0) ? 0 : s.z - 1;
-		int z1 = (s.z + 1 >= Sectors.getXZ()) ? Sectors.getXZ()-1 : s.z + 1;
+		int x0 = (s.getX() - 1 < 0) ? 0 : s.getX() - 1;
+		int x1 = (s.getX() + 1 >= Sectors.getXZ()) ? Sectors.getXZ()-1 : s.getX() + 1;
+		int y0 = (s.getY() - 2 < 0) ? 0 : s.getY() - 2;
+		int y1 = (s.getY() + 2 >= Sectors.getY()) ? Sectors.getY()-1 : s.getY() + 2;
+		int z0 = (s.getZ() - 1 < 0) ? 0 : s.getZ() - 1;
+		int z1 = (s.getZ() + 1 >= Sectors.getXZ()) ? Sectors.getXZ()-1 : s.getZ() + 1;
 		
 		// force regeneration of affected sectors
 		int x = x0, y = y0, z = z0;
@@ -76,9 +76,9 @@ namespace cppcraft
 		if (L != sector)
 		{
 			// different sector
-			position.x += (L.x - sector.x) * Sector::BLOCKS_XZ;
-			position.y += (L.y - sector.y) * Sector::BLOCKS_Y;
-			position.z += (L.z - sector.z) * Sector::BLOCKS_XZ;
+			position.x += (L.getX() - sector.getX()) * Sector::BLOCKS_XZ;
+			position.y += (L.getY() - sector.getY()) * Sector::BLOCKS_Y;
+			position.z += (L.getZ() - sector.getZ()) * Sector::BLOCKS_XZ;
 		}
 		
 		//if (light.id == _TORCH || light.id == _LANTERN)

@@ -205,10 +205,9 @@ namespace cppcraft
 			if (input.getKey(GLFW_KEY_C))
 			{
 				Sector* sector = Sectors.sectorAt(player.X, player.Y, player.Z);
-				
 				if (sector)
 				{
-					logger << Log::INFO << "Sector (" << sector->x << ", " << sector->y << ", " << sector->z << "): " << (int) sector->progress << Log::ENDL;
+					logger << Log::INFO << "Sector (" << sector->getX() << ", " << sector->getY() << ", " << sector->getZ() << "): " << (int) sector->progress << Log::ENDL;
 					logger << Log::INFO << "culled= " << (int) sector->culled << ", render= " << sector->render << ", content= " << (int) sector->contents << Log::ENDL;
 				}
 			}

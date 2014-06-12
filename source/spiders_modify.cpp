@@ -218,11 +218,11 @@ namespace cppcraft
 	
 	void Spiders::skylightReachDown(Sector& sector)
 	{
-		for (int y = 0; y < sector.y; y++)
+		for (int y = 0; y < sector.getY(); y++)
 		{
-			if (Sectors(sector.x, y, sector.z).render)
+			if (Sectors(sector.getX(), y, sector.getZ()).render)
 			{
-				Sectors(sector.x, y, sector.z).progress = Sector::PROG_NEEDRECOMP;
+				Sectors(sector.getX(), y, sector.getZ()).progress = Sector::PROG_NEEDRECOMP;
 			}
 		}
 	}
@@ -241,49 +241,49 @@ namespace cppcraft
 	{
 		if (bx == 0)
 		{
-			if (sector.x)
+			if (sector.getX())
 			{
-				Sector& testsector = Sectors(sector.x-1, sector.y, sector.z);
+				Sector& testsector = Sectors(sector.getX()-1, sector.getY(), sector.getZ());
 				updateNeighboringSector(testsector, immediate);
 			}
 		}
 		else if (bx == Sector::BLOCKS_XZ-1)
 		{
-			if (sector.x+1 != Sectors.getXZ())
+			if (sector.getX()+1 != Sectors.getXZ())
 			{
-				Sector& testsector = Sectors(sector.x+1, sector.y, sector.z);
+				Sector& testsector = Sectors(sector.getX()+1, sector.getY(), sector.getZ());
 				updateNeighboringSector(testsector, immediate);
 			}
 		}
 		if (by == 0)
 		{
-			if (sector.y)
+			if (sector.getY())
 			{
-				Sector& testsector = Sectors(sector.x, sector.y-1, sector.z);
+				Sector& testsector = Sectors(sector.getX(), sector.getY()-1, sector.getZ());
 				updateNeighboringSector(testsector, immediate);
 			}
 		}
 		else if (by == Sector::BLOCKS_Y-1)
 		{
-			if (sector.y+1 != Sectors.getY())
+			if (sector.getY()+1 != Sectors.getY())
 			{
-				Sector& testsector = Sectors(sector.x, sector.y+1, sector.z);
+				Sector& testsector = Sectors(sector.getX(), sector.getY()+1, sector.getZ());
 				updateNeighboringSector(testsector, immediate);
 			}
 		}
 		if (bz == 0)
 		{
-			if (sector.z)
+			if (sector.getZ())
 			{
-				Sector& testsector = Sectors(sector.x, sector.y, sector.z-1);
+				Sector& testsector = Sectors(sector.getX(), sector.getY(), sector.getZ()-1);
 				updateNeighboringSector(testsector, immediate);
 			}
 		}
 		else if (bz == Sector::BLOCKS_XZ-1)
 		{
-			if (sector.z+1 != Sectors.getXZ())
+			if (sector.getZ()+1 != Sectors.getXZ())
 			{
-				Sector& testsector = Sectors(sector.x, sector.y, sector.z+1);
+				Sector& testsector = Sectors(sector.getX(), sector.getY(), sector.getZ()+1);
 				updateNeighboringSector(testsector, immediate);
 			}
 		}

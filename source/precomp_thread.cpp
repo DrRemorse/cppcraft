@@ -83,18 +83,18 @@ namespace cppcraft
 		pcg.bigTextures = tiles.bigTilesX * tiles.bigTilesY;
 		
 		// world coordinates
-		pcg.worldY = (sector.y * Sector::BLOCKS_Y) * RenderConst::VERTEX_SCALE;
+		pcg.worldY = (sector.getY() * Sector::BLOCKS_Y) * RenderConst::VERTEX_SCALE;
 		pcg.worldY_extra = 0;
 		
 		
 		// flatland data (biome +++)
-		pcg.flatl = &flatlands(sector.x, sector.z);
+		pcg.flatl = &flatlands(sector.getX(), sector.getZ());
 		// flatlands +x
-		pcg.flatl_x = &flatlands(sector.x+1, sector.z);
+		pcg.flatl_x = &flatlands(sector.getX()+1, sector.getZ());
 		// flatlands +z
-		pcg.flatl_z = &flatlands(sector.x, sector.z+1);
+		pcg.flatl_z = &flatlands(sector.getX(), sector.getZ()+1);
 		// flatlands +xz
-		pcg.flatl_xz = &flatlands(sector.x+1, sector.z+1);
+		pcg.flatl_xz = &flatlands(sector.getX()+1, sector.getZ()+1);
 		// initialize to invalid CRC value
 		pcg.fbicrc = 256;
 		

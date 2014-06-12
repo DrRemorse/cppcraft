@@ -480,9 +480,9 @@ namespace cppcraft
 		float tmplight = 0.0;
 		
 		vec3 position = vec3(
-			sector.x * Sector::BLOCKS_XZ + bx, 
-			sector.y * Sector::BLOCKS_Y  + by, 
-			sector.z * Sector::BLOCKS_XZ + bz
+			sector.getX() * Sector::BLOCKS_XZ + bx, 
+			sector.getY() * Sector::BLOCKS_Y  + by, 
+			sector.getZ() * Sector::BLOCKS_XZ + bz
 		);
 		
 		vec2 angle = thesun.getAngle().xy();

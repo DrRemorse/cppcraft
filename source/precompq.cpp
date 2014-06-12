@@ -86,14 +86,17 @@ namespace cppcraft
 	void PrecompQ::addTruckload(Sector& s)
 	{
 		// adds all sectors in this sectors "column" to the queue
-		int columnY = columns.fromSectorY(s.y);
+		int columnY = columns.fromSectorY(s.getY());
 		int start_y = columns.getSectorLevel(columnY);
 		int end_y   = start_y + columns.getSizeInSectors(columnY);
+		
+		int x = s.getX();
+		int z = s.getZ();
 		
 		// put truckload of sectors into queue
 		for (int y = start_y; y < end_y; y++)
 		{
-			Sector& s2 = Sectors(s.x, y, s.z);
+			Sector& s2 = Sectors(x, y, z);
 			
 			// NOTE bug fixed:
 			// don't try to re-add sectors that are already in the owen,

@@ -17,9 +17,9 @@ namespace cppcraft
 		if (s == nullptr) { valid = false; return; }
 		
 		// set world coordinates
-		wc.x = world.getWX() + s->x;
-		wc.y = world.getWY() + s->y;
-		wc.z = world.getWZ() + s->z;
+		wc.x = world.getWX() + s->getX();
+		wc.y = world.getWY() + s->getY();
+		wc.z = world.getWZ() + s->getZ();
 		
 		// set block coordinates (with 8-bit fractions)
 		vec3 f = vec3(x, y, z).frac();
@@ -35,9 +35,9 @@ namespace cppcraft
 		if (s == nullptr) { valid = false; return; }
 		
 		// set world coordinates
-		wc.x = world.getWX() + s->x;
-		wc.y = world.getWY() + s->y;
-		wc.z = world.getWZ() + s->z;
+		wc.x = world.getWX() + s->getX();
+		wc.y = world.getWY() + s->getY();
+		wc.z = world.getWZ() + s->getZ();
 		
 		// set block coordinates
 		bc.x = bx;
@@ -49,9 +49,9 @@ namespace cppcraft
 	{
 		// NOTE: may need to verify sector is not null
 		// set world coordinates
-		wc.x = world.getWX() + sector->x;
-		wc.y = world.getWY() + sector->y;
-		wc.z = world.getWZ() + sector->z;
+		wc.x = world.getWX() + sector->getX();
+		wc.y = world.getWY() + sector->getY();
+		wc.z = world.getWZ() + sector->getZ();
 		
 		// set block coordinates
 		bc.x = bx;

@@ -38,9 +38,6 @@ namespace cppcraft
 		// special datablock
 		//specialptr special;
 		
-		// grid position
-		short x, y, z;
-		
 		// flags
 		bool render;   // renderable
 		char progress; // progress_t
@@ -69,8 +66,22 @@ namespace cppcraft
 			CONT_SAVEDATA
 		};
 		
+		Sector() {}
 		// creates a sector with location (x, y, z)
 		Sector(int x, int y, int z);
+		
+		inline int getX() const
+		{
+			return (this - this->y)->x;
+		}
+		inline int getY() const
+		{
+			return this->y;
+		}
+		inline int getZ() const
+		{
+			return (this - this->y)->z;
+		}
 		
 		// returns true if the sector has been assigned a sectorblock
 		inline bool hasBlocks() const
@@ -110,6 +121,13 @@ namespace cppcraft
 		
 		// torchlight related
 		int countLights(); // recounts lights internally AND returns that count
+		
+	private:
+		// grid position
+		short x, y, z;
+		
+		friend class SectorContainer;
+		friend class Seamless;
 	};
 	
 }

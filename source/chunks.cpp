@@ -24,8 +24,8 @@ namespace cppcraft
 	void Chunks::addSector(Sector& sector)
 	{
 		// generate chunk token from sector
-		int tmptokenX = (sector.x + world.getWX()) >> CHUNK_SH;
-		int tmptokenZ = (sector.z + world.getWZ()) >> CHUNK_SH;
+		int tmptokenX = (sector.getX() + world.getWX()) >> CHUNK_SH;
+		int tmptokenZ = (sector.getZ() + world.getWZ()) >> CHUNK_SH;
 		
 		int foundChunk = -1;
 		
@@ -72,8 +72,8 @@ namespace cppcraft
 	std::string Chunks::getSectorString(Sector& sector)
 	{
 		// base32 composite of X and Z absolute world coordinates
-		return BaseConv::base32((sector.x + world.getWX()) >> Chunks::CHUNK_SH, 5) + "-" + 
-				BaseConv::base32((sector.z + world.getWZ()) >> Chunks::CHUNK_SH, 5);
+		return BaseConv::base32((sector.getX() + world.getWX()) >> Chunks::CHUNK_SH, 5) + "-" + 
+			   BaseConv::base32((sector.getZ() + world.getWZ()) >> Chunks::CHUNK_SH, 5);
 	}
 	
 	// forwards
@@ -128,10 +128,10 @@ namespace cppcraft
 	
 	void Chunks::writeSector(Sector& s, std::fstream& File)
 	{
-		int dx = (world.getWX() + s.x) & (CHUNK_SIZE - 1);
-		int dz = (world.getWZ() + s.z) & (CHUNK_SIZE - 1);
+		int dx = (world.getWX() + s.getX()) & (CHUNK_SIZE - 1);
+		int dz = (world.getWZ() + s.getZ()) & (CHUNK_SIZE - 1);
 		
-		int P = (1 + dx + s.y * CHUNK_SIZE + dz * CHUNK_SIZE * Sectors.getY()) * sizeof(int);
+		int P = (1 + dx + s.getY() * CHUNK_SIZE + dz * CHUNK_SIZE * Sectors.getY()) * sizeof(int);
 		int PL;
 		
 		if (s.contents == Sector::CONT_NULLSECTOR)

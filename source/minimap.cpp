@@ -3,7 +3,6 @@
 #include <library/log.hpp>
 #include <library/bitmap/bitmap.hpp>
 #include <library/bitmap/colortools.hpp>
-//#include <library/opengl/opengl.hpp>
 #include <library/opengl/vao.hpp>
 #include <library/opengl/texture.hpp>
 #include "biome.hpp"
@@ -282,8 +281,8 @@ namespace cppcraft
 		
 		// read certain blocks from sector, and determine pixel value
 		// set pixel value in the correct 2x2 position on pixel table
-		Sector& s0 = Sectors(sector.x, 0, sector.z);
-		FlatlandSector& fs = flatlands(sector.x, sector.z);
+		Sector& s0 = Sectors(sector.getX(), 0, sector.getZ());
+		FlatlandSector& fs = flatlands(sector.getX(), sector.getZ());
 		
 		// fetch sky levels
 		int skylevel[8];
@@ -298,8 +297,8 @@ namespace cppcraft
 		skylevel[7] = fgetSkylevel(fs, 11, 11);
 		
 		// fetch blocks at skylevels
-		int bx = s0.x * Sector::BLOCKS_XZ;
-		int bz = s0.z * Sector::BLOCKS_XZ;
+		int bx = s0.getX() * Sector::BLOCKS_XZ;
+		int bz = s0.getZ() * Sector::BLOCKS_XZ;
 		
 		// determine colors for skylevel blocks
 		Bitmap::rgba8_t colors[4];
@@ -321,8 +320,8 @@ namespace cppcraft
 					getBlockColor(fs, bx+11, skylevel[7], bz+11), 0.5);
 		
 		// set final color @ pixel (px, pz)
-		int px = bitmap->getWidth()  / 2 - Sectors.getXZ() + 2 * sector.x;
-		int pz = bitmap->getHeight() / 2 - Sectors.getXZ() + 2 * sector.z;
+		int px = bitmap->getWidth()  / 2 - Sectors.getXZ() + 2 * sector.getX();
+		int pz = bitmap->getHeight() / 2 - Sectors.getXZ() + 2 * sector.getZ();
 		
 		Bitmap::rgba8_t* pixels = bitmap->data();
 		if (pixels == nullptr) throw std::string("Minimap::addSector(): Bitmap had no buffer");

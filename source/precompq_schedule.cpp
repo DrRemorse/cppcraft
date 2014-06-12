@@ -22,9 +22,9 @@ namespace cppcraft
 		for (size_t i = 0; i < psched.size(); i++)
 		{
 			// we have to compare against sectors here, because the world is constantly changing
-			if (psched[i].sector->x == sector.x && 
-				psched[i].sector->y == sector.y && 
-				psched[i].sector->z == sector.z)
+			if (psched[i].sector->getX() == sector.getX() && 
+				psched[i].sector->getY() == sector.getY() && 
+				psched[i].sector->getZ() == sector.getZ())
 			{
 				// column already exists in scheduler, exit immediately
 				return;
@@ -57,15 +57,19 @@ namespace cppcraft
 	{
 		// determine readiness of column before sending to compiler
 		// first sector & end iterator in column
-		int start_y = columns.getSectorLevel(sector->y);
+		int start_y = columns.getSectorLevel(sector->getY());
 		bool ready = true;
 		bool foundData = false;
 		
-		Column& cv = columns(sector->x, sector->y, sector->z);
+		int x = sector->getX();
+		int z = sector->getZ();
 		
-		for (int sy = 0; sy < columns.getSizeInSectors(sector->y); sy++)
+		Column& cv = columns(x, sector->getY(), z);
+		int columnSize = columns.getSizeInSectors(sector->getY());
+		
+		for (int sy = 0; sy < columnSize; sy++)
 		{
-			Sector& s2 = Sectors(sector->x, start_y + sy, sector->z);
+			Sector& s2 = Sectors(x, start_y + sy, z);
 			
 			if (s2.progress != Sector::PROG_COMPILED)
 			{
