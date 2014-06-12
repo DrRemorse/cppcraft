@@ -49,7 +49,6 @@ void main()
 
 #ifdef FRAGMENT_PROGRAM
 #extension GL_EXT_gpu_shader4 : enable
-
 uniform sampler2DArray texture;
 uniform float daylight;
 
@@ -59,19 +58,17 @@ in float vertdist;
 flat in float worldLight;
 in float brightness;
 
-const float ZFAR
+out vec4 color;
 
 void main(void)
 {
-	vec4 color = texture2DArray(texture, texCoord);
+	color = texture2DArray(texture, texCoord);
 	if (color.a < 0.1) discard; // le discard!
 	
 	#include "degamma.glsl"
 	
 	// shadows & torchlight
 	color.rgb *= worldLight;
-	
-	#include "horizonfade.glsl"
 	
 	#include "finalcolor.glsl"
 }
