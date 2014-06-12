@@ -155,6 +155,7 @@ namespace cppcraft
 		NetPlayer* np = netplayers.playerByUID(userid);
 		if (np)
 		{
+			logger << Log::INFO << "CHAT  " << np->getName() << ": " << text << Log::ENDL;
 			chatbox.add(np->getName(), text, Chatbox::L_CHAT);
 		}
 	}
@@ -275,7 +276,7 @@ namespace cppcraft
 			break;
 			
 		case T_LOG:
-			logger << Log::INFO << "SERVER  " << ((char*) mp->args) << Log::ENDL;
+			logger << Log::INFO << "SERVER  " << ((const char*) mp->args) << Log::ENDL;
 			chatbox.add("SERVER", (const char*) mp->args, Chatbox::L_SERVER);
 			break;
 			
@@ -320,7 +321,7 @@ namespace cppcraft
 		lplayer.userid = dis(gen);
 		*/
 		lplayer.userid = rand();
-		lplayer.nickname = strdup((char*) uname.c_str());
+		lplayer.nickname = strdup(uname.c_str());
 		
 		lplayer.burstdist = 16;
 		
@@ -350,7 +351,7 @@ namespace cppcraft
 		
 		lattice_setplayer(&lplayer);
 		
-		if (lattice_connect((char*) hostn.c_str(), port) < 0) return false;
+		if (lattice_connect(hostn.c_str(), port) < 0) return false;
 		return true;
 	}
 	
@@ -479,7 +480,7 @@ namespace cppcraft
 			// outgoing chat
 			if (ntt.outgoingChat.size())
 			{
-				c_schat((char*) ntt.outgoingChat.c_str());
+				c_schat(ntt.outgoingChat.c_str());
 				ntt.outgoingChat.clear();
 			}
 		}

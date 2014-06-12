@@ -68,7 +68,7 @@ void main(void)
 	#include "degamma.glsl"
 	
 	// shadows & torchlight
-	color.rgb *= worldLight;
+	color.rgb *= worldLight * daylight;
 	
 	#include "finalcolor.glsl"
 }

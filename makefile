@@ -3,10 +3,9 @@
 #######################
 
 # build options
-# -Ofast -mfpmath=both -march=native -flto
 # -Ofast -mfpmath=both -march=native
 # -g -Og
-BUILDOPT = -O2 -mfpmath=both -march=native
+BUILDOPT = -Ofast -mfpmath=both -march=native
 # output file
 OUTPUT   = ./Debug/cppcraft
 
