@@ -159,6 +159,11 @@ namespace cppcraft
 			chatbox.add(np->getName(), text, Chatbox::L_CHAT);
 		}
 	}
+	void userChat(const char* nick, const char* text)
+	{
+		logger << Log::INFO << "CHAT  " << nick << ": " << text << Log::ENDL;
+		chatbox.add(nick, text, Chatbox::L_CHAT);
+	}
 	
 	void userMoved(NetPlayer::userid_t userid, lattice_p* movement)
 	{
@@ -281,6 +286,8 @@ namespace cppcraft
 			break;
 			
 		case T_SCHAT:
+			userChat(((lattice_schat*)mp->args)->nickname, ((lattice_schat*)mp->args)->schat_text);
+			break;
 		case T_CHAT:
 			userChat(mp->fromuid, (const char*) mp->args);
 			break;

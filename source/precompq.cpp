@@ -24,7 +24,10 @@ namespace cppcraft
 	class PrecompJob : public ThreadPool::TPool::TJob
 	{
 	public:
-		PrecompJob (int p) : ThreadPool::TPool::TJob(p) {}
+		PrecompJob (int p) : ThreadPool::TPool::TJob(p)
+		{
+			is_done = true;
+		}
 		
 		void run (void* pthread)
 		{
@@ -45,7 +48,10 @@ namespace cppcraft
 			{
 				logger << "PrecompJob(): Unknown job: " << (int) sector.progress << Log::ENDL;
 			}
+			this->is_done = true;
 		}
+		
+		bool is_done;
 	};
 	std::vector<PrecompJob> jobs;
 	
@@ -200,14 +206,15 @@ namespace cppcraft
 		}
 		if (cont)
 		{
+			jobs[this->nextJobID].is_done = false;
 			// queue thread job
 			threadpool->run(&jobs[this->nextJobID], &pt, false);
 			
 			// go to next thread
 			this->nextJobID = (this->nextJobID + 1) % precompiler.getJobCount();
 			
-			// if we are back at the start, we may just be exiting
-			if (this->nextJobID == 0) return true;
+			// if we are back at the start, we may just stop running jobs
+			return (this->nextJobID == 0);
 		}
 		return false;
 	}
@@ -222,7 +229,6 @@ namespace cppcraft
 	{
 		/// ------------ PRECOMPILER -------------- ///
 		
-		bool queueJobs = true;
 		bool everythingDead = true;
 		
 		for (int i = 0; i < Precompiler::MAX_PRECOMPQ; i++)
@@ -233,18 +239,14 @@ namespace cppcraft
 				
 				if (sector.progress == Sector::PROG_RECOMPILE || sector.progress == Sector::PROG_NEEDAO)
 				{
-					if (queueJobs)
-					{
-						if (this->nextJobID == 0)
-						{
-							// finish whatever is currently running, if anything
-							finish();
-						}
-						
-						// check if we are out of jobs to queue for,
-						// and if we are stop adding
-						queueJobs = !startJob(i);
-					}
+					// finish whatever is currently running, if anything
+					threadpool->sync(&jobs[this->nextJobID]);
+					
+					if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT)
+						return true;
+					
+					// start job immediately, since there's still time left
+					startJob(i);
 				}
 				else if (sector.progress == Sector::PROG_RECOMPILING || sector.progress == Sector::PROG_AO)
 				{

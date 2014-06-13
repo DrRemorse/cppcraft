@@ -2,6 +2,7 @@
 
 #include <library/log.hpp>
 #include <library/timing/timer.hpp>
+#include <library/sleep.hpp>
 #include "chunks.hpp"
 #include "network.hpp"
 #include "particles.hpp"
