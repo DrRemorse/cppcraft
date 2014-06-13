@@ -96,6 +96,17 @@ namespace cppcraft
 		delete[] this->vbodata;
 	}
 	
+	void Column::reset(int y)
+	{
+		for (int sy = columns.getSizeInSectors(y)-1; sy >= 0; sy--)
+		{
+			delete[] vbodata[sy].pcdata;
+			vbodata[sy].pcdata = nullptr;
+		}
+		renderable = false;
+		updated = false;
+	}
+	
 	void Column::compile(int x, int y, int z)
 	{
 		/////////////////////////////////////////////////////////////
@@ -110,8 +121,6 @@ namespace cppcraft
 			{
 				// COPY the VBO data section
 				vboList[vboCount] = vbodata[sy];
-				// unassign vertex data pointer from source
-				vbodata[sy].pcdata = nullptr;
 				// renderable and consistent, add to queue
 				vboCount += 1;
 			}
@@ -184,8 +193,6 @@ namespace cppcraft
 				}
 			} // shaders
 			
-			delete[] v.pcdata;
-			
 		} // next vbo
 		
 		
@@ -230,9 +237,6 @@ namespace cppcraft
 		glVertexAttribPointer(5, 4, GL_UNSIGNED_BYTE, GL_TRUE,  sizeof(vertex_t), (char*) (&vrt->c) + 4); // torchlight color
 		glEnableVertexAttribArray(5);
 		}
-		
-		// delete vertex data
-		
 		
 		#ifdef DEBUG
 		if (OpenGL::checkError())

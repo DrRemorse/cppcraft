@@ -97,12 +97,11 @@ namespace cppcraft
 				break;
 			}
 			
-			bool timeout = false;
 			
-			//----------------------------------//
-			//        SEAMLESS TRANSITION       //
-			//----------------------------------//
-			if (Seamless::run()) timeout = true;
+			///----------------------------------///
+			///        SEAMLESS TRANSITION       ///
+			///----------------------------------///
+			bool timeout = Seamless::run();
 			
 			// check for timeout
 			if (timer.getDeltaTime() > _localtime + MAX_TIMING_WAIT) timeout = true;
@@ -110,8 +109,9 @@ namespace cppcraft
 			// update shadows if sun travelled far
 			thesun.travelCheck();
 			
-			// ---------- PRECOMPILER ----------- //
-			
+			///----------------------------------///
+			/// --------- PRECOMPILER ---------- ///
+			///----------------------------------///
 			if (timeout == false)
 			if (worldbuilder.getMode() != worldbuilder.MODE_GENERATING)
 			{
@@ -122,7 +122,7 @@ namespace cppcraft
 				{
 					// as long as not currently 'generating' world:
 					// start precompiling sectors
-					if (precompq.run(timer, _localtime)) timeout = true;
+					timeout = precompq.run(timer, _localtime);
 				}
 				catch (std::string exc)
 				{
@@ -140,31 +140,38 @@ namespace cppcraft
 				//logger << "pcq time: " << t1 - t0 << Log::ENDL;
 			}
 			
-			// ----------- WORLD BUILDER ------------ //
+			///----------------------------------///
+			/// -------- WORLD BUILDER --------- ///
+			///----------------------------------///
 			if (timeout == false)
 			{
-				//double t0 = timer.getDeltaTime();
-				//double t0 = _localtime;
-				
-				try
+				// either the worldbuilder is not in precompiler queue-adding mode
+				// or precompq queue must be empty (aka ready for more stuff)
+				if (worldbuilder.getMode() != WorldBuilder::MODE_PRECOMPILE || precompq.ready())
 				{
-					worldbuilder.run(timer, _localtime);
+					//double t0 = timer.getDeltaTime();
+					//double t0 = _localtime;
+					
+					try
+					{
+						worldbuilder.run(timer, _localtime);
+					}
+					catch (std::string exc)
+					{
+						logger << Log::ERR << "Worldbuilder: " << exc << Log::ENDL;
+						break;
+					}
+					
+					//double t1 = timer.getDeltaTime() - t0;
+					//if (t1 > 0.020)
+					//{
+					//	logger << "Worldbuilder delta: " << t1 * 1000 << Log::ENDL;
+					//}
+					
+					//double t1 = timer.getDeltaTime();
+					//logger << "WB time: " << t1 - t0 << Log::ENDL;
 				}
-				catch (std::string exc)
-				{
-					logger << Log::ERR << "Worldbuilder: " << exc << Log::ENDL;
-					break;
-				}
-				
-				//double t1 = timer.getDeltaTime() - t0;
-				//if (t1 > 0.020)
-				//{
-				//	logger << "Worldbuilder delta: " << t1 * 1000 << Log::ENDL;
-				//}
-				
-				//double t1 = timer.getDeltaTime();
-				//logger << "WB time: " << t1 - t0 << Log::ENDL;
-			}
+			} // world builder
 			
 			// send & receive stuff
 			network.handleNetworking();

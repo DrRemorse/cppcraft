@@ -12,6 +12,7 @@
 #include "camera.hpp"
 #include "minimap.hpp"
 #include "player.hpp"
+#include "precompq.hpp"
 #include "sector.hpp"
 #include "sun.hpp"
 #include "threading.hpp"
@@ -88,7 +89,7 @@ namespace cppcraft
 	void Seamless::seamless_preconditions()
 	{
 		// finish all running precompiler threads
-		//precompq.finish();
+		precompq.finish();
 	}
 	
 	// big huge monster function
@@ -144,7 +145,7 @@ namespace cppcraft
 				
 				// reset edge columns
 				for (y = 0; y < columns.getColumnsY(); y++)
-					columns(0, y, z).reset();
+					columns(0, y, z).reset(y);
 				
 			} // sectors z
 			
@@ -195,7 +196,7 @@ namespace cppcraft
 				
 				// reset edge columns
 				for (y = 0; y < columns.getColumnsY(); y++)
-					columns(Sectors.getXZ()-1, y, z).reset();
+					columns(Sectors.getXZ()-1, y, z).reset(y);
 				
 			} // sectors z
 			
@@ -243,7 +244,7 @@ namespace cppcraft
 				
 				// reset edge columns
 				for (y = 0; y < columns.getColumnsY(); y++)
-					columns(x, y, 0).reset();
+					columns(x, y, 0).reset(y);
 				
 			} // sectors x
 			
@@ -287,7 +288,7 @@ namespace cppcraft
 				
 				// reset edge columns
 				for (y = 0; y < columns.getColumnsY(); y++)
-					columns(x, y, Sectors.getXZ()-1).reset();
+					columns(x, y, Sectors.getXZ()-1).reset(y);
 				
 			} // sectors x
 			

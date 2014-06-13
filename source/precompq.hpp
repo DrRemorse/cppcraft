@@ -24,12 +24,12 @@ namespace cppcraft
 		// initializes threading pool
 		void init();
 		// returns true if we must add stuff to precompq
-		inline bool ready()
+		inline bool ready() const
 		{
 			return queueCount == 0;
 		}
 		// starting a job is actually a little complicated
-		bool startJob(int& t_mod, int job);
+		bool startJob(int job);
 		// finish any remaining queue
 		void finish();
 		// stop threading pool
@@ -46,6 +46,8 @@ namespace cppcraft
 		int queueCount = 0;
 		// number of parallell threads
 		int threads;
+		// next job ID
+		int nextJobID;
 	};
 	extern PrecompQ precompq;
 }

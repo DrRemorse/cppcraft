@@ -28,11 +28,7 @@ namespace cppcraft
 		~Column();
 		
 		// used by: Seamless
-		inline void reset()
-		{
-			renderable = false;
-			updated = false;
-		}
+		void reset(int y);
 		// used by: Compiler pipeline
 		void compile(int x, int y, int z);
 		

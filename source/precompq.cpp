@@ -55,6 +55,7 @@ namespace cppcraft
 		precompiler.init();
 		// create X amount of threads
 		this->threads = config.get("world.threads", 2);
+		this->nextJobID = 0;
 		// create dormant thread pool
 		threadpool = new ThreadPool::TPool(this->threads);
 		// create precompiler job count jobs
@@ -181,10 +182,10 @@ namespace cppcraft
 		return (queueCount < Precompiler::MAX_PRECOMPQ);
 	}
 	
-	bool PrecompQ::startJob(int& t_mod, int job)
+	bool PrecompQ::startJob(int job)
 	{
 		// set thread job info
-		PrecompThread& pt = precompiler.getJob(t_mod);
+		PrecompThread& pt = precompiler.getJob(this->nextJobID);
 		pt.precomp = &precompiler[job];
 		// increase progress/stage
 		int stage = ++pt.precomp->sector->progress;
@@ -200,13 +201,13 @@ namespace cppcraft
 		if (cont)
 		{
 			// queue thread job
-			threadpool->run(&jobs[t_mod], &pt, false);
+			threadpool->run(&jobs[this->nextJobID], &pt, false);
 			
 			// go to next thread
-			t_mod = (t_mod + 1) % precompiler.getJobCount();
+			this->nextJobID = (this->nextJobID + 1) % precompiler.getJobCount();
 			
 			// if we are back at the start, we may just be exiting
-			if (t_mod == 0) return true;
+			if (this->nextJobID == 0) return true;
 		}
 		return false;
 	}
@@ -214,18 +215,17 @@ namespace cppcraft
 	void PrecompQ::finish()
 	{
 		threadpool->sync_all();
+		this->nextJobID = 0;
 	}
 	
 	bool PrecompQ::run(Timer& timer, double localTime)
 	{
-		// current thread id
-		int t_mod = 0;
+		/// ------------ PRECOMPILER -------------- ///
 		
-		// ------------ PRECOMPILER -------------- //
-		
+		bool queueJobs = true;
 		bool everythingDead = true;
-		int i;
-		for (i = 0; i < Precompiler::MAX_PRECOMPQ; i++)
+		
+		for (int i = 0; i < Precompiler::MAX_PRECOMPQ; i++)
 		{
 			if (precompiler[i].alive)
 			{
@@ -233,17 +233,17 @@ namespace cppcraft
 				
 				if (sector.progress == Sector::PROG_RECOMPILE || sector.progress == Sector::PROG_NEEDAO)
 				{
-					if (startJob(t_mod, i))
+					if (queueJobs)
 					{
-						finish();
-						
-						// always check if time is out
-						if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT)
+						if (this->nextJobID == 0)
 						{
-							everythingDead = false;
-							// exit for loop
-							break;
+							// finish whatever is currently running, if anything
+							finish();
 						}
+						
+						// check if we are out of jobs to queue for,
+						// and if we are stop adding
+						queueJobs = !startJob(i);
 					}
 				}
 				else if (sector.progress == Sector::PROG_RECOMPILING || sector.progress == Sector::PROG_AO)
@@ -275,12 +275,6 @@ namespace cppcraft
 			} // if precomp is alive
 			
 		} // for each precomp
-		
-		if (t_mod)
-		{
-			// finish jobs & clear queue
-			finish();
-		}
 		
 		if (everythingDead)
 		{
