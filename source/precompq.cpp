@@ -10,6 +10,7 @@
 #include "precompq_schedule.hpp"
 #include "sectors.hpp"
 #include "worldbuilder.hpp"
+#include <mutex>
 //#define DEBUG
 
 using namespace library;
@@ -18,7 +19,8 @@ namespace cppcraft
 {
 	PrecompQ precompq;
 	ThreadPool::TPool* threadpool;
-	static const double PRECOMPQ_MAX_THREADWAIT = 0.013;
+	std::mutex jobsynch;
+	static const double PRECOMPQ_MAX_THREADWAIT = 0.012;
 	
 	class PrecompJob : public ThreadPool::TPool::TJob
 	{
@@ -47,13 +49,23 @@ namespace cppcraft
 			{
 				logger << "PrecompJob(): Unknown job: " << (int) sector.progress << Log::ENDL;
 			}
+			jobsynch.lock();
 			this->is_done = true;
+			jobsynch.unlock();
 		}
-		void resetJob()
+		bool isDone()
 		{
-			this->lock();
+			jobsynch.lock();
+			bool result = is_done;
+			jobsynch.unlock();
+			return result;
+		}
+		void setBusy()
+		{
+			jobsynch.lock();
+			//if (is_done == false) throw std::string("Was not finished");
 			is_done = false;
-			this->unlock();
+			jobsynch.unlock();
 		}
 		
 	private:
@@ -212,7 +224,7 @@ namespace cppcraft
 		}
 		if (cont)
 		{
-			jobs[this->nextJobID].resetJob();
+			jobs[this->nextJobID].setBusy();
 			// queue thread job
 			threadpool->run(&jobs[this->nextJobID], &pt, false);
 			
@@ -246,13 +258,19 @@ namespace cppcraft
 				if (sector.progress == Sector::PROG_RECOMPILE || sector.progress == Sector::PROG_NEEDAO)
 				{
 					// finish whatever is currently running, if anything
-					threadpool->sync(&jobs[this->nextJobID]);
-					
-					if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT)
-						return true;
-					
-					// start job immediately, since there's still time left
-					startJob(i);
+					if (jobs[this->nextJobID].isDone())
+					{
+						// start job immediately, since there's still time left
+						if (startJob(i))
+						{
+							if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT)
+								return true;
+						}
+					}
+					else
+					{
+						this->nextJobID = (this->nextJobID + 1) % precompiler.getJobCount();
+					}
 				}
 				else if (sector.progress == Sector::PROG_RECOMPILING || sector.progress == Sector::PROG_AO)
 				{
