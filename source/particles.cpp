@@ -68,6 +68,8 @@ namespace cppcraft
 		{
 			Particle& p = particles[i];
 			
+			// skip to next particle, if this one was dead
+			if (p.alive == false) continue;
 			// decrease time-to-live
 			if (p.TTL > 0)
 			{
@@ -77,22 +79,21 @@ namespace cppcraft
 				{
 					p.alive = false;
 					deadParticles.push_back(i);
+					continue;
 				}
 			}
-			// skip to next particle, if this one was dead
-			if (p.alive == false) continue;
 			
 			// accelerate speed
 			p.spd += p.acc;
 			// move particle
 			p.position += p.spd;
 			
-			// find delta between player and particle
-			int dx = (p.wx - world.getWX()) * Sector::BLOCKS_XZ;
-			int dz = (p.wz - world.getWZ()) * Sector::BLOCKS_XZ;
+			// find delta between worldpos and particle worldpos
+			int dx = (p.wx - world.getWX()) << Sector::BLOCKS_XZ_SH;
+			int dz = (p.wz - world.getWZ()) << Sector::BLOCKS_XZ_SH;
 			
 			// particle rendering position
-			vec3 fpos(p.position.x + dx, p.position.y, p.position.z + dz);
+			vec3 fpos = p.position + vec3(dx, 0.0, dz);
 			
 			// direction to particle
 			vec3 direction = normalize(fpos - playerPos);

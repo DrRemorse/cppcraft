@@ -1,8 +1,8 @@
 #include "torchlight.hpp"
 
-#include "library/log.hpp"
-#include "library/bitmap/colortools.hpp"
-#include "library/math/vector.hpp"
+#include <library/log.hpp>
+#include <library/bitmap/colortools.hpp>
+#include <library/math/vector.hpp>
 #include "lighttable.hpp"
 #include "precompq.hpp"
 #include "sectors.hpp"
@@ -39,22 +39,23 @@ namespace cppcraft
 				
 				if (ss.isUpdateable())
 				{
+					//logger << Log::INFO << "Updating: " << ss.getX() << ", " << ss.getY() << ", " << ss.getZ() << Log::ENDL;
 					ss.progress = Sector::PROG_NEEDRECOMP;
 					if (instant) precompq.addTruckload(ss);
 				}
 			}
 			
-			z += 1;
-			if (z > z1)
+			y += 1;
+			if (y > y1)
 			{
-				y += 1;
-				if (y > y1)
+				z += 1;
+				if (z > z1)
 				{
 					x += 1;
 					if (x > x1) break;
-					y = y0;
+					z = z0;
 				}
-				z = z0;
+				y = y0;
 			}
 		}
 	}

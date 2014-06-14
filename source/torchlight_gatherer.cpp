@@ -1,6 +1,6 @@
 #include "torchlight.hpp"
 
-#include "library/log.hpp"
+#include <library/log.hpp>
 #include "sectors.hpp"
 
 using namespace library;
@@ -171,41 +171,37 @@ namespace cppcraft
 					if (maxsolid)
 					{
 						// iterate only edges
-						if ((bx == 0 || bx == Sector::BLOCKS_XZ-1 ||
-							 by == 0 || by == Sector::BLOCKS_Y-1 || 
-							 bz == 0 || bz == Sector::BLOCKS_XZ-1) == false) goto nextBlock;
+						if (bx != 0 && bx != Sector::BLOCKS_XZ-1 &&
+							by != 0 && by != Sector::BLOCKS_Y-1 &&
+							bz != 0 && bz != Sector::BLOCKS_XZ-1) continue;
 					}
-					; /* scope */
+					
+					Block& block = s2(bx, by, bz);
+					if (isLight(block.getID()))
 					{
-						Block& block = s2(bx, by, bz);
-						if (isLight(block.getID()))
-						{
-							short lem = getEmitterId(block.getID());
-							const lightdata_t& id = getEmitter(lem);
-							
-							bool test = true;
-							if (sector != s2) test = (sector.distanceTo(s2, bx, by, bz) < id.reach);
-							
-							if (test)
-							{
-								if (lightGathererHelper(s2, bx, by, bz))
-								{
-									// add light
-									list.lights.emplace_back(
-										&s2, (short)bx, (short)by, (short)bz, lem
-									);
-									
-								} // visibility culling
-								
-							} // emission reach test
-							
-							// decrease known total, keeping track of lights
-							total -= 1;
-							if (total == 0) goto nextSector; // exit when no lights left
-						}
+						short lem = getEmitterId(block.getID());
+						const lightdata_t& id = getEmitter(lem);
 						
-					} // scope
-					nextBlock:;
+						bool test = true;
+						if (sector != s2) test = (sector.distanceTo(s2, bx, by, bz) < id.reach);
+						
+						if (test)
+						{
+							if (lightGathererHelper(s2, bx, by, bz))
+							{
+								// add light
+								list.lights.emplace_back(
+									&s2, (short)bx, (short)by, (short)bz, lem
+								);
+								
+							} // visibility culling
+							
+						} // emission reach test
+						
+						// decrease known total, keeping track of lights
+						total -= 1;
+						if (total == 0) goto nextSector; // exit when no lights left
+					}
 					
 				} // iterate blocks
 				

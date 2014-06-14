@@ -7,7 +7,7 @@ namespace cppcraft
 {
 	inline short randomHeight(int bx, int bz)
 	{
-		return (((bx + bz * 3) & 7) - 4) * 4;
+		return (((bx + bz * 3) & 7) - 2) * 5;
 	}
 	
 	int PrecompThreadData::emitCross(block_t id, int bx, int by, int bz)
@@ -38,13 +38,15 @@ namespace cppcraft
 		indic[2].biome = fbiome[3]; // (1, 1)
 		indic[1].biome = fbiome[3];
 		
-		// random height
-		short height = randomHeight(bx, bz);
-		indic[2].y += height;
-		indic[3].y += height;
-		indic[6].y += height;
-		indic[7].y += height;
-		
+		if (id < _WATERLILY)
+		{
+			// random height for non-special crosses
+			short height = randomHeight(bx, bz);
+			indic[2].y += height;
+			indic[3].y += height;
+			indic[6].y += height;
+			indic[7].y += height;
+		}
 		// set first vertex tile id
 		indic->w = Block::cubeFaceById(id, 0, 0);
 		// set reset
