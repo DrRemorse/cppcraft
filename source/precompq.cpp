@@ -30,6 +30,13 @@ namespace cppcraft
 			is_done = true;
 		}
 		
+		void setBusy()
+		{
+			jobsynch.lock();
+			//if (is_done == false) throw std::string("Was not finished");
+			is_done = false;
+			jobsynch.unlock();
+		}
 		void run (void* pthread)
 		{
 			PrecompThread& pt = *(PrecompThread*)pthread;
@@ -59,13 +66,6 @@ namespace cppcraft
 			bool result = is_done;
 			jobsynch.unlock();
 			return result;
-		}
-		void setBusy()
-		{
-			jobsynch.lock();
-			//if (is_done == false) throw std::string("Was not finished");
-			is_done = false;
-			jobsynch.unlock();
 		}
 		
 	private:
@@ -257,19 +257,23 @@ namespace cppcraft
 				
 				if (sector.progress == Sector::PROG_RECOMPILE || sector.progress == Sector::PROG_NEEDAO)
 				{
-					// finish whatever is currently running, if anything
-					if (jobs[this->nextJobID].isDone())
+					for (size_t N = 0; N < precompiler.getJobCount(); N++)
 					{
-						// start job immediately, since there's still time left
-						if (startJob(i))
+						// finish whatever is currently running, if anything
+						if (jobs[this->nextJobID].isDone())
 						{
-							if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT)
-								return true;
+							// start job immediately, since there's still time left
+							if (startJob(i))
+							{
+								if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT)
+									return true;
+							}
+							break;
 						}
-					}
-					else
-					{
-						this->nextJobID = (this->nextJobID + 1) % precompiler.getJobCount();
+						else
+						{
+							this->nextJobID = (this->nextJobID + 1) % precompiler.getJobCount();
+						}
 					}
 				}
 				else if (sector.progress == Sector::PROG_RECOMPILING || sector.progress == Sector::PROG_AO)
