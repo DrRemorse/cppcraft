@@ -75,11 +75,18 @@ namespace cppcraft
 	}
 	Columns::~Columns()
 	{
-		delete[] vboList;
-		delete[] column_dump;
+		int num_columns = Sectors.getXZ() * Sectors.getXZ() * this->height;
+		for (int i = 0; i < num_columns; i++)
+		{
+			int y = i % this->height;
+			columns[i].reset(y);
+		}
 		delete[] columns;
 		delete[] sectorLevels;
 		delete[] sectorSizes;
+		// compile stuff
+		delete[] vboList;
+		delete[] column_dump;
 	}
 	
 	Column::Column()
@@ -96,13 +103,17 @@ namespace cppcraft
 		delete[] this->vbodata;
 	}
 	
-	void Column::reset(int y)
+	inline void Column::deleteData(int y)
 	{
 		for (int sy = columns.getSizeInSectors(y)-1; sy >= 0; sy--)
 		{
 			delete[] vbodata[sy].pcdata;
 			vbodata[sy].pcdata = nullptr;
 		}
+	}
+	void Column::reset(int y)
+	{
+		deleteData(y);
 		renderable = false;
 		updated = false;
 	}
@@ -195,6 +206,7 @@ namespace cppcraft
 			
 		} // next vbo
 		
+		this->deleteData(y);
 		
 		///////////////////////////////////
 		// generate resources for column //

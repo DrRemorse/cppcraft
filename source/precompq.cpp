@@ -52,9 +52,13 @@ namespace cppcraft
 				// second stage: AO
 				pt.ambientOcclusion();
 			}
+			else if (sector.progress == Sector::PROG_NEEDRECOMP)
+			{
+				//logger << Log::WARN << "PrecompJob(): Ignore this: " << (int) sector.progress << Log::ENDL;
+			}
 			else
 			{
-				logger << "PrecompJob(): Unknown job: " << (int) sector.progress << Log::ENDL;
+				logger << Log::WARN << "PrecompJob(): Unknown job: " << (int) sector.progress << Log::ENDL;
 			}
 			jobsynch.lock();
 			this->is_done = true;

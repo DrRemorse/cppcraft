@@ -41,7 +41,6 @@ namespace cppcraft
 		bool hasdata;    // has uploaded gpu data
 		bool aboveWater; // is above the waterline (reflectable)
 		
-	//private:
 		unsigned int  vao;
 		unsigned int  vbo; // opengl renderable objects
 		library::vec3 pos; // rendering position
@@ -49,6 +48,10 @@ namespace cppcraft
 		int           vertices [RenderConst::MAX_UNIQUE_SHADERS];
 		unsigned int  occlusion[RenderConst::MAX_UNIQUE_SHADERS];
 		char          occluded [RenderConst::MAX_UNIQUE_SHADERS];
+		
+	private:
+		void deleteData(int y);
+		
 	};
 	
 	class Columns
