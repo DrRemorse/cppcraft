@@ -363,16 +363,16 @@ namespace cppcraft
 				indic[0].v = (by - 1) * repeat_factor;
 				indic[1].u = (bz - 1) * repeat_factor; // 1, 1
 				indic[1].v =  by      * repeat_factor;
-				indic[2].u = (bz - 0) * repeat_factor; // 0, 1
+				indic[2].u = (bz + 0) * repeat_factor; // 0, 1
 				indic[2].v =  by      * repeat_factor;
-				indic[3].u = (bz - 0) * repeat_factor; // 0, 0
+				indic[3].u = (bz + 0) * repeat_factor; // 0, 0
 				indic[3].v = (by - 1) * repeat_factor;
 			}
 			else
 			{
-				indic[0].u = (1 + bz) * repeat_factor; // 1, 0
+				indic[0].u = (bz - 1) * repeat_factor; // 1, 0
 				indic[0].v = 2  * repeat_factor;
-				indic[1].u = (1 + bz) * repeat_factor; // 1, 1
+				indic[1].u = (bz - 1) * repeat_factor; // 1, 1
 				indic[1].v = 3  * repeat_factor;
 				indic[2].u = bz * repeat_factor;       // 0, 1
 				indic[2].v = 3  * repeat_factor;

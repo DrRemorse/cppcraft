@@ -10,7 +10,6 @@
 #include "precompq_schedule.hpp"
 #include "sectors.hpp"
 #include "worldbuilder.hpp"
-
 //#define DEBUG
 
 using namespace library;
@@ -50,7 +49,14 @@ namespace cppcraft
 			}
 			this->is_done = true;
 		}
+		void resetJob()
+		{
+			this->lock();
+			is_done = false;
+			this->unlock();
+		}
 		
+	private:
 		bool is_done;
 	};
 	std::vector<PrecompJob> jobs;
@@ -206,7 +212,7 @@ namespace cppcraft
 		}
 		if (cont)
 		{
-			jobs[this->nextJobID].is_done = false;
+			jobs[this->nextJobID].resetJob();
 			// queue thread job
 			threadpool->run(&jobs[this->nextJobID], &pt, false);
 			
