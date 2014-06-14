@@ -1,9 +1,12 @@
 #include "vertex_block.hpp"
 
+#include <library/log.hpp>
 #include "precompiler.hpp"
 #include "precomp_thread.hpp"
 #include "renderconst.hpp"
 #include "sector.hpp"
+
+using namespace library;
 
 namespace cppcraft
 {
@@ -21,309 +24,213 @@ namespace cppcraft
 	
 	void optimizeMesh(unsigned short& verts, vertex_t* source, int txsize)
 	{
-		vertex_t *position, *next, *last;
-		
-		#define resetOptPositions() \
-			position = source; \
-			next     = source + 4; \
-			last     = source + verts;
-		
-		// optimize +Y-faces
-		resetOptPositions();
+		vertex_t* position = source;
+		vertex_t* next     = source + 4;
+		vertex_t* last     = source + verts;
+		//int counter = 0;
 		
 		for (; next < last; next += 4)
 		{
+			bool skip = false;
+			
 			for (vertex_t* current = source; current <= position; current += 4)
 			{
 				// current has same texture as its next
 				if (current->w == next->w)
-				
-				// determine that quad points upwards (+y)
-				if (current->nx == 0 && current->ny == 127 && current->nz == 0)
-				
-				// now check that the next quad has the same normal
-				if (next->nx == 0 && next->ny == 127 && next->nz == 0)
-				
-				// next quad has previous quad position (-z)
-				if (next->z + RenderConst::VERTEX_SCALE == current->z)
-				if (next->x == current->x && next->y == current->y)
-				
-				// color match
-				if (next[2].c == next[3].c)
-				if (next[0].c == next[1].c)
-				if (current[2].c == current[3].c)
-				if (current[0].c == current[1].c)
-				if (next[2].c == current[3].c)
-				if (next[1].c == current[0].c)
-				
-				// terrain color match
-				if (colorDistance(next[2].biome, next[3].biome) < 7)
-				if (colorDistance(next[0].biome, next[1].biome) < 7)
-				if (colorDistance(next[2].biome, current[3].biome) < 7)
-				if (colorDistance(next[1].biome, current[0].biome) < 7)
+				// same normal / face
+				if (current->nx == next->nx && current->ny == next->ny && current->nz == next->nz)
 				{
-					// now optimize the quad, by extending the position quad,
-					// and effectively removing the next quad
-					// PY: (0, 0) --> (0, 1) --> (1, 1) --> (1, 0)
-					// --> extend v[0] and v[3]
-					current[0].z -= RenderConst::VERTEX_SCALE;
-					current[3].z -= RenderConst::VERTEX_SCALE;
-					// wrap texture coordinates
-					current[0].v -= txsize;
-					current[3].v -= txsize;
+					// optimize +Y-faces
+					if (current->ny == 127)
+					{
+						// next quad has previous quad position (-z)
+						if (next->z + RenderConst::VERTEX_SCALE == current->z)
+						if (next->x == current->x && next->y == current->y)
+						
+						// color match
+						if (next[2].c == next[3].c)
+						if (next[0].c == next[1].c)
+						if (current[2].c == current[3].c)
+						if (current[0].c == current[1].c)
+						if (next[2].c == current[3].c)
+						if (next[1].c == current[0].c)
+						
+						// terrain color match
+						if (colorDistance(next[2].biome, next[3].biome) < 7)
+						if (colorDistance(next[0].biome, next[1].biome) < 7)
+						if (colorDistance(next[2].biome, current[3].biome) < 7)
+						if (colorDistance(next[1].biome, current[0].biome) < 7)
+						{
+							// now optimize the quad, by extending the position quad,
+							// and effectively removing the next quad
+							// PY: (0, 0) --> (0, 1) --> (1, 1) --> (1, 0)
+							// --> extend v[0] and v[3]
+							current[0].z -= RenderConst::VERTEX_SCALE;
+							current[3].z -= RenderConst::VERTEX_SCALE;
+							// wrap texture coordinates
+							current[0].v -= txsize;
+							current[3].v -= txsize;
+							
+							verts -= 4;   // decrease total number of vertices
+							skip = true; break;
+						}
+					} // Y-faces
+					// optimize +X-faces
+					else if (current->nx == 127)
+					{
+						// next quad has previous quad position (-z)
+						if (next->z + RenderConst::VERTEX_SCALE == current->z)
+						if (next->y == current->y && next->x == current->x)
+						
+						// color match
+						if (next[0].c == next[3].c)
+						if (next[1].c == next[2].c)
+						if (current[0].c == current[3].c)
+						if (current[1].c == current[2].c)
+						if (next[0].c == current[3].c)
+						if (next[1].c == current[2].c)
+						
+						// terrain color match
+						/*if (colorDistance(next[2].biome, next[3].biome) < 7)
+						if (colorDistance(next[0].biome, next[1].biome) < 7)
+						if (colorDistance(next[2].biome, current[3].biome) < 7)
+						if (colorDistance(next[1].biome, current[0].biome) < 7)*/
+						{
+							// now optimize the quad, by extending the position quad,
+							// and effectively removing the next quad
+							// {1.0, 0.0, 0.0,  1.0, 1.0, 0.0,  1.0, 1.0, 1.0,  1.0, 0.0, 1.0},  // +x right
+							// {1.0, 0.0,  1.0, 1.0,  0.0, 1.0,  0.0, 0.0}, // right
+							// --> extend v[0] and v[1]
+							current[0].z -= RenderConst::VERTEX_SCALE;
+							current[1].z -= RenderConst::VERTEX_SCALE;
+							// wrap texture coordinates
+							current[0].u -= txsize;
+							current[1].u -= txsize;
+							
+							verts -= 4;   // decrease total number of vertices
+							skip = true; break;
+						}
+					} // optimize +X faces
 					
-					/*current[0].c = 0 << 24;
-					current[1].c = 0 << 24;
-					current[2].c = 0 << 24;
-					current[3].c = 0 << 24;*/
+					// optimize -X faces
+					else if (current->nx == -128)
+					{
+						// next quad has previous quad position (-z)
+						if (next->z + RenderConst::VERTEX_SCALE == current->z)
+						if (next->y == current->y && next->x == current->x)
+						
+						// color match
+						if (next[2].c == next[3].c)
+						if (next[0].c == next[1].c)
+						if (current[2].c == current[3].c)
+						if (current[0].c == current[1].c)
+						if (next[2].c == current[3].c)
+						if (next[1].c == current[0].c)
+						
+						// terrain color match
+						if (colorDistance(next[2].biome, next[3].biome) < 7)
+						if (colorDistance(next[0].biome, next[1].biome) < 7)
+						if (colorDistance(next[2].biome, current[3].biome) < 7)
+						if (colorDistance(next[1].biome, current[0].biome) < 7)
+						{
+							// now optimize the quad, by extending the position quad,
+							// and effectively removing the next quad
+							current[0].z -= RenderConst::VERTEX_SCALE;
+							current[3].z -= RenderConst::VERTEX_SCALE;
+							// wrap texture coordinates
+							current[0].u -= txsize;
+							current[3].u -= txsize;
+							
+							verts -= 4;   // decrease total number of vertices
+							skip = true; break;
+						}
+					} // optimize -X faces
+					// optimize +Z faces
+					else if (current->nz == 127)
+					{
+						// next quad has previous quad position (-x)
+						if (next->x + RenderConst::VERTEX_SCALE == current->x)
+						if (next->y == current->y && next->z == current->z)
+						
+						// color match
+						if (next[2].c == next[3].c)
+						if (next[0].c == next[1].c)
+						if (current[2].c == current[3].c)
+						if (current[0].c == current[1].c)
+						if (next[2].c == current[3].c)
+						if (next[1].c == current[0].c)
+						
+						// terrain color match
+						if (colorDistance(next[2].biome, next[3].biome) < 7)
+						if (colorDistance(next[0].biome, next[1].biome) < 7)
+						if (colorDistance(next[2].biome, current[3].biome) < 7)
+						if (colorDistance(next[1].biome, current[0].biome) < 7)
+						{
+							// now optimize the quad, by extending the position quad,
+							// and effectively removing the next quad
+							current[0].x -= RenderConst::VERTEX_SCALE;
+							current[3].x -= RenderConst::VERTEX_SCALE;
+							// wrap texture coordinates
+							current[0].u -= txsize;
+							current[3].u -= txsize;
+							
+							verts -= 4;   // decrease total number of vertices
+							skip = true; break;
+						}
+					} // optimize +Z faces
+					// optimize -Z faces
+					else if (current->nz == -128)
+					{
+						// next quad has previous quad position (-x)
+						if (next->x + RenderConst::VERTEX_SCALE == current->x)
+						if (next->y == current->y && next->z == current->z)
+						
+						// color match
+						if (next[0].c == next[3].c)
+						if (next[1].c == next[2].c)
+						if (current[0].c == current[3].c)
+						if (current[1].c == current[2].c)
+						if (next[0].c == current[3].c)
+						if (next[1].c == current[2].c)
+						
+						// terrain color match
+						/*if (colorDistance(next[2].biome, next[3].biome) < 7)
+						if (colorDistance(next[0].biome, next[1].biome) < 7)
+						if (colorDistance(next[2].biome, current[3].biome) < 7)
+						if (colorDistance(next[1].biome, current[0].biome) < 7)*/
+						{
+							// now optimize the quad, by extending the position quad,
+							// and effectively removing the next quad
+							current[0].x -= RenderConst::VERTEX_SCALE;
+							current[1].x -= RenderConst::VERTEX_SCALE;
+							// wrap texture coordinates
+							current[0].u -= txsize;
+							current[1].u -= txsize;
+							
+							verts -= 4;   // decrease total number of vertices
+							skip = true; break;
+						}
+					} // optimize -Z faces
 					
-					verts -= 4;   // decrease total number of vertices
-					goto skipAdvancementY;
-				}
-			}
-			// go to next position, and at the same time copy the entire
-			// next quad into position
-			position += 4;
-			for (int i = 0; i < 4; i++) position[i] = next[i];
-		skipAdvancementY:;
-		}
-		
-		// optimize +X-faces
-		resetOptPositions();
-		
-		for (; next < last; next += 4)
-		{
-			for (vertex_t* current = source; current <= position; current += 4)
+				} // same texture & same normal
+				
+			} // next face
+			
+			if (skip == false)
 			{
-				// current has same texture as its next
-				if (current->w == next->w)
-				
-				// determine that quad points upwards (+y)
-				if (current->nx == 127 && current->ny == 0 && current->nz == 0)
-				
-				// now check that the next quad has the same normal
-				if (next->nx == 127 && next->ny == 0 && next->nz == 0)
-				
-				// next quad has previous quad position (-z)
-				if (next->z + RenderConst::VERTEX_SCALE == current->z)
-				if (next->y == current->y && next->x == current->x)
-				
-				// color match
-				if (next[0].c == next[3].c)
-				if (next[1].c == next[2].c)
-				if (current[0].c == current[3].c)
-				if (current[1].c == current[2].c)
-				if (next[0].c == current[3].c)
-				if (next[1].c == current[2].c)
-				
-				// terrain color match
-				/*if (colorDistance(next[2].biome, next[3].biome) < 7)
-				if (colorDistance(next[0].biome, next[1].biome) < 7)
-				if (colorDistance(next[2].biome, current[3].biome) < 7)
-				if (colorDistance(next[1].biome, current[0].biome) < 7)*/
-				{
-					// now optimize the quad, by extending the position quad,
-					// and effectively removing the next quad
-					// {1.0, 0.0, 0.0,  1.0, 1.0, 0.0,  1.0, 1.0, 1.0,  1.0, 0.0, 1.0},  // +x right
-					// {1.0, 0.0,  1.0, 1.0,  0.0, 1.0,  0.0, 0.0}, // right
-					// --> extend v[0] and v[1]
-					current[0].z -= RenderConst::VERTEX_SCALE;
-					current[1].z -= RenderConst::VERTEX_SCALE;
-					// wrap texture coordinates
-					current[0].u -= txsize;
-					current[1].u -= txsize;
-					
-					/*current[0].c = 0 << 24;
-					current[1].c = 0 << 24;
-					current[2].c = 0 << 24;
-					current[3].c = 0 << 24;*/
-					
-					verts -= 4;   // decrease total number of vertices
-					goto skipAdvancementPX;
-				}
+				// just go to next position, and at the same time copy the entire
+				// next quad into position
+				position += 4;
+				for (int i = 0; i < 4; i++) position[i] = next[i];
 			}
-			// go to next position, and at the same time copy the entire
-			// next quad into position
-			position += 4;
-			for (int i = 0; i < 4; i++) position[i] = next[i];
-		skipAdvancementPX:;
+			//else counter ++;
 		}
 		
-		// optimize -X-faces
-		resetOptPositions();
+		//if (counter)
+		//logger << Log::INFO << "Optimized faces: " << counter << Log::ENDL;
 		
-		for (; next < last; next += 4)
-		{
-			for (vertex_t* current = source; current <= position; current += 4)
-			{
-				// current has same texture as its next
-				if (current->w == next->w)
-				
-				// determine that quad points upwards (+y)
-				if (current->nx == -128 && current->ny == 0 && current->nz == 0)
-				
-				// now check that the next quad has the same normal
-				if (next->nx == -128 && next->ny == 0 && next->nz == 0)
-				
-				// next quad has previous quad position (-z)
-				if (next->z + RenderConst::VERTEX_SCALE == current->z)
-				if (next->y == current->y && next->x == current->x)
-				
-				// color match
-				if (next[2].c == next[3].c)
-				if (next[0].c == next[1].c)
-				if (current[2].c == current[3].c)
-				if (current[0].c == current[1].c)
-				if (next[2].c == current[3].c)
-				if (next[1].c == current[0].c)
-				
-				// terrain color match
-				if (colorDistance(next[2].biome, next[3].biome) < 7)
-				if (colorDistance(next[0].biome, next[1].biome) < 7)
-				if (colorDistance(next[2].biome, current[3].biome) < 7)
-				if (colorDistance(next[1].biome, current[0].biome) < 7)
-				{
-					// now optimize the quad, by extending the position quad,
-					// and effectively removing the next quad
-					current[0].z -= RenderConst::VERTEX_SCALE;
-					current[3].z -= RenderConst::VERTEX_SCALE;
-					// wrap texture coordinates
-					current[0].u -= txsize;
-					current[3].u -= txsize;
-					
-					/*current[0].c = 0 << 24;
-					current[1].c = 0 << 24;
-					current[2].c = 0 << 24;
-					current[3].c = 0 << 24;*/
-					
-					verts -= 4;   // decrease total number of vertices
-					goto skipAdvancementNX;
-				}
-			}
-			// go to next position, and at the same time copy the entire
-			// next quad into position
-			position += 4;
-			for (int i = 0; i < 4; i++) position[i] = next[i];
-		skipAdvancementNX:;
-		}
-		
-		// optimize +Z-faces
-		resetOptPositions();
-		
-		for (; next < last; next += 4)
-		{
-			for (vertex_t* current = source; current <= position; current += 4)
-			{
-				// current has same texture as its next
-				if (current->w == next->w)
-				
-				// determine that quad points upwards (+y)
-				if (current->nx == 0 && current->ny == 0 && current->nz == 127)
-				
-				// now check that the next quad has the same normal
-				if (next->nx == 0 && next->ny == 0 && next->nz == 127)
-				
-				// next quad has previous quad position (-x)
-				if (next->x + RenderConst::VERTEX_SCALE == current->x)
-				if (next->y == current->y && next->z == current->z)
-				
-				// color match
-				if (next[2].c == next[3].c)
-				if (next[0].c == next[1].c)
-				if (current[2].c == current[3].c)
-				if (current[0].c == current[1].c)
-				if (next[2].c == current[3].c)
-				if (next[1].c == current[0].c)
-				
-				// terrain color match
-				if (colorDistance(next[2].biome, next[3].biome) < 7)
-				if (colorDistance(next[0].biome, next[1].biome) < 7)
-				if (colorDistance(next[2].biome, current[3].biome) < 7)
-				if (colorDistance(next[1].biome, current[0].biome) < 7)
-				{
-					// now optimize the quad, by extending the position quad,
-					// and effectively removing the next quad
-					current[0].x -= RenderConst::VERTEX_SCALE;
-					current[3].x -= RenderConst::VERTEX_SCALE;
-					// wrap texture coordinates
-					current[0].u -= txsize;
-					current[3].u -= txsize;
-					
-					/*current[0].c = 0 << 24;
-					current[1].c = 0 << 24;
-					current[2].c = 0 << 24;
-					current[3].c = 0 << 24;*/
-					
-					verts -= 4;   // decrease total number of vertices
-					goto skipAdvancementPZ;
-				}
-			}
-			// go to next position, and at the same time copy the entire
-			// next quad into position
-			position += 4;
-			for (int i = 0; i < 4; i++) position[i] = next[i];
-		skipAdvancementPZ:;
-		}
-		
-		// optimize -Z-faces
-		resetOptPositions();
-		
-		for (; next < last; next += 4)
-		{
-			for (vertex_t* current = source; current <= position; current += 4)
-			{
-				// current has same texture as its next
-				if (current->w == next->w)
-				
-				// determine that quad points upwards (+y)
-				if (current->nx == 0 && current->ny == 0 && current->nz == -128)
-				
-				// now check that the next quad has the same normal
-				if (next->nx == 0 && next->ny == 0 && next->nz == -128)
-				
-				// next quad has previous quad position (-x)
-				if (next->x + RenderConst::VERTEX_SCALE == current->x)
-				if (next->y == current->y && next->z == current->z)
-				
-				// color match
-				if (next[0].c == next[3].c)
-				if (next[1].c == next[2].c)
-				if (current[0].c == current[3].c)
-				if (current[1].c == current[2].c)
-				if (next[0].c == current[3].c)
-				if (next[1].c == current[2].c)
-				
-				// terrain color match
-				/*if (colorDistance(next[2].biome, next[3].biome) < 7)
-				if (colorDistance(next[0].biome, next[1].biome) < 7)
-				if (colorDistance(next[2].biome, current[3].biome) < 7)
-				if (colorDistance(next[1].biome, current[0].biome) < 7)*/
-				{
-					// now optimize the quad, by extending the position quad,
-					// and effectively removing the next quad
-					current[0].x -= RenderConst::VERTEX_SCALE;
-					current[1].x -= RenderConst::VERTEX_SCALE;
-					// wrap texture coordinates
-					current[0].u -= txsize;
-					current[1].u -= txsize;
-					
-					/*current[0].c = 0 << 24;
-					current[1].c = 0 << 24;
-					current[2].c = 0 << 24;
-					current[3].c = 0 << 24;*/
-					
-					verts -= 4;   // decrease total number of vertices
-					goto skipAdvancementNZ;
-				}
-			}
-			// go to next position, and at the same time copy the entire
-			// next quad into position
-			position += 4;
-			for (int i = 0; i < 4; i++) position[i] = next[i];
-		skipAdvancementNZ:;
-		}
-		
-	}
+	} // optimizeMesh()
+	
 	void optimizeShaderPlane(unsigned short& verts, vertex_t* source)
 	{
 		// origin quad for each line
