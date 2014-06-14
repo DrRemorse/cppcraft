@@ -15,9 +15,9 @@ namespace cppcraft
 		this->x = x;
 		this->y = y;
 		this->z = z;
-		// initialize sector to default empty-unknown state
+		// initialize blocks to null
 		this->blockpt = nullptr;
-		// this->special = nullptr;
+		//this->special = nullptr;
 		
 		this->render = false;          // not renderable
 		this->progress = PROG_NEEDGEN; // needs to be generated
@@ -26,6 +26,10 @@ namespace cppcraft
 		this->culled  = false; // not culled / covered by other sectors
 		this->hasWork = false; // no work
 		this->hasLight = 0;  // unknown: we don't know if its exposed to any lights
+	}
+	Sector::~Sector()
+	{
+		delete this->blockpt;
 	}
 	
 	void Sector::createBlocks()
@@ -42,8 +46,7 @@ namespace cppcraft
 	void Sector::smartAssignBlocks(bool needBlocks)
 	{
 		// note: this function has no side effects, it's only supposed
-		// to assign blocks, and clear them for immediate usage
-		
+		// to assign blocks, and (possibly) clear them for immediate usage
 		if (progress == PROG_NEEDGEN)
 		{
 			// generate blocks now, no flag CHANGES
@@ -94,10 +97,10 @@ namespace cppcraft
 		render = false;
 		// and nullsectors are always "compiled"
 		progress = PROG_COMPILED;
-		// clearing a sector, means invalidating it
+		// clearing its block contents
 		contents = CONT_NULLSECTOR;
 		
-		// clear many flags, just because... bite me
+		// clear many flags, ... bite me
 		culled = false;
 		hasWork = false;
 		hasLight = 1;     // no lights (NOTE: MAY BE WRONG)
@@ -109,11 +112,8 @@ namespace cppcraft
 		//	special = nullptr;
 		}*/
 		
-		if (blockpt)
-		{
-			delete blockpt;
-			blockpt = nullptr;
-		}
+		delete blockpt;
+		blockpt = nullptr;
 	}
 	
 	void Sector::invalidate()

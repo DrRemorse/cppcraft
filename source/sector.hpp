@@ -5,6 +5,7 @@
 
 namespace cppcraft
 {
+	#pragma pack(push, 4)
 	class Sector
 	{
 	public:
@@ -33,20 +34,6 @@ namespace cppcraft
 		} sectorblock_t;
 		#pragma pack(pop)
 		
-		// data/blocks
-		sectorblock_t* blockpt;
-		// special datablock
-		//specialptr special;
-		
-		// flags
-		bool render;   // renderable
-		char progress; // progress_t
-		char contents; // sectorcontents_t
-		bool culled;   // surrounded by solids
-		bool hasWork;
-		// 0 = unknown (not computed), 1 = found no lights, 2 = found light(s)
-		char hasLight;
-		
 		enum progress_t
 		{
 			PROG_NEEDGEN,
@@ -69,6 +56,7 @@ namespace cppcraft
 		Sector() {}
 		// creates a sector with location (x, y, z)
 		Sector(int x, int y, int z);
+		~Sector();
 		
 		inline int getX() const
 		{
@@ -122,14 +110,32 @@ namespace cppcraft
 		// torchlight related
 		int countLights(); // recounts lights internally AND returns that count
 		
+		/// data members
+		// data/blocks
+		sectorblock_t* blockpt;
+		// special datablock
+		//specialptr special;
+		
 	private:
 		// grid position
 		short x, y, z;
 		
+	public:
+		// flags
+		bool render;   // renderable
+		//! See: progress_t
+		char progress;
+		//! See: sectorcontents_t
+		char contents;
+		//! 0 = not computed, 1 = no lights, 2 = found lights
+		char hasLight;
+		bool culled;   // surrounded by solids
+		bool hasWork;
+		
 		friend class SectorContainer;
 		friend class Seamless;
 	};
-	
+	#pragma pack(pop)
 }
 
 #endif

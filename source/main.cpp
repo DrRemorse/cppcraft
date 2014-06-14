@@ -8,16 +8,11 @@
 
 #include <library/config.hpp>
 #include <library/log.hpp>
-#include <library/opengl/input.hpp>
-
 #include "gameconf.hpp"
 #include "generator.hpp"
-#include "player.hpp"
 #include "renderman.hpp"
 #include "threading.hpp"
 #include "worldmanager.hpp"
-#include <random>
-
 #include <string>
 
 const std::string configFile = "config.ini";
@@ -41,8 +36,8 @@ int main(int argc, char* argv[])
 	}
 	
 	// read config file
-	if (config.load("config.ini") == false)
-		logger << Log::WARN << "Could not find config file: " << configFile << Log::ENDL;
+	if (config.load(configFile) == false)
+		logger << Log::WARN << "[!] Could not find config file: " << configFile << Log::ENDL;
 	
 	// read game configuration
 	gameconf.init();
@@ -57,7 +52,7 @@ int main(int argc, char* argv[])
 	{
 		logger.write(Log::ERR, errorstring);
 		logger.write(Log::ERR, "Failed to initialize renderer... Exiting.");
-		return 1;
+		return EXIT_FAILURE;
 	}
 	
 	// initialize game/world manager
@@ -70,7 +65,7 @@ int main(int argc, char* argv[])
 	{
 		logger.write(Log::ERR, errorstring);
 		logger.write(Log::ERR, "Failed to initialize renderer... Exiting.");
-		return 1;
+		return EXIT_FAILURE;
 	}
 	
 	try
@@ -82,7 +77,7 @@ int main(int argc, char* argv[])
 	{
 		logger.write(Log::ERR, errorstring);
 		logger.write(Log::ERR, "Failed to prepare renderer... Exiting.");
-		return 1;
+		return EXIT_FAILURE;
 	}
 	
 	try
@@ -95,7 +90,7 @@ int main(int argc, char* argv[])
 	{
 		logger.write(Log::ERR, errorstring);
 		logger.write(Log::ERR, "Failed to generate inital world... Exiting.");
-		return 1;
+		return EXIT_FAILURE;
 	}
 	
 	try
@@ -107,7 +102,7 @@ int main(int argc, char* argv[])
 	{
 		logger.write(Log::ERR, errorstring);
 		logger.write(Log::ERR, "Failed to initialize threading... Exiting.");
-		return 1;
+		return EXIT_FAILURE;
 	}
 	
 	logger << Log::INFO << "* Starting renderer..." << Log::ENDL;
@@ -120,5 +115,5 @@ int main(int argc, char* argv[])
 	// cleanup
 	mtx.cleanupThreading();
 	
-	return 0;
+	return EXIT_SUCCESS;
 }
