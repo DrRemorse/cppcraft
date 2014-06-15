@@ -182,31 +182,6 @@ namespace cppcraft
 					GL_COLOR_BUFFER_BIT, GL_NEAREST);
 		
 		
-		/// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
-		/// render physical scene w/depth
-		/// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
-		
-		sceneFBO.bind();
-		glViewport(0, 0, sceneTex.getWidth(), sceneTex.getHeight());
-		
-		if (gameconf.ssao)
-		{
-			std::vector<int> dbuffers;
-			dbuffers.push_back(GL_COLOR_ATTACHMENT0);
-			dbuffers.push_back(GL_COLOR_ATTACHMENT1);
-			sceneFBO.drawBuffers(dbuffers);
-		}
-		
-		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LEQUAL);
-		glDepthMask(GL_TRUE);
-		
-		// clear depth texture (or depth renderbuffer)
-		glClear(GL_DEPTH_BUFFER_BIT);
-		
-		// disable double-sided faces
-		glEnable(GL_CULL_FACE);
-		
 		////////////////////////////////////////////////////
 		/// take snapshots of player state               ///
 		/// and recalculate rendering queue if necessary ///
@@ -356,7 +331,6 @@ namespace cppcraft
 				
 				glDisable(GL_DEPTH_TEST);
 				glDepthMask(GL_FALSE);
-				//glEnable(GL_CULL_FACE);
 				
 				// render sky (atmosphere, sun, moon, clouds)
 				skyrenderer.render(reflectionCamera, playerY - RenderConst::WATER_LEVEL, renderer.frametick, 1);
@@ -367,22 +341,41 @@ namespace cppcraft
 					glDepthMask(GL_TRUE);
 					glClear(GL_DEPTH_BUFFER_BIT);
 					
+					//glEnable(GL_CULL_FACE);
 					renderReflectedScene(renderer, reflectionCamera);
 				}
-				
-				// unbind and return to normal viewport
-				reflectionFBO.unbind();
-				glViewport(0, 0, sceneTex.getWidth(), sceneTex.getHeight());
 			}
 		}
+		
+		/// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
+		/// render physical scene w/depth
+		/// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
+		
+		sceneFBO.bind();
+		glViewport(0, 0, sceneTex.getWidth(), sceneTex.getHeight());
+		
+		if (gameconf.ssao)
+		{
+			std::vector<int> dbuffers;
+			dbuffers.push_back(GL_COLOR_ATTACHMENT0);
+			dbuffers.push_back(GL_COLOR_ATTACHMENT1);
+			sceneFBO.drawBuffers(dbuffers);
+		}
+		
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
+		glDepthMask(GL_TRUE);
+		
+		// clear depth texture (or depth renderbuffer)
+		glClear(GL_DEPTH_BUFFER_BIT);
+		
+		// disable double-sided faces
+		glEnable(GL_CULL_FACE);
 		
 		#ifdef TIMING
 		Timer timerScene;
 		timerScene.startNewRound();
 		#endif
-		
-		//glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
-		//glEnable(GL_SAMPLE_COVERAGE);
 		
 		// scene
 		renderScene(renderer, camera);

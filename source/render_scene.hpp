@@ -6,7 +6,6 @@
 
 namespace library
 {
-	class Camera;
 	class vec3;
 }
 
@@ -53,8 +52,8 @@ namespace cppcraft
 		void recalculateFrustum(Camera& camera, DrawQueue& drawq, const library::vec3& look);
 		void compressRenderingQueue();
 		// main scene rendering function
-		void renderScene(Renderer& renderer, library::Camera& camera);
-		void renderReflectedScene(Renderer& renderer, library::Camera& camera);
+		void renderScene(Renderer& renderer, cppcraft::Camera& camera);
+		void renderReflectedScene(Renderer& renderer, cppcraft::Camera& camera);
 		void renderSceneWater(Renderer& renderer);
 		
 		friend class SkyRenderer;

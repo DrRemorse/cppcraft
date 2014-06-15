@@ -310,7 +310,7 @@ namespace cppcraft
 			GLint& location, 
 			GLint& loc_vtrans, 
 			vec3& position,
-			const mat4& matview
+			cppcraft::Camera& camera
 		)
 	{
 		// bind appropriate shader
@@ -320,7 +320,7 @@ namespace cppcraft
 		if (camera.ref)
 		{
 			// modelview matrix
-			shd.sendMatrix("matview", matview);
+			shd.sendMatrix("matview", camera.getViewMatrix());
 			// mvp matrix
 			shd.sendMatrix("matmvp", camera.getMVP());
 		}
@@ -348,7 +348,7 @@ namespace cppcraft
 		location = shd.getUniform("texrange");
 	}
 	
-	void SceneRenderer::renderScene(Renderer& renderer, library::Camera& renderCam)
+	void SceneRenderer::renderScene(Renderer& renderer, cppcraft::Camera& renderCam)
 	{
 		GLint loc_vtrans, location;
 		vec3 position(-1.0f);
@@ -371,7 +371,7 @@ namespace cppcraft
 							shaderman[Shaderman::STD_BLOCKS], 
 							location, 
 							loc_vtrans, 
-							position, renderCam.getViewMatrix());
+							position, renderCam);
 		
 		// check for errors
 		#ifdef DEBUG
@@ -412,7 +412,7 @@ namespace cppcraft
 									shaderman[Shaderman::CULLED_BLOCKS], 
 									location, 
 									loc_vtrans, 
-									position, renderCam.getViewMatrix());
+									position, renderCam);
 				break;
 				
 			case RenderConst::TX_2SIDED: // 2-sided faces (torches, vines etc.)
@@ -427,7 +427,7 @@ namespace cppcraft
 									shaderman[Shaderman::ALPHA_BLOCKS], 
 									location, 
 									loc_vtrans, 
-									position, renderCam.getViewMatrix());
+									position, renderCam);
 				
 				// safe to increase step from this -->
 				if (drawq[i].count() == 0) continue;
@@ -473,7 +473,7 @@ namespace cppcraft
 		glDrawArrays(GL_QUADS, cv->bufferoffset[i], cv->vertices[i]);
 	}
 	
-	void SceneRenderer::renderReflectedScene(Renderer& renderer, library::Camera& renderCam)
+	void SceneRenderer::renderReflectedScene(Renderer& renderer, cppcraft::Camera& renderCam)
 	{
 		GLint loc_vtrans, location;
 		vec3  position(-1);
@@ -483,7 +483,7 @@ namespace cppcraft
 							shaderman[Shaderman::BLOCKS_REFLECT], 
 							location,
 							loc_vtrans,
-							position, renderCam.getViewMatrix());
+							position, renderCam);
 		
 		// check for errors
 		#ifdef DEBUG
@@ -502,15 +502,14 @@ namespace cppcraft
 			{
 			case RenderConst::TX_REPEAT: // repeatable solids (most terrain)
 				
-				glDisable(GL_CULL_FACE);
-				// change to repeatable textures
+				// change to big tile textures
 				textureman.bind(0, Textureman::T_BIG_DIFF);
 				textureman.bind(1, Textureman::T_BIG_TONE);
 				break;
 				
 			case RenderConst::TX_SOLID: // solid stuff (most blocks)
 				
-				// change to clamped textures
+				// change to normal tile textures
 				textureman.bind(0, Textureman::T_DIFFUSE);
 				textureman.bind(1, Textureman::T_TONEMAP);
 				break;
@@ -554,7 +553,7 @@ namespace cppcraft
 								shaderman[Shaderman::BLOCKS_DEPTH], 
 								location, 
 								loc_vtrans, 
-								position, camera.getViewMatrix());
+								position, camera);
 			// cull only front water-faces inside water
 			glCullFace(GL_FRONT);
 		}
@@ -589,7 +588,7 @@ namespace cppcraft
 										shaderman[Shaderman::BLOCKS_WATER],
 										location,
 										loc_vtrans,
-										position, camera.getViewMatrix());
+										position, camera);
 					// update world offset
 					if (camera.ref)
 						shaderman[Shaderman::BLOCKS_WATER].sendVec3("worldOffset", camera.getWorldOffset());
@@ -607,7 +606,7 @@ namespace cppcraft
 										shaderman[Shaderman::BLOCKS_LAVA],
 										location,
 										loc_vtrans,
-										position, camera.getViewMatrix());
+										position, camera);
 					// update world offset
 					if (camera.ref)
 						shaderman[Shaderman::BLOCKS_LAVA].sendVec3("worldOffset", camera.getWorldOffset());

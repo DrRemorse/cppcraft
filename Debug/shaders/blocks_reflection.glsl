@@ -77,6 +77,6 @@ void main(void)
 	
 	// fake fog
 	vec3 fogColor = vec3(0.6, 0.7, 0.8) * daylight;
-	color.rgb = mix(color.rgb, fogColor, color.a * 0.75);
+	color.rgb = mix(color.rgb, fogColor, 0.15);
 }
 #endif
