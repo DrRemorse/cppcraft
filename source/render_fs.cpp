@@ -52,6 +52,9 @@ namespace cppcraft
 			logger << Log::ERR << "FSRenderer::init(): Failed to initialize framebuffers" << Log::ENDL;
 			throw std::string("Failed to initialize screenspace framebuffers");
 		}
+		
+		// flags
+		this->underwater = -1;
 	}
 	
 	void FSRenderer::fog(double timeElapsed)
@@ -97,7 +100,7 @@ namespace cppcraft
 		downsampler.unbind();
 	}
 	
-	void FSRenderer::render(WindowClass& gamescr, double frameCounter)
+	void FSRenderer::render(WindowClass& gamescr, double frameCounter, bool is_underwater)
 	{
 		glDisable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
@@ -118,7 +121,12 @@ namespace cppcraft
 		Shader& shd = shaderman[Shaderman::POSTPROCESS];
 		shd.bind();
 		shd.sendFloat("frameCounter", frameCounter);
-		shd.sendInteger("submerged", plogic.FullySubmerged);
+		
+		if (this->underwater == -1 || this->underwater != is_underwater)
+		{
+			this->underwater = is_underwater;
+			shd.sendInteger("submerged", this->underwater);
+		}
 		
 		// render fullscreen quad
 		screenVAO.render(GL_QUADS);

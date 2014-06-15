@@ -24,6 +24,11 @@ namespace cppcraft
 		void init(Renderer& renderer);
 		void render(Renderer& renderer);
 		
+		bool isUnderwater() const
+		{
+			return underwater;
+		}
+		
 	private:
 		double lastTime;
 		

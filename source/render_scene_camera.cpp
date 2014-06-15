@@ -41,7 +41,7 @@ namespace cppcraft
 		{
 			// do nothing
 		}
-		else if (plogic.FullySubmerged)
+		else if (this->isUnderwater())
 		{
 			// always if underwater
 			deviation = sin(frameCounter / 40) * 0.04;

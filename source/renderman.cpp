@@ -134,7 +134,7 @@ namespace cppcraft
 		this->scene_elements = drawq.size();
 		
 		// post processing
-		screenspace.render(gamescr, this->frametick);
+		screenspace.render(gamescr, this->frametick, sceneRenderer->isUnderwater());
 		// gui
 		rendergui.render(*this);
 		

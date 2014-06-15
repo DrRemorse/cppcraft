@@ -26,6 +26,7 @@
 #include "renderconst.hpp"
 #include "sector.hpp"
 #include "shaderman.hpp"
+#include "spiders.hpp"
 #include "textureman.hpp"
 #include "threading.hpp"
 #include "world.hpp"
@@ -242,13 +243,20 @@ namespace cppcraft
 				}
 				this->playerMoved = player.JustMoved;
 				
+				// position & sector snapshots
 				this->playerX = iplayerX;
 				this->playerY = iplayerY;
 				this->playerZ = iplayerZ;
 				this->playerSectorX = (int)playerX / Sector::BLOCKS_XZ;
 				this->playerSectorZ = (int)playerZ / Sector::BLOCKS_XZ;
 				
-				underwater = plogic.FullySubmerged != PlayerLogic::PS_None;
+				// underwater snapshot
+				block_t blockID = Spiders::testArea(this->playerX,this->playerY-camera.getZNear(),this->playerZ);
+				this->underwater = (blockID == _WATER || blockID == _LAVABLOCK);
+				if (this->underwater)
+				{
+					this->playerY -= camera.getZNear();
+				}
 				
 				frustumRecalc = (dist > 0.01) || camera.recalc;
 				camera.recalc = false;
@@ -387,12 +395,6 @@ namespace cppcraft
 		// render player selection
 		renderPlayerSelection();
 		
-		// cull water faces if player is not (fully) submerged in water
-		if (underwater == false)
-			glEnable(GL_CULL_FACE);
-		else
-			glDisable(GL_CULL_FACE);
-		
 		// blit terrain to (downsampled) underwatermap
 		;{
 			Texture& underwaterTex = textureman[Textureman::T_UNDERWATERMAP];
@@ -406,6 +408,8 @@ namespace cppcraft
 						GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 		}
 		sceneFBO.bind();
+		
+		glEnable(GL_CULL_FACE);
 		
 		// finally, render scene water
 		renderSceneWater(renderer);

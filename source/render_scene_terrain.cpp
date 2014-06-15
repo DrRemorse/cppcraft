@@ -547,7 +547,7 @@ namespace cppcraft
 			textureman.bind(2, Textureman::T_REFLECTION);
 		}
 		
-		if (plogic.FullySubmerged)
+		if (this->isUnderwater())
 		{
 			// underwater shader-set
 			handleSceneUniforms(renderer.frametick, 
@@ -555,6 +555,8 @@ namespace cppcraft
 								location, 
 								loc_vtrans, 
 								position, camera.getViewMatrix());
+			// cull only front water-faces inside water
+			glCullFace(GL_FRONT);
 		}
 		
 		// check for errors
@@ -566,13 +568,13 @@ namespace cppcraft
 		}
 		#endif
 		
-		// water shader
-		for (int i = RenderConst::TX_WATER; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
+		// FIXME: need to render water running_water and lava separately instead of "accepting fully submerged"
+		// as not rendering anything but depth values
+		
+		if (this->isUnderwater() == false)
 		{
-			// FIXME: need to render water running_water and lava separately instead of "accepting fully submerged"
-			// as not rendering anything but depth values
-			
-			if (plogic.FullySubmerged == false)
+			// water shader
+			for (int i = RenderConst::TX_WATER; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 			{
 				switch (i)
 				{
@@ -611,12 +613,25 @@ namespace cppcraft
 						shaderman[Shaderman::BLOCKS_LAVA].sendVec3("worldOffset", camera.getWorldOffset());
 					break;
 				}
-			}
+				
+				// render it all
+				renderColumnSet(i, position, loc_vtrans);
+				
+			} // each shader
 			
+		} // underwater
+		else
+		{
 			// render it all
-			renderColumnSet(i, position, loc_vtrans);
-			
-		} // each shader
+			renderColumnSet(RenderConst::TX_WATER, position, loc_vtrans);
+			// restore cullface setting
+			glCullFace(GL_BACK);
+		}
+		
+		if (OpenGL::checkError())
+		{
+			throw std::string("SceneRenderer::renderSceneWater(): OpenGL error");
+		}
 		
 	} // renderSceneWater
 	
