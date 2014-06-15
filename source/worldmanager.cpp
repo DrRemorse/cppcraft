@@ -107,8 +107,12 @@ namespace cppcraft
 			// check for timeout
 			if (timer.getDeltaTime() > _localtime + MAX_TIMING_WAIT) timeout = true;
 			
-			// update shadows if sun travelled far
-			thesun.travelCheck();
+			// update shadows if sun has travelled far
+			// but not when connected to a network
+			if (network.isConnected() == false)
+			{
+				thesun.travelCheck();
+			}
 			
 			///----------------------------------///
 			/// --------- PRECOMPILER ---------- ///

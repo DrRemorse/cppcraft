@@ -110,6 +110,11 @@ namespace cppcraft
 			return this->nickname;
 		}
 		
+		inline bool isConnected() const
+		{
+			return connected;
+		}
+		
 	private:
 		bool connect();
 		
