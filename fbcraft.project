@@ -536,6 +536,8 @@
     <File Name="source/network_helpers.cpp"/>
     <File Name="source/precomp_thread_ao.hpp"/>
     <File Name="source/precomp_optimize.cpp"/>
+    <File Name="source/generatorq.hpp"/>
+    <File Name="source/generatorq.cpp"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>

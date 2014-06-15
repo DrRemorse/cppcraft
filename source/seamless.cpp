@@ -10,6 +10,7 @@
 
 #include "columns.hpp"
 #include "camera.hpp"
+#include "generatorq.hpp"
 #include "minimap.hpp"
 #include "player.hpp"
 #include "precompq.hpp"
@@ -65,6 +66,8 @@ namespace cppcraft
 			// invalidate sector, which makes it regenerate
 			base[y].invalidate();
 		}
+		// add to generator queue
+		generatorQueue.add(base);
 	}
 	
 	void Seamstress::updateSectorColumn(int x, int z)

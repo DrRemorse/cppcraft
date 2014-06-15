@@ -19,6 +19,7 @@ uniform sampler2D terrain;
 uniform sampler2D lensflare;
 
 uniform float frameCounter;
+uniform float daylight;
 uniform int   submerged;
 
 in  vec2 texCoord;
@@ -58,7 +59,7 @@ void main()
 			const vec3 shallowWater = pow(vec3(0.35, 0.6, 0.45), vec3(2.2));
 			
 			float shallowValue = min(1.0, wdepth * 16.0);
-			vec3 waterColor = mix(shallowWater, deepWater, shallowValue);
+			vec3 waterColor = mix(shallowWater, deepWater, shallowValue) * daylight;
 			
 			const float DEPTH_TRESHOLD = 36.0 / ZFAR;
 			float dep = smoothstep(0.0, DEPTH_TRESHOLD, wdepth);

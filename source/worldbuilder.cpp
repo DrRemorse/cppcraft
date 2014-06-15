@@ -11,76 +11,26 @@ using namespace library;
 
 namespace cppcraft
 {
-	const double WORLDBUILDER_MAX_TIME_SPENT = 0.012;
 	WorldBuilder worldbuilder;
 	
 	void WorldBuilder::init()
 	{
-		this->diagonal = 0;
-		this->nextDiagonal = 0;
-		this->lastPosition = 0;
-		// the world has already been generated upon start
-		this->mode = MODE_PRECOMPILE;
+		reset();
 	}
 	
 	void WorldBuilder::seamResponse()
 	{
-		if (this->mode == MODE_GENERATING)
-		{
-			// already generating, reduce if we are generating on the edge
-			if (this->diagonal) this->diagonal--;
-		}
-		else
-		{
-			int halfW = Sectors.getXZ() / 2;
-			
-			// not generating, just pick somewhere close to border
-			this->mode = MODE_GENERATING;
-			
-			if (diagonal)
-				this->nextDiagonal = diagonal - 1;
-			else
-				this->nextDiagonal = 0;
-			
-			// can not be smaller than 2
-			this->diagonal = halfW-2;
-		}
-		// reset spiral side (last position in WorldBuilder::run())
-		this->lastPosition = 0;
-	}
-	
-	int WorldBuilder::getMode() const
-	{
-		return this->mode;
-	}
-	
-	void WorldBuilder::setMode(int newmode)
-	{
-		this->mode = newmode;
-		// reset spiral
-		this->diagonal = 0;
+		// reduce to catch sector movement from seamless
+		if (this->diagonal) this->diagonal--;
+		// reset spiral side
 		this->lastPosition = 0;
 	}
 	
 	void WorldBuilder::reset()
 	{
-		// can only reset progress if recompiling
-		if (this->mode == MODE_PRECOMPILE)
-		{
-			// reset spiral
-			this->diagonal = 0;
-			this->nextDiagonal = 0;
-			this->lastPosition = 0;
-		}
-	}
-	
-	inline bool wrunGen(Sector& sector, Timer& timer, double timeOut)
-	{
-		if (sector.progress == Sector::PROG_NEEDGEN)
-		{
-			if (Generator::generate(sector, &timer, timeOut)) return true;
-		}
-		return false;
+		// reset spiral
+		this->diagonal = 0;
+		this->lastPosition = 0;
 	}
 	
 	bool wrunPrecomp(int xx, int zz)
@@ -99,18 +49,15 @@ namespace cppcraft
 		return false;
 	}
 	
-	bool WorldBuilder::run(Timer& timer, double localTime)
+	bool WorldBuilder::run(Timer& timer, double timeOut)
 	{
 		///////////////////////////////////////////////////////
 		// ------------- GENERATE AND REBUILD -------------- //
 		///////////////////////////////////////////////////////
 		
 		//logger << "d=" << this->diagonal << " nd=" << this->nextDiagonal << " md=" << (int)this->mode << " cq=" << compilers.colqCount() << Log::ENDL;
-		
-		int diagonalsRun = 0;
-		const int maxDiagsRun = 8;
-		
-		double timeOut = localTime + WORLDBUILDER_MAX_TIME_SPENT;
+		//int diagonalsRun = 0;
+		//const int maxDiagsRun = 8;
 		
 		int center_x = Sectors.getXZ() / 2;
 		#define center_z center_x
@@ -161,16 +108,8 @@ namespace cppcraft
 			xx = x0;
 			for (zz = z0; zz <= z1; zz++)
 			{
-				if (mode == MODE_GENERATING)
-				{
-					// load compressed sectors, flatlands, sector dumps
-					Sector& s = Sectors(xx, 0, zz);
-					if (wrunGen(s, timer, timeOut)) return true;
-				}
-				else
-				{	// alternatively, adding to precompiler queue
-					if (wrunPrecomp(xx, zz)) return true;
-				}
+				// potentially add to precompiler queue
+				if (wrunPrecomp(xx, zz)) return true;
 				if (timer.getDeltaTime() > timeOut) return true;
 			}
 			
@@ -182,16 +121,8 @@ namespace cppcraft
 			xx = x1;
 			for (zz = z0; zz <= z1; zz++)
 			{
-				if (mode == MODE_GENERATING)
-				{
-					// load compressed sectors, flatlands, sector dumps
-					Sector& s = Sectors(xx, 0, zz);
-					if (wrunGen(s, timer, timeOut)) return true;
-				}
-				else
-				{	// alternatively, adding to precompiler queue
-					if (wrunPrecomp(xx, zz)) return true;
-				}
+				// potentially add to precompiler queue
+				if (wrunPrecomp(xx, zz)) return true;
 				if (timer.getDeltaTime() > timeOut) return true;
 			}
 			
@@ -203,16 +134,8 @@ namespace cppcraft
 			zz = z0;
 			for (xx = x0; xx <= x1; xx++)
 			{
-				if (mode == MODE_GENERATING)
-				{
-					// load compressed sectors, flatlands, sector dumps
-					Sector& s = Sectors(xx, 0, zz);
-					if (wrunGen(s, timer, timeOut)) return true;
-				}
-				else
-				{	// alternatively, adding to precompiler queue
-					if (wrunPrecomp(xx, zz)) return true;
-				}
+				// potentially add to precompiler queue
+				if (wrunPrecomp(xx, zz)) return true;
 				if (timer.getDeltaTime() > timeOut) return true;
 			}
 			
@@ -224,16 +147,8 @@ namespace cppcraft
 			zz = z1;
 			for (xx = x0; xx <= x1; xx++)
 			{
-				if (mode == MODE_GENERATING)
-				{
-					// load compressed sectors, flatlands, sector dumps
-					Sector& s = Sectors(xx, 0, zz);
-					if (wrunGen(s, timer, timeOut)) return true;
-				}
-				else
-				{	// alternatively, adding to precompiler queue
-					if (wrunPrecomp(xx, zz)) return true;
-				}
+				// potentially add to precompiler queue
+				if (wrunPrecomp(xx, zz)) return true;
 				if (timer.getDeltaTime() > timeOut) return true;
 			}
 			
@@ -248,17 +163,12 @@ namespace cppcraft
 			
 			if (this->diagonal > corner_rad)
 			{
-				// reset
-				diagonal = nextDiagonal;
-				nextDiagonal = 0;
-				// next runtype
-				if (mode == MODE_GENERATING) mode = MODE_PRECOMPILE;
-				// exit
-				break;
+				diagonal = 0; // reset
+				break;        // then, exit
 			}
 			
-			diagonalsRun++;
-			if (diagonalsRun == maxDiagsRun) break;
+			//diagonalsRun++;
+			//if (diagonalsRun == maxDiagsRun) break;
 		}
 		return false;
 		

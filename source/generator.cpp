@@ -10,7 +10,6 @@
 #include "sectors.hpp"
 #include "torchlight.hpp"
 #include "world.hpp"
-#include "worldbuilder.hpp"
 
 // load compressor last
 #include "compressor.hpp"
@@ -33,7 +32,6 @@ namespace cppcraft
 				Generator::generate(Sectors(x, 0, z), nullptr, 0);
 			}
 		}
-		worldbuilder.setMode(WorldBuilder::MODE_PRECOMPILE);
 	}
 	
 	void Generator::loadSector(Sector& sector, std::ifstream& file, unsigned int PL)

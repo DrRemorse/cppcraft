@@ -4,6 +4,7 @@
 #include <library/timing/timer.hpp>
 #include <library/sleep.hpp>
 #include "chunks.hpp"
+#include "generatorq.hpp"
 #include "network.hpp"
 #include "particles.hpp"
 #include "player.hpp"
@@ -118,7 +119,6 @@ namespace cppcraft
 			/// --------- PRECOMPILER ---------- ///
 			///----------------------------------///
 			if (timeout == false)
-			if (worldbuilder.getMode() != worldbuilder.MODE_GENERATING)
 			{
 				//double t0 = timer.getDeltaTime();
 				//double t0 = _localtime;
@@ -150,32 +150,39 @@ namespace cppcraft
 			///----------------------------------///
 			if (timeout == false)
 			{
-				// either the worldbuilder is not in precompiler queue-adding mode
-				// or precompq queue must be empty (aka ready for more stuff)
-				if (worldbuilder.getMode() != WorldBuilder::MODE_PRECOMPILE || precompq.ready())
+				const double WORLDBUILDER_MAX_TIME_SPENT = 0.012;
+				double timeOut = _localtime + WORLDBUILDER_MAX_TIME_SPENT;
+				
+				if (generatorQueue.run(timer, timeOut) == false)
 				{
-					//double t0 = timer.getDeltaTime();
-					//double t0 = _localtime;
-					
-					try
+					// precompq queue must be empty (aka ready for more stuff)
+					if (precompq.ready())
 					{
-						worldbuilder.run(timer, _localtime);
-					}
-					catch (std::string exc)
-					{
-						logger << Log::ERR << "Worldbuilder: " << exc << Log::ENDL;
-						break;
+						//double t0 = timer.getDeltaTime();
+						//double t0 = _localtime;
+						
+						try
+						{
+							worldbuilder.run(timer, timeOut);
+						}
+						catch (std::string exc)
+						{
+							logger << Log::ERR << "Worldbuilder: " << exc << Log::ENDL;
+							break;
+						}
+						
+						//double t1 = timer.getDeltaTime() - t0;
+						//if (t1 > 0.020)
+						//{
+						//	logger << "Worldbuilder delta: " << t1 * 1000 << Log::ENDL;
+						//}
+						
+						//double t1 = timer.getDeltaTime();
+						//logger << "WB time: " << t1 - t0 << Log::ENDL;
 					}
 					
-					//double t1 = timer.getDeltaTime() - t0;
-					//if (t1 > 0.020)
-					//{
-					//	logger << "Worldbuilder delta: " << t1 * 1000 << Log::ENDL;
-					//}
-					
-					//double t1 = timer.getDeltaTime();
-					//logger << "WB time: " << t1 - t0 << Log::ENDL;
-				}
+				} // generator queue
+				
 			} // world builder
 			
 			// send & receive stuff

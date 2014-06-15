@@ -121,6 +121,7 @@ namespace cppcraft
 		Shader& shd = shaderman[Shaderman::POSTPROCESS];
 		shd.bind();
 		shd.sendFloat("frameCounter", frameCounter);
+		shd.sendFloat("daylight", thesun.getRealtimeDaylight());
 		
 		if (this->underwater == -1 || this->underwater != is_underwater)
 		{

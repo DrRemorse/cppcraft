@@ -15,13 +15,6 @@ namespace cppcraft
 	class WorldBuilder
 	{
 	public:
-		typedef enum
-		{
-			MODE_GENERATING,
-			MODE_PRECOMPILE
-			
-		} wb_mode_t;
-		
 		// initializer
 		void init();
 		// executed when seamless() has transitioned the world
@@ -34,13 +27,8 @@ namespace cppcraft
 		// returns true if worldbuilder exit early due to time exceeded
 		bool run(library::Timer& timer, double localTime);
 		
-		// manipulate worldbuilder state
-		int  getMode() const;
-		void setMode(int newmode);
-		
 	private:
 		int diagonal;      // diagonal of outward spiral
-		int nextDiagonal;
 		int lastPosition;  // last side of spiral
 		int mode;          // worldbuilder mode
 		
