@@ -53,7 +53,7 @@ namespace cppcraft
 	void SkyRenderer::render(cppcraft::Camera& camera, float cloudLevel, double time, int mode)
 	{
 		// render sky dome
-		Atmosphere::render(camera);
+		Atmosphere::render(camera, mode);
 		
 		glEnable(GL_BLEND);
 		glColorMask(1, 1, 1, 0);

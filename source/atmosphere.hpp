@@ -9,7 +9,7 @@ namespace cppcraft
 	{
 	public:
 		static void init();
-		static void render(Camera& camera);
+		static void render(Camera& camera, int mode);
 		
 	};
 }

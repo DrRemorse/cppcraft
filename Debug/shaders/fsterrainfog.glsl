@@ -105,7 +105,7 @@ void main()
 	
 	// volumetric fog
 	float fogAmount = fogDensity(ray, wpos.xyz) * 0.5;
-	fogAmount *= max(0.0, depth - 0.2) * daylight;
+	fogAmount *= max(0.0, depth - 0.2) * daylight * daylight;
 	
 	const vec3 fogBaseColor = vec3(0.9);
 	const vec3 sunBaseColor = vec3(1.0, 0.8, 0.5);

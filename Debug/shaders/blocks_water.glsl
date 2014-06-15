@@ -179,7 +179,7 @@ void main(void)
 	const vec3 shallowWater = vec3(0.35, 0.6, 0.45);
 	
 	// create final water color
-	color = vec4(mix(shallowWater, deepWater, shallowValue), 1.0);
+	color = vec4(mix(shallowWater, deepWater, shallowValue), 1.0) * daylight;
 	
 	// mix watercolor and refraction/seabed
 	color.rgb = mix(color.rgb, underw.rgb, dep);
@@ -199,7 +199,8 @@ void main(void)
 	//color.rgb = vec3(fresnel);
 #endif
 	
-	//- lighting -//
+	//----- LIGHTING -----
+	
 	#include "lightw.glsl"
 	
 	//- sun/specular -//

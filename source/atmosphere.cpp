@@ -35,7 +35,7 @@ namespace cppcraft
 		float m_fWavelength4[3];
 		
 		void init();
-		void render(Camera& camera);
+		void render(Camera& camera, int mode);
 	};
 	Scatterer scatter;
 	
@@ -48,9 +48,9 @@ namespace cppcraft
 	{
 		scatter.init();
 	}
-	void Atmosphere::render(Camera& camera)
+	void Atmosphere::render(Camera& camera, int mode)
 	{
-		scatter.render(camera);
+		scatter.render(camera, mode);
 	}
 	
 	// scatterer implementation
@@ -122,13 +122,15 @@ namespace cppcraft
 		shd.sendFloat("fCameraHeight", m_fInnerRadius);
 	}
 	
-	void Scatterer::render(Camera& camera)
+	void Scatterer::render(Camera& camera, int mode)
 	{
 		Shader& shd = shaderman[Shaderman::ATMOSPHERE];
 		shd.bind();
 		
 		shd.sendVec3("v3LightPos", thesun.getRealtimeAngle());
 		shd.sendFloat("sunAngle", thesun.getRealtimeRadianAngle());
+		
+		shd.sendFloat("gammaValue", (mode == 1) ? 0.45 : 0.9);
 		
 		// bind textures
 		textureman.bind(1, Textureman::T_STARS);

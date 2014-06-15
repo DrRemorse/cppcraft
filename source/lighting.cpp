@@ -491,7 +491,7 @@ namespace cppcraft
 		);
 		
 		vec2 angle = thesun.getAngle().xy();
-		if (angle.y < 0.0) tmplight = SHADOWS;
+		if (angle.y < 0.0) goto straightToTorchlight;
 		
 		#define sunray   lightRay2D(tmplight, SHADOWS, position, angle.x, angle.y)
 		#define halfray  lightRay2D(tmplight, SHADOWS, position, half1.x, half1.y)
@@ -562,6 +562,7 @@ namespace cppcraft
 			
 		} // raycasting when light < SHADOWS
 		
+	straightToTorchlight:
 		if (list.lights.size() == 0)
 		{
 			// shadows only, since there are no lights

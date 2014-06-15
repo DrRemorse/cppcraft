@@ -1,4 +1,4 @@
-#version 130
+#version 150
 #define VERTEX_PROGRAM
 #define FRAGMENT_PROGRAM
 
@@ -88,13 +88,12 @@ void main(void)
 #endif
 
 #ifdef FRAGMENT_PROGRAM
-#define POSTPROCESS
-
-uniform samplerCube texture;
-uniform sampler2D   stars;
+uniform samplerCube skymap;
+uniform sampler2D   starmap;
 
 uniform float above;
 uniform float sunAngle;
+uniform float gammaValue;
 
 uniform vec3 v3LightPos;
 uniform float g;
@@ -107,6 +106,7 @@ in vec3 color_mie;
 in vec3 starc;
 
 const float exposure = 2.5;
+out vec4 color;
 
 void main (void)
 {
@@ -119,8 +119,8 @@ void main (void)
 	vec3 norm = normalize(v3Direction);
 	norm.y *= (0.5 - above) * 2.0;
 	
-	vec3 skymap = textureCube(texture, norm).rgb;
-	final = mix(final, skymap, final.b - final.r * 0.5);
+	vec3 skyColor = texture(skymap, norm).rgb;
+	final = mix(final, skyColor, final.b - final.r * 0.5);
 	
 	float darkness = max(0.0, 0.16 - length(final)) * 6.0;
 	if (darkness > 0.05)
@@ -129,14 +129,15 @@ void main (void)
 		const float PI = 3.1415926;
 		vec2 coord = vec2(((atan(norm.y, norm.x) + sunAngle) / PI + 1.0) * 0.5, asin(norm.z) / PI + 0.5 );
 		
-		vec3 stars = pow(texture2D(stars, coord).rgb, vec3(2.5));
+		vec3 stars = pow(texture(starmap, coord).rgb, vec3(2.5));
 		
 		final = mix(final, stars, darkness * darkness);
 	}
 	
-	//final = pow(final, vec3(1.0 / 2.2)) * 1.05;
+	final = pow(final, vec3(gammaValue));
 	//final = vec3(1.0) - exp(final * -exposure);
-	gl_FragColor = vec4(final, 1.0);
+	
+	color = vec4(final, 1.0);
 }
 
 #endif

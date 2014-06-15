@@ -196,8 +196,8 @@ namespace cppcraft
 		linkstage.emplace_back("in_vertex");
 		
 		shaders[ATMOSPHERE] = Shader("shaders/atmosphere.glsl", tokenizer, linkstage);
-		shaders[ATMOSPHERE].sendInteger("texture", 0);
-		shaders[ATMOSPHERE].sendInteger("stars",   1);
+		shaders[ATMOSPHERE].sendInteger("skymap",  0);
+		shaders[ATMOSPHERE].sendInteger("starmap", 1);
 		shaders[ATMOSPHERE].sendMatrix("matproj", camera.getProjection());
 		
 		// sun shader
