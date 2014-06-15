@@ -53,7 +53,7 @@ namespace cppcraft
 	
 	void World::load()
 	{
-		//return;
+		return;
 		std::ifstream ff (worldFolder() + "/world.data", std::ios::in | std::ios::binary);
 		if (!ff) return;
 		
