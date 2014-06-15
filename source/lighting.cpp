@@ -28,7 +28,8 @@ namespace cppcraft
 	
 	static const float RAY_CRASH_CONSTANT = 64.0f;
 	static const float LIGHT_FULL_DAMAGE  = 24.0f;
-	static const float LIGHT_MEDI_DAMAGE  = 10.0f;
+	static const float LIGHT_MEDI_DAMAGE  = 14.0f;
+	static const float LIGHT_FLUID_DAMAGE  = 8.0f;
 	
 	void LightingClass::init()
 	{
@@ -54,6 +55,10 @@ namespace cppcraft
 		{
 			// we ignore all these blocks
 			return false;
+		}
+		else if (isFluid(id))
+		{
+			ray += LIGHT_FLUID_DAMAGE * distance_curve;
 		}
 		else
 		{
