@@ -170,12 +170,13 @@ void main(void)
 	wdepth += 0.02; //max(0.0, 0.02 + wdepth);
 	
 	// above water we want the sky to appear as 100% seafloor
-	float dep = 1.0 - smoothstep(0.0, 0.04, wdepth);
-	float depthTreshold = min(1.0, wdepth * 12.0);
+	const float DEPTH_TRESHOLD = 36.0 / ZFAR;
+	float dep = 1.0 - smoothstep(0.0, DEPTH_TRESHOLD, wdepth);
+	float depthTreshold = min(1.0, wdepth * 14.0);
 	
 	//----- SEACOLOR -----
 	const vec3 deepWater    = vec3(42, 73, 87) * vec3(1.0 / 255.0);
-	const vec3 shallowWater = vec3(0.35, 0.55, 0.50);
+	const vec3 shallowWater = vec3(0.35, 0.55, 0.46);
 	
 	// create final water color
 	color = vec4(mix(shallowWater, deepWater, depthTreshold), 1.0);

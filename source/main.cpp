@@ -23,9 +23,8 @@ using namespace cppcraft;
 
 int main(int argc, char* argv[])
 {
+	// start logging to file
 	logger.open(logFile);
-	
-	// start logging
 	logger << Log::INFO << "Starting up..." << Log::ENDL;
 	
 	std::string wfolder = "";
