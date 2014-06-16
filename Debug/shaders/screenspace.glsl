@@ -45,7 +45,7 @@ void main()
 		vec2 waves = vec2(sin(speed), cos(speed)) * 0.01;
 		// depth-based waves
 		vec2 waveCoords = vec2(speed * 5) + texCoord.xy * 6.28 * 32;
-		float wavyDepth = min(0.25, depth * ZFAR / 32.0);
+		float wavyDepth = min(0.25, depth * ZFAR / 20.0);
 		waves += vec2(cos(waveCoords.x), sin(waveCoords.y)) * wavyDepth * 0.008;
 		
 		color = texture(terrain, texCoord + waves);
@@ -53,7 +53,7 @@ void main()
 		
 		if (submerged == 1)
 		{
-			float wdepth = depth + 0.02;
+			float wdepth = depth + 2.0 / ZFAR;
 			
 			const vec3 deepWater    = pow(vec3(42, 73, 87) * vec3(1.0 / 255.0), vec3(2.2));
 			const vec3 shallowWater = pow(vec3(0.35, 0.6, 0.45), vec3(2.2));
@@ -61,7 +61,7 @@ void main()
 			float shallowValue = min(1.0, wdepth * 16.0);
 			vec3 waterColor = mix(shallowWater, deepWater, shallowValue) * daylight;
 			
-			const float DEPTH_TRESHOLD = 36.0 / ZFAR;
+			const float DEPTH_TRESHOLD = 30.0 / ZFAR;
 			float dep = smoothstep(0.0, DEPTH_TRESHOLD, wdepth);
 			
 			// submerged in water

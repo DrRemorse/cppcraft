@@ -149,7 +149,7 @@ void main(void)
 	//----- REFRACTION -----
 	
 	// wave modulation
-	vec2 refcoord = texCoord + vNormal.xz * (0.003 + 0.02 * dist);
+	vec2 refcoord = texCoord + vNormal.xz * 0.005 * (1.0 - dist);
 	
 	// read underwater, use as base color
 	vec4 underw = texture(underwatermap, refcoord);
@@ -161,12 +161,14 @@ void main(void)
 	{
 		wdepth = getDepth(texCoord) - dist;
 	}
+	// degamma underwater color
+	underw.rgb = pow(underw.rgb, vec3(1.0 / 2.2));
 	
 	// nicer depth, adding a little extra
-	wdepth += 0.02; //max(0.0, 0.02 + wdepth);
+	wdepth += 2.0 / ZFAR;
 	
 	// above water we want the sky to appear as 100% seafloor
-	const float DEPTH_TRESHOLD = 36.0 / ZFAR;
+	const float DEPTH_TRESHOLD = 20.0 / ZFAR;
 	float dep = 1.0 - smoothstep(0.0, DEPTH_TRESHOLD, wdepth);
 	float shallowValue = min(1.0, wdepth * 16.0);
 	

@@ -364,7 +364,7 @@ namespace cppcraft
 		}
 		else // terrain-based particles
 		{
-			for (int i = 0; i < 4; i++)
+			for (int i = 0; i < 3; i++)
 			{
 				vec3 position(player.X, 0, player.Z);
 				position += vec3(toolbox::rndNorm(180), 0, toolbox::rndNorm(180));
