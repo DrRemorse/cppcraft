@@ -242,9 +242,9 @@ namespace cppcraft
 		}
 		else if (b.getID() == _WATER)
 		{
-			int depth = getDepth(x, y, z); // ocean depth
+			float depth = 1.0 - getDepth(x, y, z) / 64.0; // ocean depth
 			// create gradiented ocean blue
-			return RGBA8(62-(int)(depth*0.8), (int)(120-depth*1.9), 128-depth, 255);
+			return RGBA8(depth * depth * 62, depth*depth * 140, depth * 128, 255);
 		}
 		else if (b.getID() == _AIR)
 		{
