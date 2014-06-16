@@ -15,7 +15,7 @@ namespace cppcraft
 			1.0, 0.0, 0.0,  0.0, 0.0, 1.0,  0.0, 1.0, 1.0,  1.0, 1.0, 0.0
 		};
 		
-		const vec3 norm = vec3(-1, 1, 1).normalized() * 127;
+		const vec3 norm = vec3(-1, 1.5, 1).normalized() * 127;
 		
 		char cross_normals[6] =
 		{

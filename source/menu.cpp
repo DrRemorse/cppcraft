@@ -31,8 +31,8 @@ namespace cppcraft
 		inventory(5, quickbarY) = InventoryItem(_WOODDOOR, ITT_BLOCK, 8);
 		inventory(6, quickbarY) = InventoryItem(_LADDER, ITT_BLOCK, 999);
 		
-		inventory(7, quickbarY) = InventoryItem(_TORCH, ITT_BLOCK, 64);
-		inventory(8, quickbarY) = InventoryItem(_LANTERN, ITT_BLOCK, 64);
+		inventory(7, quickbarY) = InventoryItem(_TORCH, ITT_BLOCK, 255);
+		inventory(8, quickbarY) = InventoryItem(_LANTERN, ITT_BLOCK, 255);
 		
 		inventory.setChanged(true);
 		

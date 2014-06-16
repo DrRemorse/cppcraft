@@ -52,10 +52,6 @@ namespace cppcraft
 				// second stage: AO
 				pt.ambientOcclusion();
 			}
-			else if (sector.progress == Sector::PROG_NEEDRECOMP)
-			{
-				//logger << Log::WARN << "PrecompJob(): Ignore this: " << (int) sector.progress << Log::ENDL;
-			}
 			else
 			{
 				logger << Log::WARN << "PrecompJob(): Unknown job: " << (int) sector.progress << Log::ENDL;
@@ -249,7 +245,7 @@ namespace cppcraft
 	
 	bool PrecompQ::run(Timer& timer, double localTime)
 	{
-		/// ------------ PRECOMPILER -------------- ///
+		/// ------------ PRECOMPILER ------------ ///
 		
 		bool everythingDead = true;
 		
@@ -315,6 +311,8 @@ namespace cppcraft
 			// reset counters
 			queueCount = 0;
 		}
+		
+		finish();
 		
 		// handle transition from this thread to rendering thread
 		// from precomp scheduler to compiler scheduler

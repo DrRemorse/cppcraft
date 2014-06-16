@@ -53,15 +53,17 @@ namespace cppcraft
 			Generator::generate(*this, nullptr, 0);
 		}
 		
-		if (contents == CONT_NULLSECTOR)
+		// if the sector doesn't really need blocks, just exit
+		if (needBlocks == false) return;
+		
+		// create blocks, if wanted
+		if (hasBlocks() == false)
 		{
-			// if the sector doesn't really need blocks, just exit
-			if (needBlocks == false) return;
-			
-			// since we are here, we want to create blocks, if necessary
-			if (hasBlocks() == false) createBlocks();
+			createBlocks();
 			// then clear the blocks completely
 			memset(blockpt, 0, sizeof(sectorblock_t));
+			// set to savedata
+			this->contents = CONT_SAVEDATA;
 		}
 	}
 	
@@ -70,12 +72,12 @@ namespace cppcraft
 		if (hasBlocks() == false) throw std::string("Sector::countLights(): Sector had no blocks");
 		
 		Block* block = &blockpt->b[0][0][0];
+		Block* lastBlock = block + BLOCKS_XZ * BLOCKS_XZ * BLOCKS_Y;
 		int lights = 0;
 		
-		for (int i = 0; i < BLOCKS_XZ * BLOCKS_XZ * BLOCKS_Y; i++)
+		for (; block < lastBlock; block++)
 		{
 			if (isLight(block->getID())) lights++;
-			block++;
 		}
 		
 		blockpt->lights = lights;
@@ -85,9 +87,9 @@ namespace cppcraft
 	float Sector::distanceTo(const Sector& sector, int bx, int by, int bz) const
 	{
 		// centroidal
-		int dx = ((x - sector.x) << 4) + (BLOCKS_XZ / 2 - bx);
-		int dy = ((y - sector.y) << 3) + (BLOCKS_Y  / 2 - by);
-		int dz = ((z - sector.z) << 4) + (BLOCKS_XZ / 2 - bz);
+		int dx = ((getX() - sector.getX()) << BLOCKS_XZ_SH) + (BLOCKS_XZ / 2 - bx);
+		int dy = ((getY() - sector.getY()) << BLOCKS_Y_SH)  + (BLOCKS_Y  / 2 - by);
+		int dz = ((getZ() - sector.getZ()) << BLOCKS_XZ_SH) + (BLOCKS_XZ / 2 - bz);
 		
 		return sqrtf(dx*dx + dy*dy + dz*dz) - (BLOCKS_XZ / 2) * sqrtf(3.0);
 	}

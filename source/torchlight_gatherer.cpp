@@ -150,8 +150,8 @@ namespace cppcraft
 		list.lights.clear();
 		
 		for (int x = x0; x <= x1; x++)
-		for (int y = y0; y <= y1; y++)
 		for (int z = z0; z <= z1; z++)
+		for (int y = y0; y <= y1; y++)
 		{
 			Sector& s2 = Sectors(x, y, z);
 			
@@ -164,8 +164,8 @@ namespace cppcraft
 				
 				// iterate all blocks in sector
 				for (int bx = 0; bx < Sector::BLOCKS_XZ; bx++)
-				for (int by = 0; by < Sector::BLOCKS_Y;  by++)
 				for (int bz = 0; bz < Sector::BLOCKS_XZ; bz++)
+				for (int by = 0; by < Sector::BLOCKS_Y;  by++)
 				{
 					// if sector is totally encompassed by solid blocks
 					if (maxsolid)
@@ -200,14 +200,14 @@ namespace cppcraft
 						
 						// decrease known total, keeping track of lights
 						total -= 1;
-						if (total == 0) goto nextSector; // exit when no lights left
+						if (total == 0) goto gatherNextSector; // exit when no lights left
 					}
 					
 				} // iterate blocks
 				
 			} // sector has emissive blocks
 			
-			nextSector:;
+			gatherNextSector:;
 			
 		} // iterate sectors
 		

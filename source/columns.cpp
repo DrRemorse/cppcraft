@@ -206,8 +206,7 @@ namespace cppcraft
 			
 		} // next vbo
 		
-		// relieves some RAM usage, 
-		// chances of updating same sector with zero changes == low
+		// relieves some RAM usage
 		this->deleteData(y);
 		
 		///////////////////////////////////

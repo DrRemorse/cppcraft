@@ -115,6 +115,16 @@ namespace cppcraft
 				thesun.travelCheck();
 			}
 			
+			double timeOut = _localtime + MAX_TIMING_WAIT;
+			
+			///----------------------------------///
+			/// ---------- GENERATOR ----------- ///
+			///----------------------------------///
+			if (timeout == false)
+			{
+				timeout = generatorQueue.run(timer, timeOut);
+			}
+			
 			///----------------------------------///
 			/// --------- PRECOMPILER ---------- ///
 			///----------------------------------///
@@ -150,38 +160,31 @@ namespace cppcraft
 			///----------------------------------///
 			if (timeout == false)
 			{
-				const double WORLDBUILDER_MAX_TIME_SPENT = 0.012;
-				double timeOut = _localtime + WORLDBUILDER_MAX_TIME_SPENT;
-				
-				if (generatorQueue.run(timer, timeOut) == false)
+				// precompq queue must be empty (aka ready for more stuff)
+				if (precompq.ready())
 				{
-					// precompq queue must be empty (aka ready for more stuff)
-					if (precompq.ready())
+					//double t0 = timer.getDeltaTime();
+					//double t0 = _localtime;
+					
+					try
 					{
-						//double t0 = timer.getDeltaTime();
-						//double t0 = _localtime;
-						
-						try
-						{
-							worldbuilder.run(timer, timeOut);
-						}
-						catch (std::string exc)
-						{
-							logger << Log::ERR << "Worldbuilder: " << exc << Log::ENDL;
-							break;
-						}
-						
-						//double t1 = timer.getDeltaTime() - t0;
-						//if (t1 > 0.020)
-						//{
-						//	logger << "Worldbuilder delta: " << t1 * 1000 << Log::ENDL;
-						//}
-						
-						//double t1 = timer.getDeltaTime();
-						//logger << "WB time: " << t1 - t0 << Log::ENDL;
+						worldbuilder.run(timer, timeOut);
+					}
+					catch (std::string exc)
+					{
+						logger << Log::ERR << "Worldbuilder: " << exc << Log::ENDL;
+						break;
 					}
 					
-				} // generator queue
+					//double t1 = timer.getDeltaTime() - t0;
+					//if (t1 > 0.020)
+					//{
+					//	logger << "Worldbuilder delta: " << t1 * 1000 << Log::ENDL;
+					//}
+					
+					//double t1 = timer.getDeltaTime();
+					//logger << "WB time: " << t1 - t0 << Log::ENDL;
+				}
 				
 			} // world builder
 			
