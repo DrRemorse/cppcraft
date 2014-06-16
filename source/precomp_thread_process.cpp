@@ -263,7 +263,7 @@ namespace cppcraft
 				
 				if (isColoredBlock(id))
 				{
-					fbiome[0] = Biomes::getSpecialColorBGRA(currentBlock.getSpecial());
+					fbiome[0] = Biomes::getSpecialColorRGBA(currentBlock.getSpecial());
 					fbiome[1] = fbiome[0];
 					fbiome[2] = fbiome[0];
 					fbiome[3] = fbiome[0];

@@ -125,7 +125,7 @@ namespace cppcraft
 							   (vertex_color_t(brightness * 255) << 8) +
 							   (255 << 16);
 		// set torchlight color
-		*((unsigned int*) &retval+1) = BGRA8(vtorch.x * 255,
+		*((unsigned int*) &retval+1) = RGBA8(vtorch.x * 255,
 											 vtorch.y * 255,
 											 vtorch.z * 255,
 											 vtorch.w * 255);

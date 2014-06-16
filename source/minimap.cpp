@@ -161,9 +161,9 @@ namespace cppcraft
 	
 	Bitmap::rgba8_t getBlockColor(FlatlandSector& fs, int x, int y, int z)
 	{
-		if (y == 0) return RGBA8(48, 48, 48, 255);
+		if (y == 0) return BGRA8(48, 48, 48, 255);
 		
-		static const Bitmap::rgba8_t greenGrass = RGBA8(20, 120, 0, 255);
+		static const Bitmap::rgba8_t greenGrass = BGRA8(20, 120, 0, 255);
 		
 		// get the block
 		const Block& b = Spiders::getBlock(x, y, z);
@@ -173,32 +173,32 @@ namespace cppcraft
 		if (isStone(b.getID()))
 		{
 			//c = fgetColor(s, x, z, Biomes::CL_STONE);
-			c = RGBA8(68, 62, 62, 255);
+			c = BGRA8(68, 62, 62, 255);
 		}
 		else if (b.getID() == _SNOWGRASS || b.getID() == _SNOWGRASS_S || b.getID() == _LOWSNOW)
 		{
-			c = RGBA8(230, 230, 230, 255); // snow white
+			c = BGRA8(230, 230, 230, 255); // snow white
 		}
 		else if (b.getID() == _GRAVEL1)
 		{
-			c = RGBA8(86, 69, 48, 255); // brown-grey
+			c = BGRA8(86, 69, 48, 255); // brown-grey
 		}
 		else if (b.getID() == _GRAVEL2)
 		{
-			c = RGBA8(130, 130, 130, 255); // grey
+			c = BGRA8(130, 130, 130, 255); // grey
 		}
 		else if (b.getID() == _CLAY)
 		{
-			c = RGBA8(48, 67, 86, 255); // grey-blue
+			c = BGRA8(48, 67, 86, 255); // grey-blue
 		}
 		else if (b.getID() == _CLAYRED)
 		{
-			c = RGBA8(140, 55, 5, 255); // grey-red
+			c = BGRA8(140, 55, 5, 255); // grey-red
 		}
 		else if (b.getID() >= SOIL_START && b.getID() <= SOIL_END)
 		{
 			if (isDirtSoil(b.getID()))
-				c = RGBA8(97, 57, 14, 255); // soil
+				c = BGRA8(97, 57, 14, 255); // soil
 			else
 			{
 				c = fgetColor(fs, x, z, Biomes::CL_GRASS);
@@ -212,7 +212,7 @@ namespace cppcraft
 		}
 		/*else if (b.getID() == _LEAF_NEEDLE)
 		{
-			c = RGBA8(20, 80, 20, 255); // needle trees
+			c = BGRA8(20, 80, 20, 255); // needle trees
 		}*/
 		else if (isLeaf(b.getID()))
 		{
@@ -221,38 +221,38 @@ namespace cppcraft
 		}
 		else if (isSand(b.getID()))
 		{
-			c = RGBA8(220, 210, 174, 255); // sandy
+			c = BGRA8(220, 210, 174, 255); // sandy
 		}
 		else if (b.getID() >= 200 && b.getID() <= 231)
 		{
 			// wood + pumpkin
-			c = RGBA8(111, 63, 16, 255); // brown-wood
+			c = BGRA8(111, 63, 16, 255); // brown-wood
 		}
 		else if (b.getID() >= _GIANTSHROOMCORE && b.getID() <= _GIANTSHROOMTOPSPECLE)
 		{
-			c = Biomes::getSpecialColorRGBA(b.getSpecial());
+			c = Biomes::getSpecialColorBGRA(b.getSpecial());
 		}
 		else if (b.getID() == _LOWICE)
 		{
-			c = RGBA8(0, 191, 239, 255); // icy blue
+			c = BGRA8(0, 191, 239, 255); // icy blue
 		}
 		else if (b.getID() == _CACTUS || b.getID() == _CACTUSBLOCK)
 		{
-			c = RGBA8(0, 96, 0, 255); // cactus green
+			c = BGRA8(0, 96, 0, 255); // cactus green
 		}
 		else if (b.getID() == _WATER)
 		{
 			float depth = 1.0 - getDepth(x, y, z) / 64.0; // ocean depth
 			// create gradiented ocean blue
-			return RGBA8(depth * depth * 62, depth*depth * 140, depth * 128, 255);
+			return BGRA8(depth * depth * 62, depth*depth * 140, depth * 128, 255);
 		}
 		else if (b.getID() == _AIR)
 		{
-			c = RGBA8(0, 255, 255, 255); // cyan (error color)
+			c = BGRA8(0, 255, 255, 255); // cyan (error color)
 		}
 		else
 		{
-			c = RGBA8(255, 0, 255, 255); // magenta (unknown id)
+			c = BGRA8(255, 0, 255, 255); // magenta (unknown id)
 		}
 		
 		// basic height coloring

@@ -27,9 +27,9 @@ namespace cppcraft
 		for (int x = 0; x < Sectors.getXZ(); x++)
 		for (int z = 0; z < Sectors.getXZ(); z++)
 		{
-			if (Sectors(x, 0, z).contents == Sector::CONT_UNKNOWN)
+			if (Sectors(x, z).contents == Sector::CONT_UNKNOWN)
 			{
-				Generator::generate(Sectors(x, 0, z), nullptr, 0);
+				Generator::generate(Sectors(x, z), nullptr, 0);
 			}
 		}
 	}
@@ -66,7 +66,7 @@ namespace cppcraft
 	}
 	
 	/**
-	 * Generator will round sector(x, z) down to the nearest chunk,
+	 * Generator will truncate sector(x, z) down to the nearest chunk,
 	 * and attempt to load as many sectors from this chunk as possible in one go.
 	 * Will first attempt to decompress a compressed column, then replace with modified sectors as they appear
 	**/
@@ -188,19 +188,23 @@ namespace cppcraft
 				
 				// for each finished column we can potentially exit
 				// if the current time is more than the timeout value, we need to exit now
-				if (timer)
+				/*if (timer)
 				{
 					if (timer->getDeltaTime() > timeOut)
 					{
 						if (minimapUpdated) minimap.setUpdated();
 						return true;
 					}
-				}
+				}*/
 			} // z
 		} // x
 		
 		if (minimapUpdated) minimap.setUpdated();
 		
+		if (timer)
+		{
+			return timer->getDeltaTime() > timeOut;
+		}
 		// time did not run out
 		return false;
 		

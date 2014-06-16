@@ -134,34 +134,34 @@ namespace cppcraft
 				case PARTICLE_LAVA:
 					pv->u = 8;
 					// lava drops (almost invisible)
-					pv->c = BGRA8(255, 200, 127, 96);
+					pv->c = RGBA8(255, 200, 127, 96);
 					break;
 				case PARTICLE_WATER:
 					pv->u = 8;
 					// water drops (almost invisible)
-					pv->c = BGRA8(127, 255, 255, 96);
+					pv->c = RGBA8(127, 255, 255, 96);
 					break;
 					
 				case PARTICLE_MARSH:
 					pv->u = 8; // water drops
-					pv->c = BGRA8(127, 255, 255, 128);
+					pv->c = RGBA8(127, 255, 255, 128);
 					break;
 					
 				case PARTICLE_DANDELION:
 					pv->u = 16;
-					pv->c = BGRA8(255, 255, 255, 0);
+					pv->c = RGBA8(255, 255, 255, 0);
 					break;
 					
 				case PARTICLE_LEAF:
 					pv->u = 16;
 					// jungle green (110, 178, 78)
-					pv->c = BGRA8(110, 178, 78, 255);
+					pv->c = RGBA8(110, 178, 78, 255);
 					break;
 					
 				case PARTICLE_LEAF_B:
 					pv->u = 16;
 					// autumn brown (142, 130, 46)
-					pv->c = BGRA8(142, 130, 46, 255);
+					pv->c = RGBA8(142, 130, 46, 255);
 					break;
 					
 				case PARTICLE_FOREST:

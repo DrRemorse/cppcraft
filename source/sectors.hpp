@@ -26,6 +26,11 @@ namespace cppcraft
 		{
 			return *this->getSectorPtr(x, y, z);
 		}
+		// returns a reference to a Sector located at (x, 0, z)
+		inline Sector& operator() (int x, int z)
+		{
+			return *this->getSectorColumn(x, z);
+		}
 		
 		// returns sector at position (x, y, z), or null
 		Sector* sectorAt(float x, float y, float z) const;

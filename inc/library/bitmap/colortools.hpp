@@ -10,8 +10,7 @@ namespace library
 	class vec4;
 	typedef uint32_t rgba8_t;
 	
-	template <class C8, class C_8>
-	rgba8_t BGRA8(C8 r, C8 g, C8 b, C_8 a)
+	inline rgba8_t RGBA8(int r, int g, int b, int a)
 	{
 		return  ((rgba8_t)r      ) + 
 				((rgba8_t)g <<  8) + 
@@ -19,7 +18,7 @@ namespace library
 				((rgba8_t)a << 24);
 	}
 	
-	rgba8_t RGBA8(int r, int g, int b, int a)
+	inline rgba8_t BGRA8(int r, int g, int b, int a)
 	{
 		return  ((rgba8_t)b      ) + 
 				((rgba8_t)g <<  8) + 

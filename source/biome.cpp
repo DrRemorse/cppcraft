@@ -1,13 +1,13 @@
 #include "biome.hpp"
 
-#include "library/bitmap/colortools.hpp"
+#include <library/bitmap/colortools.hpp>
 #include "blocks.hpp"
 
 using namespace library;
 
 namespace cppcraft
 {
-	int biomeColors16[16][3] =
+	static int biomeColors16[16][3] =
 	{
 		{ 20,  12,   28 },
 		{ 68,  36,   52 },
@@ -60,14 +60,14 @@ namespace cppcraft
 		return -1;
 	}
 	
-	unsigned int Biomes::getSpecialColorRGBA(block_t clid)
-	{
-		return BGRA8(biomeColors16[clid][2], biomeColors16[clid][1], biomeColors16[clid][0], 255);
-	}
-	
-	unsigned int Biomes::getSpecialColorBGRA(block_t clid)
+	Biomes::biomecolor_t Biomes::getSpecialColorBGRA(int clid)
 	{
 		return BGRA8(biomeColors16[clid][0], biomeColors16[clid][1], biomeColors16[clid][2], 255);
+	}
+	
+	Biomes::biomecolor_t Biomes::getSpecialColorRGBA(int clid)
+	{
+		return RGBA8(biomeColors16[clid][0], biomeColors16[clid][1], biomeColors16[clid][2], 255);
 	}
 	
 }
