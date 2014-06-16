@@ -194,8 +194,8 @@ namespace cppcraft
 		shd.bind();
 		
 		// common stuff
-		shd.sendVec3 ("lightVector", thesun.getRealtimeAngle());
-		shd.sendFloat("daylight",    thesun.getRealtimeDaylight());
+		shd.sendVec3 ("v_ldir",   thesun.getRealtimeViewAngle());
+		shd.sendFloat("daylight", thesun.getRealtimeDaylight());
 		shd.sendFloat("frameCounter", frameCounter);
 		
 		shd.sendFloat("modulation", torchlight.getModulation(frameCounter));
@@ -245,9 +245,9 @@ namespace cppcraft
 			matv.rotateZYX(np.rotation.x, 0.0, 0.0);
 			shd.sendMatrix("matview", matv);
 			
-			mat4 matrot = rotationMatrix(0.0, headrot, 0.0);
+			/*mat4 matrot = rotationMatrix(0.0, headrot, 0.0);
 			matrot.rotateZYX(np.rotation.x, 0.0, 0.0);
-			shd.sendMatrix("matrot", matrot);
+			shd.sendMatrix("matrot", matrot);*/
 			
 			vao.render(GL_QUADS, 0, 24);
 			
@@ -259,8 +259,8 @@ namespace cppcraft
 			float brot = interpolate_angle(np.bodyrot, headrot, weight, maxdelta);
 			np.bodyrot = interpolate_angle(brot, np.bodyrot, 0.05 * dtime, 0.0);
 			
-			matrot = rotationMatrix(0.0, np.bodyrot, 0.0);
-			shd.sendMatrix("matrot", matrot);
+			/*matrot = rotationMatrix(0.0, np.bodyrot, 0.0);
+			shd.sendMatrix("matrot", matrot);*/
 			
 			/// render chest ///
 			matv = matview;

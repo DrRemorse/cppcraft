@@ -589,6 +589,8 @@ namespace cppcraft
 										location,
 										loc_vtrans,
 										position, camera);
+					// sun view angle
+					shaderman[Shaderman::BLOCKS_WATER].sendVec3 ("v_ldir", thesun.getRealtimeViewAngle());
 					// update world offset
 					if (camera.ref)
 						shaderman[Shaderman::BLOCKS_WATER].sendVec3("worldOffset", camera.getWorldOffset());

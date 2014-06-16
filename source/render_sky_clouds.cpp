@@ -90,7 +90,7 @@ namespace cppcraft
 		
 		shd.sendFloat("frameCounter", frameCounter);
 		shd.sendVec3 ("worldOffset",  camera.getWorldOffset());
-		shd.sendVec3 ("lightVector",  thesun.getRealtimeAngle());
+		shd.sendVec3 ("v_ldir",       thesun.getRealtimeViewAngle());
 		shd.sendFloat("daylight",     thesun.getRealtimeDaylight());
 		
 		mat4 matclouds = camera.getRotationMatrix();

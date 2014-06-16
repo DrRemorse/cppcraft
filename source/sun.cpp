@@ -30,19 +30,6 @@ namespace cppcraft
 		suntimer.startNewRound();
 	}
 	
-	const vec3& SunClass::getAngle() const
-	{
-		return this->angle;
-	}
-	const vec3& SunClass::getHalfAngle() const
-	{
-		return this->half1;
-	}
-	const vec3& SunClass::getHalf2Angle() const
-	{
-		return this->half2;
-	}
-	
 	void SunClass::setRadianAngle(float angle)
 	{
 		// angle fmod= PI2
@@ -90,11 +77,6 @@ namespace cppcraft
 			// update world
 			Sectors.invalidateAll();
 		}
-	}
-	
-	float SunClass::getRadianAngle() const
-	{
-		return this->radianAngle;
 	}
 	
 	// returns the current light level
@@ -145,21 +127,14 @@ namespace cppcraft
 		}
 	}
 	
-	const vec3& SunClass::getRealtimeAngle() const
-	{
-		return realAngle;
-	}
-	float SunClass::getRealtimeRadianAngle() const
-	{
-		return realRadian;
-	}
-	float SunClass::getRealtimeDaylight() const
-	{
-		return realAmbience;
-	}
 	void SunClass::setStep(int seconds)
 	{
 		this->step = PI2 / seconds;
+	}
+	
+	void SunClass::setRealtimeSunView(const library::mat4& matrot)
+	{
+		this->realViewAngle = matrot * realAngle;
 	}
 	
 	mat4 SunClass::getSunMatrix() const

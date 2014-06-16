@@ -10,7 +10,6 @@ uniform mat4 matview;
 uniform vec3 vtrans;
 
 uniform vec3 worldOffset;
-uniform vec3 lightVector;
 uniform float frameCounter;
 
 in vec4 in_vertex;
@@ -25,7 +24,6 @@ out vec4 lightdata;
 out vec4 torchlight;
 
 out vec3 v_pos;
-out vec3 v_ldir;
 out vec3 v_normal;
 out vec4 waves;
 
@@ -39,7 +37,6 @@ void main(void)
 	
 	// light and eye direction in view space
 	v_pos = -position.xyz;
-	v_ldir = mat3(matview) * lightVector;
 	// reflect light in view space using view-normal
 	v_normal = mat3(matview) * in_normal.xyz;
 	
@@ -73,14 +70,13 @@ uniform vec2 nearPlaneHalfSize;
 
 uniform float frameCounter;
 uniform float daylight;
-uniform vec4  playerLight;
 uniform float modulation;
+uniform vec3  v_ldir;
 
 in vec4 waterColor;
 in vec4 lightdata;
 in vec4 torchlight;
 
-in vec3 v_ldir;
 in vec3 v_pos;
 in vec3 v_normal;
 

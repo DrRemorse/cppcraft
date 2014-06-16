@@ -18,7 +18,6 @@
 #include "netplayers.hpp"
 #include "particles.hpp"
 #include "player.hpp"
-#include "player_logic.hpp"
 #include "renderman.hpp"
 #include "render_fs.hpp"
 #include "render_player_selection.hpp"
@@ -27,6 +26,7 @@
 #include "sector.hpp"
 #include "shaderman.hpp"
 #include "spiders.hpp"
+#include "sun.hpp"
 #include "textureman.hpp"
 #include "threading.hpp"
 #include "world.hpp"
@@ -163,6 +163,8 @@ namespace cppcraft
 		{
 			camera.setRotation(player.xrotrad, player.yrotrad, 0.0);
 		}
+		/// set sun view-direction (rotated)
+		thesun.setRealtimeSunView(camera.getRotationMatrix());
 		
 		// bind the FBO that we are rendering the entire scene into
 		skyFBO.bind();
