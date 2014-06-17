@@ -43,16 +43,17 @@ const float ZFAR
 const float ZNEAR
 
 //#include "noise3.glsl"
+#include "noise.glsl"
 
 float fogDensity(in vec3  ray,
 				 in vec3  point,
 				 in float depth)
 {
 	const float HEIGHT   = 32.0;
-	const float fogY     = 72.0;
+	const float fogY     = 70.0;
 	
 	// distance in fog
-	float foglen = smoothstep(0.15, 0.75, depth) * 0.4;
+	float foglen = smoothstep(0.15, 0.75, depth);
 	
 	// how far are we from center of fog?
 	float foglevel = min(1.0, abs(point.y - fogY) / HEIGHT);
@@ -61,6 +62,9 @@ float fogDensity(in vec3  ray,
 	foglevel = 1.0 - smoothstep(0.0, 1.0, foglevel);
 	// steeper curve under fog center (fogY)
 	foglevel = above * pow(foglevel, 6.0) + (1.0 - above) * foglevel;
+	
+	vec2 np1 = point.xz / 256.0 + vec2(timeElapsed * 0.001, 0.0);
+	foglevel *= snoise(np1) * 0.5 + 0.5;
 	
 	/*
 	vec3 np1 = point + vec3(timeElapsed * 0.02, 0.0, 0.0);
@@ -109,22 +113,28 @@ void main()
 	// to world coordinates
 	wpos.xyz -= worldOffset;
 	
-	// curved luminance of main color
+	// main color luminance
 	const vec3 LUMA = vec3(0.2126, 0.7152, 0.0722);
-	float luminance = min(1.0, 0.5 + dot(color.rgb, LUMA));
+	float luminance = min(1.0, 0.3 + 3.0 * dot(color.rgb, LUMA));
+	//color.rgb = vec3(luminance);
 	
 	// volumetric fog
 	float fogAmount = fogDensity(ray, wpos.xyz, depth);
-	fogAmount *= daylight;
+	// fog density
+	fogAmount *= 0.5 * daylight * daylight;
 	
-	vec3 fogBaseColor = vec3(0.75, 0.7, 0.65) * luminance;
+	vec3 fogBaseColor = vec3(0.55) * luminance;
 	const vec3 sunBaseColor = vec3(1.0, 0.8, 0.5);
-	float sunAmount = max(0.0, dot(ray, sunAngle)) * daylight * daylight;
+	
+	float sunAmount = max(0.0, dot(ray, sunAngle));
+	sunAmount *= 0.5 * depth * daylight * daylight;
+	fogAmount = max(0.0, fogAmount - sunAmount);
 	
 	color.rgb = mix(color.rgb, fogBaseColor, fogAmount);
+	//color.rgb = fogBaseColor * fogAmount;
 	
 	// mix in additional sun glow on terrain
-	color.rgb = mix(color.rgb, sunBaseColor, sunAmount * 0.5 * depth);
+	color.rgb = mix(color.rgb, sunBaseColor, sunAmount);
 	
 	//color.rgb = vec3(ray.y);
 	
