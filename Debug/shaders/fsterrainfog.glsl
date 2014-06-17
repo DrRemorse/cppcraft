@@ -42,28 +42,34 @@ out vec4 color;
 const float ZFAR
 const float ZNEAR
 
-#include "noise3.glsl"
+//#include "noise3.glsl"
 
 float fogDensity(in vec3  ray,
-				 in vec3  point)
+				 in vec3  point,
+				 in float depth)
 {
-	const float HEIGHT   = 36.0;
-	const float fogY     = 70.0;
-	const float fogTopY  = fogY + HEIGHT;
+	const float HEIGHT   = 32.0;
+	const float fogY     = 68.0;
 	
-	// distance in fog is calculated with a simple intercept
-	float foglen = max(0.0, fogTopY - point.y) / abs(ray.y);
-	foglen = min(1.0, foglen / ZFAR);
+	// distance in fog
+	float foglen = smoothstep(0.15, 0.75, depth) * 0.3;
 	
 	// how far are we from center of fog?
 	float foglevel = min(1.0, abs(point.y - fogY) / HEIGHT);
-	foglevel = 1.0 - foglevel * foglevel;
+	float above = step(point.y, fogY);
+	// make S-curve/gradient
+	foglevel = 1.0 - smoothstep(0.0, 1.0, foglevel);
+	// steeper curve under fog center (fogY)
+	foglevel = above * pow(foglevel, 6.0) + (1.0 - above) * foglevel;
 	
+	/*
 	vec3 np1 = point + vec3(timeElapsed * 0.02, 0.0, 0.0);
 	vec3 np2 = point + vec3(timeElapsed * 0.03, 0.0, 0.0);
 	float noise = snoise(np1 * 0.02) + snoise(np2 * 0.05) + 2.0;
 	
 	return (noise * 0.25 + foglen) * 0.5 * foglevel;
+	*/
+	return foglevel * foglen;
 }
 
 float linearDepth(in vec2 uv)
@@ -99,29 +105,32 @@ void main()
 	// reconstruct view to world coordinates
 	vec4 wpos = vec4(viewPos, 1.0) * matview;
 	// camera->point ray
-	vec3 ray = normalize(-wpos.xyz);
+	vec3 ray = normalize(wpos.xyz);
 	// to world coordinates
 	wpos.xyz -= worldOffset;
 	
+	// curved luminance of main color
+	const vec3 LUMA = vec3(0.2126, 0.7152, 0.0722);
+	float luminance = min(1.0, 0.6 + 4.0 * dot(color.rgb, LUMA));
+	
 	// volumetric fog
-	float fogAmount = fogDensity(ray, wpos.xyz) * 0.5;
-	fogAmount *= max(0.0, depth - 0.2) * daylight * daylight;
+	float fogAmount = fogDensity(ray, wpos.xyz, depth);
+	fogAmount *= daylight;
 	
-	const vec3 fogBaseColor = vec3(0.9);
+	vec3 fogBaseColor = vec3(0.8, 0.7, 0.6) * luminance;
 	const vec3 sunBaseColor = vec3(1.0, 0.8, 0.5);
+	float sunAmount = max(0.0, dot(ray, sunAngle)) * daylight * daylight;
 	
-	float sunAmount = max(0.0, dot(-ray, sunAngle)) * daylight * daylight;
-	vec3 fogColor = mix(fogBaseColor, sunBaseColor, sunAmount);
+	color.rgb = mix(color.rgb, fogBaseColor, fogAmount);
 	
-	color.rgb = mix(color.rgb, fogColor, fogAmount);
-	// additional sun glow on terrain
+	// mix in additional sun glow on terrain
 	color.rgb = mix(color.rgb, sunBaseColor, sunAmount * 0.5 * depth);
 	
-	//color.rgb = vec3(depth);
+	//color.rgb = vec3(ray.y);
 	
 	// mix in sky to fade out the world
 	vec3 skyColor = texture(skytexture, texCoord).rgb;
-	const float SKY_EDGE = 0.7;
+	const float SKY_EDGE = 0.75;
 	float edge = max(0.0, (depth - SKY_EDGE) / (1.0 - SKY_EDGE));
 	color.rgb = mix(color.rgb, skyColor, edge * edge);
 	// use alpha-channel as depth

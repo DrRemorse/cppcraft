@@ -294,6 +294,7 @@
     </VirtualDirectory>
     <File Name="inc/libtcc.h"/>
     <File Name="inc/bass.h"/>
+    <File Name="Debug/config.ini"/>
   </VirtualDirectory>
   <Reconciliation>
     <Regexes/>
@@ -543,7 +544,6 @@
   <Dependencies/>
   <VirtualDirectory Name="misc">
     <File Name="makefile"/>
-    <File Name="Debug/config.ini"/>
     <File Name="res/cppcraft.rc"/>
     <File Name="Debug/cppcraft.log"/>
   </VirtualDirectory>
