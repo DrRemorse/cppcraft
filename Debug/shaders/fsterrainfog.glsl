@@ -140,9 +140,8 @@ void main()
 	
 	// mix in sky to fade out the world
 	vec3 skyColor = texture(skytexture, texCoord).rgb;
-	const float SKY_EDGE = 0.75;
-	float edge = max(0.0, (depth - SKY_EDGE) / (1.0 - SKY_EDGE));
-	color.rgb = mix(color.rgb, skyColor, edge * edge);
+	float edge = smoothstep(0.85, 1.0, depth);
+	color.rgb = mix(color.rgb, skyColor, edge);
 	// use alpha-channel as depth
 	color.a   = depth;
 }
