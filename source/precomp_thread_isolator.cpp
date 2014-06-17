@@ -177,7 +177,8 @@ namespace cppcraft
 		}
 		else
 		{
-			pcg.testdata.test_y_p = 0;
+			// treat top of the world as nullsector
+			pcg.testdata.test_y_p = 1;
 		} // test +y
 		
 		if (sector.getZ()) // test -z

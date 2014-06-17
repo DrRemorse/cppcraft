@@ -100,7 +100,7 @@ namespace cppcraft
 		downsampler.unbind();
 	}
 	
-	void FSRenderer::render(WindowClass& gamescr, double frameCounter, bool is_underwater)
+	void FSRenderer::render(WindowClass& gamescr, double frameCounter, char is_underwater)
 	{
 		glDisable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);

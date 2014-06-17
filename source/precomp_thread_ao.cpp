@@ -177,19 +177,24 @@ namespace cppcraft
 		{
 			if (x == -1 || z == -1 || y == -1 || x == Sector::BLOCKS_XZ || z == Sector::BLOCKS_XZ || y == Sector::BLOCKS_Y)
 			{
-				Block& block = Spiders::getBlockNoGen(sector, x, y, z);
-				// shaky test to ignore ids that definitely can't produce corner shadows
-				if (cornerShadowBlocktest(block))
+				// finally run transversal
+				int bx = x, by = y, bz = z;
+				Sector* testsector = Spiders::spiderwrap(sector, bx, by, bz);
+				if (testsector)
 				{
-					// finally run transversal
-					int bx = x, by = y, bz = z;
-					Sector* testsector = Spiders::spiderwrap(sector, bx, by, bz);
-					unsigned short facing = block.visibleFaces(*testsector, bx, by, bz);
-					
-					// add corners to THIS sector
-					if (facing) runCornerShadowTest(ao, facing, x, y, z);
-					
-				} // correct id
+					if (testsector->hasBlocks())
+					{
+						Block& block = testsector[0](bx, by, bz);
+						// shaky test to ignore ids that definitely can't produce corner shadows
+						if (cornerShadowBlocktest(block))
+						{
+							// check which faces are visible
+							unsigned short facing = block.visibleFaces(*testsector, bx, by, bz);
+							// add corners to THIS sector
+							if (facing) runCornerShadowTest(ao, facing, x, y, z);
+						} // correct id
+					} // sector has blocks
+				} // sector exists
 			}
 		}
 		

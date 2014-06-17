@@ -204,6 +204,7 @@ namespace cppcraft
 				}
 				else lbx |= 4;
 			}
+			//else lbx |= 4; // top of the world will still add mesh
 		}
 		else
 		{

@@ -229,11 +229,17 @@ namespace cppcraft
 				
 				// underwater snapshot
 				block_t blockID = Spiders::testArea(this->playerX,this->playerY-camera.getZNear(),this->playerZ);
-				this->underwater = (blockID == _WATER || blockID == _LAVABLOCK);
-				if (this->underwater)
+				if (isFluid(blockID))
 				{
+					if (blockID == _WATER)
+						this->underwater = 1;
+					else // _LAVABLOCK
+						this->underwater = 2;
+						
+					// cheap hack to fix seeing into water
 					this->playerY -= camera.getZNear();
 				}
+				else this->underwater = 0;
 				
 				frustumRecalc = (dist > 0.01) || camera.recalc;
 				camera.recalc = false;

@@ -23,7 +23,7 @@ namespace cppcraft
 		void init(Renderer& renderer);
 		void render(Renderer& renderer);
 		
-		bool isUnderwater() const
+		char isUnderwater() const
 		{
 			return underwater;
 		}
@@ -35,9 +35,10 @@ namespace cppcraft
 		double iplayerX, iplayerY, iplayerZ;
 		// used when rendering
 		double playerX, playerY, playerZ;
-		bool playerMoved, underwater;
 		int playerSectorX, playerSectorZ;
 		int snapWX, snapWZ;
+		bool playerMoved;
+		char underwater;
 		
 		// camera bobbing
 		double motionTimed = 0.0;

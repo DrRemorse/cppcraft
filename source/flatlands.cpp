@@ -4,6 +4,7 @@
 #include <library/math/toolbox.hpp>
 #include <library/opengl/opengl.hpp>
 #include <cstring>
+#include <climits>
 
 using namespace library;
 
@@ -14,11 +15,10 @@ namespace cppcraft
 	FlatlandSector::flatland_t& FlatlandsContainer::getData(int x, int z)
 	{
 		// find flatland sector
-		int fx = x >> Sector::BLOCKS_XZ_SH;
-		int fz = z >> Sector::BLOCKS_XZ_SH;
-		// clamp to within local grid
-		fx = toolbox::clamp(0, Sectors.getXZ()-1, fx);
-		fz = toolbox::clamp(0, Sectors.getXZ()-1, fz);
+		int fx = (x >> Sector::BLOCKS_XZ_SH) & INT_MAX;
+		fx %= Sectors.getXZ();
+		int fz = (z >> Sector::BLOCKS_XZ_SH) & INT_MAX;
+		fz %= Sectors.getXZ();
 		// find internal position
 		int bx = x & (Sector::BLOCKS_XZ-1);
 		int bz = z & (Sector::BLOCKS_XZ-1);

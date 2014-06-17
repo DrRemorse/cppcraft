@@ -500,6 +500,7 @@ namespace cppcraft
 		// skylevel searching (light seeking)
 		// used as base shadows for all configurations
 		// if the first block is black we can try to find distance to closest atmospheric light
+		if (position.y < 64)
 		if (light1D(position.x, position.y, position.z))
 		{
 			float dist = lightSeek(this->seek_radius, position.x, position.y, position.z);

@@ -22,7 +22,7 @@ namespace cppcraft
 		void terrain();
 		void renderSuperSampling(library::Texture& supersampled, library::Texture& texture);
 		
-		void render(library::WindowClass& gamescr, double frameCounter, bool underwater);
+		void render(library::WindowClass& gamescr, double frameCounter, char underwater);
 		
 		library::vec2 getSunVector(const library::mat4& matsun);
 		
