@@ -76,7 +76,7 @@ void main(void)
 	#include "stdlight.glsl"
 	
 	// fake fog
-	vec3 fogColor = vec3(0.6, 0.7, 0.8) * daylight;
-	color.rgb = mix(color.rgb, fogColor, 0.15);
+	vec3 fogColor = vec3(0.9) * daylight;
+	color.rgb = mix(color.rgb, fogColor, 0.1);
 }
 #endif

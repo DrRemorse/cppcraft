@@ -24,7 +24,7 @@ out vec4 lightdata;
 out vec4 torchlight;
 
 out vec3 v_pos;
-out vec3 v_normal;
+flat out vec3 v_normal;
 out vec4 waves;
 
 const float VERTEX_SCALE_INV
@@ -78,7 +78,7 @@ in vec4 lightdata;
 in vec4 torchlight;
 
 in vec3 v_pos;
-in vec3 v_normal;
+flat in vec3 v_normal;
 
 in vec4 waves; // wave positions
 
@@ -134,7 +134,7 @@ void main(void)
 	float vertdist = length(v_pos);
 	
 	vec3 vNormal = mat3(matview) * Normal;
-	vec3 viewNormal = normalize(v_normal);
+	vec3 viewNormal = v_normal; //normalize(v_normal);
 	
 	// normalize inputs (water planes are complex)
 	vec3 vEye   = v_pos / vertdist;
@@ -190,7 +190,7 @@ void main(void)
 	
 	//----- fresnel term -----
 	float fresnel = max(0.0, dot(vEye, viewNormal));
-	fresnel = pow(1.0 - fresnel, 3.5);
+	fresnel = pow(1.0 - fresnel, 3.0);
 	
 	// add reflections to final color
 	color.rgb = mix(color.rgb, wreflection.rgb, fresnel);
