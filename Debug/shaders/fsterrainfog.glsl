@@ -64,7 +64,8 @@ float fogDensity(in vec3  ray,
 	foglevel = above * pow(foglevel, 6.0) + (1.0 - above) * foglevel;
 	
 	vec2 np1 = point.xz / 256.0 + vec2(timeElapsed * 0.001, 0.0);
-	foglevel *= snoise(np1) * 0.5 + 0.5;
+	float noi = snoise(np1);
+	foglevel *= step(0.0, noi) * noi;
 	
 	/*
 	vec3 np1 = point + vec3(timeElapsed * 0.02, 0.0, 0.0);
@@ -121,9 +122,9 @@ void main()
 	// volumetric fog
 	float fogAmount = fogDensity(ray, wpos.xyz, depth);
 	// fog density
-	fogAmount *= 0.5 * daylight * daylight;
+	fogAmount *= 0.6 * daylight * daylight;
 	
-	vec3 fogBaseColor = vec3(0.55) * luminance;
+	vec3 fogBaseColor = vec3(0.65) * luminance;
 	const vec3 sunBaseColor = vec3(1.0, 0.8, 0.5);
 	
 	float sunAmount = max(0.0, dot(ray, sunAngle));
