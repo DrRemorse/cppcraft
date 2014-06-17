@@ -49,10 +49,10 @@ float fogDensity(in vec3  ray,
 				 in float depth)
 {
 	const float HEIGHT   = 32.0;
-	const float fogY     = 68.0;
+	const float fogY     = 72.0;
 	
 	// distance in fog
-	float foglen = smoothstep(0.15, 0.75, depth) * 0.3;
+	float foglen = smoothstep(0.15, 0.75, depth) * 0.4;
 	
 	// how far are we from center of fog?
 	float foglevel = min(1.0, abs(point.y - fogY) / HEIGHT);
@@ -111,13 +111,13 @@ void main()
 	
 	// curved luminance of main color
 	const vec3 LUMA = vec3(0.2126, 0.7152, 0.0722);
-	float luminance = min(1.0, 0.6 + 4.0 * dot(color.rgb, LUMA));
+	float luminance = min(1.0, 0.5 + dot(color.rgb, LUMA));
 	
 	// volumetric fog
 	float fogAmount = fogDensity(ray, wpos.xyz, depth);
 	fogAmount *= daylight;
 	
-	vec3 fogBaseColor = vec3(0.8, 0.7, 0.6) * luminance;
+	vec3 fogBaseColor = vec3(0.7) * luminance;
 	const vec3 sunBaseColor = vec3(1.0, 0.8, 0.5);
 	float sunAmount = max(0.0, dot(ray, sunAngle)) * daylight * daylight;
 	
