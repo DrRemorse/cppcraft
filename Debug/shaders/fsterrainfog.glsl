@@ -117,7 +117,7 @@ void main()
 	float fogAmount = fogDensity(ray, wpos.xyz, depth);
 	fogAmount *= daylight;
 	
-	vec3 fogBaseColor = vec3(0.7) * luminance;
+	vec3 fogBaseColor = vec3(0.75, 0.7, 0.65) * luminance;
 	const vec3 sunBaseColor = vec3(1.0, 0.8, 0.5);
 	float sunAmount = max(0.0, dot(ray, sunAngle)) * daylight * daylight;
 	
