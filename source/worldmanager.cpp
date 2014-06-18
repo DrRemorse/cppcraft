@@ -11,6 +11,7 @@
 #include "precompq.hpp"
 #include "seamless.hpp"
 #include "soundman.hpp"
+#include "sun.hpp"
 #include "threading.hpp"
 #include "worldbuilder.hpp"
 #include "world.hpp"
@@ -109,10 +110,10 @@ namespace cppcraft
 			
 			// update shadows if sun has travelled far
 			// but not when connected to a network
-			/*if (network.isConnected() == false)
+			if (network.isConnected() == false)
 			{
 				thesun.travelCheck();
-			}*/
+			}
 			
 			double timeOut = _localtime + MAX_TIMING_WAIT;
 			

@@ -33,7 +33,7 @@ namespace cppcraft
 				// center grid, center sector, center block
 				player.X = ((float)Sectors.getXZ() / 2.0 - 0.5) * Sector::BLOCKS_XZ + 0.5;
 				player.Z = player.X;
-				player.Y = flatlands.getSkyLevel(player.X, player.Z) + 1.5;
+				player.Y = flatlands.getSkyLevel(player.X, player.Z) + 2.5;
 				
 				mtx.compiler.lock();
 				{
