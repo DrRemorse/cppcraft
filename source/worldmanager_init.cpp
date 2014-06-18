@@ -1,12 +1,14 @@
 #include "worldmanager.hpp"
 
 #include "chunks.hpp"
+#include "flatlands.hpp"
 #include "items.hpp"
 #include "lighting.hpp"
 #include "menu.hpp"
 #include "particles.hpp"
 #include "player.hpp"
 #include "precompq.hpp"
+#include "sectors.hpp"
 #include "soundman.hpp"
 #include "world.hpp"
 #include "worldbuilder.hpp"
@@ -20,8 +22,6 @@ namespace cppcraft
 		world.init(worldFolder);
 		// initialize player
 		player.initPlayer();
-		// load world data (if any)
-		world.load();
 		// initialize chunk systems
 		chunks.initChunks();
 		// initialize precompiler systems
@@ -44,4 +44,13 @@ namespace cppcraft
 		player.initInputs(gameScreen);
 	}
 	
+	void WorldManager::initPlayer()
+	{
+		// center grid, center sector, center block
+		player.X = ((float)Sectors.getXZ() / 2.0 - 0.5) * Sector::BLOCKS_XZ + 0.5;
+		player.Z = player.X;
+		player.Y = Sectors.getY() * Sector::BLOCKS_Y * 0.75;
+		// load world data (if any)
+		world.load();
+	}
 }

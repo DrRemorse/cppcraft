@@ -74,7 +74,7 @@ namespace cppcraft
 					  light.by + 0.5 - by,
 					  light.bz + 0.5 - bz);
 		// same sector, no calculations
-		if (L != sector)
+		if (&L != &sector)
 		{
 			// different sector
 			position.x += (L.getX() - sector.getX()) * Sector::BLOCKS_XZ;

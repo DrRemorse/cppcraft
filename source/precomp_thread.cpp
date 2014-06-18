@@ -106,8 +106,7 @@ namespace cppcraft
 		// get pointer to current block
 		Block* currentBlock = &sector(bx, by, bz);
 		// number of non-air blocks
-		int blocks = sector.blockpt->blocks;
-		//bool totalsolid = (sector.hardsolid == Sector::MAX_HARDSOLID);
+		int blocks = sector.blockCount();
 		
 		while(blocks)
 		{

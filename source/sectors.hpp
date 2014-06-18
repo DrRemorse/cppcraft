@@ -35,8 +35,10 @@ namespace cppcraft
 		// returns sector at position (x, y, z), or null
 		Sector* sectorAt(float x, float y, float z) const;
 		
-		// invalidates all sectors, eg. when sun-position permanently changed
-		void invalidateAll();
+		// updates all sectors, for eg. when sun-position changed
+		void updateAll();
+		// regenerate all sectors, for eg. teleport
+		void regenerateAll();
 		
 	private:
 		// returns a reference to a pointer to a sector, which is ONLY used by Seamless
@@ -51,7 +53,7 @@ namespace cppcraft
 			return this->sectors[x * sectors_XZ + z] + y;
 		}
 		
-		// moves sector (x2, z2) to (x, z)
+		// Seamless: moves sector (x2, z2) to (x, z)
 		inline void move(int x, int z, int x2, int z2)
 		{
 			Sector*& s = getSectorColumn(x, z);

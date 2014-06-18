@@ -22,8 +22,6 @@
 
 namespace cppcraft
 {
-	class Seamless; // proto forward
-	
 	class World
 	{
 	public:
@@ -72,9 +70,12 @@ namespace cppcraft
 		
 		void increaseDelta(int dx, int dz);
 		
+		void transitionTo(int wx, int wz);
+		
 		// seamless transitions the word, and is the only one
 		// allowed to directly modify worldX, worldZ
-		friend Seamless; // special customer
+		friend class Seamless; // special customer
+		friend class WorldManager; // teleport
 	};
 	extern World world;
 }

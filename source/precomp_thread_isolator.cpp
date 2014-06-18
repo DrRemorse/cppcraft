@@ -49,7 +49,7 @@ namespace cppcraft
 			killPrecomp();
 			return false;
 		}
-		else if (sector.blockpt->blocks == 0)
+		else if (sector.blockCount() == 0)
 		{
 			logger << Log::WARN << "sector with 0 blocks in precompiler" << Log::ENDL;
 			killPrecomp();
@@ -81,7 +81,7 @@ namespace cppcraft
 			}
 			else // sector must have blocks (WARNING assumption)
 			{
-				pcg.testdata.test_x_m = (testsector.blockpt->hardsolid & 1) == 0;
+				pcg.testdata.test_x_m = (testsector.solidFlags() & 1) == 0;
 				if (pcg.testdata.test_x_m)
 				{
 					pcg.testdata.test_x_m = 2; // read (compare)
@@ -109,7 +109,7 @@ namespace cppcraft
 			}
 			else // sector must have blocks (WARNING assumption)
 			{
-				pcg.testdata.test_x_p = (testsector.blockpt->hardsolid & 2) == 0;
+				pcg.testdata.test_x_p = (testsector.solidFlags() & 2) == 0;
 				
 				if (pcg.testdata.test_x_p)
 				{
@@ -138,7 +138,7 @@ namespace cppcraft
 			}
 			else // sector must have blocks (WARNING assumption)
 			{
-				pcg.testdata.test_y_m = (testsector.blockpt->hardsolid & 4) == 0;
+				pcg.testdata.test_y_m = (testsector.solidFlags() & 4) == 0;
 				
 				if (pcg.testdata.test_y_m)
 				{
@@ -167,7 +167,7 @@ namespace cppcraft
 			}
 			else // sector must have blocks (WARNING assumption)
 			{
-				pcg.testdata.test_y_p = (testsector.blockpt->hardsolid & 8) == 0;
+				pcg.testdata.test_y_p = (testsector.solidFlags() & 8) == 0;
 				if (pcg.testdata.test_y_p)
 				{
 					pcg.testdata.test_y_p = 2; // contains data
@@ -196,7 +196,7 @@ namespace cppcraft
 			}
 			else // sector must have blocks (WARNING assumption)
 			{
-				pcg.testdata.test_z_m = (testsector.blockpt->hardsolid & 16) == 0;
+				pcg.testdata.test_z_m = (testsector.solidFlags() & 16) == 0;
 				
 				if (pcg.testdata.test_z_m)
 				{
@@ -225,7 +225,7 @@ namespace cppcraft
 			}
 			else // sector must have blocks (WARNING assumption)
 			{
-				pcg.testdata.test_z_p = (testsector.blockpt->hardsolid & 32) == 0;
+				pcg.testdata.test_z_p = (testsector.solidFlags() & 32) == 0;
 				
 				if (pcg.testdata.test_z_p)
 				{

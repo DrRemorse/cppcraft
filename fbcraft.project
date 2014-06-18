@@ -539,6 +539,7 @@
     <File Name="source/precomp_optimize.cpp"/>
     <File Name="source/generatorq.hpp"/>
     <File Name="source/generatorq.cpp"/>
+    <File Name="source/worldmanager_teleport.cpp"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>

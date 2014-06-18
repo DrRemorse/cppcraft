@@ -15,7 +15,7 @@ namespace cppcraft
 	class GeneratorQueue
 	{
 	public:
-		void add(Sector* sector)
+		inline void add(Sector* sector)
 		{
 			genq.push_back(sector);
 		}

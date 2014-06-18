@@ -50,17 +50,16 @@ namespace cppcraft
 	class Seamstress
 	{
 	public:
-		static void resetSectorColumn(int x, int z);
+		static void resetSectorColumn(Sector* base);
 		static void updateSectorColumn(int x, int z);
 	};
 	
-	inline void Seamstress::resetSectorColumn(int x, int z)
+	void Seamstress::resetSectorColumn(Sector* base)
 	{
-		// NOTE: GRIDTESTING DEALLOCATES VBO DATA
-		//       IN ANOTHER THREAD! DONT REMOVE VBODATA!
+		//! NOTE: GRIDTESTING DEALLOCATES VBO DATA
+		//!       IN ANOTHER THREAD! DON'T REMOVE VBODATA!
 		
 		// for each sector in column,
-		Sector* base = &Sectors(x, 0, z);
 		for (int y = 0; y < SectorContainer::SECTORS_Y; y++)
 		{
 			// invalidate sector, which makes it regenerate
@@ -135,7 +134,7 @@ namespace cppcraft
 				oldpointer->x = 0;
 				
 				// reset it completely
-				Seamstress::resetSectorColumn(0, z);
+				Seamstress::resetSectorColumn(oldpointer);
 				// flag neighboring sector as dirty, if necessary
 				Seamstress::updateSectorColumn(1, z);
 				
@@ -187,7 +186,7 @@ namespace cppcraft
 				oldpointer->x = Sectors.getXZ()-1;
 				
 				// reset sector completely
-				Seamstress::resetSectorColumn(Sectors.getXZ()-1, z);
+				Seamstress::resetSectorColumn(oldpointer);
 				// update neighbor
 				Seamstress::updateSectorColumn(Sectors.getXZ()-2, z);
 				
@@ -241,7 +240,7 @@ namespace cppcraft
 				oldpointer->z = 0;
 				
 				// reset oldpointer column
-				Seamstress::resetSectorColumn(x, 0);
+				Seamstress::resetSectorColumn(oldpointer);
 				// only need to update 1 row for Z
 				Seamstress::updateSectorColumn(x, 1);
 				
@@ -285,7 +284,7 @@ namespace cppcraft
 				oldpointer->z = Sectors.getXZ()-1;
 				
 				// reset oldpointer column
-				Seamstress::resetSectorColumn(x, Sectors.getXZ()-1);
+				Seamstress::resetSectorColumn(oldpointer);
 				// only need to update 1 row for Z
 				Seamstress::updateSectorColumn(x, Sectors.getXZ()-2);
 				

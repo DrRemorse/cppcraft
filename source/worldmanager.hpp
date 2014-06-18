@@ -31,8 +31,11 @@ namespace cppcraft
 		
 		// initializer
 		void init(gamestate_t, library::WindowClass& scr, std::string& folder);
+		void initPlayer();
 		// running thread function
 		void main();
+		
+		void teleportHandler();
 		
 		gamestate_t getState() const noexcept
 		{

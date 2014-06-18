@@ -180,25 +180,25 @@ namespace cppcraft
 			if (input.getKey(GLFW_KEY_F1))
 			{
 				thesun.setRadianAngle(0.1);
-				Sectors.invalidateAll();
+				Sectors.updateAll();
 				worldbuilder.reset();
 			}
 			if (input.getKey(GLFW_KEY_F2))
 			{
 				thesun.setRadianAngle(0.707);
-				Sectors.invalidateAll();
+				Sectors.updateAll();
 				worldbuilder.reset();
 			}
 			if (input.getKey(GLFW_KEY_F3))
 			{
 				thesun.setRadianAngle(3.0);
-				Sectors.invalidateAll();
+				Sectors.updateAll();
 				worldbuilder.reset();
 			}
 			if (input.getKey(GLFW_KEY_F4))
 			{
 				thesun.setRadianAngle(-1);
-				Sectors.invalidateAll();
+				Sectors.updateAll();
 				worldbuilder.reset();
 			}
 			

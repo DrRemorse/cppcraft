@@ -1,6 +1,7 @@
 #include "sectors.hpp"
 
 #include "generator.hpp"
+#include "generatorq.hpp"
 
 namespace cppcraft
 {
@@ -50,17 +51,36 @@ namespace cppcraft
 		delete[] this->sectors;
 	}
 	
-	void SectorContainer::invalidateAll()
+	void SectorContainer::updateAll()
 	{
 		// iterate sectors
 		for (int x = 0; x < sectors_XZ; x++)
 		for (int z = 0; z < sectors_XZ; z++)
-		for (int y = 0; y < SECTORS_Y;  y++)
 		{
-			// get reference to Sector pointer
-			Sector &s = Sectors(x, y, z);
-			// recompile sector, if (we know) its already renderable
-			if (s.render) s.progress = Sector::PROG_NEEDRECOMP;
+			// get column
+			Sector* base = getSectorColumn(x, z);
+			// update all sectors in column
+			for (int y = 0; y < SECTORS_Y;  y++)
+			{
+				// recompile sector, if (we know) its already renderable
+				if (base[y].render) base[y].progress = Sector::PROG_NEEDRECOMP;
+			}
+		} // y, z, x
+	}
+	void SectorContainer::regenerateAll()
+	{
+		// iterate sectors
+		for (int x = 0; x < sectors_XZ; x++)
+		for (int z = 0; z < sectors_XZ; z++)
+		{
+			// get column
+			Sector* base = getSectorColumn(x, z);
+			// clear all sectors in column, and add to generator queue
+			for (int y = 0; y < SECTORS_Y;  y++)
+			{
+				base[y].invalidate();
+			}
+			Generator::generate(Sectors(x, 0, z), nullptr, 0.0);
 		} // y, z, x
 	}
 }

@@ -81,6 +81,8 @@ int main(int argc, char* argv[])
 	
 	try
 	{
+		// load player location
+		worldman.initPlayer();
 		// initialize generator as late as possible because
 		// there's some rendering dependencies that are just barely finished
 		Generator::init();

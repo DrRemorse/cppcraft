@@ -35,7 +35,7 @@ namespace cppcraft
 		plogic.Slowfall = false;
 		plogic.Ladderized = false;
 		//plogic.jetpacking = false;
-		player.Flying = true;
+		player.Flying = false;
 		
 		// initialize block selection system
 		plogic.selection = playerselect_t();
@@ -47,10 +47,6 @@ namespace cppcraft
 		plogic.terrain = 0;
 		plogic.shadowColor = 255 + (255 << 24);
 		
-		// center grid, center sector, center block
-		player.X = ((float)Sectors.getXZ() / 2.0 - 0.5) * Sector::BLOCKS_XZ + 0.5;
-		player.Y = Sector::BLOCKS_Y * 22; //RenderConst::WATER_LEVEL + Sector::BLOCKS_Y * 12; //2;
-		player.Z = player.X;
 		// acceleration
 		player.pax = player.pay = player.paz = 0.0;
 		// rotation

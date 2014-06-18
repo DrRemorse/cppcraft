@@ -75,7 +75,7 @@ namespace cppcraft
 			// reset timer & traveldistance
 			suntimer.startNewRound();
 			// update world
-			Sectors.invalidateAll();
+			Sectors.updateAll();
 		}
 	}
 	

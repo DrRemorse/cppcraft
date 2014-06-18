@@ -78,4 +78,12 @@ namespace cppcraft
 		internal.z += dz;
 		while (internal.z < 0) internal.z += Sectors.getXZ();
 	}
+	
+	void World::transitionTo(int wx, int wz)
+	{
+		internal.x = 0;
+		internal.z = 0;
+		this->worldCoords.x = wx;
+		this->worldCoords.z = wz;
+	}
 }

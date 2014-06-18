@@ -156,11 +156,11 @@ namespace cppcraft
 			Sector& s2 = Sectors(x, y, z);
 			
 			if (s2.hasLight != 1 && s2.contents == Sector::CONT_SAVEDATA)
-			if (s2.blockpt->lights != 0)
+			if (s2.lightCount())
 			{
 				// backwards counter used for early exiting
-				short total = s2.blockpt->lights;
-				bool maxsolid = s2.blockpt->hardsolid == Sector::MAX_HARDSOLID;
+				short total = s2.lightCount();
+				bool maxsolid = (s2.solidFlags() == Sector::MAX_HARDSOLID);
 				
 				// iterate all blocks in sector
 				for (int bx = 0; bx < Sector::BLOCKS_XZ; bx++)
@@ -183,7 +183,7 @@ namespace cppcraft
 						const lightdata_t& id = getEmitter(lem);
 						
 						bool test = true;
-						if (sector != s2) test = (sector.distanceTo(s2, bx, by, bz) < id.reach);
+						if (&sector != &s2) test = (sector.distanceTo(s2, bx, by, bz) < id.reach);
 						
 						if (test)
 						{

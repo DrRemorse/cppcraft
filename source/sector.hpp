@@ -76,6 +76,18 @@ namespace cppcraft
 		{
 			return (this->blockpt != nullptr);
 		}
+		inline short blockCount() const
+		{
+			return this->blockpt->blocks;
+		}
+		inline short lightCount() const
+		{
+			return this->blockpt->lights;
+		}
+		inline unsigned char solidFlags() const
+		{
+			return this->blockpt->hardsolid;
+		}
 		
 		// returns true if there is a point in trying to recompile this sector
 		inline bool isUpdateable() const
@@ -94,29 +106,24 @@ namespace cppcraft
 			return this->blockpt->b[x][z][y];
 		}
 		
-		// sector boolean equality tests
-		inline bool operator == (const Sector& sector) const
-		{
-			return (this == &sector);
-		}
-		inline bool operator != (const Sector& sector) const
-		{
-			return (this != &sector);
-		}
-		
 		// distance to another sector (in block units)
 		float distanceTo(const Sector& sector, int bx, int by, int bz) const;
 		
 		// torchlight related
 		int countLights(); // recounts lights internally AND returns that count
 		
+		inline Sector* getBaseSector()
+		{
+			return this - this->y;
+		}
+		
+	private:
 		/// data members
 		// data/blocks
 		sectorblock_t* blockpt;
 		// special datablock
 		//specialptr special;
 		
-	private:
 		// grid position
 		short x, y, z;
 		
@@ -132,8 +139,11 @@ namespace cppcraft
 		bool culled;   // surrounded by solids
 		bool hasWork;
 		
+		friend class Chunks;
+		friend class Compressor;
 		friend class SectorContainer;
 		friend class Seamless;
+		friend class Spiders;
 	};
 	#pragma pack(pop)
 }
