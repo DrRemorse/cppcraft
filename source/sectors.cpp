@@ -60,7 +60,7 @@ namespace cppcraft
 			// get column
 			Sector* base = getSectorColumn(x, z);
 			// update all sectors in column
-			for (int y = 0; y < SECTORS_Y;  y++)
+			for (int y = 2; y < SECTORS_Y;  y++)
 			{
 				// recompile sector, if (we know) its already renderable
 				if (base[y].render) base[y].progress = Sector::PROG_NEEDRECOMP;

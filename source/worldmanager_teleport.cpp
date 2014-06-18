@@ -5,6 +5,7 @@
 #include "flatlands.hpp"
 #include "player.hpp"
 #include "player_inputs.hpp"
+#include "precompq.hpp"
 #include "sectors.hpp"
 #include "threading.hpp"
 #include "worldbuilder.hpp"
@@ -21,6 +22,8 @@ namespace cppcraft
 			input.hold(GLFW_KEY_P);
 			// flush chunk queue
 			chunks.flushChunks();
+			// finish running jobs
+			precompq.finish();
 			
 			mtx.sectorseam.lock();
 			{

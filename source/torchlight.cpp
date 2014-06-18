@@ -39,11 +39,11 @@ namespace cppcraft
 		p = &torchlights[L_LAVA];
 		// lava (_LAVABLOCK)
 		p->reach = 3;
-		p->curve = 1.4;
-		p->cap   = 0.6;
+		p->curve = 1.0;
+		p->cap   = 1.0;
 		
-		p->colors     = 0.55;
-		p->brightness = 0.4;
+		p->colors     = 0.5;
+		p->brightness = 0.6;
 		
 		p->r = 1.0;
 		p->g = 0.45;
@@ -154,8 +154,8 @@ namespace cppcraft
 	
 	float Torchlight::getModulation(double frameCounter)
 	{
-		const float TL_MODULATION_STRENGTH = 0.01;
-		float modulation = 0.75 * cos( frameCounter * 0.0085 ) + 1.25 * sin( frameCounter * 0.012 );
+		const float TL_MODULATION_STRENGTH = 0.02;
+		float modulation = cos( frameCounter * 0.125 + sin(frameCounter * 0.20) );
 		
 		return 1.0 + modulation * TL_MODULATION_STRENGTH;
 	}

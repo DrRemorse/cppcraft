@@ -311,8 +311,7 @@ namespace cppcraft
 			// reset counters
 			queueCount = 0;
 		}
-		
-		finish();
+		//finish();
 		
 		// handle transition from this thread to rendering thread
 		// from precomp scheduler to compiler scheduler

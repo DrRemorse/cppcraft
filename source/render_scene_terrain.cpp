@@ -623,8 +623,16 @@ namespace cppcraft
 		} // underwater
 		else
 		{
-			// render it all
-			renderColumnSet(RenderConst::TX_WATER, position, loc_vtrans);
+			if (this->isUnderwater() == 1)
+			{
+				// render water meshes
+				renderColumnSet(RenderConst::TX_WATER, position, loc_vtrans);
+			}
+			else
+			{
+				// render lava meshes
+				renderColumnSet(RenderConst::TX_LAVA, position, loc_vtrans);
+			}
 			// restore cullface setting
 			glCullFace(GL_BACK);
 		}

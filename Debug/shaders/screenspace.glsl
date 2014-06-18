@@ -25,9 +25,6 @@ uniform int   submerged;
 in  vec2 texCoord;
 out vec4 color;
 
-const vec3 SUB_WATER = vec3(0.01, 0.05, 0.14);
-const vec3 SUB_LAVA  = vec3(0.28, 0.06, 0.0);
-
 const float ZFAR
 const float ZNEAR
 
@@ -68,8 +65,16 @@ void main()
 			color.rgb = mix(color.rgb, waterColor, dep) * 0.7;
 		}
 		else
-		{	// submerged in lava
-			color.rgb = mix(color.rgb, SUB_LAVA, 0.6 + 0.4 * wavyDepth);
+		{
+			float wdepth = depth + 2.0 / ZFAR;
+			
+			const float DEPTH_TRESHOLD = 10.0 / ZFAR;
+			float dep = smoothstep(0.0, DEPTH_TRESHOLD, wdepth);
+			
+			const vec3 lavaColor  = vec3(0.28, 0.06, 0.0);
+			
+			// submerged in lava
+			color.rgb = mix(color.rgb, lavaColor, dep);
 		}
 	}
 	
