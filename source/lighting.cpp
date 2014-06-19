@@ -596,7 +596,7 @@ namespace cppcraft
 		return std::min(1.0f, sqrtf(x*x + z*z) / maxRadius);
 	}
 	
-	vertex_color_t LightingClass::lightCheck(LightList& list, Sector& sector, int bx, int by, int bz, int norm_int, int rayCount)
+	vertex_color_t LightingClass::lightCheck(LightList& list, Sector& sector, int bx, int by, int bz, int rayCount)
 	{
 		vec3 position = vec3(
 			sector.getX() * Sector::BLOCKS_XZ + bx, 
@@ -604,7 +604,7 @@ namespace cppcraft
 			sector.getZ() * Sector::BLOCKS_XZ + bz
 		);
 		
-		float tmplight = 0.0f;
+		int tmplight = 180;
 		
 		vec2 angle = thesun.getAngle().xy();
 		if (angle.y < 0.0f) goto straightToTorchlight;
@@ -634,13 +634,13 @@ namespace cppcraft
 			else if (rayCount == 1)
 			{
 				// towards sun
-				tmplight = sunray * 255.0f;
+				tmplight = sunray * 255;
 			}
 			else if (rayCount == 2)
 			{
 				const vec3& half1 = thesun.getHalfAngle();
 				// towards sun & halfray
-				tmplight = sunray * 0.8 + halfray * 0.2;
+				tmplight = (sunray * 0.8 + halfray * 0.2) * 255;
 			}
 			else
 			{
@@ -682,14 +682,20 @@ namespace cppcraft
 					*/
 					//tmplight = light * 255.0f;
 					// pepper some slight sunray into it all
-					tmplight = sunray * 255.0f;
+					tmplight = sunray * 255;
 					//tmplight = (sunray + light) * 0.5f * 255.0f;
 				}
 			}
-			if (tmplight > 255.0)
-				tmplight = 255.0;
-			else if (tmplight < 0.0)
-				tmplight = 0.0;
+			if (tmplight < 32) tmplight = 32;
+			
+			if (light1D(position.x, position.y, position.z) == false)
+			{
+				tmplight += 16;
+			}
+			
+			// clamp to 0-255
+			if (tmplight > 255) tmplight = 255;
+			
 			
 		} // raycasting when light < SHADOWS
 		
@@ -697,7 +703,7 @@ namespace cppcraft
 		if (list.lights.size() == 0)
 		{
 			// shadows only, since there are no lights
-			return vertex_color_t(tmplight) | (255 << 16);
+			return tmplight | (255 << 16);
 		}
 		else
 		{

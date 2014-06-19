@@ -38,7 +38,7 @@ namespace cppcraft
 		float lightRay1D(float light, float maxlight, library::vec3 const& position);
 		float lightSeek(int maxRadius, int x, int y, int z);
 		bool light1D(int x, int y, int z);
-		vertex_color_t lightCheck(LightList& list, Sector& sector, int bx, int by, int bz, int normal, int rayCount);
+		vertex_color_t lightCheck(LightList& list, Sector& sector, int bx, int by, int bz, int rayCount);
 		
 	};
 	extern LightingClass Lighting;

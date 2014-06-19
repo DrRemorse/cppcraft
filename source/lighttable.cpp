@@ -40,7 +40,7 @@ namespace cppcraft
 		}
 		
 		// otherwise, calculate new complex color
-		vertex_color_t vcolor = Lighting.lightCheck(*this, sector, x, y, z, normal, Lighting.ray_count);
+		vertex_color_t vcolor = Lighting.lightCheck(*this, sector, x, y, z, Lighting.ray_count);
 		
 		// set (remember) value
 		table.set(x, y, z, vcolor);
