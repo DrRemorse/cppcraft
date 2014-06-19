@@ -33,16 +33,16 @@ namespace cppcraft
 		vertex_t* memtarget = indic;
 		
 		// top cubeface
-		c[0] = ldata.tableLight(*sector, bx,   by+1, bz  );
-		c[1] = ldata.tableLight(*sector, bx,   by+1, bz+1);
-		c[2] = ldata.tableLight(*sector, bx+1, by+1, bz+1);
-		c[3] = ldata.tableLight(*sector, bx+1, by+1, bz  );
+		c[0] = ldata.tableLight(*sector, bx,   by+1, bz  , 2);
+		c[1] = ldata.tableLight(*sector, bx,   by+1, bz+1, 2);
+		c[2] = ldata.tableLight(*sector, bx+1, by+1, bz+1, 2);
+		c[3] = ldata.tableLight(*sector, bx+1, by+1, bz  , 2);
 		
 		// bottom cubeface
-		c[4] = ldata.tableLight(*sector, bx,   by-1, bz  );
-		c[5] = ldata.tableLight(*sector, bx+1, by-1, bz  );
-		c[6] = ldata.tableLight(*sector, bx+1, by-1, bz+1);
-		c[7] = ldata.tableLight(*sector, bx,   by-1, bz+1);
+		c[4] = ldata.tableLight(*sector, bx,   by-1, bz  , 3);
+		c[5] = ldata.tableLight(*sector, bx+1, by-1, bz  , 3);
+		c[6] = ldata.tableLight(*sector, bx+1, by-1, bz+1, 3);
+		c[7] = ldata.tableLight(*sector, bx,   by-1, bz+1, 3);
 		
 		/// lighting for stair lower part ///
 		

@@ -169,7 +169,7 @@ namespace cppcraft
 		torchlight.lightGatherer(*sector, lightNowList);
 		
 		// return calculated shadows & lighting
-		return Lighting.lightCheck(lightNowList, *sector, ix, iy, iz, 1);
+		return Lighting.lightCheck(lightNowList, *sector, ix, iy, iz, 2, 1);
 	}
 	
 }

@@ -91,7 +91,7 @@ namespace cppcraft
 	
 	vertex_color_t Torchlight::torchlight(LightList& list, float shadowLevel, Sector& sector, int bx, int by, int bz)
 	{
-		float L = 1.0 - (long)shadowLevel / 255.0;
+		float L = shadowLevel / 255.0;
 		// create base light value from shadow level
 		vec4  vtorch(L, L, L, 0.0);
 		float brightness = 0.0;
@@ -121,7 +121,7 @@ namespace cppcraft
 		} // next light
 		
 		// set shadow, brightness and cornershadow defaults
-		vertex_color_t retval = vertex_color_t(255 - shadowLevel) +
+		vertex_color_t retval = vertex_color_t(shadowLevel) +
 							   (vertex_color_t(brightness * 255) << 8) +
 							   (255 << 16);
 		// set torchlight color

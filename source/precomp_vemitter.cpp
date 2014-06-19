@@ -482,50 +482,50 @@ namespace cppcraft
 	
 	void PrecompThreadData::applyFaceLighting_PZ(int bx, int by, int bz)
 	{
-		indic->c   = ldata.tableLight(*sector, bx  , by,   bz); //, 3, 0
-		indic[1].c = ldata.tableLight(*sector, bx+1, by,   bz); //, 6, 0
-		indic[2].c = ldata.tableLight(*sector, bx+1, by+1, bz); //, 7, 0
-		indic[3].c = ldata.tableLight(*sector, bx  , by+1, bz); //, 4, 0
+		indic->c   = ldata.tableLight(*sector, bx  , by,   bz, 0); //, 3, 0
+		indic[1].c = ldata.tableLight(*sector, bx+1, by,   bz, 0); //, 6, 0
+		indic[2].c = ldata.tableLight(*sector, bx+1, by+1, bz, 0); //, 7, 0
+		indic[3].c = ldata.tableLight(*sector, bx  , by+1, bz, 0); //, 4, 0
 	}
 	
 	void PrecompThreadData::applyFaceLighting_NZ(int bx, int by, int bz)
 	{
-		indic->c   = ldata.tableLight(*sector, bx  , by,   bz); //, 0, 1
-		indic[1].c = ldata.tableLight(*sector, bx  , by+1, bz); //, 2, 1
-		indic[2].c = ldata.tableLight(*sector, bx+1, by+1, bz); //, 5, 1
-		indic[3].c = ldata.tableLight(*sector, bx+1, by,   bz); //, 1, 1
+		indic->c   = ldata.tableLight(*sector, bx  , by,   bz, 1); //, 0, 1
+		indic[1].c = ldata.tableLight(*sector, bx  , by+1, bz, 1); //, 2, 1
+		indic[2].c = ldata.tableLight(*sector, bx+1, by+1, bz, 1); //, 5, 1
+		indic[3].c = ldata.tableLight(*sector, bx+1, by,   bz, 1); //, 1, 1
 	}
 	
 	void PrecompThreadData::applyFaceLighting_PY(int bx, int by, int bz)
 	{
-		indic->c   = ldata.tableLight(*sector, bx  , by, bz  ); //, 2, 2
-		indic[1].c = ldata.tableLight(*sector, bx  , by, bz+1); //, 4, 2
-		indic[2].c = ldata.tableLight(*sector, bx+1, by, bz+1); //, 7, 2
-		indic[3].c = ldata.tableLight(*sector, bx+1, by, bz  ); //, 5, 2
+		indic->c   = ldata.tableLight(*sector, bx  , by, bz  , 2); //, 2, 2
+		indic[1].c = ldata.tableLight(*sector, bx  , by, bz+1, 2); //, 4, 2
+		indic[2].c = ldata.tableLight(*sector, bx+1, by, bz+1, 2); //, 7, 2
+		indic[3].c = ldata.tableLight(*sector, bx+1, by, bz  , 2); //, 5, 2
 	}
 	
 	void PrecompThreadData::applyFaceLighting_NY(int bx, int by, int bz)
 	{
-		indic->c   = ldata.tableLight(*sector, bx  , by, bz  ); //, 0, 3
-		indic[1].c = ldata.tableLight(*sector, bx+1, by, bz  ); //, 1, 3
-		indic[2].c = ldata.tableLight(*sector, bx+1, by, bz+1); //, 6, 3
-		indic[3].c = ldata.tableLight(*sector, bx  , by, bz+1); //, 3, 3
+		indic->c   = ldata.tableLight(*sector, bx  , by, bz  , 3); //, 0, 3
+		indic[1].c = ldata.tableLight(*sector, bx+1, by, bz  , 3); //, 1, 3
+		indic[2].c = ldata.tableLight(*sector, bx+1, by, bz+1, 3); //, 6, 3
+		indic[3].c = ldata.tableLight(*sector, bx  , by, bz+1, 3); //, 3, 3
 	}
 	
 	void PrecompThreadData::applyFaceLighting_PX(int bx, int by, int bz)
 	{
-		indic->c   = ldata.tableLight(*sector, bx, by,   bz  ); //, 1, 4
-		indic[1].c = ldata.tableLight(*sector, bx, by+1, bz  ); //, 5, 4
-		indic[2].c = ldata.tableLight(*sector, bx, by+1, bz+1); //, 7, 4
-		indic[3].c = ldata.tableLight(*sector, bx, by,   bz+1); //, 6, 4
+		indic->c   = ldata.tableLight(*sector, bx, by,   bz  , 4); //, 1, 4
+		indic[1].c = ldata.tableLight(*sector, bx, by+1, bz  , 4); //, 5, 4
+		indic[2].c = ldata.tableLight(*sector, bx, by+1, bz+1, 4); //, 7, 4
+		indic[3].c = ldata.tableLight(*sector, bx, by,   bz+1, 4); //, 6, 4
 	}
 	
 	void PrecompThreadData::applyFaceLighting_NX(int bx, int by, int bz)
 	{
-		indic->c   = ldata.tableLight(*sector, bx, by,   bz  ); //, 0, 5
-		indic[1].c = ldata.tableLight(*sector, bx, by,   bz+1); //, 3, 5
-		indic[2].c = ldata.tableLight(*sector, bx, by+1, bz+1); //, 4, 5
-		indic[3].c = ldata.tableLight(*sector, bx, by+1, bz  ); //, 2, 5
+		indic->c   = ldata.tableLight(*sector, bx, by,   bz  , 5); //, 0, 5
+		indic[1].c = ldata.tableLight(*sector, bx, by,   bz+1, 5); //, 3, 5
+		indic[2].c = ldata.tableLight(*sector, bx, by+1, bz+1, 5); //, 4, 5
+		indic[3].c = ldata.tableLight(*sector, bx, by+1, bz  , 5); //, 2, 5
 	}
 	
 	void PrecompThreadData::applyFaceLightingAll(int bx, int by, int bz)
