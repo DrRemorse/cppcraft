@@ -3,6 +3,7 @@
 #include <library/log.hpp>
 #include "precompiler.hpp"
 #include "precomp_thread_ao.hpp"
+#include "precomp_thread_data.hpp"
 #include "renderconst.hpp"
 #include "sectors.hpp"
 #include "flatlands.hpp"
@@ -18,8 +19,8 @@ namespace cppcraft
 	
 	PrecompThread::PrecompThread()
 	{
-		this->precomp = nullptr;
 		this->occ = new AmbientOcclusion();
+		this->ptd = new PrecompThreadData();
 		
 		// random default values for vertex array sizes
 		// the arrays get automatically resized as needed
@@ -38,9 +39,9 @@ namespace cppcraft
 		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 		{
 			// set initial shaderline sizes
-			pcg.pipelineSize[i] = pipelineSize[i];
+			ptd->pipelineSize[i] = pipelineSize[i];
 			// initialize each shaderline
-			pcg.databuffer[i] = new vertex_t[pipelineSize[i]];
+			ptd->databuffer[i] = new vertex_t[pipelineSize[i]];
 		}
 	}
 	PrecompThread::~PrecompThread()
@@ -54,10 +55,10 @@ namespace cppcraft
 			delete[] this->databuffer[i];
 	}
 	
-	void PrecompThread::precompile()
+	void PrecompThread::precompile(Precomp& pc)
 	{
-		Precomp& pc     = precomp[0];
-		Sector&  sector = pc.sector[0];
+		Sector& sector = pc.sector[0];
+		PrecompThreadData& pcg = *this->ptd;
 		
 		// reset light list
 		pcg.ldata.gathered = false;
@@ -98,8 +99,11 @@ namespace cppcraft
 		// initialize to invalid CRC value
 		pcg.fbicrc = 256;
 		
+		// set sector & testdata (visible neighbors)
+		pcg.sector   = pc.sector;
+		pcg.testdata = &pc.vfaces;
+		
 		// iterate all
-		pcg.sector = pc.sector;
 		int bx = Sector::BLOCKS_XZ-1;
 		int by = Sector::BLOCKS_Y -1;
 		int bz = Sector::BLOCKS_XZ-1;
@@ -108,7 +112,7 @@ namespace cppcraft
 		// number of non-air blocks
 		int blocks = sector.blockCount();
 		
-		while(blocks)
+		while (blocks)
 		{
 			// ignore AIR and invalid blocks
 			if (currentBlock->getID() > AIR_END && currentBlock->getID() <= MAX_UNIQUE_IDS)
@@ -146,11 +150,9 @@ namespace cppcraft
 		
 		if (cnt == 0)
 		{
-			// only air, no faces present
-			sector.render = false;
-			sector.progress = Sector::PROG_COMPILED;
-			sector.culled = true;
-			precomp->alive = false; // nothing to compile...
+			// no vertices, we can exit early, but make sure to
+			// mark the sector as culled
+			pc.result = Precomp::STATUS_CULLED;
 			return;
 		}
 		
@@ -179,10 +181,8 @@ namespace cppcraft
 			pc.bufferoffset[i] = bufferoffset[i];
 			pc.vertices[i]     = pcg.vertices[i];
 		}
-		
-		// this stage has ended
-		// go to next stage: ambient occlusion gradients
-		if (sector.progress == Sector::PROG_RECOMPILING)
-			sector.progress = Sector::PROG_NEEDAO;
+		// set job as done
+		pc.result = Precomp::STATUS_DONE;
 	}
+	
 }

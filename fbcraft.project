@@ -521,7 +521,6 @@
     <File Name="source/compressor_rle.hpp"/>
     <File Name="source/compressor_rle.cpp"/>
     <File Name="source/blocks_vfaces.cpp"/>
-    <File Name="source/precomp_thread_isolator.cpp"/>
     <File Name="source/lighttable.cpp"/>
     <File Name="source/network.hpp"/>
     <File Name="source/network.cpp"/>
@@ -540,6 +539,9 @@
     <File Name="source/generatorq.hpp"/>
     <File Name="source/generatorq.cpp"/>
     <File Name="source/worldmanager_teleport.cpp"/>
+    <File Name="source/precompq_helpers.cpp"/>
+    <File Name="source/precomp_thread_data.hpp"/>
+    <File Name="source/precompiler_isolator.cpp"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>

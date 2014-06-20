@@ -4,7 +4,7 @@
 #include "biome.hpp"
 #include "blockmodels.hpp"
 #include "flatlands.hpp"
-#include "precompiler.hpp"
+#include "precomp_thread_data.hpp"
 #include "renderconst.hpp"
 #include "torchlight.hpp"
 #include <cstring>
@@ -43,13 +43,13 @@ namespace cppcraft
 		if (id < HALFBLOCK_START)
 		{
 			// all solid blocks
-			sides = currentBlock.visibleFaces(testdata, bx, by, bz);
+			sides = currentBlock.visibleFaces(*testdata, bx, by, bz);
 			model = BlockModels::MI_BLOCK;
 		}
 		else if (id == _WATER)
 		{
 			// water
-			sides = currentBlock.visibleFaces(testdata, bx, by, bz);
+			sides = currentBlock.visibleFaces(*testdata, bx, by, bz);
 			model = BlockModels::MI_BLOCK;
 		}
 		else if (isHalfblock(id))
@@ -57,13 +57,13 @@ namespace cppcraft
 			if (isStair(id))
 			{
 				// stairs belong in halfblock category
-				sides = currentBlock.visibleFaces(testdata, bx, by, bz);
+				sides = currentBlock.visibleFaces(*testdata, bx, by, bz);
 				model = PC_STAIR;
 			}
 			else
 			{
 				// halfblocks
-				sides = currentBlock.visibleFaces(testdata, bx, by, bz);
+				sides = currentBlock.visibleFaces(*testdata, bx, by, bz);
 				model = BlockModels::MI_HALFBLOCK;
 				
 				if (currentBlock.getSpecial() == 0)
@@ -82,7 +82,7 @@ namespace cppcraft
 		}
 		else if (isLowblock(id))
 		{
-			sides = currentBlock.visibleFaces(testdata, bx, by, bz);
+			sides = currentBlock.visibleFaces(*testdata, bx, by, bz);
 			model  = BlockModels::MI_LOWBLOCK;
 			
 			worldY_extra = currentBlock.getSpecial() * RenderConst::VERTEX_SCALE * 0.125;
@@ -131,7 +131,7 @@ namespace cppcraft
 				sides = Block(_STONE).visibleFaces(testdata, bx, by, bz);
 			}
 			else*/
-				sides = currentBlock.visibleFaces(testdata, bx, by, bz);
+				sides = currentBlock.visibleFaces(*testdata, bx, by, bz);
 			model  = BlockModels::MI_BLOCK;
 			
 			// check if any are visible

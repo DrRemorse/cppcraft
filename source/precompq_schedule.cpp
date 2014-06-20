@@ -73,7 +73,6 @@ namespace cppcraft
 			
 			if (s2.progress != Sector::PROG_COMPILED)
 			{
-				// avoid resetting the sector compiled status
 				ready = false;
 			}
 			else if (s2.render)
@@ -81,8 +80,9 @@ namespace cppcraft
 				// a renderable sector without VBO data, is not renderable!
 				if (cv.vbodata[sy].pcdata == nullptr)
 				{
-					logger << Log::ERR << "PrecompSchedule::schedule(): vertex data was null" << Log::ENDL;
-					// FIXME this is a bug, somewhere
+					//logger << Log::ERR << "PrecompSchedule::schedule(): vertex data was null" << Log::ENDL;
+					// FIXME this is a bug: Seamless resets column data, and the sectors they come from
+					// but the sector might still remain in the scheduling/transfer queue (this) from before
 					s2.progress = Sector::PROG_NEEDRECOMP;
 					ready = false;
 				}

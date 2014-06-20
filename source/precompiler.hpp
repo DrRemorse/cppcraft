@@ -10,7 +10,6 @@
 namespace cppcraft
 {
 	class Sector;
-	class PrecompThread;
 	struct vertex_t;
 	
 	class Precomp
@@ -19,10 +18,43 @@ namespace cppcraft
 		Precomp();
 		~Precomp();
 		
-		bool    alive;
-		Sector* sector;
+		enum jobresult_t
+		{
+			STATUS_NEW,
+			STATUS_CULLED,
+			STATUS_FAILED,
+			STATUS_DONE
+		};
 		
-		// mesh data
+		inline bool isAlive() const
+		{
+			return alive;
+		}
+		inline jobresult_t getResult() const
+		{
+			return result;
+		}
+		inline int getJob() const
+		{
+			return job;
+		}
+		
+		bool isolator();
+		//! try to complete a column and schedule it for transfer to renderer
+		void complete();
+		
+		void cancel();
+		void kill();
+		
+		bool        alive;
+		jobresult_t result;
+		// the job we are to do
+		int         job;
+		// testdata from isolator
+		visiblefaces_t vfaces;
+		// sector as mesh source
+		Sector*     sector;
+		// resulting mesh data
 		vertex_t* datadump;
 		
 		#ifdef USE_INDEXING
@@ -32,16 +64,12 @@ namespace cppcraft
 		
 		unsigned short vertices    [RenderConst::MAX_UNIQUE_SHADERS];
 		unsigned short bufferoffset[RenderConst::MAX_UNIQUE_SHADERS];
-		
-		void complete();
 	};
 	
 	class Precompiler
 	{
 	public:
 		static const int MAX_PRECOMPQ = 64;
-		
-		~Precompiler();
 		
 		inline Precomp& operator[] (std::size_t i)
 		{
@@ -51,24 +79,11 @@ namespace cppcraft
 		// initializes the precompiler pipeline stage
 		void init();
 		
-		// number of precompiler threads
-		inline std::size_t getJobCount() const
-		{
-			return pcthread_count;
-		}
-		// returns a precompilation thread object
-		PrecompThread& getJob(int job);
-		
 		// executes a round of precompilation
 		void run();
 		
 	private:
 		Precomp queue[MAX_PRECOMPQ];
-		
-		// precompilation threads
-		PrecompThread* pcthreads;
-		int pcthread_count;
-		
 	};
 	extern Precompiler precompiler;
 	

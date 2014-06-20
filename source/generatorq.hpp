@@ -3,11 +3,6 @@
 
 #include <deque>
 
-namespace library
-{
-	class Timer;
-}
-
 namespace cppcraft
 {
 	class Sector;
@@ -21,7 +16,7 @@ namespace cppcraft
 		}
 		
 		// returns true if time ran out
-		bool run(library::Timer& timer, double timeOut);
+		void run();
 		
 	private:
 		std::deque<Sector*> genq;

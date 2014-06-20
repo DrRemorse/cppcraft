@@ -208,7 +208,8 @@ namespace cppcraft
 				if (sector)
 				{
 					logger << Log::INFO << "Sector (" << sector->getX() << ", " << sector->getY() << ", " << sector->getZ() << "): " << (int) sector->progress << Log::ENDL;
-					logger << Log::INFO << "culled= " << (int) sector->culled << ", render= " << sector->render << ", content= " << (int) sector->contents << Log::ENDL;
+					logger << Log::INFO << "culled= " << (int) sector->culled << ", render= " << sector->render 
+						<< ", content= " << (int) sector->contents << ", progress= " << (int) sector->progress << Log::ENDL;
 				}
 			}
 			

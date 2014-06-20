@@ -21,7 +21,8 @@ using namespace library;
 namespace cppcraft
 {
 	static const double TIMING_TICKTIMER = 0.0125;
-	static const double MAX_TIMING_WAIT  = 0.011;
+	static const double MAX_TIMING_WAIT  = 0.012;
+	static const double TIMING_SLEEP_TIME = TIMING_TICKTIMER / 2.0;
 	
 	void WorldManager::main()
 	{
@@ -37,14 +38,14 @@ namespace cppcraft
 		
 		// integral delta timing
 		Timer timer;
-		double _localtime = timer.getDeltaTime();
-		double _ticktimer = timer.getDeltaTime();
+		double localTime = timer.getDeltaTime();
+		double _ticktimer = localTime;
 		
 		// world manager main loop
 		while (mtx.terminate == false)
 		{
 			// fixed timestep
-			_localtime = timer.getDeltaTime();
+			localTime = timer.getDeltaTime();
 			
 			try
 			{
@@ -60,6 +61,8 @@ namespace cppcraft
 			// integrator
 			try
 			{
+				double _localtime = localTime;
+				
 				while (_localtime >= _ticktimer + TIMING_TICKTIMER)
 				{
 					//----------------------------------//
@@ -91,7 +94,7 @@ namespace cppcraft
 				
 				// this function changes the player.positionChanged value each round
 				// also transports relevant player values to rendering thread
-				player.handleActions(_localtime);
+				player.handleActions(localTime);
 			}
 			catch (std::string exc)
 			{
@@ -99,51 +102,40 @@ namespace cppcraft
 				break;
 			}
 			
-			
-			///----------------------------------///
-			///        SEAMLESS TRANSITION       ///
-			///----------------------------------///
-			bool timeout = Seamless::run();
-			
-			// check for timeout
-			if (timer.getDeltaTime() > _localtime + MAX_TIMING_WAIT) timeout = true;
-			
-			// update shadows if sun has travelled far
-			// but not when connected to a network
-			if (network.isConnected() == false)
+			while (true)
 			{
-				thesun.travelCheck();
-			}
-			
-			double timeOut = _localtime + MAX_TIMING_WAIT;
-			
-			///----------------------------------///
-			/// ---------- GENERATOR ----------- ///
-			///----------------------------------///
-			if (timeout == false)
-			{
-				timeout = generatorQueue.run(timer, timeOut);
-			}
-			
-			///----------------------------------///
-			/// --------- PRECOMPILER ---------- ///
-			///----------------------------------///
-			if (timeout == false)
-			{
+				///----------------------------------///
+				///        SEAMLESS TRANSITION       ///
+				///----------------------------------///
+				if (Seamless::run()) break;
+				
+				///----------------------------------///
+				/// ---------- GENERATOR ----------- ///
+				///----------------------------------///
+				// mandatory to run entire operation
+				generatorQueue.run();
+				
+				double timeOut = localTime + MAX_TIMING_WAIT;
+				
+				// check for timeout
+				if (timer.getDeltaTime() > timeOut) break;
+				
+				// update shadows if sun has travelled far
+				// but not when connected to a network
+				if (network.isConnected() == false)
+				{
+					thesun.travelCheck();
+				}
+				
+				///----------------------------------///
+				/// --------- PRECOMPILER ---------- ///
+				///----------------------------------///
 				//double t0 = timer.getDeltaTime();
 				//double t0 = _localtime;
 				
-				try
-				{
-					// as long as not currently 'generating' world:
-					// start precompiling sectors
-					timeout = precompq.run(timer, _localtime);
-				}
-				catch (std::string exc)
-				{
-					logger << Log::ERR << "PrecompQ: " << exc << Log::ENDL;
-					break;
-				}
+				// as long as not currently 'generating' world:
+				// start precompiling sectors
+				if (precompq.run(timer, timeOut)) break;
 				
 				//double t1 = timer.getDeltaTime() - t0;
 				//if (t1 > 0.020)
@@ -153,15 +145,12 @@ namespace cppcraft
 				
 				//double t1 = timer.getDeltaTime();
 				//logger << "pcq time: " << t1 - t0 << Log::ENDL;
-			}
-			
-			teleportHandler();
-			
-			///----------------------------------///
-			/// -------- WORLD BUILDER --------- ///
-			///----------------------------------///
-			if (timeout == false)
-			{
+				
+				teleportHandler();
+				
+				///----------------------------------///
+				/// -------- WORLD BUILDER --------- ///
+				///----------------------------------///
 				// precompq queue must be empty (aka ready for more stuff)
 				if (precompq.ready())
 				{
@@ -188,6 +177,7 @@ namespace cppcraft
 					//logger << "WB time: " << t1 - t0 << Log::ENDL;
 				}
 				
+				break;
 			} // world builder
 			
 			// send & receive stuff
@@ -196,6 +186,11 @@ namespace cppcraft
 			// flush chunk write queue
 			chunks.flushChunks();
 			
+			// this shit won't work...
+			/*if (timer.getDeltaTime() < localTime + TIMING_SLEEP_TIME)
+			{
+				sleepMillis(6);
+			}*/
 		}
 		
 		// flush if queue still exists

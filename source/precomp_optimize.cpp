@@ -4,7 +4,6 @@
 #include "precompiler.hpp"
 #include "precomp_thread.hpp"
 #include "renderconst.hpp"
-#include "sector.hpp"
 
 using namespace library;
 
@@ -287,25 +286,25 @@ namespace cppcraft
 		}
 	}
 	
-	void PrecompThread::optimizeMesh(int shaderline, int txsize)
+	void PrecompThread::optimizeMesh(Precomp& pc, int shaderline, int txsize)
 	{
-		unsigned short verts = precomp->vertices[shaderline];
+		unsigned short verts = pc.vertices[shaderline];
 		if (verts >= 8)
 		{
-			vertex_t* repeat = precomp->datadump + precomp->bufferoffset[shaderline];
+			vertex_t* repeat = pc.datadump + pc.bufferoffset[shaderline];
 			// verts is sent by reference
 			cppcraft::optimizeMesh(verts, repeat, txsize);
 			// set final number of vertices
-			precomp->vertices[shaderline] = verts;
+			pc.vertices[shaderline] = verts;
 		}
 	}
 	
-	void PrecompThread::optimizeShadedMesh(int shaderline)
+	void PrecompThread::optimizeShadedMesh(Precomp& pc, int shaderline)
 	{
 		static const unsigned short WATER_MAX_VERTS = Sector::BLOCKS_XZ * Sector::BLOCKS_XZ * 4;
 		
-		unsigned short verts = precomp->vertices[shaderline];
-		vertex_t* water = precomp->datadump + precomp->bufferoffset[shaderline];
+		unsigned short verts = pc.vertices[shaderline];
+		vertex_t* water = pc.datadump + pc.bufferoffset[shaderline];
 		
 		if (verts == WATER_MAX_VERTS)
 		{
@@ -329,7 +328,7 @@ namespace cppcraft
 			water[3].z = 0;
 			
 			// set final number of vertices
-			precomp->vertices[shaderline] = 4;
+			pc.vertices[shaderline] = 4;
 			return;
 		}
 		// try to optimize the water plane manually
@@ -339,7 +338,7 @@ namespace cppcraft
 			// verts is sent by reference
 			optimizeShaderPlane(verts, water);
 			// set final number of vertices
-			precomp->vertices[shaderline] = verts;
+			pc.vertices[shaderline] = verts;
 		}
 	}
 }

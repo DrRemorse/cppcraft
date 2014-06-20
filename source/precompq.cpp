@@ -20,46 +20,51 @@ namespace cppcraft
 	PrecompQ precompq;
 	ThreadPool::TPool* threadpool;
 	std::mutex jobsynch;
-	static const double PRECOMPQ_MAX_THREADWAIT = 0.012;
 	
 	class PrecompJob : public ThreadPool::TPool::TJob
 	{
 	public:
 		PrecompJob (int p) : ThreadPool::TPool::TJob(p)
 		{
+			this->pt = new PrecompThread();
+			precomp = nullptr;
 			is_done = true;
 		}
 		
-		void setBusy()
+		void prepareJob()
 		{
 			jobsynch.lock();
-			//if (is_done == false) throw std::string("Was not finished");
-			is_done = false;
+			{
+				is_done  = false;
+			}
 			jobsynch.unlock();
 		}
-		void run (void* pthread)
+		
+		void run (void* _precomp)
 		{
-			PrecompThread& pt = *(PrecompThread*)pthread;
-			Sector& sector = *pt.precomp->sector;
+			this->precomp = (Precomp*) _precomp;
 			
-			if (sector.progress == Sector::PROG_RECOMPILING)
+			if (precomp->getJob() == Sector::PROG_RECOMPILING)
 			{
 				// first precompiler stage: mesh generation
-				pt.precompile();
+				pt->precompile(*precomp);
 			}
-			else if (sector.progress == Sector::PROG_AO)
+			else if (precomp->getJob() == Sector::PROG_AO)
 			{
 				// second stage: AO
-				pt.ambientOcclusion();
+				pt->ambientOcclusion(*precomp);
 			}
 			else
 			{
-				logger << Log::WARN << "PrecompJob(): Unknown job: " << (int) sector.progress << Log::ENDL;
+				logger << Log::WARN << "PrecompJob(): Unknown job: " << precomp->getJob() << Log::ENDL;
+				precomp->result = Precomp::STATUS_FAILED;
 			}
+			
 			jobsynch.lock();
 			this->is_done = true;
 			jobsynch.unlock();
 		}
+		
 		bool isDone()
 		{
 			jobsynch.lock();
@@ -67,9 +72,15 @@ namespace cppcraft
 			jobsynch.unlock();
 			return result;
 		}
+		Precomp* getPrecomp()
+		{
+			return precomp;
+		}
 		
 	private:
-		bool is_done;
+		PrecompThread* pt;
+		Precomp* precomp;
+		bool     is_done;
 	};
 	std::vector<PrecompJob> jobs;
 	
@@ -77,164 +88,61 @@ namespace cppcraft
 	{
 		// initialize precompiler backend
 		precompiler.init();
-		// create X amount of threads
-		this->threads = config.get("world.threads", 2);
-		this->nextJobID = 0;
+		
 		// create dormant thread pool
+		this->threads = config.get("world.threads", 2);
 		threadpool = new ThreadPool::TPool(this->threads);
-		// create precompiler job count jobs
-		for (size_t i = 0; i < precompiler.getJobCount(); i++)
+		
+		// create jobs
+		int jobCount = config.get("world.jobs", 2);
+		for (int i = 0; i < jobCount; i++)
 			jobs.emplace_back(i);
+		
+		// next job is first job
+		this->nextJobID = 0;
 	}
-	
 	// stop precompq
 	void PrecompQ::stop()
 	{
 		delete threadpool;
 	}
 	
-	// must return index, because it could be less than the queue counter
-	// which could make the precompq indexifier go mad MAD I SAY MADDDDDD
-	int PrecompQ::precompIndex(Sector& sector) const
-	{
-		for (int i = 0; i < Precompiler::MAX_PRECOMPQ; i++)
-		{
-			if (precompiler[i].alive)
-			if (precompiler[i].sector == &sector)
-			{
-				return i;
-			}
-		}
-		return -1;
-	}
 	
-	void PrecompQ::addTruckload(Sector& s)
+	bool PrecompQ::startJob(Precomp& precomp)
 	{
-		// adds all sectors in this sectors "column" to the queue
-		int columnY = columns.fromSectorY(s.getY());
-		int start_y = columns.getSectorLevel(columnY);
-		int end_y   = start_y + columns.getSizeInSectors(columnY);
+		if (jobs[this->nextJobID].isDone() == false) return true;
 		
-		int x = s.getX();
-		int z = s.getZ();
+		// complete any previously running job
+		Precomp* prev = jobs[this->nextJobID].getPrecomp();
+		if (prev) checkJobStatus(*prev);
 		
-		// put truckload of sectors into queue
-		for (int y = start_y; y < end_y; y++)
+		Sector& sector = *precomp.sector;
+		if (sector.progress == Sector::PROG_RECOMPILE)
 		{
-			Sector& s2 = Sectors(x, y, z);
-			
-			// NOTE bug fixed:
-			// don't try to re-add sectors that are already in the owen,
-			// because different threads might just start to work on the same sector
-			
-			// try to add all sectors that need recompilation, until queue is full
-			if (s2.contents == Sector::CONT_SAVEDATA && s2.culled == false)
-			{
-				if (s2.progress == Sector::PROG_NEEDRECOMP)
-					// we can directly add sector that is flagged as ready
-					addPrecomp(s2);
-				else if (s2.progress > Sector::PROG_RECOMPILE)
-					// we also don't want to REschedule sectors already being compiled
-					// that means we really just want to change its flag if its already in the owen
-					// NOTE: this will cause this same function to try to add living precomps to queue
-					s2.progress = Sector::PROG_NEEDRECOMP;
-			}
-			
-		} // y
-		
-		// tell worldbuilder to immediately start over, UNLESS its generating
-		// the sectors closest to the player will be rebuilt sooner, rather than later
-		worldbuilder.reset();
-		
-	} // addTruckload
-	
-	bool PrecompQ::addPrecomp(Sector& s)
-	{
-		// check if sector needs to be generated
-		if (s.progress == Sector::PROG_NEEDGEN)
+			sector.progress = Sector::PROG_RECOMPILING;
+		}
+		else if (sector.progress == Sector::PROG_NEEDAO)
 		{
-			logger << Log::ERR << "PrecompQ::addPrecomp(): Sector needed generation" << Log::ENDL;
-			// not much to do, so exit
-			return true;
+			sector.progress = Sector::PROG_AO;
+		}
+		else
+		{
+			// an error hath occured
+			logger << Log::ERR << "PrecompQ::startJob(): Unknown progress (" << (int)sector.progress << ")" << Log::ENDL;
+			return false;
 		}
 		
-		// check if sector is about to be precompiled
-		if (s.progress >= Sector::PROG_RECOMPILE)
-		{
-			//logger << Log::WARN << "PrecompQ::addPrecomp(): Sector already about to be recompiled" << Log::ENDL;
-			s.progress = Sector::PROG_RECOMPILE;
-			// not much to do, so exit
-			return true;
-		}
+		precomp.result = Precomp::STATUS_NEW;
+		precomp.job    = sector.progress;
 		
-		// check that the sector isn't already in the queue
-		int index = precompIndex(s);
-		if (index != -1)
-		{
-			//logger << Log::INFO << "PrecompQ::addPrecomp(): Already existed " << s.x << ", " << s.y << ", " << s.z << Log::ENDL;
-			//logger << Log::INFO << "progress: " << (int) s.progress << Log::ENDL;
-			
-			// if the sector was already in the queue, just start recompiling right this instant!
-			s.progress = Sector::PROG_RECOMPILE;
-			return true;
-		}
+		jobs[this->nextJobID].prepareJob();
+		// queue thread job
+		threadpool->run(&jobs[this->nextJobID], &precomp, false);
 		
-		// because of addTruckload() dependency, some precomps could be alive still
-		while (true)
-		{
-			// if the queue is full, return immediately
-			if (queueCount >= Precompiler::MAX_PRECOMPQ)
-				return false;
-			
-			// is the current precomp queue index not in use?
-			if (precompiler[queueCount].alive == false)
-			{
-				// if its not, break out of loop
-				break;
-			}
-			// otherwise, since it's alive, go to the next index in queue
-			queueCount += 1;
-		}
-		
-		// if we are here, we have found a precomp that wasn't in-use already
-		// add the sector to precompilation queue
-		s.progress = Sector::PROG_RECOMPILE;
-		precompiler[queueCount].sector = &s;
-		precompiler[queueCount].alive  = true;
-		// automatically go to next precomp
-		queueCount += 1;
-		return (queueCount < Precompiler::MAX_PRECOMPQ);
-	}
-	
-	bool PrecompQ::startJob(int job)
-	{
-		// set thread job info
-		PrecompThread& pt = precompiler.getJob(this->nextJobID);
-		pt.precomp = &precompiler[job];
-		// increase progress/stage
-		int stage = ++pt.precomp->sector->progress;
-		
-		bool cont = true;
-		
-		if (stage == Sector::PROG_RECOMPILING)
-		{
-			// before starting precompiler we need to isolate all data properly
-			// then check if the precomp can actually be run (or is needed at all)
-			cont = pt.isolator();
-		}
-		if (cont)
-		{
-			jobs[this->nextJobID].setBusy();
-			// queue thread job
-			threadpool->run(&jobs[this->nextJobID], &pt, false);
-			
-			// go to next thread
-			this->nextJobID = (this->nextJobID + 1) % precompiler.getJobCount();
-			
-			// if we are back at the start, we may just stop running jobs
-			return (this->nextJobID == 0);
-		}
-		return false;
+		// go to next job
+		this->nextJobID = (this->nextJobID + 1) % jobs.size();
+		// return good news
+		return (this->nextJobID == 0);
 	}
 	
 	void PrecompQ::finish()
@@ -243,11 +151,66 @@ namespace cppcraft
 		this->nextJobID = 0;
 	}
 	
-	bool PrecompQ::run(Timer& timer, double localTime)
+	// before we can use this job index, we need to check if there are any results
+	// from completing a previous job on this index (there are a limited number of jobs)
+	void PrecompQ::checkJobStatus(Precomp& precomp)
+	{
+		Precomp::jobresult_t result = precomp.getResult();
+		
+		if (result == Precomp::STATUS_NEW)
+		{
+			// this precomp is ready to go, or waiting to be replaced
+			return;
+		}
+		else if (result == Precomp::STATUS_FAILED)
+		{
+			logger << Log::WARN << "PrecompQ(): Job returned failure" << Log::ENDL;
+			Sector& sector = *precomp.sector;
+			sector.culled = true;
+			sector.render = false;
+			sector.progress = Sector::PROG_COMPILED;
+			precomp.alive = false;
+		}
+		else if (result == Precomp::STATUS_CULLED)
+		{
+			Sector& sector = *precomp.sector;
+			sector.culled = true;
+			sector.render = false;
+			sector.progress = Sector::PROG_COMPILED;
+			precomp.alive = false;
+		}
+		else if (result == Precomp::STATUS_DONE)
+		{
+			Sector& sector = *precomp.sector;
+			sector.progress++;
+			//logger << Log::INFO << "Sector progress: " << (int)sector.progress << Log::ENDL;
+		}
+		else
+		{
+			// blast the logs with an error
+			logger << Log::ERR << "Precomp(): Job running? result = " << result << Log::ENDL;
+			return;
+		}
+		// reset result, since we no longer want to change status
+		precomp.result = Precomp::STATUS_NEW;
+	}
+	
+	bool PrecompQ::run(Timer& timer, double timeOut)
 	{
 		/// ------------ PRECOMPILER ------------ ///
-		
 		bool everythingDead = true;
+		bool nomorejobs = false;
+		
+		// check for any finished jobs
+		for (PrecompJob& job : jobs)
+		{
+			// complete any previously running job
+			if (job.isDone())
+			if (job.getPrecomp())
+			{
+				checkJobStatus(*job.getPrecomp());
+			}
+		}
 		
 		for (int i = 0; i < Precompiler::MAX_PRECOMPQ; i++)
 		{
@@ -255,26 +218,20 @@ namespace cppcraft
 			{
 				Sector& sector = *precompiler[i].sector;
 				
-				if (sector.progress == Sector::PROG_RECOMPILE || sector.progress == Sector::PROG_NEEDAO)
+				if (sector.progress == Sector::PROG_RECOMPILE)
 				{
-					for (size_t N = 0; N < precompiler.getJobCount(); N++)
+					if (precompiler[i].isolator())
 					{
-						// finish whatever is currently running, if anything
-						if (jobs[this->nextJobID].isDone())
-						{
-							// start job immediately, since there's still time left
-							if (startJob(i))
-							{
-								if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT)
-									return true;
-							}
-							break;
-						}
-						else
-						{
-							this->nextJobID = (this->nextJobID + 1) % precompiler.getJobCount();
-						}
+						// start job
+						if (nomorejobs == false)
+						if (startJob(precompiler[i])) nomorejobs = true;
 					}
+				}
+				else if (sector.progress == Sector::PROG_NEEDAO)
+				{
+					// start job
+					if (nomorejobs == false)
+					if (startJob(precompiler[i])) nomorejobs = true;
 				}
 				else if (sector.progress == Sector::PROG_RECOMPILING || sector.progress == Sector::PROG_AO)
 				{
@@ -284,14 +241,7 @@ namespace cppcraft
 				{
 					// ready for completion
 					// verify that this sector can be assembled into a column properly
-					try
-					{
-						precompiler[i].complete();
-					}
-					catch (std::string exc)
-					{
-						logger << Log::ERR << "Precomp::complete(): " << exc << Log::ENDL;
-					}
+					precompiler[i].complete();
 				}
 				else  // if (precompiler[currentPrecomp].sector->precomp == 0)
 				{
@@ -311,7 +261,9 @@ namespace cppcraft
 			// reset counters
 			queueCount = 0;
 		}
-		//finish();
+		
+		// always check if time is out
+		if (timer.getDeltaTime() > timeOut) return true;
 		
 		// handle transition from this thread to rendering thread
 		// from precomp scheduler to compiler scheduler
@@ -319,7 +271,7 @@ namespace cppcraft
 		PrecompScheduler::scheduling();
 		
 		// always check if time is out
-		if (timer.getDeltaTime() > localTime + PRECOMPQ_MAX_THREADWAIT) return true;
+		if (timer.getDeltaTime() > timeOut) return true;
 		
 		return false;
 	}

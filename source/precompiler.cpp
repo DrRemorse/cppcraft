@@ -4,7 +4,6 @@
 #include <library/config.hpp>
 #include "blockmodels.hpp"
 #include "columns.hpp"
-#include "precomp_thread.hpp"
 #include "precompq_schedule.hpp"
 #include "sectors.hpp"
 #include "torchlight.hpp"
@@ -29,26 +28,13 @@ namespace cppcraft
 		
 		logger << Log::INFO << "* Initializing torchlight" << Log::ENDL;
 		torchlight.init();
-		
-		logger << Log::INFO << "* Initializing precompiler" << Log::ENDL;
-		
-		// create precomiler thread objects
-		this->pcthread_count = config.get("world.jobs", 4);
-		this->pcthreads = new PrecompThread[pcthread_count]();
-	}
-	Precompiler::~Precompiler()
-	{
-		delete[] pcthreads;
-	}
-	
-	PrecompThread& Precompiler::getJob(int job)
-	{
-		return pcthreads[job];
 	}
 	
 	Precomp::Precomp()
 	{
 		this->alive    = false;
+		this->result   = STATUS_NEW;
+		this->sector   = nullptr;
 		this->datadump = nullptr;
 	}
 	Precomp::~Precomp()
@@ -79,15 +65,14 @@ namespace cppcraft
 			v.bufferoffset[n] = this->bufferoffset[n];
 		}
 		
-		// free precomp slot (as early as possible)
-		this->alive = false;
-		
 		// set progress to finished state
 		sector.progress = Sector::PROG_COMPILED;
 		// set renderable flag to sector
 		sector.render = true;
 		// sector was definitely not culled
 		sector.culled = false;
+		// disable precomp
+		this->alive = false;
 		
 		PrecompScheduler::add(Sectors(sector.getX(), columnY, sector.getZ()));
 	}

@@ -1,4 +1,4 @@
-#include "precomp_thread.hpp"
+#include "precomp_thread_data.hpp"
 
 #include "blockmodels.hpp"
 

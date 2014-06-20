@@ -1,6 +1,5 @@
 #include "generatorq.hpp"
 
-#include <library/timing/timer.hpp>
 #include "generator.hpp"
 #include "sector.hpp"
 
@@ -10,7 +9,7 @@ namespace cppcraft
 {
 	GeneratorQueue generatorQueue;
 	
-	bool GeneratorQueue::run(Timer& timer, double timeOut)
+	void GeneratorQueue::run()
 	{
 		while (genq.empty() == false)
 		{
@@ -19,11 +18,9 @@ namespace cppcraft
 			
 			if (sector->progress == Sector::PROG_NEEDGEN)
 			{
-				if (Generator::generate(*sector, &timer, timeOut))
-					return true;
+				Generator::generate(*sector, nullptr, 0.0);
 			}
 		}
-		return false;
 	}
 }
 

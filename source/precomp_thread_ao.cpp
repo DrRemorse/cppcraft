@@ -15,29 +15,19 @@ using namespace library;
 
 namespace cppcraft
 {
-	
-	void PrecompThread::ambientOcclusion()
+	void PrecompThread::ambientOcclusion(Precomp& precomp)
 	{
-		Sector& sector = *precomp->sector;
-		
 		// recount total vertices
-		int cnt = precomp->vertices[0];
+		int cnt = precomp.vertices[0];
 		for (int i = 1; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 		{
-			cnt += precomp->vertices[i];
+			cnt += precomp.vertices[i];
 		}
 		
-		if (sector.progress != Sector::PROG_AO)
-		{
-			logger << Log::ERR << "PrecompThread::ambientOcclusion(): invalid sector progress state" << Log::ENDL;
-			logger << Log::ERR << "PrecompThread::ambientOcclusion(): state: " << (int) sector.progress << Log::ENDL;
-			cancelPrecomp();
-			return;
-		}
-		else if (precomp->datadump == nullptr)
+		if (precomp.datadump == nullptr)
 		{
 			logger << Log::ERR << "PrecompThread::ambientOcclusion(): datadump was null" << Log::ENDL;
-			cancelPrecomp();
+			precomp.cancel();
 			return;
 		}
 		
@@ -45,22 +35,22 @@ namespace cppcraft
 		#ifdef AMBIENT_OCCLUSION_GRADIENTS
 			if (gameconf.ssao == false)
 			{
-				ambientOcclusionGradients(this->occ, precomp->datadump, cnt);
+				ambientOcclusionGradients(*this->occ, *precomp.sector, precomp.datadump, cnt);
 			}
 		#endif
 		
 		// optimize repeating textures mesh
-		optimizeMesh(RenderConst::TX_REPEAT, RenderConst::VERTEX_SCALE / tiles.tilesPerBigtile);
+		optimizeMesh(precomp, RenderConst::TX_REPEAT, RenderConst::VERTEX_SCALE / tiles.tilesPerBigtile);
 		// optimize normal solids
-		optimizeMesh(RenderConst::TX_SOLID, RenderConst::VERTEX_SCALE);
+		optimizeMesh(precomp, RenderConst::TX_SOLID, RenderConst::VERTEX_SCALE);
 		// optimize transparent textures
-		optimizeMesh(RenderConst::TX_TRANS, RenderConst::VERTEX_SCALE);
+		optimizeMesh(precomp, RenderConst::TX_TRANS, RenderConst::VERTEX_SCALE);
 		// optimize water & lava meshes
-		optimizeShadedMesh(RenderConst::TX_WATER);
-		optimizeShadedMesh(RenderConst::TX_LAVA);
+		optimizeShadedMesh(precomp, RenderConst::TX_WATER);
+		optimizeShadedMesh(precomp, RenderConst::TX_LAVA);
 		
-		if (sector.progress == Sector::PROG_AO)
-			sector.progress = Sector::PROG_NEEDCOMPILE;
+		// set result
+		precomp.result = Precomp::STATUS_DONE;
 	}
 	
 	short addCornerShadowVertex(AmbientOcclusion& ao, vertex_t* vt, short x, short y, short z)
@@ -125,15 +115,10 @@ namespace cppcraft
 		return (id > AIR_END && id < CROSS_START && id != _LANTERN && id != _VINES);
 	}
 	
-	void PrecompThread::ambientOcclusionGradients(AmbientOcclusion* ambocc, vertex_t* datadump, int vertexCount)
+	void PrecompThread::ambientOcclusionGradients(AmbientOcclusion& ao, Sector& sector, vertex_t* datadump, int vertexCount)
 	{
-		// ambient occlusion structure
-		AmbientOcclusion& ao = *ambocc;
 		// clear/reset any previous data
 		ao.clear();
-		
-		// sector belonging to precomp
-		Sector& sector = precomp->sector[0];
 		
 		// world height in block units
 		short worldY = sector.getY() * Sector::BLOCKS_Y;

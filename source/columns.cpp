@@ -18,7 +18,7 @@ namespace cppcraft
 	Columns columns;
 	
 	// list of metadata that add up to a complete column VBO
-	vbodata_t* vboList;
+	vbodata_t** vboList;
 	// column compiler accumulation buffer
 	vertex_t*  column_dump;
 	
@@ -67,7 +67,7 @@ namespace cppcraft
 		// allocate temporary datadumps for compiling columns //
 		////////////////////////////////////////////////////////
 		
-		vboList = new vbodata_t[tallest];
+		vboList = new vbodata_t*[tallest];
 		
 		column_dump = 
 			new vertex_t[tallest * RenderConst::MAX_FACES_PER_SECTOR * 4];
@@ -128,10 +128,10 @@ namespace cppcraft
 		
 		for (int sy = columns.getSizeInSectors(y)-1; sy >= 0; sy--)
 		{
-			if (vbodata[sy].pcdata != nullptr)
+			if (vbodata[sy].pcdata)
 			{
 				// COPY the VBO data section
-				vboList[vboCount] = vbodata[sy];
+				vboList[vboCount] = &vbodata[sy];
 				// renderable and consistent, add to queue
 				vboCount += 1;
 			}
@@ -159,7 +159,7 @@ namespace cppcraft
 			for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 			{
 				// increase by vertices from each path
-				totalverts[i] += vboList[vy].vertices[i];
+				totalverts[i] += vboList[vy]->vertices[i];
 			}
 		}
 		
@@ -186,7 +186,7 @@ namespace cppcraft
 		
 		for (int vindex = 0; vindex < vboCount; vindex++)
 		{
-			vbodata_t& v = vboList[vindex];
+			vbodata_t& v = *vboList[vindex];
 			
 			// loop through all vertices in shader path
 			for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
