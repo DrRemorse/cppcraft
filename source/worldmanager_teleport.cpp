@@ -6,6 +6,7 @@
 #include "player.hpp"
 #include "player_inputs.hpp"
 #include "precompq.hpp"
+#include "precompq_schedule.hpp"
 #include "sectors.hpp"
 #include "threading.hpp"
 #include "worldbuilder.hpp"
@@ -42,6 +43,8 @@ namespace cppcraft
 			chunks.flushChunks();
 			// finish running jobs
 			precompq.finish();
+			// clear precomp scheduler
+			PrecompScheduler::reset();
 			
 			mtx.sectorseam.lock();
 			{

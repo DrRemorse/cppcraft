@@ -34,6 +34,11 @@ namespace cppcraft
 		psched.emplace_back(sector);
 	}
 	
+	void PrecompScheduler::reset()
+	{
+		psched.clear();
+	}
+	
 	template <typename T>
 	void remove_at(std::vector<T>&v, typename std::vector<T>::size_type n)
 	{
@@ -101,11 +106,16 @@ namespace cppcraft
 		}
 		
 		// either the column isn't ready to be assembled
-		if (ready == false) return false;
+		if (ready == false)
+		{
+			//mtx.compiler.unlock();
+			return false;
+		}
 		// or, there simply wasn't anything to assemble
 		if (foundData == false)
 		{
 			cv.renderable = false;
+			//mtx.compiler.unlock();
 			return false;
 		}
 		

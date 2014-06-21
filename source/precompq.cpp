@@ -172,7 +172,7 @@ namespace cppcraft
 			else if (result == Precomp::STATUS_CULLED)
 			{
 				Sector& sector = *precomp.sector;
-				if (sector.progress > Sector::PROG_RECOMPILE)
+				if (sector.progress > Sector::PROG_NEEDRECOMP)
 				{
 					sector.culled = true;
 					sector.render = false;

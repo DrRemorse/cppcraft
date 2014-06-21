@@ -18,6 +18,8 @@ namespace cppcraft
 	public:
 		static void add(const Sector& sector);
 		static void scheduling();
+		// used by teleport
+		static void reset();
 	};
 	
 }
