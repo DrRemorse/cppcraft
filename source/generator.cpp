@@ -22,6 +22,8 @@ namespace cppcraft
 	unsigned int g_fres[Chunks::CHUNK_SIZE][Sectors.SECTORS_Y][Chunks::CHUNK_SIZE];
 	unsigned int g_compres[Chunks::CHUNK_SIZE][Chunks::CHUNK_SIZE];
 	
+	std::deque<Sector*> propagationQueue;
+	
 	void Generator::init()
 	{
 		for (int x = 0; x < Sectors.getXZ(); x++)
@@ -45,16 +47,14 @@ namespace cppcraft
 		// if the sector still has saved data, process sector and propagate light
 		if (sector.contents == Sector::CONT_SAVEDATA)
 		{
-			// (eventually) place sector in precompiler queue
-			if (sector.progress != Sector::PROG_NEEDRECOMP)
-			{
-				sector.progress = Sector::PROG_NEEDRECOMP;
-			}
+			// place sector in precompiler queue
+			sector.progress = Sector::PROG_NEEDRECOMP;
+			
 			// update sector neighbors, if there are emissive lights on this sector
 			if (sector.lightCount())
 			{
-				// worst-case emissive block reach (_TORCH)
-				torchlight.lightSectorUpdates(sector, false);
+				// add sector to light propagation queue
+				propagationQueue.push_back(&sector);
 			}
 		}
 		else
@@ -198,6 +198,17 @@ namespace cppcraft
 				}*/
 			} // z
 		} // x
+		
+		// propagate light (covers all cases, because it's AFTER loading)
+		// NOTE: if there is an early exit, this can go wrong!
+		while (propagationQueue.empty() == false)
+		{
+			Sector* lsector = propagationQueue.front();
+			propagationQueue.pop_front();
+			
+			// worst-case emissive block reach (_TORCH)
+			torchlight.lightSectorUpdates(*lsector, false);
+		}
 		
 		if (minimapUpdated) minimap.setUpdated();
 		

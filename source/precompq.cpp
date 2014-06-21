@@ -33,13 +33,8 @@ namespace cppcraft
 		
 		void prepareJob()
 		{
-			jobsynch.lock();
-			{
-				is_done  = false;
-			}
-			jobsynch.unlock();
+			is_done  = false;
 		}
-		
 		void run (void* _precomp)
 		{
 			this->precomp = (Precomp*) _precomp;
@@ -116,6 +111,7 @@ namespace cppcraft
 		Precomp* prev = jobs[this->nextJobID].getPrecomp();
 		if (prev) checkJobStatus(*prev);
 		
+		// execute new job
 		Sector& sector = *precomp.sector;
 		if (sector.progress == Sector::PROG_RECOMPILE)
 		{
@@ -134,9 +130,9 @@ namespace cppcraft
 		
 		precomp.result = Precomp::STATUS_NEW;
 		precomp.job    = sector.progress;
-		
 		jobs[this->nextJobID].prepareJob();
-		// queue thread job
+		
+		// schedule job
 		threadpool->run(&jobs[this->nextJobID], &precomp, false);
 		
 		// go to next job
@@ -155,41 +151,48 @@ namespace cppcraft
 	// from completing a previous job on this index (there are a limited number of jobs)
 	void PrecompQ::checkJobStatus(Precomp& precomp)
 	{
-		Precomp::jobresult_t result = precomp.getResult();
-		
-		if (result == Precomp::STATUS_NEW)
+		if (precomp.alive)
 		{
-			// this precomp is ready to go, or waiting to be replaced
-			return;
-		}
-		else if (result == Precomp::STATUS_FAILED)
-		{
-			logger << Log::WARN << "PrecompQ(): Job returned failure" << Log::ENDL;
-			Sector& sector = *precomp.sector;
-			sector.culled = true;
-			sector.render = false;
-			sector.progress = Sector::PROG_COMPILED;
-			precomp.alive = false;
-		}
-		else if (result == Precomp::STATUS_CULLED)
-		{
-			Sector& sector = *precomp.sector;
-			sector.culled = true;
-			sector.render = false;
-			sector.progress = Sector::PROG_COMPILED;
-			precomp.alive = false;
-		}
-		else if (result == Precomp::STATUS_DONE)
-		{
-			Sector& sector = *precomp.sector;
-			sector.progress++;
-			//logger << Log::INFO << "Sector progress: " << (int)sector.progress << Log::ENDL;
-		}
-		else
-		{
-			// blast the logs with an error
-			logger << Log::ERR << "Precomp(): Job running? result = " << result << Log::ENDL;
-			return;
+			Precomp::jobresult_t result = precomp.getResult();
+			
+			if (result == Precomp::STATUS_NEW)
+			{
+				// this precomp is ready to go, or waiting to be replaced
+				return;
+			}
+			else if (result == Precomp::STATUS_FAILED)
+			{
+				logger << Log::WARN << "PrecompQ(): Job returned failure" << Log::ENDL;
+				Sector& sector = *precomp.sector;
+				sector.culled = true;
+				sector.render = false;
+				sector.progress = Sector::PROG_COMPILED;
+				precomp.alive = false;
+			}
+			else if (result == Precomp::STATUS_CULLED)
+			{
+				Sector& sector = *precomp.sector;
+				if (sector.progress > Sector::PROG_RECOMPILE)
+				{
+					sector.culled = true;
+					sector.render = false;
+					sector.progress = Sector::PROG_COMPILED;
+					precomp.alive = false;
+				}
+			}
+			else if (result == Precomp::STATUS_DONE)
+			{
+				Sector& sector = *precomp.sector;
+				if (sector.progress > Sector::PROG_RECOMPILE)
+					sector.progress++;
+				//logger << Log::INFO << "Sector progress: " << (int)sector.progress << Log::ENDL;
+			}
+			else
+			{
+				// blast the logs with an error
+				logger << Log::ERR << "Precomp(): Job running? result = " << result << Log::ENDL;
+				return;
+			}
 		}
 		// reset result, since we no longer want to change status
 		precomp.result = Precomp::STATUS_NEW;

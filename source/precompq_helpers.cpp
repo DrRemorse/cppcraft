@@ -98,8 +98,9 @@ namespace cppcraft
 			//logger << Log::INFO << "progress: " << (int) s.progress << Log::ENDL;
 			
 			// if the sector was already in the queue, just start recompiling right this instant!
-			s.progress = Sector::PROG_RECOMPILE;
-			return true;
+			precompiler[index].alive = false;
+			s.progress = Sector::PROG_NEEDRECOMP;
+			//return true;
 		}
 		
 		// because of addTruckload() dependency, some precomps could be alive still
