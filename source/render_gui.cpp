@@ -8,7 +8,6 @@
 #include "chat.hpp"
 #include "minimap.hpp"
 #include "renderman.hpp"
-//#include "render_scene.hpp"
 #include "shaderman.hpp"
 #include <cmath>
 #include <sstream>

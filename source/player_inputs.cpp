@@ -177,39 +177,60 @@ namespace cppcraft
 		// testing/cheats
 		if (busyControls() == false)
 		{
-			if (input.getKey(GLFW_KEY_F1))
+			if (input.getKey(GLFW_KEY_F1) == Input::KEY_PRESSED)
 			{
+				input.hold(GLFW_KEY_F1);
+				
 				thesun.setRadianAngle(3.14159 * 1/8);
 				Sectors.updateAll();
 				worldbuilder.reset();
 			}
-			if (input.getKey(GLFW_KEY_F2))
+			if (input.getKey(GLFW_KEY_F2) == Input::KEY_PRESSED)
 			{
+				input.hold(GLFW_KEY_F2);
+				
 				thesun.setRadianAngle(3.14159 * 2/8);
 				Sectors.updateAll();
 				worldbuilder.reset();
 			}
-			if (input.getKey(GLFW_KEY_F3))
+			if (input.getKey(GLFW_KEY_F3) == Input::KEY_PRESSED)
 			{
+				input.hold(GLFW_KEY_F3);
+				
 				thesun.setRadianAngle(3.14159 * 3/8);
 				Sectors.updateAll();
 				worldbuilder.reset();
 			}
-			if (input.getKey(GLFW_KEY_F4))
+			if (input.getKey(GLFW_KEY_F4) == Input::KEY_PRESSED)
 			{
+				input.hold(GLFW_KEY_F4);
+				
 				thesun.setRadianAngle(-1);
 				Sectors.updateAll();
 				worldbuilder.reset();
 			}
 			
-			if (input.getKey(GLFW_KEY_C))
+			if (input.getKey(GLFW_KEY_C) == Input::KEY_PRESSED)
 			{
+				input.hold(GLFW_KEY_C);
+				
 				Sector* sector = Sectors.sectorAt(player.X, player.Y, player.Z);
 				if (sector)
 				{
 					logger << Log::INFO << "Sector (" << sector->getX() << ", " << sector->getY() << ", " << sector->getZ() << "): " << (int) sector->progress << Log::ENDL;
 					logger << Log::INFO << "culled= " << (int) sector->culled << ", render= " << sector->render 
 						<< ", content= " << (int) sector->contents << ", progress= " << (int) sector->progress << Log::ENDL;
+				}
+			}
+			else if (input.getKey(GLFW_KEY_V) == Input::KEY_PRESSED)
+			{
+				input.hold(GLFW_KEY_V);
+				
+				PackCoord plc(player.X, player.Y, player.Z);
+				if (plc.valid)
+				{
+					logger << Log::INFO << "World (" << plc.wc.x << ", " << plc.wc.y << ", " << plc.wc.z << ")" << Log::ENDL;
+					logger << Log::INFO << "Block (" << plc.bc.x << ", " << plc.bc.y << ", " << plc.bc.z << ")" << Log::ENDL;
 				}
 			}
 			

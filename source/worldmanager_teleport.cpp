@@ -36,44 +36,43 @@ namespace cppcraft
 	
 	void WorldManager::teleportHandler()
 	{
-		if (teleport_teleport)
+		if (teleport_teleport == false) return;
+		teleport_teleport = false;
+		
+		// flush chunk queue
+		chunks.flushChunks();
+		// finish running jobs
+		precompq.finish();
+		// clear precomp scheduler
+		PrecompScheduler::reset();
+		
+		mtx.sectorseam.lock();
 		{
-			teleport_teleport = false;
-			// flush chunk queue
-			chunks.flushChunks();
-			// finish running jobs
-			precompq.finish();
-			// clear precomp scheduler
-			PrecompScheduler::reset();
+			// transition to new location
+			world.transitionTo(teleport_wcoords.x, teleport_wcoords.z);
 			
-			mtx.sectorseam.lock();
+			// invalidate ALL sectors
+			Sectors.regenerateAll();
+			
+			// center grid, center sector, center block
+			player.X = teleport_xyz.x;
+			player.Y = teleport_xyz.y;
+			player.Z = teleport_xyz.z;
+			
+			mtx.compiler.lock();
 			{
-				// transition to new location
-				world.transitionTo(teleport_wcoords.x, teleport_wcoords.z);
-				
-				// invalidate ALL sectors
-				Sectors.regenerateAll();
-				
-				// center grid, center sector, center block
-				player.X = teleport_xyz.x;
-				player.Y = teleport_xyz.y;
-				player.Z = teleport_xyz.z;
-				
-				mtx.compiler.lock();
+				for (int x = 0; x < Sectors.getXZ(); x++)
+				for (int z = 0; z < Sectors.getXZ(); z++)
+				for (int y = 0; y < columns.getColumnsY(); y++)
 				{
-					for (int x = 0; x < Sectors.getXZ(); x++)
-					for (int z = 0; z < Sectors.getXZ(); z++)
-					for (int y = 0; y < columns.getColumnsY(); y++)
-					{
-						columns(x, y, z).reset(y);
-					}
+					columns(x, y, z).reset(y);
 				}
-				mtx.compiler.unlock();
 			}
-			mtx.sectorseam.unlock();
-			// reset world builder
-			worldbuilder.reset();
+			mtx.compiler.unlock();
 		}
+		mtx.sectorseam.unlock();
+		// reset world builder
+		worldbuilder.reset();
 	}
 	
 }
