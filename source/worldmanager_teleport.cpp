@@ -15,11 +15,29 @@ using namespace library;
 
 namespace cppcraft
 {
+	bool teleport_teleport = false;
+	World::world_t teleport_wcoords;
+	vec3 teleport_xyz;
+	
+	void WorldManager::teleport(const World::world_t& coords, const library::vec3& position)
+	{
+		// center local grid on world coordinate location
+		teleport_wcoords.x = coords.x - Sectors.getXZ() / 2;
+		teleport_wcoords.y = 0;
+		teleport_wcoords.z = coords.z - Sectors.getXZ() / 2;
+		// center player on grid, add his local coordinates and offset by world coords.y
+		teleport_xyz.x = position.x + Sector::BLOCKS_XZ * Sectors.getXZ() / 2;
+		teleport_xyz.y = position.y + Sector::BLOCKS_Y  * coords.y;
+		teleport_xyz.z = position.z + Sector::BLOCKS_XZ * Sectors.getXZ() / 2;
+		// bzzzzzzzzzzzz
+		teleport_teleport = true;
+	}
+	
 	void WorldManager::teleportHandler()
 	{
-		if (input.getKey(GLFW_KEY_P) == Input::KEY_PRESSED)
+		if (teleport_teleport)
 		{
-			input.hold(GLFW_KEY_P);
+			teleport_teleport = false;
 			// flush chunk queue
 			chunks.flushChunks();
 			// finish running jobs
@@ -28,15 +46,15 @@ namespace cppcraft
 			mtx.sectorseam.lock();
 			{
 				// transition to new location
-				world.transitionTo(World::WORLD_STARTING_X+192, World::WORLD_STARTING_Z-232);
+				world.transitionTo(teleport_wcoords.x, teleport_wcoords.z);
 				
 				// invalidate ALL sectors
 				Sectors.regenerateAll();
 				
 				// center grid, center sector, center block
-				player.X = ((float)Sectors.getXZ() / 2.0 - 0.5) * Sector::BLOCKS_XZ + 0.5;
-				player.Z = player.X;
-				player.Y = flatlands.getSkyLevel(player.X, player.Z) + 2.5;
+				player.X = teleport_xyz.x;
+				player.Y = teleport_xyz.y;
+				player.Z = teleport_xyz.z;
 				
 				mtx.compiler.lock();
 				{
@@ -52,7 +70,6 @@ namespace cppcraft
 			mtx.sectorseam.unlock();
 			// reset world builder
 			worldbuilder.reset();
-			
 		}
 	}
 	

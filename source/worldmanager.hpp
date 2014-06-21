@@ -1,11 +1,13 @@
 #ifndef WORLDMANAGER_HPP
 #define WORLDMANAGER_HPP
 
+#include "world.hpp"
 #include <string>
 
 namespace library
 {
 	class WindowClass;
+	class vec3;
 }
 
 namespace cppcraft
@@ -35,6 +37,7 @@ namespace cppcraft
 		// running thread function
 		void main();
 		
+		void teleport(const World::world_t& coords, const library::vec3& position);
 		void teleportHandler();
 		
 		gamestate_t getState() const noexcept

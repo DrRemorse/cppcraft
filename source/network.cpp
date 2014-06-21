@@ -26,15 +26,14 @@ extern "C"
 namespace cppcraft
 {
 	Network network;
-	void message(lattice_message* mp);
 	
-	void Network::init()
+	void Network::init(WorldManager& worldman)
 	{
 		this->connected = false;
 		if (config.get("net.connect", false))
 		{
 			this->running = true;
-			this->networkThread = std::thread(&Network::mainLoop, this);
+			this->networkThread = std::thread(&Network::mainLoop, this, std::ref(worldman));
 		}
 		
 		#ifdef TEST_MODEL
@@ -45,20 +44,9 @@ namespace cppcraft
 		timer.startNewRound();
 	}
 	
-	void Network::stop()
+	void Network::mainLoop(WorldManager& worldman)
 	{
-		if (this->running)
-		{
-			this->running = false;
-			this->networkThread.join();
-		}
-	}
-	
-	void Network::mainLoop()
-	{
-		lattice_init(-1, message);
-		
-		if (connect() == false)
+		if (connect(worldman) == false)
 		{
 			logger << Log::ERR << "Network::mainLoop(): Connection failed" << Log::ENDL;
 			return;
@@ -305,61 +293,6 @@ namespace cppcraft
 		}
 		
 		return;
-	}
-	
-	bool Network::connect()
-	{
-		std::string  hostn = config.get("net.host", "127.0.0.1");
-		unsigned int port  = config.get("net.port", 8805);
-		
-		std::string uname  = config.get("net.user", "guest");
-		std::string upass  = config.get("net.pass", "guest");
-		
-		// for now:
-		this->nickname = uname;
-		lattice_player_t lplayer;
-		
-		srand(time(0));
-		/*
-		std::random_device rd;
-		std::mt19937 gen(rd());
-		std::uniform_int_distribution<unsigned int> dis;
-		
-		lplayer.userid = dis(gen);
-		*/
-		lplayer.userid = rand();
-		lplayer.nickname = strdup(uname.c_str());
-		
-		lplayer.burstdist = 16;
-		
-		PackCoord playerCoords(player.X, player.Y, player.Z);
-		// world coordinates
-		lplayer.wpos = playerCoords.wc;
-		// block coordinates
-		lplayer.bpos = playerCoords.bc;
-		
-		lplayer.hrot.xrot = player.xrotrad / PI2 * 4096;
-		lplayer.hrot.yrot = player.yrotrad / PI2 * 4096;
-		
-		lplayer.model = config.get("net.model", 0);
-		rgba8_t color = RGBA8(config.get("net.color.r", 255), config.get("net.color.g", 0), config.get("net.color.b", 0), 255);
-		lplayer.usercolor = color;
-		lplayer.color = plogic.shadowColor;
-		
-		lplayer.hhold.item_id = 0;
-		lplayer.hhold.item_type = 0;
-		lplayer.mining = 0;
-		
-		std::stringstream ss;
-		ss << "Connecting to " << hostn << ":" << port;
-		
-		logger << Log::INFO << ss.str() << Log::ENDL;
-		chatbox.add("[!]", ss.str(), Chatbox::L_INFO);
-		
-		lattice_setplayer(&lplayer);
-		
-		if (lattice_connect(hostn.c_str(), port) < 0) return false;
-		return true;
 	}
 	
 	/// from main (worldman) thread ///

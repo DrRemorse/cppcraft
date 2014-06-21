@@ -29,7 +29,7 @@ namespace cppcraft
 		try
 		{
 			// start me some networking
-			network.init();
+			network.init(*this);
 		}
 		catch (std::string exc)
 		{

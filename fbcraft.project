@@ -542,6 +542,7 @@
     <File Name="source/precompq_helpers.cpp"/>
     <File Name="source/precomp_thread_data.hpp"/>
     <File Name="source/precompiler_isolator.cpp"/>
+    <File Name="source/network_init.cpp"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>

@@ -26,4 +26,8 @@ extern void (*gcallback)(lattice_message *mp);
 
 extern sched_header sched;
 
+extern int lattice_initialized;
+
+extern int lattice_connected;
+
 #endif

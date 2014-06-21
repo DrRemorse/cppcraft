@@ -18,6 +18,7 @@ struct lattice_message;
 namespace cppcraft
 {
 	class Sector;
+	class WorldManager;
 	
 	class PackCoord
 	{
@@ -97,7 +98,7 @@ namespace cppcraft
 			OUTGOING
 		};
 		
-		void init();
+		void init(WorldManager& worldman);
 		void stop();
 		
 		void handleNetworking();
@@ -116,9 +117,9 @@ namespace cppcraft
 		}
 		
 	private:
-		bool connect();
+		bool connect(WorldManager& worldman);
 		
-		void mainLoop();
+		void mainLoop(WorldManager& worldman);
 		void handleTransfer();
 		
 		bool running;
