@@ -47,7 +47,7 @@ namespace cppcraft
 		int result = authserver_login(uname.c_str(), upass.c_str(), hostn.c_str(), port, 16);
 		if (result < 0)
 		{
-			logger << Log::WARN << "Authentication failed: " << result << Log::ENDL;
+			logger << Log::WARN << "Authentication failed (" << result << "): " << authserver_errorstring(result) << Log::ENDL;
 			chatbox.add("[!]", "Authentication failed", Chatbox::L_INFO);
 			return false;
 		}
