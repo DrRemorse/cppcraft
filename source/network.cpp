@@ -237,7 +237,8 @@ namespace cppcraft
 			{
 				double angle = ((double*) mp->args)[0];
 				logger << Log::INFO << "SAT angle: " << angle << Log::ENDL;
-				thesun.setRadianAngle(angle);
+				network.ntt.newAngle  = angle;
+				network.ntt.updateSun = true;
 			}
 			break;
 			
@@ -247,7 +248,8 @@ namespace cppcraft
 				lattice_satstep& sats = ((lattice_satstep*) mp->args)[0];
 				logger << Log::INFO << "SAT step: " << sats.satstep << " SAT: " << sats.sat << Log::ENDL;
 				thesun.setStep(sats.satstep);
-				thesun.setRadianAngle(sats.sat);
+				network.ntt.newAngle  = sats.sat;
+				network.ntt.updateSun = true;
 			}
 			break;
 			
@@ -340,9 +342,15 @@ namespace cppcraft
 				}
 				ntt.incoming.pop_front();
 				
-			} // incoming block queue
+			} // incoming work from network
 			
-		}
+			if (ntt.updateSun)
+			{
+				ntt.updateSun = false;
+				thesun.setRadianAngle(ntt.newAngle);
+				Sectors.updateAll();
+			}
+		} // network -> main thread
 		mtx.unlock();
 		
 		// handle players - interpolate movement and determine if renderable

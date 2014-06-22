@@ -2,7 +2,7 @@
 // Standard lighting code snippet
 //
 
-float brightness = lightdata.y * modulation;
+#define brightness  lightdata.y // * modulation;
 // increase brightness if player holds an emissive item
 //#include "playerlight.glsl"
 
@@ -11,7 +11,7 @@ float shadow = min(1.0, daylight * lightdata.x + brightness);
 
 // corner shadows and dotlight
 float cornershad = smoothstep(0.2, 0.7, lightdata.z);
-cornershad = min(1.0, cornershad * worldLight + brightness * 0.15);
+cornershad = min(1.0, cornershad * worldLight + brightness * 0.125);
 
 // scaled shadow color
 //vec3 shadowColor = vec3(-0.2, 0.0, 0.2) * shadow;

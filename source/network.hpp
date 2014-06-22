@@ -87,6 +87,9 @@ namespace cppcraft
 		std::deque<NetworkBlock> outgoing;
 		
 		std::string outgoingChat;
+		
+		bool  updateSun = false;
+		float newAngle;
 	};
 	
 	class Network

@@ -79,7 +79,7 @@ namespace cppcraft
 		// major direction scheme
 		int xstp = 1;
 		int x0, x1;
-		if (look.x >= 0)
+		if (look.x >= 0.0f)
 		{
 			if (look.x > half_fov)
 				x0 = playerSectorX - safety_border;
@@ -112,7 +112,7 @@ namespace cppcraft
 		
 		int zstp = 1;
 		int z0, z1;
-		if (look.z >= 0)
+		if (look.z >= 0.0f)
 		{
 			if (look.z > half_fov)
 				z0 = playerSectorZ - safety_border;
@@ -143,7 +143,7 @@ namespace cppcraft
 			zstp = -1;
 		}
 		
-		int ystp = (look.y < 0.0) ? -1 : 1;
+		int ystp = (look.y < 0.0f) ? -1 : 1;
 		
 		int majority = 0;
 		
@@ -252,10 +252,10 @@ namespace cppcraft
 			glUniform3fv(loc_vtrans, 1, &position.x);
 			
 			// cool effect
-			if (cv->pos.y < 0.0)
+			if (cv->pos.y < 0.0f)
 			{
-				cv->pos.y += 0.25;
-				if (cv->pos.y > 0.0) cv->pos.y = 0.0;
+				cv->pos.y += 0.5f;
+				if (cv->pos.y > 0.0f) cv->pos.y = 0.0f;
 			}
 		}
 		glBindVertexArray(cv->vao);
@@ -342,7 +342,7 @@ namespace cppcraft
 		
 		// translation uniform location
 		loc_vtrans = shd.getUniform("vtrans");
-		position.x = -1.0; // invalidate position
+		position.x = -1.0f; // invalidate position
 		
 		// texrange, because too lazy to create all shaders
 		location = shd.getUniform("texrange");

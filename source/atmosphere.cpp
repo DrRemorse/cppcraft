@@ -61,7 +61,7 @@ namespace cppcraft
 		m_Kr4PI = m_Kr * 4.0 * PI;
 		m_Km = 0.0025;		// Mie scattering constant
 		m_Km4PI = m_Km * 4.0 * PI;
-		m_ESun = 13.0;		// Sun brightness constant
+		m_ESun = 15.0;		// Sun brightness constant
 		m_g = -0.50;		// The Mie phase asymmetry factor
 		
 		m_fInnerRadius = 10.0; // 9.99375
@@ -130,7 +130,7 @@ namespace cppcraft
 		shd.sendVec3("v3LightPos", thesun.getRealtimeAngle());
 		shd.sendFloat("sunAngle", thesun.getRealtimeRadianAngle());
 		
-		shd.sendFloat("gammaValue", (mode == 1) ? 0.45 : 0.9);
+		shd.sendFloat("gammaValue", (mode == 1) ? 0.45 : 0.8);
 		
 		// bind textures
 		textureman.bind(1, Textureman::T_STARS);

@@ -2,7 +2,7 @@
 // Water lighting
 //
 
-float brightness = lightdata.y * modulation;
+#define brightness  lightdata.y // * modulation;
 
 // scaled shadows
 float shadow = min(1.0, lightdata.x + brightness);

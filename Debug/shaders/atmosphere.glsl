@@ -41,7 +41,7 @@ float scale(float fCos)
 void main(void)
 {
 	v3x = in_vertex.xyz - v3CameraPos;
-	v3x.y = v3x.y * above + 0.005 * v3x.y * (1.0 - above);
+	v3x.y = v3x.y * above + 0.001 * v3x.y * (1.0 - above);
 	
 	v3Direction = v3CameraPos - in_vertex.xyz;
 	
@@ -134,8 +134,8 @@ void main (void)
 		final = mix(final, stars, darkness * darkness);
 	}
 	
-	final = pow(final, vec3(gammaValue));
-	//final = vec3(1.0) - exp(final * -exposure);
+	//final = pow(final, vec3(gammaValue));
+	final = vec3(1.0) - exp(final * -exposure);
 	
 	color = vec4(final, 1.0);
 }
