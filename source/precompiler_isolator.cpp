@@ -242,9 +242,9 @@ namespace cppcraft
 		if (vfaces.test_x_m + vfaces.test_x_p + vfaces.test_y_m +
 			vfaces.test_y_p + vfaces.test_z_m + vfaces.test_z_p == 0)
 		{
+			// a culled sector.. is no point in trying to render
 			sector.culled = true; // fully hidden by other sectors
 			sector.render = false;
-			// a culled sector.. is completed, and completely empty
 			sector.progress = Sector::PROG_COMPILED;
 			this->alive = false; // job done
 			return false;

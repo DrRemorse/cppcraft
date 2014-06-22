@@ -47,15 +47,17 @@ namespace cppcraft
 	{
 		Sector& sector = *this->sector;
 		
-		// renderable VBO structure
+		// column mesh belongs to
 		int columnY = columns.fromSectorY(sector.getY());
-		int internalY = columns.internalSectorY(sector.getY());
 		Column& cv = columns(sector.getX(), columnY, sector.getZ());
+		
+		// mesh structure (vbodata)
+		int internalY = columns.internalSectorY(sector.getY());
 		vbodata_t& v = cv.vbodata[internalY];
 		
 		// ye olde switcharoo
-		delete[] v.pcdata;         // remove old data (if any)
-		v.pcdata = this->datadump; // set vbodata to become precomp data
+		delete[] v.pcdata;         // remove old data (if any) from column
+		v.pcdata = this->datadump; // set to same as precomp data pointer
 		this->datadump = nullptr;  // unassign precomp data pointer
 		
 		// copy info from precomp to vbodata struct

@@ -3,7 +3,6 @@
 #include <library/log.hpp>
 #include "columns.hpp"
 #include "compilers.hpp"
-#include "precompq.hpp"
 #include "sectors.hpp"
 #include "threading.hpp"
 #include "vertex_block.hpp"
@@ -19,12 +18,12 @@ namespace cppcraft
 	// the sector reference is really only for the coordinates (x, cy, z)
 	void PrecompScheduler::add(const Sector& sector)
 	{
-		for (size_t i = 0; i < psched.size(); i++)
+		for (PrecompSchedule& ps : psched)
 		{
 			// we have to compare against sectors here, because the world is constantly changing
-			if (psched[i].sector->getX() == sector.getX() && 
-				psched[i].sector->getY() == sector.getY() && 
-				psched[i].sector->getZ() == sector.getZ())
+			if (ps.sector->getX() == sector.getX() && 
+				ps.sector->getY() == sector.getY() && 
+				ps.sector->getZ() == sector.getZ())
 			{
 				// column already exists in scheduler, exit immediately
 				return;
@@ -86,8 +85,6 @@ namespace cppcraft
 				if (cv.vbodata[sy].pcdata == nullptr)
 				{
 					//logger << Log::ERR << "PrecompSchedule::schedule(): vertex data was null" << Log::ENDL;
-					// FIXME this is a bug: Seamless resets column data, and the sectors they come from
-					// but the sector might still remain in the scheduling/transfer queue (this) from before
 					s2.progress = Sector::PROG_NEEDRECOMP;
 					ready = false;
 				}
