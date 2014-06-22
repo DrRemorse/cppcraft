@@ -158,8 +158,10 @@ namespace cppcraft
 			// then we will simply ignore the result of the operation
 			if (precomp.sector)
 			{
-				if (precomp.sector->progress <= Sector::PROG_RECOMPILE)
+				if (precomp.sector->progress <= Sector::PROG_RECOMPILE ||
+					precomp.sector->progress == Sector::PROG_COMPILED)
 				{
+					// this sector has been reset (eg. by Seamless)
 					precomp.result = Precomp::STATUS_NEW;
 					return;
 				}
