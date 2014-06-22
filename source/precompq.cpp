@@ -153,7 +153,20 @@ namespace cppcraft
 	{
 		if (precomp.alive)
 		{
+			// check if the precomp/sector has been reset
+			// if the progress value is obviously not the result of a job,
+			// then we will simply ignore the result of the operation
+			if (precomp.sector)
+			{
+				if (precomp.sector->progress <= Sector::PROG_RECOMPILE)
+				{
+					precomp.result = Precomp::STATUS_NEW;
+					return;
+				}
+			}
+			
 			Precomp::jobresult_t result = precomp.getResult();
+			Sector& sector = *precomp.sector;
 			
 			if (result == Precomp::STATUS_NEW)
 			{
@@ -163,7 +176,6 @@ namespace cppcraft
 			else if (result == Precomp::STATUS_FAILED)
 			{
 				logger << Log::WARN << "PrecompQ(): Job returned failure" << Log::ENDL;
-				Sector& sector = *precomp.sector;
 				sector.culled = true;
 				sector.render = false;
 				sector.progress = Sector::PROG_COMPILED;
@@ -171,27 +183,26 @@ namespace cppcraft
 			}
 			else if (result == Precomp::STATUS_CULLED)
 			{
-				Sector& sector = *precomp.sector;
-				if (sector.progress > Sector::PROG_NEEDRECOMP)
-				{
-					sector.culled = true;
-					sector.render = false;
-					sector.progress = Sector::PROG_COMPILED;
-					precomp.alive = false;
-				}
+				sector.culled = true;
+				sector.render = false;
+				sector.progress = Sector::PROG_COMPILED;
+				precomp.alive = false;
 			}
 			else if (result == Precomp::STATUS_DONE)
 			{
-				Sector& sector = *precomp.sector;
-				if (sector.progress > Sector::PROG_RECOMPILE)
-					sector.progress++;
-				//logger << Log::INFO << "Sector progress: " << (int)sector.progress << Log::ENDL;
+				if (sector.progress == Sector::PROG_RECOMPILING)
+					sector.progress = Sector::PROG_NEEDAO;
+					
+				else if (sector.progress == Sector::PROG_AO)
+					sector.progress = Sector::PROG_NEEDCOMPILE;
+					
+				else
+					logger << Log::WARN << "Unusual sector progress: " << (int)sector.progress << Log::ENDL;
 			}
 			else
 			{
 				// blast the logs with an error
 				logger << Log::ERR << "Precomp(): Job running? result = " << result << Log::ENDL;
-				return;
 			}
 		}
 		// reset result, since we no longer want to change status

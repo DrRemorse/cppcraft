@@ -271,7 +271,7 @@ namespace cppcraft
 			{
 				// make sure it is added to renderq
 				camera.recalc = true;
-				this->pos.y = -COLUMN_DEPRESSION;
+				//this->pos.y = -COLUMN_DEPRESSION;
 			}
 		}
 		

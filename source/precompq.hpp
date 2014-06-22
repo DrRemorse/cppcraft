@@ -42,6 +42,7 @@ namespace cppcraft
 		void checkJobStatus(Precomp& precomp);
 		
 		int precompIndex(Sector& sector) const;
+		int newPrecompIndex() const;
 		
 		// the number of precomps that was added to queue
 		int queueCount = 0;

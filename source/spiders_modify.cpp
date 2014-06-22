@@ -2,6 +2,7 @@
 
 #include <library/log.hpp>
 #include "blocks.hpp"
+#include "columns.hpp"
 #include "chunks.hpp"
 #include "flatlands.hpp"
 #include "generator.hpp"
@@ -66,6 +67,11 @@ namespace cppcraft
 		// flag sector as having modified blocks
 		s->contents = Sector::CONT_SAVEDATA;
 		
+		// unless we recalculate hardsolid-ness, simply nulling it will do
+		s->blockpt->hardsolid = 0; // TODO: OPTIMIZE
+		// we have no idea if the sector is culled anymore, so remove it
+		s->culled = false;
+		
 		if (id == _CHEST)
 		{
 			//int index = CreateSectorData(s, bx, by, bz, id);
@@ -82,7 +88,8 @@ namespace cppcraft
 		{
 			s->progress = Sector::PROG_NEEDRECOMP;
 		}
-		// write sector to disk
+		
+		// write updated sector to disk
 		chunks.addSector(*s);
 		
 		if (isLight(id))
@@ -160,7 +167,7 @@ namespace cppcraft
 		s->blockpt->blocks -= 1;
 		
 		// BEFORE we clear the sector entirely, make sure conditions are ok
-		s->blockpt->hardsolid = 0; // mui importante! must optimize later
+		s->blockpt->hardsolid = 0; // mui importante! TODO: OPTIMIZE
 		s->culled = false;         // remove culled flag!
 		
 		// don't render something with 0 blocks
@@ -168,8 +175,7 @@ namespace cppcraft
 		{
 			s->clear();
 			// we need to disable rendering columns that have no blocks anymore
-			int FIXME_disable_columns_without_blocks;
-			//checkColumn(*s);
+			checkColumn(*s);
 		}
 		else // sector still has blocks
 		{
@@ -231,9 +237,9 @@ namespace cppcraft
 	{
 		if (sector.contents != Sector::CONT_NULLSECTOR)
 		{
-			sector.progress = Sector::PROG_NEEDRECOMP;
 			sector.culled   = false;
 			if (immediate) precompq.addTruckload(sector);
+			else sector.progress = Sector::PROG_NEEDRECOMP;
 		}
 	}
 	
@@ -287,5 +293,26 @@ namespace cppcraft
 				updateNeighboringSector(testsector, immediate);
 			}
 		}
+	}
+	
+	void Spiders::checkColumn(Sector& sector)
+	{
+		// find column.Y from sector.Y
+		int coly = columns.fromSectorY(sector.getY());
+		// find bottom and top sector.Y in column
+		int boty = columns.getSectorLevel(coly);
+		int topy = boty + columns.getSizeInSectors(coly);
+		
+		int x = sector.getX();
+		int z = sector.getZ();
+		// determine if all sectors are render == false
+		for (int y = boty; y < topy; y++)
+		{
+			// if even one sector is visible, return
+			if (Sectors(x, y, z).render) return;
+		}
+		// and if they are, disable rendering the column
+		Column& col = columns(sector.getX(), coly, sector.getZ());
+		col.renderable = false;
 	}
 }

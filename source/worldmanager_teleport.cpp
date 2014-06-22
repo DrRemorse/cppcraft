@@ -36,6 +36,17 @@ namespace cppcraft
 	
 	void WorldManager::teleportHandler()
 	{
+		if (input.getKey(GLFW_KEY_P) == Input::KEY_PRESSED)
+		{
+			input.hold(GLFW_KEY_P);
+			
+			teleport_wcoords.x = World::WORLD_CENTER + 64;
+			teleport_wcoords.z = World::WORLD_CENTER + 64;
+			
+			teleport_xyz = vec3(player.X, player.Y, player.Z);
+			teleport_teleport = true;
+		}
+		
 		if (teleport_teleport == false) return;
 		teleport_teleport = false;
 		
