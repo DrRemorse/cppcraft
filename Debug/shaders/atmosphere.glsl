@@ -119,8 +119,8 @@ void main (void)
 	vec3 norm = normalize(v3Direction);
 	norm.y *= (0.5 - above) * 2.0;
 	
-	//vec3 skyColor = texture(skymap, norm).rgb;
-	//final = mix(final, skyColor, final.b - final.r * 0.5);
+	vec3 skyColor = texture(skymap, norm).rgb;
+	final = mix(final, skyColor, (final.b - final.r * 0.5) * 0.5);
 	
 	float darkness = max(0.0, 0.16 - length(final)) * 6.0;
 	if (darkness > 0.05)
