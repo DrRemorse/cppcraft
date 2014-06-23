@@ -33,7 +33,7 @@ uniform vec3 screensize;
 in vec3 pos;
 const float ZFAR
 
-out vec4 color;
+out lowp vec4 color;
 
 void main(void)
 {

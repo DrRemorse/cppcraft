@@ -5,32 +5,45 @@
 #ifdef VERTEX_PROGRAM
 
 uniform mat4 matmvp;
+uniform vec3 v3LightPos; // The direction vector to the light source
+uniform float above;     // 1.0 above horizon, 0.0 below horizon
 
-uniform vec3 v3CameraPos;		// The camera's current position
-uniform vec3 v3LightPos;		// The direction vector to the light source
-uniform vec3 v3InvWavelength;	// 1 / pow(wavelength, 4) for the red, green, and blue channels
-uniform float fCameraHeight;	// The camera's current height
-uniform float fOuterRadius;		// The outer (atmosphere) radius
-uniform float fInnerRadius;		// The inner (planetary) radius
-uniform float fKrESun;			// Kr * ESun
-uniform float fKmESun;			// Km * ESun
-uniform float fKr4PI;			// Kr * 4 * PI
-uniform float fKm4PI;			// Km * 4 * PI
-uniform float fScale;			// 1 / (fOuterRadius - fInnerRadius)
-uniform float fScaleDepth;		// The scale depth (i.e. the altitude at which the atmosphere's average density is found)
-uniform float fScaleOverScaleDepth;	// fScale / fScaleDepth
-uniform float above; // 1.0 above horizon, 0.0 below horizon
+const float PI = 3.1415926;
+
+// 1 / pow(wavelength, 4) for the red, green, and blue channels
+const vec3 v3Wavelength = pow(vec3(0.650, 0.570, 0.475), vec3(4.0));
+const vec3 v3InvWavelength = vec3(1.0) / v3Wavelength;
+
+const float Kr   = 0.0025;	// Rayleigh scattering constant
+const float Km   = 0.0025;	// Mie scattering constant
+const float ESun = 15.0;	// Sun brightness constant
+
+const float fKrESun = Kr * ESun;
+const float fKmESun = Km * ESun;
+const float fKr4PI = Kr * 4.0 * PI;
+const float fKm4PI = Km * 4.0 * PI;
+
+const float fInnerRadius = 10.0;  // The inner (planetary) radius
+const float fOuterRadius = 10.25; // The outer (atmosphere) radius
+const float fRayleighScaleDepth = 0.25; // The scale depth (i.e. the altitude at which the atmosphere's average density is found)
+
+const float fScale = 1.0 / (fOuterRadius - fInnerRadius);
+const float fScaleDepth = fRayleighScaleDepth;
+const float fScaleOverScaleDepth = fScale / fScaleDepth;
+
+const vec3  v3CameraPos   = vec3(0.0, fInnerRadius, 0.0); // The camera's current position
+const float fCameraHeight = fInnerRadius; // The camera's current height
 
 #define nSamples 4
 #define fSamples 4.0
 
 in vec3 in_vertex;
 
-out vec3 v3x;
-out vec3 v3Direction;
-out vec3 color_rayleigh;
-out vec3 color_mie;
-out vec3 starc;
+out lowp vec3 v3x;
+out lowp vec3 v3Direction;
+out lowp vec3 color_rayleigh;
+out lowp vec3 color_mie;
+out lowp vec3 starc;
 
 float scale(float fCos)
 {
@@ -77,10 +90,11 @@ void main(void)
 		v3SamplePoint += v3SampleRay;
 	}
 	
-	starc = normalize(v3Ray);
 	// Finally, scale the Mie and Rayleigh colors and set up the varying variables for the pixel shader
 	color_mie = v3FrontColor * fKmESun;
 	color_rayleigh = v3FrontColor * (v3InvWavelength * fKrESun);
+	// camera look direction
+	starc = v3Ray;
 	
 	gl_Position = matmvp * vec4(in_vertex.xyz, 1.0);
 }
@@ -96,48 +110,45 @@ uniform float sunAngle;
 uniform float gammaValue;
 
 uniform vec3 v3LightPos;
-uniform float g;
-uniform float g2;
+const float g  = -0.50; // The Mie phase asymmetry factor
+const float g2 = g * g;
 
-in vec3 v3x;
-in vec3 v3Direction;
-in vec3 color_rayleigh;
-in vec3 color_mie;
-in vec3 starc;
+in lowp vec3 v3x;
+in lowp vec3 v3Direction;
+in lowp vec3 color_rayleigh;
+in lowp vec3 color_mie;
+in lowp vec3 starc;
 
-const float exposure = 2.5;
-out vec4 color;
+out lowp vec4 color;
 
 void main (void)
 {
-	float fCos = dot(v3LightPos, -v3x) / length(v3x);
-	float fRayleighPhase = 0.75 * (1.0 + fCos*fCos);
-	float fMiePhase = 1.5 * ((1.0 - g2) / (2.0 + g2)) * (1.0 + fCos*fCos) / pow(1.0 + g2 - 2.0*g*fCos, 1.5);
+	lowp float fCos = dot(v3LightPos, -v3x) / length(v3x);
+	lowp float fRayleighPhase = 0.75 * (1.0 + fCos*fCos);
+	lowp float fMiePhase = 1.5 * ((1.0 - g2) / (2.0 + g2)) * (1.0 + fCos*fCos) / pow(1.0 + g2 - 2.0*g*fCos, 1.5);
 	
-	vec3 final = fRayleighPhase * color_rayleigh + fMiePhase * color_mie;
+	color.rgb = fRayleighPhase * color_rayleigh + fMiePhase * color_mie;
 	
-	vec3 norm = normalize(v3Direction);
+	lowp vec3 norm = normalize(v3Direction);
 	norm.y *= (0.5 - above) * 2.0;
 	
-	vec3 skyColor = texture(skymap, norm).rgb;
-	final = mix(final, skyColor, (final.b - final.r * 0.5) * 0.5);
+	lowp vec3 skyColor = texture(skymap, norm).rgb;
+	color.rgb = mix(color.rgb, skyColor, (color.b - color.r * 0.5) * 0.5);
 	
-	float darkness = max(0.0, 0.16 - length(final)) * 6.0;
+	lowp float darkness = max(0.0, 0.16 - length(color.rgb)) * 6.0;
 	if (darkness > 0.05)
 	{
 		// stars
-		const float PI = 3.1415926;
-		vec2 coord = vec2(((atan(norm.y, norm.x) + sunAngle) / PI + 1.0) * 0.5, asin(norm.z) / PI + 0.5 );
+		const lowp float PI = 3.1415926;
+		lowp vec2 coord = vec2(((atan(norm.y, norm.x) + sunAngle) / PI + 1.0) * 0.5, asin(norm.z) / PI + 0.5 );
+		lowp vec3 stars = texture(starmap, coord).rgb;
+		stars = pow(stars, lowp vec3(3.0)) * 0.4;
 		
-		vec3 stars = pow(texture(starmap, coord).rgb, vec3(2.5));
-		
-		final = mix(final, stars, darkness * darkness);
+		color.rgb = mix(color.rgb, stars, darkness * darkness);
 	}
 	
-	//final = pow(final, vec3(gammaValue));
-	final = vec3(1.0) - exp(final * -exposure);
-	
-	color = vec4(final, 1.0);
+	color.rgb = vec3(1.0) - exp(color.rgb * -2.0);
+	color.a = 1.0;
 }
 
 #endif

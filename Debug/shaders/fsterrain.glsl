@@ -4,7 +4,7 @@
 
 #ifdef VERTEX_PROGRAM
 in  vec2 in_vertex;
-out vec2 texCoord;
+out lowp vec2 texCoord;
 
 void main(void)
 {
@@ -17,8 +17,8 @@ void main(void)
 uniform sampler2D terrain;
 uniform vec2 offset;
 
-in  vec2 texCoord;
-out vec4 color;
+in  lowp vec2 texCoord;
+out lowp vec4 color;
 
 void main()
 {
@@ -26,17 +26,17 @@ void main()
 	color = texture(terrain, texCoord);
 	
 	const int   WIDTH = 3;
-	const float MAXW = length(vec2(WIDTH));
-	vec4  blur = vec4(0.0);
-	float sum  = 0.0;
+	const lowp float MAXW = length(vec2(WIDTH));
+	lowp vec4  blur = vec4(0.0);
+	lowp float sum  = 0.0;
 	
 	for (int x = -WIDTH; x <= WIDTH; x++)
 	for (int y = -WIDTH; y <= WIDTH; y++)
 	{
-		vec2 pos = vec2(float(x), float(y));
-		vec4 c = texture(terrain, texCoord + offset * pos);
+		lowp vec2 pos = vec2(float(x), float(y));
+		lowp vec4 c = texture(terrain, texCoord + offset * pos);
 		
-		float width = MAXW - length(pos);
+		lowp float width = MAXW - length(pos);
 		width *= 1.0 - abs(color.a - c.a);
 		
 		blur += c * width;
@@ -45,7 +45,7 @@ void main()
 	blur /= sum;
 	
 	// depth from blur
-	float depth = blur.a;
+	lowp float depth = blur.a;
 	depth = smoothstep(0.3, 0.9, depth) * step(depth, 0.997);
 	
 	// blur based on depth

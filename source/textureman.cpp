@@ -342,11 +342,11 @@ namespace cppcraft
 		}
 		
 		// fullscreen colorbuffer
-		textures[T_RENDERBUFFER] = Texture(GL_TEXTURE_2D, GL_RGBA16F);
+		textures[T_RENDERBUFFER] = Texture(GL_TEXTURE_2D, GL_RGBA8);
 		textures[T_RENDERBUFFER].create(0, gamescr.getWidth(), gamescr.getHeight());
 		
 		// resolved from multisampling texture
-		textures[T_FINALBUFFER] = Texture(GL_TEXTURE_2D, GL_RGBA16F);
+		textures[T_FINALBUFFER] = Texture(GL_TEXTURE_2D, GL_RGBA8);
 		textures[T_FINALBUFFER].create(0, gamescr.getWidth(), gamescr.getHeight());
 		
 		if (ogl.checkError()) throw std::string("Fullscreen textures error");

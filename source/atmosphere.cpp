@@ -21,18 +21,8 @@ namespace cppcraft
 	public:
 		VAO vao;
 		
-		float m_Kr, m_Kr4PI;
-		float m_Km, m_Km4PI;
-		float m_ESun, m_g;
-		
-		float m_fInnerRadius;
-		float m_fOuterRadius;
-		float m_fScale;
-		
-		float m_fRayleighScaleDepth;
-		float m_fMieScaleDepth;
-		float m_fWavelength[3];
-		float m_fWavelength4[3];
+		float innerRadius;
+		float outerRadius;
 		
 		void init();
 		void render(Camera& camera, int mode);
@@ -57,69 +47,11 @@ namespace cppcraft
 	
 	void Scatterer::init()
 	{
-		m_Kr = 0.0025;		// Rayleigh scattering constant
-		m_Kr4PI = m_Kr * 4.0 * PI;
-		m_Km = 0.0025;		// Mie scattering constant
-		m_Km4PI = m_Km * 4.0 * PI;
-		m_ESun = 15.0;		// Sun brightness constant
-		m_g = -0.50;		// The Mie phase asymmetry factor
-		
-		m_fInnerRadius = 10.0; // 9.99375
-		m_fOuterRadius = 10.25;
-		m_fScale = 1.0 / (m_fOuterRadius - m_fInnerRadius);
-		
-		m_fRayleighScaleDepth = 0.25;
-		m_fMieScaleDepth = 0.1;
-		
-		m_fWavelength[0] = 0.650;	// 650 nm for red
-		m_fWavelength[1] = 0.570;	// 570 nm for green
-		m_fWavelength[2] = 0.475;	// 475 nm for blue
-		m_fWavelength4[0] = powf(m_fWavelength[0], 4.0f);
-		m_fWavelength4[1] = powf(m_fWavelength[1], 4.0f);
-		m_fWavelength4[2] = powf(m_fWavelength[2], 4.0f);
+		innerRadius = 10.0;
+		outerRadius = 10.25;
 		
 		// create the skydome algorithmically
-		createSkyDome(m_fInnerRadius, m_fOuterRadius);
-		
-		Shader& shd = shaderman[Shaderman::ATMOSPHERE];
-		shd.bind();
-		
-		GLuint prog = shd.getShader();
-		GLint location;
-		
-		#define setu1(uname, udata) \
-			\
-			location = glGetUniformLocation(prog, uname); \
-			if (location+1) \
-				glUniform1f(location, udata)
-		
-		#define setu3(uname, udata1, udata2, udata3) \
-			\
-			location = glGetUniformLocation(prog, uname); \
-			if (location+1) \
-				glUniform3f(location, udata1, udata2, udata3)
-		
-		
-		setu3("v3InvWavelength", 1.0 / m_fWavelength4[0], 
-								 1.0 / m_fWavelength4[1], 
-								 1.0 / m_fWavelength4[2]);
-		setu1("fInnerRadius",  m_fInnerRadius);
-		setu1("fOuterRadius",  m_fOuterRadius);
-		setu1("fKrESun", m_Kr * m_ESun);
-		setu1("fKmESun", m_Km * m_ESun);
-		setu1("fKr4PI",  m_Kr4PI);
-		setu1("fKm4PI",  m_Km4PI);
-		setu1("fScale",  m_fScale);
-		setu1("fScaleDepth", m_fRayleighScaleDepth);
-		setu1("fScaleOverScaleDepth", m_fScale / m_fRayleighScaleDepth);
-		setu1("g",  m_g);
-		setu1("g2", m_g * m_g);
-		
-		shd.sendInteger("texture", 0);
-		shd.sendInteger("stars",   1);
-		
-		shd.sendVec3("v3CameraPos", vec3(0.0, m_fInnerRadius, 0.0));
-		shd.sendFloat("fCameraHeight", m_fInnerRadius);
+		createSkyDome(innerRadius, outerRadius);
 	}
 	
 	void Scatterer::render(Camera& camera, int mode)
@@ -138,7 +70,7 @@ namespace cppcraft
 		
 		// create view matrix
 		mat4 matview = camera.getRotationMatrix();
-		matview.translate(0.0, -m_fInnerRadius, 0.0);
+		matview.translate(0.0, -innerRadius, 0.0);
 		
 		matview = camera.getProjection() * matview;
 		shd.sendMatrix("matmvp", matview);
@@ -150,7 +82,7 @@ namespace cppcraft
 		matview = camera.getRotationMatrix();
 		// multiply with negative-Y scaling matrix
 		matview *= mat4(1.0, -1.0, 1.0);
-		matview.translate(0.0, -m_fInnerRadius, 0.0);
+		matview.translate(0.0, -innerRadius, 0.0);
 		matview = camera.getProjection() * matview;
 		
 		shd.sendMatrix("matmvp", matview);

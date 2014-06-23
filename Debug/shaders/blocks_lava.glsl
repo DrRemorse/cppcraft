@@ -16,7 +16,7 @@ in vec4 in_biome;
 in vec4 in_color;
 in vec4 in_color2;
 
-out vec2  wave;
+out vec2 wave;
 
 const float VERTEX_SCALE_INV
 const float ZFAR
@@ -39,7 +39,7 @@ uniform sampler2D lavatex;
 uniform float frameCounter;
 
 in  vec2  wave;
-out vec4 color;
+out lowp vec4 color;
 
 void main(void)
 {

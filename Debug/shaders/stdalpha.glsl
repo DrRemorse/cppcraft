@@ -17,12 +17,12 @@ in vec4 in_biome;
 in vec4 in_color;
 in vec4 in_color2;
 
-out vec3 texCoord;
-out vec4 biomeColor;
-out vec4 lightdata;
-out vec4 torchlight;
-out vec3 out_normal;
-out vec3 v_normals;
+out lowp vec3 texCoord;
+out lowp vec4 biomeColor;
+out lowp vec4 lightdata;
+out lowp vec4 torchlight;
+out lowp vec3 out_normal;
+out lowp vec3 v_normals;
 
 const int TX_2SIDED
 const int TX_CROSS
@@ -86,14 +86,13 @@ uniform float daylight;
 uniform float modulation;
 uniform int   texrange;
 
-in vec3 texCoord;
-in vec4 biomeColor;
-in vec4 lightdata;
-in vec4 torchlight;
-in vec3 biomeCoords;
-in vec3 out_normal;
-
-in vec3 v_normals;
+in lowp vec3 texCoord;
+in lowp vec4 biomeColor;
+in lowp vec4 lightdata;
+in lowp vec4 torchlight;
+in lowp vec3 biomeCoords;
+in lowp vec3 out_normal;
+in lowp vec3 v_normals;
 
 layout(location = 0) out vec4 color;
 #ifdef VIEW_NORMALS
@@ -108,7 +107,7 @@ void main(void)
 	if (color.a < 0.1) discard;
 	
 	// read tonecolor from tonemap
-	vec4 toneColor = texture(tonemap, texCoord.stp);
+	lowp vec4 toneColor = texture(tonemap, texCoord.stp);
 	color.rgb = mix(color.rgb, biomeColor.rgb * toneColor.rgb, toneColor.a);
 	
 	#include "degamma.glsl"

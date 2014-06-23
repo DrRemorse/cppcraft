@@ -23,7 +23,7 @@ uniform float daylight;
 uniform int   submerged;
 
 in  vec2 texCoord;
-out vec4 color;
+out lowp vec4 color;
 
 const float ZFAR
 const float ZNEAR
@@ -31,7 +31,7 @@ const float ZNEAR
 void main()
 {
 	color = texture(terrain, texCoord);
-	float depth = color.a;
+	lowp float depth = color.a;
 	
 	if (submerged != 0)
 	{
@@ -52,26 +52,26 @@ void main()
 		{
 			float wdepth = depth + 2.0 / ZFAR;
 			
-			const vec3 deepWater    = pow(vec3(42, 73, 87) * vec3(1.0 / 255.0), vec3(2.2));
-			const vec3 shallowWater = pow(vec3(0.35, 0.6, 0.45), vec3(2.2));
+			const lowp vec3 deepWater    = pow(vec3(42, 73, 87) * vec3(1.0 / 255.0), vec3(2.2));
+			const lowp vec3 shallowWater = pow(vec3(0.35, 0.6, 0.45), vec3(2.2));
 			
-			float shallowValue = min(1.0, wdepth * 16.0);
-			vec3 waterColor = mix(shallowWater, deepWater, shallowValue) * daylight;
+			lowp float shallowValue = min(1.0, wdepth * 16.0);
+			lowp vec3 waterColor = mix(shallowWater, deepWater, shallowValue) * daylight;
 			
-			const float DEPTH_TRESHOLD = 30.0 / ZFAR;
-			float dep = smoothstep(0.0, DEPTH_TRESHOLD, wdepth);
+			const lowp float DEPTH_TRESHOLD = 30.0 / ZFAR;
+			lowp float dep = smoothstep(0.0, DEPTH_TRESHOLD, wdepth);
 			
 			// submerged in water
 			color.rgb = mix(color.rgb, waterColor, dep) * 0.7;
 		}
 		else
 		{
-			float wdepth = depth + 2.0 / ZFAR;
+			lowp float wdepth = depth + 2.0 / ZFAR;
 			
-			const float DEPTH_TRESHOLD = 10.0 / ZFAR;
-			float dep = smoothstep(0.0, DEPTH_TRESHOLD, wdepth);
+			const lowp float DEPTH_TRESHOLD = 10.0 / ZFAR;
+			lowp float dep = smoothstep(0.0, DEPTH_TRESHOLD, wdepth);
 			
-			const vec3 lavaColor  = vec3(0.28, 0.06, 0.0);
+			const lowp vec3 lavaColor  = vec3(0.28, 0.06, 0.0);
 			
 			// submerged in lava
 			color.rgb = mix(color.rgb, lavaColor, dep);
