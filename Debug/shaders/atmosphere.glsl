@@ -107,7 +107,7 @@ uniform sampler2D   starmap;
 
 uniform float above;
 uniform float sunAngle;
-uniform float gammaValue;
+uniform float starBrightness;
 
 uniform vec3 v3LightPos;
 const float g  = -0.50; // The Mie phase asymmetry factor
@@ -142,7 +142,7 @@ void main (void)
 		const lowp float PI = 3.1415926;
 		lowp vec2 coord = vec2(((atan(norm.y, norm.x) + sunAngle) / PI + 1.0) * 0.5, asin(norm.z) / PI + 0.5 );
 		lowp vec3 stars = texture(starmap, coord).rgb;
-		stars = pow(stars, lowp vec3(3.0)) * 0.4;
+		stars = pow(stars, lowp vec3(3.0)) * starBrightness;
 		
 		color.rgb = mix(color.rgb, stars, darkness * darkness);
 	}

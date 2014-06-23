@@ -61,8 +61,8 @@ namespace cppcraft
 		
 		shd.sendVec3("v3LightPos", thesun.getRealtimeAngle());
 		shd.sendFloat("sunAngle", thesun.getRealtimeRadianAngle());
-		
-		shd.sendFloat("gammaValue", (mode == 1) ? 0.45 : 0.8);
+		// 0.8 for reflections (at night), 0.4 for normal
+		shd.sendFloat("starBrightness", (mode == 1) ? 0.8 : 0.4);
 		
 		// bind textures
 		textureman.bind(1, Textureman::T_STARS);

@@ -604,7 +604,7 @@ namespace cppcraft
 			sector.getZ() * Sector::BLOCKS_XZ + bz
 		);
 		
-		int tmplight = 180;
+		int tmplight = 255; // must be 255
 		
 		vec2 angle = thesun.getAngle().xy();
 		if (angle.y < 0.0f) goto straightToTorchlight;

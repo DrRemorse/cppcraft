@@ -202,7 +202,7 @@ void main(void)
 	#include "lightw.glsl"
 	
 	//- sun/specular -//
-	const vec3  SUNCOLOR = vec3(0.9, 0.7, 0.5);
+	const lowp vec3  SUNCOLOR = vec3(0.9, 0.7, 0.5);
 	
 	lowp float shine = max(0.0, dot(vHalf, viewNormal) );
 	lowp float specf = max(0.0, dot(reflect(-vLight, viewNormal), vEye));
