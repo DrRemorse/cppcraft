@@ -18,7 +18,7 @@ uniform sampler2D terrain;
 uniform vec2 offset;
 
 in  lowp vec2 texCoord;
-out lowp vec4 color;
+out vec4 color;
 
 void main()
 {
@@ -26,17 +26,17 @@ void main()
 	color = texture(terrain, texCoord);
 	
 	const int   WIDTH = 3;
-	const lowp float MAXW = length(vec2(WIDTH));
-	lowp vec4  blur = vec4(0.0);
-	lowp float sum  = 0.0;
+	const float MAXW = length(vec2(WIDTH));
+	vec4  blur = vec4(0.0);
+	float sum  = 0.0;
 	
 	for (int x = -WIDTH; x <= WIDTH; x++)
 	for (int y = -WIDTH; y <= WIDTH; y++)
 	{
-		lowp vec2 pos = vec2(float(x), float(y));
-		lowp vec4 c = texture(terrain, texCoord + offset * pos);
+		vec2 pos = vec2(float(x), float(y));
+		vec4 c = texture(terrain, texCoord + offset * pos);
 		
-		lowp float width = MAXW - length(pos);
+		float width = MAXW - length(pos);
 		width *= 1.0 - abs(color.a - c.a);
 		
 		blur += c * width;
@@ -45,7 +45,7 @@ void main()
 	blur /= sum;
 	
 	// depth from blur
-	lowp float depth = blur.a;
+	float depth = blur.a;
 	depth = smoothstep(0.3, 0.9, depth) * step(depth, 0.997);
 	
 	// blur based on depth
