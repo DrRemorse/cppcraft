@@ -65,7 +65,7 @@ namespace cppcraft
 	void PrecompThread::ambientOcclusionGradients(Sector& sector, vertex_t* datadump, int vertexCount)
 	{
 		static unsigned char shadowRamp[] = 
-			{ 255 - 0, 255 - 120, 255 - 128, 255 - 140 };
+			{ 255, 255 - 76, 255 - 100, 255 - 140 };
 		
 		// world height in block units
 		int sbx = sector.getX() << Sector::BLOCKS_XZ_SH;
@@ -95,12 +95,12 @@ namespace cppcraft
 				// 3 = +y top,   4 = -y bottom
 				// 5 = +x right, 6 = -x left
 				
-				int x = (vt->x >> RenderConst::VERTEX_SHL) + sbx;
-				int y = (vt->y >> RenderConst::VERTEX_SHL);
-				int z = (vt->z >> RenderConst::VERTEX_SHL) + sbz;
+				int x = ((vt->x + 4) >> RenderConst::VERTEX_SHL) + sbx;
+				int y = ((vt->y + 4) >> RenderConst::VERTEX_SHL);
+				int z = ((vt->z + 4) >> RenderConst::VERTEX_SHL) + sbz;
 				// move points back to where they should be
 				x -= (corner & 1);
-				y -= (corner & 2) >> 1;
+				y -= ((corner & 2) >> 1) - (vt->face >> 6);
 				z -= (corner & 4) >> 2;
 				// the direction we should move to catch neighbors
 				int vdirX = ((corner & 1) * 2) - 1;

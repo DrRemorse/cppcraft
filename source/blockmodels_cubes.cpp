@@ -60,12 +60,10 @@ namespace cppcraft
 					bm[vertex].y = cube_vertices[face][vertex * 3 + 1] * VERTEX_SCALE; // y
 					bm[vertex].z = cube_vertices[face][vertex * 3 + 2] * VERTEX_SCALE; // z
 					
-					const float HALFBLOCK_HEIGHT = 0.5;
-					const float LOWBLOCK_HEIGHT  = 0.125;
-					const float INSET_LEVEL      = 1.0 / 16 * VERTEX_SCALE;
+					const short INSET_LEVEL = VERTEX_SCALE / 16;
 					
-					if (model == MI_HALFBLOCK)     bm[vertex].y *= HALFBLOCK_HEIGHT;
-					else if (model == MI_LOWBLOCK) bm[vertex].y *= LOWBLOCK_HEIGHT;
+					if (model == MI_HALFBLOCK)     bm[vertex].y /= 2;
+					else if (model == MI_LOWBLOCK) bm[vertex].y /= 8;
 					else if (model == MI_INSET)
 					{
 						if (face < 2)
@@ -82,15 +80,25 @@ namespace cppcraft
 					
 					if (model != MI_LOWBLOCK)
 					{
-						// 0 to 5 (front, back, top, bottom, right, left)
-						//    face
+						// 1 to 6 (front, back, top, bottom, right, left)
 						bm[vertex].face = (  (1 + face) | 
 							int(cube_vertices[face][vertex * 3    ] *  8) | // x
 							int(cube_vertices[face][vertex * 3 + 1] * 16) | // y
 							int(cube_vertices[face][vertex * 3 + 2] * 32)   // z
 						);
 					}
-					else bm[vertex].face = 0;
+					else
+					{
+						if (face == 2)
+						bm[vertex].face = (  (1 + face) | 
+							int(cube_vertices[face][vertex * 3    ] *  8) | // x
+							int(16) | // y
+							int(cube_vertices[face][vertex * 3 + 2] * 32) | // z
+							1 * 64 // extra height
+						);
+						else
+						bm[vertex].face = 0;
+					}
 					
 					bm[vertex].nx = cube_normals[face][0]; // nx
 					bm[vertex].ny = cube_normals[face][1]; // ny

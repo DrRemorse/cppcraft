@@ -8,7 +8,7 @@
 lowp float shadow = min(1.0, daylight * lightdata.x + brightness);
 
 // corner shadows and dotlight
-lowp float cornershad = smoothstep(0.2, 0.7, lightdata.z);
+lowp float cornershad = smoothstep(0.0, 1.0, lightdata.z);
 cornershad = min(1.0, cornershad * worldLight + brightness * 0.125);
 
 // scaled shadow color
