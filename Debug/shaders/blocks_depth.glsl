@@ -28,7 +28,6 @@ void main(void)
 
 #ifdef FRAGMENT_PROGRAM
 uniform sampler2D diffuse;
-uniform sampler2D skymap;
 uniform vec3 screensize;
 
 in vec3 pos;
@@ -38,7 +37,7 @@ out lowp vec4 color;
 
 void main(void)
 {
-	vec2 texCoord = gl_FragCoord.xy / screensize.xy;
+	lowp vec2 texCoord = gl_FragCoord.xy / screensize.xy;
 	color = texture(diffuse, texCoord);
 }
 

@@ -275,7 +275,6 @@ namespace cppcraft
 		
 		int skyWidth  = gamescr.getWidth();
 		int skyHeight = gamescr.getHeight();
-		
 		// as long as multisampling is disabled, we can use lowq sky when enabled
 		if (gameconf.multisampling == 0 && gameconf.highq_sky == false)
 		{

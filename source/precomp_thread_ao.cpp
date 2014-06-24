@@ -62,7 +62,7 @@ namespace cppcraft
 	void PrecompThread::ambientOcclusionGradients(Sector& sector, vertex_t* datadump, int vertexCount)
 	{
 		static unsigned char shadowRamp[] = 
-			{ 255, 255 - 76, 255 - 100, 255 - 140 };
+			{ 255, 255 - 72, 255 - 90, 255 - 130 };
 		
 		// world height in block units
 		int sbx = sector.getX() << Sector::BLOCKS_XZ_SH;
