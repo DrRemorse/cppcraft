@@ -60,6 +60,8 @@ namespace cppcraft
 		return (id > AIR_END && id < CROSS_START && id != _LANTERN && id != _VINES) & 1;
 	}
 	
+	
+	
 	void PrecompThread::ambientOcclusionGradients(Sector& sector, vertex_t* datadump, int vertexCount)
 	{
 		static unsigned char shadowRamp[] = 
@@ -70,14 +72,16 @@ namespace cppcraft
 		int sbz = sector.getZ() << Sector::BLOCKS_XZ_SH;
 		
 		// calculate face counts for each integral vertex position
-		vertex_t* vt = datadump; // first vertex
-		vertex_t* vt_max = vt + vertexCount;
+		vertex_t* vt; // first vertex
+		vertex_t* vt_max = datadump + vertexCount;
+		// the channel used for AO in a vertex
+		#define vertexAO(vt)  ((unsigned char*)&((vt)->c))[2]
 		
 		unsigned char vside1;
 		unsigned char vside2;
 		unsigned char vcorner;
 		
-		for (; vt < vt_max; vt++)
+		for (vt = datadump; vt < vt_max; vt++)
 		{
 			if (vt->face) // only supported faces!
 			{
@@ -123,9 +127,26 @@ namespace cppcraft
 				}
 				
 				unsigned char v = cubeAO(vside1, vside2, vcorner);
-				((unsigned char*)&vt->c)[2] = shadowRamp[v];
+				vertexAO(vt) = shadowRamp[v];
 			}
 		} // vertices
+		
+		// flip quads that need it to avoid anisotropy
+		for (vt = datadump; vt < vt_max; vt += 4)
+		{
+			if (vt->face) // only supported faces!
+			{
+				if (vertexAO(vt+0) + vertexAO(vt+2) < vertexAO(vt+1) + vertexAO(vt+3))
+				{
+					vertex_t vt0 = vt[0];
+					// flip quad
+					vt[0] = vt[1];
+					vt[1] = vt[2];
+					vt[2] = vt[3];
+					vt[3] = vt0;
+				}
+			}
+		}
 		
 	} // ambientOcclusionGradients()
 	
