@@ -1,7 +1,5 @@
 #include <library/log.hpp>
-#include "blockmodels.hpp"
 #include "gameconf.hpp"
-#include "lighting.hpp"
 #include "precomp_thread.hpp"
 #include "precompiler.hpp"
 #include "renderconst.hpp"
@@ -51,7 +49,7 @@ namespace cppcraft
 		precomp.result = Precomp::STATUS_DONE;
 	}
 	
-	inline int cubeAO(char side1, char side2, char corner)
+	inline unsigned char cubeAO(unsigned char side1, unsigned char side2, unsigned char corner)
 	{
 		if (side1 & side2) return 3;
 		return side1 + side2 + corner;
@@ -97,13 +95,13 @@ namespace cppcraft
 				int y = (vt->y >> RenderConst::VERTEX_SHL);
 				int z = (vt->z >> RenderConst::VERTEX_SHL) + sbz;
 				// move points back to where they should be
-				x += (corner & 1) ? -1 : 0;
-				y += (corner & 2) ? -1 : 0;
-				z += (corner & 4) ? -1 : 0;
-				
-				int vdirX = (corner & 1) ? 1 : -1; // 2 * (corner & 1) - 1;
-				int vdirY = (corner & 2) ? 1 : -1; // (corner & 2) - 1;
-				int vdirZ = (corner & 4) ? 1 : -1; // (corner & 4) / 2 - 1;
+				x -= (corner & 1);
+				y -= (corner & 2) >> 1;
+				z -= (corner & 4) >> 2;
+				// the direction we should move to catch neighbors
+				int vdirX = ((corner & 1) * 2) - 1;
+				int vdirY =  (corner & 2) - 1;
+				int vdirZ = ((corner & 4) - 2) / 2;
 				
 				if (face < 3) // +/-z
 				{
