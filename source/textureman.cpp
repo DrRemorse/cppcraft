@@ -273,17 +273,20 @@ namespace cppcraft
 		
 		/// Fullscreen Buffers ///
 		
-		int skyWidth  = gamescr.getWidth();
-		int skyHeight = gamescr.getHeight();
+		int  skyWidth  = gamescr.getWidth();
+		int  skyHeight = gamescr.getHeight();
+		bool skyLinear = false;
 		// as long as multisampling is disabled, we can use lowq sky when enabled
 		if (gameconf.multisampling == 0 && gameconf.highq_sky == false)
 		{
 			skyWidth /= 2; skyHeight /= 2;
+			skyLinear = true;
 		}
 		
 		// fullscreen skybuffer
 		textures[T_SKYBUFFER] = Texture(GL_TEXTURE_2D, GL_RGBA8);
 		textures[T_SKYBUFFER].create(0, skyWidth, skyHeight);
+		textures[T_SKYBUFFER].setInterpolation(skyLinear);
 		
 		if (gameconf.multisampling)
 		{
