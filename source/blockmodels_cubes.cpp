@@ -78,7 +78,7 @@ namespace cppcraft
 						}
 					}
 					
-					if (model != MI_LOWBLOCK)
+					if (model != MI_LOWBLOCK && model != MI_HALFBLOCK)
 					{
 						// 1 to 6 (front, back, top, bottom, right, left)
 						bm[vertex].face = (  (1 + face) | 
