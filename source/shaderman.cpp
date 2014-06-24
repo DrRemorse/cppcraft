@@ -226,10 +226,7 @@ namespace cppcraft
 		shaders[FSTERRAINFOG].sendInteger("terrain",      0);
 		shaders[FSTERRAINFOG].sendInteger("skytexture",   1);
 		shaders[FSTERRAINFOG].sendInteger("depthtexture", 2);
-		if (gameconf.ssao)
-		{
-			shaders[FSTERRAINFOG].sendInteger("normalstex",   3);
-		}
+		
 		// near plane half size
 		shaders[FSTERRAINFOG].sendVec2("nearPlaneHalfSize", camera.getNearPlaneHalfSize());
 		// screen size

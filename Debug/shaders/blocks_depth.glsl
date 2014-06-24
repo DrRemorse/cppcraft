@@ -28,6 +28,7 @@ void main(void)
 
 #ifdef FRAGMENT_PROGRAM
 uniform sampler2D diffuse;
+uniform sampler2D skymap;
 uniform vec3 screensize;
 
 in vec3 pos;

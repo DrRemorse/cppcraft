@@ -28,12 +28,9 @@ namespace cppcraft
 		}
 		
 		// ambient occlusion processing stage
-		#ifdef AMBIENT_OCCLUSION_GRADIENTS
-			if (gameconf.ssao == false)
-			{
-				ambientOcclusionGradients(*precomp.sector, precomp.datadump, cnt);
-			}
-		#endif
+	#ifdef AMBIENT_OCCLUSION_GRADIENTS
+		ambientOcclusionGradients(*precomp.sector, precomp.datadump, cnt);
+	#endif
 		
 		// optimize repeating textures mesh
 		optimizeMesh(precomp, RenderConst::TX_REPEAT, RenderConst::VERTEX_SCALE / tiles.tilesPerBigtile);

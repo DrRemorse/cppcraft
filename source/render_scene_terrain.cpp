@@ -540,11 +540,6 @@ namespace cppcraft
 		// bind underwater scene
 		textureman.bind(0, Textureman::T_UNDERWATERMAP);
 		textureman.bind(1, Textureman::T_UNDERWDEPTH);
-		if (gameconf.reflections)
-		{
-			// bind world-reflection
-			textureman.bind(2, Textureman::T_REFLECTION);
-		}
 		
 		if (this->isUnderwater())
 		{
@@ -556,6 +551,14 @@ namespace cppcraft
 								position, camera);
 			// cull only front water-faces inside water
 			glCullFace(GL_FRONT);
+		}
+		else
+		{
+			if (gameconf.reflections)
+			{
+				// bind world-reflection
+				textureman.bind(2, Textureman::T_REFLECTION);
+			}
 		}
 		
 		// check for errors

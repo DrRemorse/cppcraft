@@ -41,7 +41,6 @@ namespace cppcraft
 	FBO reflectionFBO;
 	FBO underwaterFBO;
 	FBO fboResolveColor;
-	FBO fboResolveNormals;
 	FBO fogFBO, finalFBO;
 	
 	void SceneRenderer::init(Renderer& renderer)
@@ -69,10 +68,6 @@ namespace cppcraft
 		sceneFBO.create();
 		sceneFBO.bind();
 		sceneFBO.attachColor(0, sceneTex);
-		if (gameconf.ssao)
-		{
-			sceneFBO.attachColor(1, textureman[Textureman::T_NORMALBUFFER]);
-		}
 		sceneFBO.attachDepth(textureman[Textureman::T_DEPTHBUFFER]);
 		
 		// the FBO we copy the main scene to before rendering water
@@ -89,13 +84,6 @@ namespace cppcraft
 			fboResolveColor.bind();
 			fboResolveColor.attachColor(0, textureman[Textureman::T_FINALBUFFER]);
 			fboResolveColor.attachDepth(textureman[Textureman::T_FINALDEPTH]);
-			
-			if (gameconf.ssao)
-			{
-				fboResolveNormals.create();
-				fboResolveNormals.bind();
-				fboResolveNormals.attachColor(0, textureman[Textureman::T_FINALNORMALS]);
-			}
 		}
 		
 		fogFBO.create();
@@ -181,7 +169,7 @@ namespace cppcraft
 					skyTex.getHeight(),
 					sceneTex.getWidth(), 
 					sceneTex.getHeight(), 
-					GL_COLOR_BUFFER_BIT, GL_NEAREST);
+					GL_COLOR_BUFFER_BIT, GL_LINEAR);
 		
 		
 		////////////////////////////////////////////////////
@@ -329,12 +317,10 @@ namespace cppcraft
 				reflectionCamera.ref = camera.ref;
 				reflectionCamera.rotated = camera.rotated;
 				
-				// render to reflection texture
-				reflectionFBO.bind();
-				
 				Texture& reflections = textureman[Textureman::T_REFLECTION];
 				
-				// render at half size
+				reflectionFBO.bind();
+				// render at texture size
 				glViewport(0, 0, reflections.getWidth(), reflections.getHeight());
 				
 				glDisable(GL_DEPTH_TEST);
@@ -349,8 +335,10 @@ namespace cppcraft
 					glDepthMask(GL_TRUE);
 					glClear(GL_DEPTH_BUFFER_BIT);
 					
-					//glEnable(GL_CULL_FACE);
+					glEnable(GL_CULL_FACE);
+					glCullFace(GL_FRONT);
 					renderReflectedScene(renderer, reflectionCamera);
+					glCullFace(GL_BACK);
 				}
 			}
 		}
@@ -361,14 +349,6 @@ namespace cppcraft
 		
 		sceneFBO.bind();
 		glViewport(0, 0, sceneTex.getWidth(), sceneTex.getHeight());
-		
-		if (gameconf.ssao)
-		{
-			std::vector<int> dbuffers;
-			dbuffers.push_back(GL_COLOR_ATTACHMENT0);
-			dbuffers.push_back(GL_COLOR_ATTACHMENT1);
-			sceneFBO.drawBuffers(dbuffers);
-		}
 		
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
@@ -433,11 +413,6 @@ namespace cppcraft
 			textureman.bind(0, Textureman::T_FINALBUFFER);
 			textureman.bind(1, Textureman::T_SKYBUFFER);
 			textureman.bind(2, Textureman::T_DEPTHBUFFER);
-			if (gameconf.ssao)
-			{
-				screenspace.renderSuperSampling(textureman[Textureman::T_NORMALBUFFER], textureman[Textureman::T_FINALNORMALS]);
-				textureman.bind(3, Textureman::T_FINALNORMALS);
-			}
 		}
 		else if (gameconf.multisampling)
 		{
@@ -447,29 +422,12 @@ namespace cppcraft
 			textureman.bind(0, Textureman::T_FINALBUFFER);
 			textureman.bind(1, Textureman::T_SKYBUFFER);
 			textureman.bind(2, Textureman::T_FINALDEPTH);
-			
-			if (gameconf.ssao)
-			{
-				glBindFramebuffer(GL_READ_FRAMEBUFFER, sceneFBO.getHandle());
-				glReadBuffer(GL_COLOR_ATTACHMENT0 + 1);
-				
-				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboResolveNormals.getHandle());
-				glBlitFramebuffer(0, 0, sceneTex.getWidth(), sceneTex.getHeight(), 0, 0, sceneTex.getWidth(), sceneTex.getHeight(), GL_COLOR_BUFFER_BIT, GL_LINEAR);
-				
-				glReadBuffer(GL_COLOR_ATTACHMENT0);
-				// add normals to slot 3
-				textureman.bind(3, Textureman::T_FINALNORMALS);
-			}
 		}
 		else
 		{
 			textureman.bind(0, Textureman::T_SCENEBUFFER);
 			textureman.bind(1, Textureman::T_SKYBUFFER);
 			textureman.bind(2, Textureman::T_DEPTHBUFFER);
-			if (gameconf.ssao)
-			{
-				textureman.bind(3, Textureman::T_NORMALBUFFER);
-			}
 		}
 		
 		/////////////////////////////////
@@ -478,18 +436,26 @@ namespace cppcraft
 		// --> inputs  T_SCENEBUFFER (or T_FINALBUFFER)
 		// --> outputs T_RENDERBUFFER
 		fogFBO.bind();
-		screenspace.fog(renderer.frametick);
+		screenspace.terrainFog(renderer.frametick);
 		
-		/////////////////////////////////
-		// apply blur to background
-		/////////////////////////////////
-		renderBuffer.bind(0);
-		
-		// render to final buffer from renderbuffer
-		// --> inputs  T_RENDERBUFFER
-		// --> outputs T_FINALBUFFER
-		finalFBO.bind();
-		screenspace.terrain();
+		if (gameconf.distance_blur)
+		{
+			/////////////////////////////////
+			// apply blur to background
+			/////////////////////////////////
+			renderBuffer.bind(0);
+			
+			// render to final buffer from renderbuffer
+			// --> inputs  T_RENDERBUFFER
+			// --> outputs T_FINALBUFFER
+			finalFBO.bind();
+			screenspace.terrainBlur();
+		}
+		else
+		{
+			// just copy from one texture to another
+			fogFBO.blitTo(finalFBO, renderBuffer.getWidth(), renderBuffer.getHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		}
 		
 		///  render clouds & particles  ///
 		

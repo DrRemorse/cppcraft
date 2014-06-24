@@ -17,9 +17,8 @@ namespace cppcraft
 	public:
 		void init(library::WindowClass& gamescr);
 		void initFlare();
-		void blur(library::Texture& texture);
-		void fog(double time);
-		void terrain();
+		void terrainFog(double time);
+		void terrainBlur();
 		void renderSuperSampling(library::Texture& supersampled, library::Texture& texture);
 		
 		void render(library::WindowClass& gamescr, double frameCounter, char underwater);
@@ -32,9 +31,6 @@ namespace cppcraft
 		// flare texture
 		int flareTxW, flareTxH;
 		unsigned int flareFBO;
-		// blur texture
-		int blurTxW, blurTxH;
-		unsigned int blurFBO;
 		
 		int underwater;
 		

@@ -17,14 +17,15 @@ namespace cppcraft
 		int multisampling;
 		float anisotropy;
 		
-		bool clouds;
-		bool reflections;
-		bool reflectTerrain;
-		bool ssao;
-		bool postprocess;
+		bool highq_sky;
+		bool distance_blur;
 		bool lensflare;
 		
-		bool playerlight;
+		bool clouds;
+		bool reflections;
+		bool hq_reflections;
+		bool reflectTerrain;
+		
 		bool playerhand;
 		
 	};

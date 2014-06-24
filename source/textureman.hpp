@@ -56,7 +56,6 @@ namespace cppcraft
 			
 			T_SKYBUFFER,
 			T_SCENEBUFFER,
-			T_NORMALBUFFER,
 			T_DEPTHBUFFER,
 			
 			T_UNDERWATERMAP,
@@ -65,7 +64,6 @@ namespace cppcraft
 			
 			T_RENDERBUFFER,
 			T_FINALBUFFER,
-			T_FINALNORMALS,
 			T_FINALDEPTH,
 			
 			NUM_TEXTURES

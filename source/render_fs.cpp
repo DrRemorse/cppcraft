@@ -31,18 +31,12 @@ namespace cppcraft
 		screenVAO.createScreenspaceVAO();
 		
 		// set texture sizes
-		// fs blur
-		int factor = config.get("render.hq_blur", false) ? 1 : 2;
-		this->blurTxW = gamescr.getWidth() / factor;
-		this->blurTxH = gamescr.getHeight() / factor;
-		
 		// lens flare
-		factor = config.get("render.hq_lens", false) ? 1 : 2;
+		int factor = config.get("render.hq_lens", false) ? 2 : 4;
 		this->flareTxW = gamescr.getWidth() / factor;
 		this->flareTxH = gamescr.getHeight() / factor;
 		
 		// create screenspace FBOs
-		glGenFramebuffers(1, &blurFBO);
 		downsampler.create();
 		
 		initFlare();
@@ -57,7 +51,7 @@ namespace cppcraft
 		this->underwater = -1;
 	}
 	
-	void FSRenderer::fog(double timeElapsed)
+	void FSRenderer::terrainFog(double timeElapsed)
 	{
 		Shader& shd = shaderman[Shaderman::FSTERRAINFOG];
 		shd.bind();
@@ -77,7 +71,7 @@ namespace cppcraft
 		screenVAO.render(GL_QUADS);
 	}
 	
-	void FSRenderer::terrain()
+	void FSRenderer::terrainBlur()
 	{
 		// postprocessing shader
 		Shader& shd = shaderman[Shaderman::FSTERRAIN];

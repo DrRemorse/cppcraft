@@ -16,15 +16,15 @@ namespace cppcraft
 		multisampling = config.get("render.multisampling", 0);
 		anisotropy    = config.get("render.anisotropy", 1.0f);
 		
-		clouds        = config.get("render.clouds",  false);
-		reflections   = config.get("render.reflections", true);
-		reflectTerrain= config.get("render.reflect_terrain", false);
+		highq_sky     = config.get("render.highq_sky",     false);
+		distance_blur = config.get("render.distance_blur", true);
+		lensflare     = config.get("render.lensflare",     true);
 		
-		ssao          = config.get("render.ssao", false);
-		postprocess   = config.get("render.postprocess", true);
-		lensflare     = config.get("render.lensflare",   true);
+		clouds         = config.get("render.clouds",  false);
+		reflections    = config.get("render.reflections", true);
+		hq_reflections = config.get("render.hq_reflections", false);
+		reflectTerrain = config.get("render.reflect_terrain", false);
 		
-		playerlight   = config.get("playerlight", true);
 		playerhand    = config.get("playerhand", true);
 		
 		// audio
