@@ -1,5 +1,3 @@
-#include "precomp_thread_ao.hpp"
-
 #include <library/log.hpp>
 #include "blockmodels.hpp"
 #include "gameconf.hpp"
@@ -27,7 +25,7 @@ namespace cppcraft
 		if (precomp.datadump == nullptr)
 		{
 			logger << Log::ERR << "PrecompThread::ambientOcclusion(): datadump was null" << Log::ENDL;
-			precomp.cancel();
+			precomp.result = Precomp::STATUS_FAILED;
 			return;
 		}
 		
@@ -35,7 +33,7 @@ namespace cppcraft
 		#ifdef AMBIENT_OCCLUSION_GRADIENTS
 			if (gameconf.ssao == false)
 			{
-				ambientOcclusionGradients(*this->occ, *precomp.sector, precomp.datadump, cnt);
+				ambientOcclusionGradients(*precomp.sector, precomp.datadump, cnt);
 			}
 		#endif
 		
@@ -53,456 +51,84 @@ namespace cppcraft
 		precomp.result = Precomp::STATUS_DONE;
 	}
 	
-	short addCornerShadowVertex(AmbientOcclusion& ao, vertex_t* vt, short x, short y, short z)
+	inline int cubeAO(char side1, char side2, char corner)
 	{
-		short corner = vt->face >> 3;
-		corner = (corner & 1) + // 0 if left,  1 if right
-				  (corner & 2) + // 0 if lower, 2 if upper
-				  (corner & 4);  // 0 if back,  4 if front
-		
-		short face = (vt->face & 7) - 1;
-		short index;
-		
-		if (ao.t_lookup[x][y][z] == 0)
-		{
-			// if the lookup wasn't set before, set it now
-			index = ++ao.count;
-			ao.t_lookup[x][y][z] = index;
-		}
-		else
-		{
-			// otherwise, use previous index
-			index = ao.t_lookup[x][y][z];
-		}
-		
-		// add this vertex information
-		ao.setPoint(index, corner, face);
-		return index;
+		if (side1 & side2) return 3;
+		return side1 + side2 + corner;
+	}
+	inline unsigned char blockIsOccluder(int x, int y, int z)
+	{
+		block_t id = Spiders::getBlock(x, y, z).getID();
+		return (id > AIR_END && id < CROSS_START && id != _LANTERN && id != _VINES) & 1;
 	}
 	
-	void runCornerShadowTest(AmbientOcclusion& ao, int facing, short baseX, short baseY, short baseZ)
+	void PrecompThread::ambientOcclusionGradients(Sector& sector, vertex_t* datadump, int vertexCount)
 	{
-		// this block was visible
-		for (int i = 0; i < 6; i++) // iterate faces
-		{
-			// check which faces are visible
-			if (facing & (1 << i))
-			{
-				vertex_t* vt = &blockmodels.cubes[0].get(i, 0);
-				
-				// this face was visible
-				for (int f = 0; f < 4; f++) // iterate vertices
-				{
-					short x = baseX + (vt->x >> RenderConst::VERTEX_SHL);
-					short y = baseY + (vt->y >> RenderConst::VERTEX_SHL);
-					short z = baseZ + (vt->z >> RenderConst::VERTEX_SHL);
-					
-					if ((x | y | z) >= 0 && x <= Sector::BLOCKS_XZ && y <= Sector::BLOCKS_Y && z <= Sector::BLOCKS_XZ)
-					{
-						addCornerShadowVertex(ao, vt, x, y, z);
-					}
-					vt += 1;
-				}
-				
-			} // facing & side
-			
-		} // next face
-	}
-	
-	inline bool cornerShadowBlocktest(const Block& block)
-	{
-		block_t id = block.getID();
-		return (id > AIR_END && id < CROSS_START && id != _LANTERN && id != _VINES);
-	}
-	
-	void PrecompThread::ambientOcclusionGradients(AmbientOcclusion& ao, Sector& sector, vertex_t* datadump, int vertexCount)
-	{
-		// clear/reset any previous data
-		ao.clear();
+		static unsigned char shadowRamp[] = 
+			{ 255 - 0, 255 - 120, 255 - 128, 255 - 140 };
 		
 		// world height in block units
-		short worldY = sector.getY() * Sector::BLOCKS_Y;
+		int sbx = sector.getX() << Sector::BLOCKS_XZ_SH;
+		int sbz = sector.getZ() << Sector::BLOCKS_XZ_SH;
 		
 		// calculate face counts for each integral vertex position
 		vertex_t* vt = datadump; // first vertex
+		vertex_t* vt_max = vt + vertexCount;
 		
-		int firstCorner = 50000;
-		int lastCorner  = 0;
+		unsigned char vside1;
+		unsigned char vside2;
+		unsigned char vcorner;
 		
-		for (int i = 0; i < vertexCount; i++)
+		for (; vt < vt_max; vt++)
 		{
 			if (vt->face) // only supported faces!
 			{
-				short x = (vt->x >> RenderConst::VERTEX_SHL);
-				short y = (vt->y >> RenderConst::VERTEX_SHL) - worldY;
-				short z = (vt->z >> RenderConst::VERTEX_SHL);
+				int corner = (vt->face >> 3) & 7;
+				// 0 if left,  1 if right
+				// 0 if lower, 2 if upper
+				// 0 if back,  4 if front
 				
-				// set new face value to ao index
-				vt->face = addCornerShadowVertex(ao, vt, x, y, z);
+				int face = vt->face & 7;
+				// 1 = +z front, 2 = -z back
+				// 3 = +y top,   4 = -y bottom
+				// 5 = +x right, 6 = -x left
 				
-				if (i < firstCorner) firstCorner = i;
-				if (i > lastCorner) lastCorner = i;
-			}
-			vt += 1; // next vertex
-		}
-		// we can exit here, since theres no need to collect more vertices
-		// if there are no original vertices to test on
-		if (ao.count == 0) return;
-		
-		// we need to add remaining outside-of-sector points using Solidity()
-		// first create transversal data with true for all reads
-		ao.testdata.sector = &sector;
-		ao.testdata.sb_x_m = &sector; ao.testdata.sb_x_p = &sector;
-		ao.testdata.sb_y_m = &sector; ao.testdata.sb_y_p = &sector;
-		ao.testdata.sb_z_m = &sector; ao.testdata.sb_z_p = &sector;
-		
-		for (int x = -1; x <= Sector::BLOCKS_XZ; x++)
-		for (int z = -1; z <= Sector::BLOCKS_XZ; z++)
-		for (int y = -1; y <= Sector::BLOCKS_Y; y++)
-		{
-			if (x == -1 || z == -1 || y == -1 || x == Sector::BLOCKS_XZ || z == Sector::BLOCKS_XZ || y == Sector::BLOCKS_Y)
-			{
-				// finally run transversal
-				int bx = x, by = y, bz = z;
-				Sector* testsector = Spiders::spiderwrap(sector, bx, by, bz);
-				if (testsector)
+				int x = (vt->x >> RenderConst::VERTEX_SHL) + sbx;
+				int y = (vt->y >> RenderConst::VERTEX_SHL);
+				int z = (vt->z >> RenderConst::VERTEX_SHL) + sbz;
+				// move points back to where they should be
+				x += (corner & 1) ? -1 : 0;
+				y += (corner & 2) ? -1 : 0;
+				z += (corner & 4) ? -1 : 0;
+				
+				int vdirX = (corner & 1) ? 1 : -1; // 2 * (corner & 1) - 1;
+				int vdirY = (corner & 2) ? 1 : -1; // (corner & 2) - 1;
+				int vdirZ = (corner & 4) ? 1 : -1; // (corner & 4) / 2 - 1;
+				
+				if (face < 3) // +/-z
 				{
-					if (testsector->hasBlocks())
-					{
-						Block& block = testsector[0](bx, by, bz);
-						// shaky test to ignore ids that definitely can't produce corner shadows
-						if (cornerShadowBlocktest(block))
-						{
-							// check which faces are visible
-							unsigned short facing = block.visibleFaces(*testsector, bx, by, bz);
-							// add corners to THIS sector
-							if (facing) runCornerShadowTest(ao, facing, x, y, z);
-						} // correct id
-					} // sector has blocks
-				} // sector exists
-			}
-		}
-		
-		if (ao.count >= ao.CRASH_MAX_POINTS)
-		{
-			logger << Log::ERR << "Too many corner shadow points: " << ao.count << Log::ENDL;
-		}
-		else if (ao.count > ao.CRASH_MAX_POINTS * 0.9)
-		{
-			logger << Log::WARN << "Many corner shadow points: " << ao.count << Log::ENDL;
-		}
-		
-		static const unsigned char CRASH_WALL   = 255 - Lighting.AMB_OCC;
-		static const unsigned char CRASH_PILLAR = 255 - Lighting.AMB_OCC;
-		static const unsigned char OUTER_CORNER = 255 - Lighting.AMB_OCC;
-		static const unsigned char CRASH_CORNER = 255 - Lighting.CORNERS;
-		
-		bool weSetSomething = false;
-		
-		for (int n = 1; n <= ao.count; n++)
-		{
-			// calculate final look of vertex x,y,z
-			#define gets(vertex, face) ao.getPoint(n, vertex, face)
-			
-			// 1 0 0 = { 1 + 0 + 0 } = 1
-			// 0 1 0 = { 0 + 2 + 0 } = 2
-			// 0 0 1 = { 0 + 0 + 4 } = 4
-			ao.t_corner[n] = 255;
-			
-				// corner 0 1 0, bottom top-face
-			if (gets(0 + 2 + 0, 2))
-			{
-				// +z face = 0 with vertex at (0, 0, 1)
-				if (gets(0 + 0 + 4, 0))
-				{
-					// +x face = 4 with vertex at (1, 0, 0)
-					if (gets(1 + 0 + 0, 4)) // CORNER
-					{
-						ao.t_corner[n] = CRASH_CORNER;
-					}
-					// another +z face = 0 with vertex at (1, 0, 1)
-					if (gets(1 + 0 + 4, 0))
-					{
-						ao.t_corner[n] = CRASH_WALL;
-					}
+					vside1  = blockIsOccluder(x+vdirX, y,       z+vdirZ);
+					vside2  = blockIsOccluder(x,       y+vdirY, z+vdirZ);
+					vcorner = blockIsOccluder(x+vdirX, y+vdirY, z+vdirZ);
 				}
-				// outer corner +z 1 0 1
-				else if (gets(1 + 0 + 4, 0))
+				else if (face < 5) // +/-y
 				{
-					// outer corner +x 1 0 1
-					if (gets(1 + 0 + 4, 4))
-					{
-						ao.t_corner[n] = OUTER_CORNER;
-					}
+					vside1  = blockIsOccluder(x+vdirX, y+vdirY, z);
+					vside2  = blockIsOccluder(x,       y+vdirY, z+vdirZ);
+					vcorner = blockIsOccluder(x+vdirX, y+vdirY, z+vdirZ);
 				}
-			}
-				// corner 0 0 0, top bottom-face
-			else if (gets(0 + 0 + 0, 3))
-			{
-				// +z face = 0 with vertex at (0, 1, 1)
-				if (gets(0 + 2 + 4, 0))
+				else // +/-x
 				{
-					// +x face = 4 with vertex at (1, 1, 0)
-					if (gets(1 + 2 + 0, 4)) // CORNER
-					{
-						ao.t_corner[n] = CRASH_CORNER;
-					}
-					// another +z face = 0 with vertex at (1, 1, 1)
-					if (gets(1 + 2 + 4, 0))
-					{
-						ao.t_corner[n] = CRASH_WALL;
-					}
-				}
-			}
-				// pillar corner of (0 0 0)
-				// corner 1 0 0 +x face
-			else if (gets(1 + 0 + 0, 4))
-			{
-				// forming corner 0 0 1 +z face
-				if (gets(0 + 0 + 4, 0))
-				{
-					ao.t_corner[n] = CRASH_PILLAR;
-				}
-			}
-				// cross-junction corner of (0 1 0)
-				// corner 1 1 0 +x face
-			else if (gets(1 + 2 + 0, 4))
-			{
-				// forming corner 0 1 1 +z face, with 1 0 1 +z or 1 0 1 +x
-				if (gets(0 + 2 + 4, 0) && (gets(5,0) || gets(5,4)))
-				{
-					ao.t_corner[n] = CRASH_PILLAR;
+					vside1  = blockIsOccluder(x+vdirX, y+vdirY, z);
+					vside2  = blockIsOccluder(x+vdirX, y,       z+vdirZ);
+					vcorner = blockIsOccluder(x+vdirX, y+vdirY, z+vdirZ);
 				}
 				
+				unsigned char v = cubeAO(vside1, vside2, vcorner);
+				((unsigned char*)&vt->c)[2] = shadowRamp[v];
 			}
-			
-				// corner 1 1 0 bottom top-face
-			if (gets(1 + 2 + 0, 2))
-			{
-				// -x face = 5 with vertex at (0, 0, 0)
-				if (gets(0 + 0 + 0, 5))
-				{
-					// +z face = 0 with vertex at (1, 0, 1)
-					if (gets(1 + 0 + 4, 0)) // CORNER
-					{
-						ao.t_corner[n] = CRASH_CORNER;
-					}
-					
-					// another -x face = 5 with vertex at (0, 0, 1)
-					if (gets(0 + 0 + 4, 5))
-					{
-						ao.t_corner[n] = CRASH_WALL;
-					}
-				}
-				// outer corner +z 0 0 1
-				else if (gets(0 + 0 + 4, 0))
-				{
-					// outer corner -x 0 0 1
-					if (gets(0 + 0 + 4, 5))
-					{
-						ao.t_corner[n] = OUTER_CORNER;
-					}
-				}
-			}
-				// corner 1 0 0 top bottom-face
-			else if (gets(1 + 0 + 0, 3))
-			{
-				// -x face = 5 with vertex at (0, 1, 0)
-				if (gets(0 + 2 + 0, 5))
-				{
-					// +z face = 0 with vertex at (1, 1, 1)
-					if (gets(1 + 2 + 4, 0)) // CORNER
-					{
-						ao.t_corner[n] = CRASH_CORNER;
-					}
-					
-					// another -x face = 5 with vertex at (0, 1, 1)
-					if (gets(0 + 2 + 4, 5))
-					{
-						ao.t_corner[n] = CRASH_WALL;
-					}
-				}
-			}
-				// pillar corner of (1 0 0)
-				// corner 1 0 1 +z face
-			else if (gets(1 + 0 + 4, 0))
-			{
-				// forming corner 0 0 0 -x face
-				if (gets(0 + 0 + 0, 5))
-				{
-					ao.t_corner[n] = CRASH_PILLAR;
-				}
-			}
-				// cross-junction corner of (1 1 0)
-				// top corner 0 1 0 -x face
-			else if (gets(0 + 2 + 0, 5))
-			{
-				// forming corner 1 1 1 +z face, with 0 0 1 +z or 0 0 1 -x
-				if (gets(1 + 2 + 4, 0) && (gets(4,0) || gets(4,5)))
-				{
-					ao.t_corner[n] = CRASH_PILLAR;
-				}
-			}
-			
-				// corner 0 1 1 bottom top-face
-			if (gets(0 + 2 + 4, 2))
-			{
-				// +x face = 4 with vertex at (1, 0, 1)
-				if (gets(1 + 0 + 4, 4))
-				{
-					// -z face = 1 with vertex at (0, 0, 0)
-					if (gets(0 + 0 + 0, 1)) // CORNER
-					{
-						ao.t_corner[n] = CRASH_CORNER;
-					}
-					
-					// another +x face = 4 with vertex at (1, 0, 0)
-					if (gets(1 + 0 + 0, 4))
-					{
-						ao.t_corner[n] = CRASH_WALL;
-					}
-				}
-				// outer corner +x 1 0 0
-				else if (gets(1 + 0 + 0, 4))
-				{
-					// outer corner -z 1 0 0
-					if (gets(1 + 0 + 0, 1))
-					{
-						ao.t_corner[n] = OUTER_CORNER;
-					}
-				}
-			}
-				// corner 0 0 1 top bottom-face
-			else if (gets(0 + 0 + 4, 3))
-			{
-				// +x face = 4 with vertex at (1, 1, 1)
-				if (gets(1 + 2 + 4, 4))
-				{
-					// -z face = 1 with vertex at (0, 1, 0)
-					if (gets(0 + 2 + 0, 1)) // CORNER
-					{
-						ao.t_corner[n] = CRASH_CORNER;
-					}
-					
-					// another +x face = 4 with vertex at (1, 1, 0)
-					if (gets(1 + 2 + 0, 4))
-					{
-						ao.t_corner[n] = CRASH_WALL;
-					}
-				}
-			}
-				// pillar corner of (1 0 1)
-				// corner 0 0 1 -x face
-			else if (gets(0 + 0 + 4, 5))
-			{
-				// forming corner 1 0 0 -z face
-				if (gets(1 + 0 + 0, 1))
-				{
-					ao.t_corner[n] = CRASH_PILLAR;
-				}
-			}
-				// cross-junction corner of (1 1 0)
-				// top corner 1 1 1 +x face
-			else if (gets(1 + 2 + 4, 4))
-			{
-				// forming corner 0 1 0 -z face, with 0 0 1 -z or 0 0 1 +x
-				if (gets(0 + 2 + 0, 1) && (gets(1,1) || gets(1,4)))
-				{
-					ao.t_corner[n] = CRASH_PILLAR;
-				}
-			}
-			
-				// corner 1 1 1 bottom top-face
-			if (gets(1 + 2 + 4, 2))
-			{
-				// -z face = 1 with vertex at (1, 0, 0)
-				if (gets(1 + 0 + 0, 1))
-				{
-					// -x face = 5 with vertex at (0, 0, 1)
-					if (gets(0 + 0 + 4, 5)) // CORNER
-					{
-						ao.t_corner[n] = CRASH_CORNER;
-					}
-					// another -z face = 1 with vertex at (0, 0, 0)
-					if (gets(0 + 0 + 0, 1))
-					{
-						ao.t_corner[n] = CRASH_WALL;
-					}
-				}
-				// outer corner -z 0 0 0
-				else if (gets(0 + 0 + 0, 1))
-				{
-					// outer corner -x 0 0 0
-					if (gets(0 + 0 + 0, 5))
-					{
-						ao.t_corner[n] = OUTER_CORNER;
-					}
-				}
-			}
-				// corner 1 0 1 top bottom-face
-			else if (gets(1 + 0 + 4, 3))
-			{
-				// -z face = 1 with vertex at (1, 1, 0)
-				if (gets(1 + 2 + 0, 1))
-				{
-					// -x face = 5 with vertex at (0, 1, 1)
-					if (gets(0 + 2 + 4, 5)) // CORNER
-					{
-						ao.t_corner[n] = CRASH_CORNER;
-					}
-					
-					// another -z face = 1 with vertex at (0, 1, 0)
-					if (gets(0 + 2 + 0, 1))
-					{
-						ao.t_corner[n] = CRASH_WALL;
-					}
-				}
-			}
-				// pillar corner of (0 0 1)
-				// forming corner 1 0 1 +x face
-			else if (gets(1 + 0 + 4, 4))
-			{
-				// corner 0 0 0 -z face
-				if (gets(0 + 0 + 0, 1))
-				{
-					ao.t_corner[n] = CRASH_PILLAR;
-				}
-			}
-				// cross-junction corner of (1 1 1)
-				// top corner 1 1 0 -z face
-			else if (gets(1 + 2 + 0, 1))
-			{
-				// forming corner 0 1 1 -x face, with 0 0 0 -z or 0 0 0 -x
-				if (gets(0 + 2 + 4, 5) && (gets(0,1) || gets(0,5)))
-				{
-					ao.t_corner[n] = CRASH_PILLAR;
-				}
-			}
-			
-			if (ao.t_corner[n] != 255) weSetSomething = true;
-			
-		} // finally...
+		} // vertices
 		
-		// if no shadows were set, return immediately
-		if (weSetSomething == false) return;
-		
-		// calculate total elements
-		lastCorner += 1 - firstCorner;
-		// find first vertex
-		vt = datadump + firstCorner;
-		
-		// set corner shadow for each corner found
-		// by looking up the corner id from lookup table
-		for (int i = 0; i < lastCorner; i++)
-		{
-			if (vt->face)
-			{
-				// set corner shadow channel
-				((unsigned char*)&vt->c)[2] = ao.t_corner[vt->face];
-			}
-			vt += 1; // next vertex
-		}
-		// finished... :/
-	}
-
+	} // ambientOcclusionGradients()
+	
 }

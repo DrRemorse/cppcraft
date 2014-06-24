@@ -22,7 +22,7 @@ namespace cppcraft
 		
 		Block& block = s[0](bx, by, bz);
 		// set bitfield directly
-		block.setData(bitfield);
+		block.setBitfield(bitfield);
 		
 		if (immediate)
 		{
@@ -63,7 +63,7 @@ namespace cppcraft
 		
 		// set new ID, facing & special
 		block.setID(id);
-		block.setData(bitfield);
+		block.setBitfield(bitfield);
 		// flag sector as having modified blocks
 		s->contents = Sector::CONT_SAVEDATA;
 		

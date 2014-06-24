@@ -75,39 +75,36 @@ namespace cppcraft
 		// copy over flatland struct
 		memcpy (flatlands(x, z).fdata, cpos, FlatlandSector::FLATLAND_SIZE);
 		
-		// flatlands covered by this column needs to be rebuilt
-		//flatlands.buildTexture(x, z);
-		
 		// move to first sectorblock
 		cpos += sizeof(FlatlandSector::fdata);
 		
+		Sector* sbase = &Sectors(x, 0, z);
+		
 		for (int y = 0; y < Sectors.getY(); y++)
 		{
-			// current sector
-			Sector& sector = Sectors(x, y, z);
-			
 			if (y < datalength.sectors)
 			{
 				// check if any blocks are present
 				if (rle.hasBlocks(cpos))
 				{
 					// copy data to engine side
-					if (sector.hasBlocks() == false)
-						sector.createBlocks();
+					if (sbase[y].hasBlocks() == false)
+						sbase[y].createBlocks();
 					
 					// decompress directly onto sectors sectorblock
-					rle.decompress(cpos, *sector.blockpt);
+					rle.decompress(cpos, *sbase[y].blockpt);
 					
 					// set sector flags (based on sectorblock flags)
-					sector.hasLight = 0; // flag as needing light gathering
-					// set sector-has-data flag
-					sector.contents = Sector::CONT_SAVEDATA;
 					// flag sector for mesh assembly (next stage in pipeline)
-					sector.progress = Sector::PROG_NEEDRECOMP;
+					sbase[y].progress = Sector::PROG_NEEDRECOMP;
+					// set sector-has-data flag
+					sbase[y].contents = Sector::CONT_SAVEDATA;
+					// flag as needing light gathering
+					sbase[y].hasLight = 0;
 				}
 				else
 				{	// had no blocks, just null it
-					sector.clear();
+					sbase[y].clear();
 				}
 				
 				// go to next RLE compressed sector
@@ -115,7 +112,7 @@ namespace cppcraft
 			}
 			else
 			{	// out of bounds, just null it
-				sector.clear();
+				sbase[y].clear();
 			}
 			
 		} // y

@@ -534,7 +534,6 @@
     <File Name="source/blockmodels_player.cpp"/>
     <File Name="source/vertex_player.hpp"/>
     <File Name="source/network_helpers.cpp"/>
-    <File Name="source/precomp_thread_ao.hpp"/>
     <File Name="source/precomp_optimize.cpp"/>
     <File Name="source/generatorq.hpp"/>
     <File Name="source/generatorq.cpp"/>

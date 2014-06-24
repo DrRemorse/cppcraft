@@ -12,7 +12,6 @@
 namespace cppcraft
 {
 	class PrecompThreadData;
-	class AmbientOcclusion;
 	
 	class PrecompThread
 	{
@@ -21,7 +20,6 @@ namespace cppcraft
 		~PrecompThread();
 		
 		PrecompThreadData* ptd;
-		AmbientOcclusion* occ;
 		
 		// stage 2, generating mesh
 		void precompile(Precomp& pc);
@@ -29,7 +27,7 @@ namespace cppcraft
 		void ambientOcclusion(Precomp& pc);
 		
 		// ao gradient program, adding corner shadows to a completed mesh
-		void ambientOcclusionGradients(AmbientOcclusion& ao, Sector& sector, vertex_t* datadump, int vertexCount);
+		void ambientOcclusionGradients(Sector& sector, vertex_t* datadump, int vertexCount);
 		// mesh optimizers
 		void optimizeMesh(Precomp& pc, int shaderline, int txsize);
 		void optimizeShadedMesh(Precomp& pc, int shaderline);

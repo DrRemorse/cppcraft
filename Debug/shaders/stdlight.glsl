@@ -3,8 +3,6 @@
 //
 
 #define brightness  lightdata.y // * modulation;
-// increase brightness if player holds an emissive item
-//#include "playerlight.glsl"
 
 // shadow is smallest between shadow-value and daylight level
 lowp float shadow = min(1.0, daylight * lightdata.x + brightness);

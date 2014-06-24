@@ -38,6 +38,7 @@ namespace cppcraft
 	{
 	private:
 		block_t data;
+		//block_t extra;
 		
 	public:
 		// DOES NOTHING on default constructor
@@ -104,17 +105,31 @@ namespace cppcraft
 			return this->data >> 12;
 		}
 		// set combined data segment (ID not included), aka bitfield-part
-		inline void setData(block_t data)
+		inline void setBitfield(block_t bitf)
 		{
 			// remove previous bitfield
 			this->data &= 1023;
 			// set new bitfield
-			this->data |= (data & 63) << 10;
+			this->data |= (bitf & 63) << 10;
+		}
+		inline void setData(block_t data)
+		{
+			this->data = data;
 		}
 		inline block_t getData() const
 		{
 			return this->data;
 		}
+		
+		/*inline block_t getLight() const
+		{
+			return extra & 0xFF;
+		}
+		inline void setLight(block_t light)
+		{
+			extra &= 0xFF00;
+			extra |= light;
+		}*/
 		
 		// human readable name of a block
 		std::string getName() const;

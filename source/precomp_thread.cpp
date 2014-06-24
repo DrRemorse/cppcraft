@@ -2,7 +2,6 @@
 
 #include <library/log.hpp>
 #include "precompiler.hpp"
-#include "precomp_thread_ao.hpp"
 #include "precomp_thread_data.hpp"
 #include "renderconst.hpp"
 #include "sectors.hpp"
@@ -19,7 +18,6 @@ namespace cppcraft
 	
 	PrecompThread::PrecompThread()
 	{
-		this->occ = new AmbientOcclusion();
 		this->ptd = new PrecompThreadData();
 		
 		// random default values for vertex array sizes
@@ -46,7 +44,7 @@ namespace cppcraft
 	}
 	PrecompThread::~PrecompThread()
 	{
-		delete this->occ;
+		delete this->ptd;
 	}
 	// free vertex arrays
 	PrecompThreadData::~PrecompThreadData()

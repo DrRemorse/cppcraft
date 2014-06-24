@@ -28,7 +28,7 @@ namespace cppcraft
 		data += rh->getEntries() * sizeof(RLEEntry);
 		
 		// first palette (block)
-		Block* palette = (Block*) data;
+		block_t* palette = (block_t*) data;
 		// last entry in palette entries list (used as count)
 		RLEEntry* entries = entry + rh->getEntries();
 		// entry point to sector blocks
@@ -36,10 +36,10 @@ namespace cppcraft
 		
 		for (; entry < entries; entry++)
 		{
-			Block& block = palette[ entry->palid ];
+			block_t blockData = palette[ entry->palid ];
 			while (entry->count--)
 			{
-				*sblock = block; sblock++;
+				sblock->setData(blockData); sblock++;
 			}
 		}
 		// set sectorblock info

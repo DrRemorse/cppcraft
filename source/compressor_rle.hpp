@@ -64,7 +64,7 @@ namespace cppcraft
 		// compressed data size
 		inline int getDataSize() const
 		{
-			return rh->getPalettes() * sizeof(Block) + rh->getEntries() * sizeof(RLEEntry);
+			return rh->getPalettes() * sizeof(block_t) + rh->getEntries() * sizeof(RLEEntry);
 		}
 		
 	private:
