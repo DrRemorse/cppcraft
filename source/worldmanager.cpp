@@ -71,7 +71,8 @@ namespace cppcraft
 					player.handlePlayerTicks();
 					
 					// handle actors & particles & objects
-					particleSystem.handle();
+					particleSystem.autoCreate();
+					particleSystem.update();
 					
 					// handle sound, music & ambience
 					soundman.handleSounds(player.getTerrain());

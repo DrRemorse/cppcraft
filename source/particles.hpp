@@ -63,8 +63,10 @@ namespace cppcraft
 		
 		// initialize system
 		void init();
-		// handle one integration
-		void handle();
+		// one round of updates, as an integrator
+		void update();
+		// auto-create a particle
+		void autoCreate();
 		// rendering
 		void renderUpdate();
 		void render(int snapWX, int snapWZ);
@@ -85,10 +87,7 @@ namespace cppcraft
 		int renderCount;
 		int currentWX, currentWZ;
 		
-		void autoCreate();
 		void autoCreateFromTerrain(int terrain, vec3& position);
-		// one round of updates, as an integrator
-		void update();
 		
 		// returns a new particle ID from queue, or -1
 		int newParticleID();

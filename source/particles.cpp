@@ -40,14 +40,7 @@ namespace cppcraft
 		vao = vbo = 0;
 	}
 	
-	void Particles::handle()
-	{
-		// auto-create particles every tick
-		autoCreate();
-		// update each living particle, and prepare for rendering
-		update();
-	}
-	
+	// execute one update-tick
 	void Particles::update()
 	{
 		mtx.particles.lock();
@@ -364,7 +357,7 @@ namespace cppcraft
 		}
 		else // terrain-based particles
 		{
-			for (int i = 0; i < 3; i++)
+			for (int i = 0; i < 2; i++)
 			{
 				vec3 position(player.X, 0, player.Z);
 				position += vec3(toolbox::rndNorm(180), 0, toolbox::rndNorm(180));

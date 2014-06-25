@@ -242,6 +242,8 @@ namespace cppcraft
 						if (nomorejobs == false)
 						if (startJob(precompiler[i])) nomorejobs = true;
 					}
+					// always check if time is out
+					if (timer.getDeltaTime() > timeOut) return true;
 				}
 				else if (sector.progress == Sector::PROG_NEEDAO)
 				{
