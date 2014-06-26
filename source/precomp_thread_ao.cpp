@@ -31,7 +31,7 @@ namespace cppcraft
 	#ifdef AMBIENT_OCCLUSION_GRADIENTS
 		ambientOcclusionGradients(*precomp.sector, precomp.datadump, cnt);
 	#endif
-		/*
+		
 		// optimize repeating textures mesh
 		optimizeMesh(precomp, RenderConst::TX_REPEAT, RenderConst::VERTEX_SCALE / tiles.tilesPerBigtile);
 		// optimize normal solids
@@ -41,7 +41,7 @@ namespace cppcraft
 		// optimize water & lava meshes
 		optimizeShadedMesh(precomp, RenderConst::TX_WATER);
 		optimizeShadedMesh(precomp, RenderConst::TX_LAVA);
-		*/
+		
 		// recount vertices
 		cnt = precomp.vertices[0];
 		for (int i = 1; i < RenderConst::MAX_UNIQUE_SHADERS; i++)

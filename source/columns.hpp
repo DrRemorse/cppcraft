@@ -56,8 +56,8 @@ namespace cppcraft
 		indice_t indices    [RenderConst::MAX_UNIQUE_SHADERS];
 		indice_t indexoffset[RenderConst::MAX_UNIQUE_SHADERS];
 		
-		unsigned short bufferoffset[RenderConst::MAX_UNIQUE_SHADERS];
-		unsigned short vertices	   [RenderConst::MAX_UNIQUE_SHADERS];
+		//unsigned short bufferoffset[RenderConst::MAX_UNIQUE_SHADERS];
+		//unsigned short vertices	   [RenderConst::MAX_UNIQUE_SHADERS];
 		
 		unsigned int  occlusion[RenderConst::MAX_UNIQUE_SHADERS];
 		char          occluded [RenderConst::MAX_UNIQUE_SHADERS];

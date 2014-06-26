@@ -176,8 +176,8 @@ namespace cppcraft
 				indexCount += vboList[vindex]->indices[i];
 			}
 			
-			this->bufferoffset[i] = totalVertices;
-			this->vertices[i]     = vertexCount;
+			//this->bufferoffset[i] = totalVertices;
+			//this->vertices[i]     = vertexCount;
 			
 			// base offset used later on for copying small vertex segments
 			dumpVertexOffset[i]  = column_vertex_dump + totalVertices;

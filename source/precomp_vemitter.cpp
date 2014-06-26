@@ -136,6 +136,11 @@ namespace cppcraft
 		}
 		else
 		{
+			for (int i = 0; i < 4; i++)
+			{
+				indic[i].u += bx << RenderConst::VERTEX_SHL;
+				indic[i].v += by << RenderConst::VERTEX_SHL;
+			}
 			indic->w   = Block::cubeFaceById(id, 0, block_facing);
 			indic[1].w = indic->w;
 			indic[2].w = indic->w;
@@ -198,6 +203,11 @@ namespace cppcraft
 		}
 		else
 		{
+			for (int i = 0; i < 4; i++)
+			{
+				indic[i].u += bx << RenderConst::VERTEX_SHL;
+				indic[i].v += by << RenderConst::VERTEX_SHL;
+			}
 			indic->w   = Block::cubeFaceById(id, 1, block_facing);
 			indic[1].w = indic->w;
 			indic[2].w = indic->w;
@@ -257,6 +267,11 @@ namespace cppcraft
 		}
 		else
 		{
+			for (int i = 0; i < 4; i++)
+			{
+				indic[i].u += bx << RenderConst::VERTEX_SHL;
+				indic[i].v += bz << RenderConst::VERTEX_SHL;
+			}
 			indic[0].w = Block::cubeFaceById(id, 2, 0);
 			indic[1].w = indic[0].w;
 			indic[2].w = indic[0].w;
@@ -315,6 +330,11 @@ namespace cppcraft
 		}
 		else
 		{
+			for (int i = 0; i < 4; i++)
+			{
+				indic[i].u += bx << RenderConst::VERTEX_SHL;
+				indic[i].v += bz << RenderConst::VERTEX_SHL;
+			}
 			indic->w   = Block::cubeFaceById(id, 3, 0);
 			indic[1].w = indic->w;
 			indic[2].w = indic->w;
@@ -386,6 +406,11 @@ namespace cppcraft
 		}
 		else
 		{
+			for (int i = 0; i < 4; i++)
+			{
+				indic[i].u += bz << RenderConst::VERTEX_SHL;
+				indic[i].v += by << RenderConst::VERTEX_SHL;
+			}
 			indic->w   = Block::cubeFaceById(id, 4, block_facing);
 			indic[1].w = indic->w;
 			indic[2].w = indic->w;
@@ -454,6 +479,11 @@ namespace cppcraft
 		}
 		else
 		{
+			for (int i = 0; i < 4; i++)
+			{
+				indic[i].u += bz << RenderConst::VERTEX_SHL;
+				indic[i].v += by << RenderConst::VERTEX_SHL;
+			}
 			indic->w   = Block::cubeFaceById(id, 5, block_facing);
 			indic[1].w = indic->w;
 			indic[2].w = indic->w;
