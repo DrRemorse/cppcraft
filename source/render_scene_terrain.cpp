@@ -256,9 +256,8 @@ namespace cppcraft
 			}
 		}
 		glBindVertexArray(cv->vao);
-		//glDrawElementsBaseVertex(GL_QUADS, cv->indices[i], GL_UNSIGNED_SHORT, (GLvoid*) (intptr_t) cv->indexoffset[i], cv->indexoffset[i]);
-		//glDrawElements(GL_QUADS, cv->indices[i], GL_UNSIGNED_SHORT, (GLvoid*) (intptr_t) cv->indexoffset[i]);
-		glDrawArrays(GL_QUADS, cv->bufferoffset[i], cv->vertices[i]);
+		glDrawElements(GL_QUADS, cv->indices[i], GL_UNSIGNED_SHORT, (GLvoid*) (intptr_t) cv->indexoffset[i]);
+		//glDrawArrays(GL_QUADS, cv->bufferoffset[i], cv->vertices[i]);
 	}
 	
 	void renderColumnSet(int i, vec3& position, GLint loc_vtrans)
@@ -454,9 +453,9 @@ namespace cppcraft
 			glUniform3fv(loc_vtrans, 1, &position.x);
 		}
 		glBindVertexArray(cv->vao);
-		//glDrawElements(GL_QUADS, cv->indices[i], GL_UNSIGNED_SHORT, (GLvoid*) (intptr_t) cv->indexoffset[i]);
-		glDrawArrays(GL_QUADS, cv->bufferoffset[i], cv->vertices[i]);
-	}
+		glDrawElements(GL_QUADS, cv->indices[i], GL_UNSIGNED_SHORT, (GLvoid*) (intptr_t) cv->indexoffset[i]);
+		//glDrawArrays(GL_QUADS, cv->bufferoffset[i], cv->vertices[i]);
+	} // renderReflectedColumn()
 	
 	void SceneRenderer::renderReflectedScene(Renderer& renderer, cppcraft::Camera& renderCam)
 	{
@@ -515,7 +514,7 @@ namespace cppcraft
 			}
 		} // next shaderline
 		
-	}
+	} // renderReflectedScene()
 	
 	void SceneRenderer::renderSceneWater(Renderer& renderer)
 	{
@@ -630,6 +629,6 @@ namespace cppcraft
 			throw std::string("SceneRenderer::renderSceneWater(): OpenGL error");
 		}
 		
-	} // renderSceneWater
+	} // renderSceneWater()
 	
 }

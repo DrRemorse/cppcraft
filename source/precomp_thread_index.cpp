@@ -22,7 +22,7 @@ namespace cppcraft
 			indices += precomp.vertices[i];
 			
 			precomp.indexoffset[i] = baseIndex;
-			precomp.indices[i]     = precomp.vertices[i];
+			precomp.indices[i] = precomp.vertices[i];
 			baseIndex += precomp.indices[i];
 		}
 	}

@@ -98,6 +98,9 @@ namespace cppcraft
 				{
 					delete[] cv.vbodata[sy].pcdata;
 					cv.vbodata[sy].pcdata = nullptr;
+					
+					delete[] cv.vbodata[sy].indexdata;
+					cv.vbodata[sy].indexdata = nullptr;
 				}
 			}
 		}

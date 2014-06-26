@@ -183,7 +183,7 @@ namespace cppcraft
 			dumpVertexOffset[i]  = column_vertex_dump + totalVertices;
 			totalVertices += vertexCount;
 			
-			this->indexoffset[i] = totalIndices;
+			this->indexoffset[i] = totalIndices * sizeof(indice_t);
 			this->indices[i]     = indexCount;
 			
 			// base offset used later on for copying small index segments
@@ -196,10 +196,10 @@ namespace cppcraft
 		////////////////////////////////////////////////////////
 		
 		// loop through all vertices in shader path
+		int baseIndex = 0;
+		
 		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 		{
-			indice_t baseIndex = this->indexoffset[i];
-			
 			for (int vindex = 0; vindex < vboCount; vindex++)
 			{
 				vbodata_t& v = *vboList[vindex];
@@ -221,15 +221,13 @@ namespace cppcraft
 					memcpy( dumpIndexOffset[i], m_indxoffset, v.indices[i] * sizeof(indice_t) );
 					
 					// increase each index by using indexCount as offset
-					if (baseIndex)
+					indice_t* dumpBaseIndex = dumpIndexOffset[i];
+					for (int index = 0; index < v.indices[i]; index++)
 					{
-						indice_t* dumpBaseIndex = dumpIndexOffset[i];
-						for (int index = 0; index < v.indices[i]; index++)
-						{
-							dumpBaseIndex[index] += baseIndex;
-						}
+						dumpBaseIndex[index] += baseIndex;
 					}
 					baseIndex += v.indices[i];
+					
 					// increase the index dump offset
 					dumpIndexOffset[i] += v.indices[i];
 				}
@@ -268,8 +266,8 @@ namespace cppcraft
 		glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
 		glBufferData(GL_ARRAY_BUFFER, totalVertices * sizeof(vertex_t), column_vertex_dump, GL_STATIC_DRAW);
 		// bind ibo and upload index data
-		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibo);
-		//glBufferData(GL_ELEMENT_ARRAY_BUFFER, (int) totalIndices * sizeof(indice_t), column_index_dump, GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, (int) totalIndices * sizeof(indice_t), column_index_dump, GL_STATIC_DRAW);
 		
 		if (updateAttribs)
 		{
