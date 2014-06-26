@@ -31,6 +31,8 @@ namespace cppcraft
 		// mesh optimizers
 		void optimizeMesh(Precomp& pc, int shaderline, int txsize);
 		void optimizeShadedMesh(Precomp& pc, int shaderline);
+		
+		void createIndices(Precomp& pc, int verts);
 	};
 	
 }

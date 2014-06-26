@@ -69,6 +69,9 @@ namespace cppcraft
 		
 		// enable seamless cubemaps (globally)
 		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+		//
+		glDisable(GL_PRIMITIVE_RESTART);
+		glPrimitiveRestartIndex(65535);
 		
 		if (OpenGL::checkError())
 		{

@@ -166,7 +166,7 @@ namespace cppcraft
 						
 						for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 						{
-							if (cv.vertices[i] != 0 && (this->above == false || cv.aboveWater == true))
+							if (cv.indices[i] != 0 && (this->above == false || cv.aboveWater == true))
 							{
 								// try to hide hidden at least one more frame
 								if (cv.occluded[i] == 4)

@@ -36,10 +36,12 @@ namespace cppcraft
 		this->result   = STATUS_NEW;
 		this->sector   = nullptr;
 		this->datadump = nullptr;
+		this->indidump = nullptr;
 	}
 	Precomp::~Precomp()
 	{
 		delete[] this->datadump;
+		delete[] this->indidump;
 	}
 	
 	// tries to complete a precompilation job
@@ -60,11 +62,19 @@ namespace cppcraft
 		v.pcdata = this->datadump; // set to same as precomp data pointer
 		this->datadump = nullptr;  // unassign precomp data pointer
 		
+		delete[] v.indexdata;      // remove old data (if any) from column
+		v.indexdata = this->indidump; // set to same as precomp data pointer
+		this->indidump = nullptr;  // unassign precomp data pointer
+		
 		// copy info from precomp to vbodata struct
 		for (int n = 0; n < RenderConst::MAX_UNIQUE_SHADERS; n++)
 		{
+			// vertices
 			v.vertices[n]     = this->vertices[n];
 			v.bufferoffset[n] = this->bufferoffset[n];
+			// and indices
+			v.indices[n]     = this->indices[n];
+			v.indexoffset[n] = this->indexoffset[n];
 		}
 		
 		// set progress to finished state

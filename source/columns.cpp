@@ -19,8 +19,9 @@ namespace cppcraft
 	
 	// list of metadata that add up to a complete column VBO
 	vbodata_t** vboList;
-	// column compiler accumulation buffer
-	vertex_t*  column_dump;
+	// column compiler accumulation buffers
+	vertex_t*  column_vertex_dump;
+	indice_t*  column_index_dump;
 	
 	void Columns::init()
 	{
@@ -60,7 +61,7 @@ namespace cppcraft
 		sectorSizes[1] = 1;
 		sectorSizes[2] = Sectors.getY() - 8;
 		
-		// NOTE: ASSUMPTION -- TOP COLUMN IS TALLEST
+		// NOTE ASSUMPTION: TOP COLUMN IS TALLEST
 		int tallest = sectorSizes[height - 1];
 		
 		////////////////////////////////////////////////////////
@@ -69,8 +70,10 @@ namespace cppcraft
 		
 		vboList = new vbodata_t*[tallest];
 		
-		column_dump = 
+		column_vertex_dump = 
 			new vertex_t[tallest * RenderConst::MAX_FACES_PER_SECTOR * 4];
+		column_index_dump = 
+			new indice_t[tallest * RenderConst::MAX_FACES_PER_SECTOR * 4];
 		
 	}
 	Columns::~Columns()
@@ -84,9 +87,10 @@ namespace cppcraft
 		delete[] columns;
 		delete[] sectorLevels;
 		delete[] sectorSizes;
-		// compile stuff
+		// column assembler stuff
 		delete[] vboList;
-		delete[] column_dump;
+		delete[] column_vertex_dump;
+		delete[] column_index_dump;
 	}
 	
 	Column::Column()
@@ -109,6 +113,8 @@ namespace cppcraft
 		{
 			delete[] vbodata[sy].pcdata;
 			vbodata[sy].pcdata = nullptr;
+			delete[] vbodata[sy].indexdata;
+			vbodata[sy].indexdata = nullptr;
 		}
 	}
 	void Column::reset(int y)
@@ -130,7 +136,7 @@ namespace cppcraft
 		{
 			if (vbodata[sy].pcdata)
 			{
-				// COPY the VBO data section
+				// remember which VBO data section
 				vboList[vboCount] = &vbodata[sy];
 				// renderable and consistent, add to queue
 				vboCount += 1;
@@ -150,61 +156,89 @@ namespace cppcraft
 		// find offsets for each shader type, and total size //
 		///////////////////////////////////////////////////////
 		
-		int totalverts[RenderConst::MAX_UNIQUE_SHADERS] = {0};
+		vertex_t* dumpVertexOffset[RenderConst::MAX_UNIQUE_SHADERS] = {nullptr};
+		int totalVertices = 0; // total amount of vertices for entire column
 		
-		// go through entire column and find entry points and total bytes
-		for (int vy = 0; vy < vboCount; vy++)
-		{
-			// count vertices
-			for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
-			{
-				// increase by vertices from each path
-				totalverts[i] += vboList[vy]->vertices[i];
-			}
-		}
+		indice_t* dumpIndexOffset[RenderConst::MAX_UNIQUE_SHADERS] = {nullptr};
+		indice_t totalIndices = 0; // total amount of indices for entire column
 		
-		vertex_t* vertoffset[RenderConst::MAX_UNIQUE_SHADERS];
-		int vertcount = 0; // dont remove this, needed below
-		
-		// set the proper offsets into offset(i)
+		// go through all VBOs in column and find total vertices for each shader
 		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 		{
-			vertoffset[i] = (vertex_t*) column_dump + vertcount;
+			int vertexCount = 0;
+			indice_t indexCount  = 0;
 			
-			// set column data:
-			this->bufferoffset[i] = vertcount;
-			this->vertices[i]     = totalverts[i];
+			for (int vindex = 0; vindex < vboCount; vindex++)
+			{
+				// count vertices from each shader path
+				vertexCount += vboList[vindex]->vertices[i];
+				// count indices from each shader path
+				indexCount += vboList[vindex]->indices[i];
+			}
 			
-			vertcount += totalverts[i];
+			this->bufferoffset[i] = totalVertices;
+			this->vertices[i]     = vertexCount;
+			
+			// base offset used later on for copying small vertex segments
+			dumpVertexOffset[i]  = column_vertex_dump + totalVertices;
+			totalVertices += vertexCount;
+			
+			this->indexoffset[i] = totalIndices;
+			this->indices[i]     = indexCount;
+			
+			// base offset used later on for copying small index segments
+			dumpIndexOffset[i]  = column_index_dump + totalIndices;
+			totalIndices += indexCount;
 		}
-		
-		int totalbytes = vertcount * sizeof(vertex_t);
 		
 		////////////////////////////////////////////////////////
 		// loop through each sector in column and memcpy data //
 		////////////////////////////////////////////////////////
 		
-		for (int vindex = 0; vindex < vboCount; vindex++)
+		// loop through all vertices in shader path
+		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 		{
-			vbodata_t& v = *vboList[vindex];
+			indice_t baseIndex = this->indexoffset[i];
 			
-			// loop through all vertices in shader path
-			for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
+			for (int vindex = 0; vindex < vboCount; vindex++)
 			{
-				// find count for this shader type
+				vbodata_t& v = *vboList[vindex];
+				
+				// only copy where there actually are any vertices
 				if (v.vertices[i])
 				{
-					// macro for (vertex*)[source] + number_of_vertices
-					#define m_sourcedata ((vertex_t*) v.pcdata) + v.bufferoffset[i]
+					// macro for vertex buffer offset
+					#define m_vertoffset (v.pcdata + v.bufferoffset[i])
+					// macro for index buffer offset
+					#define m_indxoffset (v.indexdata + v.indexoffset[i])
 					
-					// to: column_dump + offset(i) from: pcdata + bufferoffset(i) in vertices
-					memcpy( vertoffset[i], m_sourcedata, v.vertices[i] * sizeof(vertex_t) );
+					// copy vertices from each individual vbodata segment to the main vertex buffer
+					memcpy( dumpVertexOffset[i], m_vertoffset, v.vertices[i] * sizeof(vertex_t) );
+					// increase the vertex dump offset
+					dumpVertexOffset[i] += v.vertices[i];
 					
-					vertoffset[i] += v.vertices[i];
+					// copy vertices from each individual vbodata segment to the main vertex buffer
+					memcpy( dumpIndexOffset[i], m_indxoffset, v.indices[i] * sizeof(indice_t) );
+					
+					// increase each index by using indexCount as offset
+					if (baseIndex)
+					{
+						indice_t* dumpBaseIndex = dumpIndexOffset[i];
+						for (int index = 0; index < v.indices[i]; index++)
+						{
+							dumpBaseIndex[index] += baseIndex;
+						}
+					}
+					baseIndex += v.indices[i];
+					// increase the index dump offset
+					dumpIndexOffset[i] += v.indices[i];
 				}
-			} // shaders
+				
+			} // vbodata
 			
-		} // next vbo
+		} // shaders
+		
+		//logger << Log::INFO << "Total: " << totalIndices << Log::ENDL;
 		
 		// relieves some RAM usage
 		this->deleteData(y);
@@ -222,16 +256,20 @@ namespace cppcraft
 			// vertex array object
 			glGenVertexArrays(1, &this->vao);
 			// vertex and index buffer object
-			glGenBuffers(1, &this->vbo);
+			glGenBuffers(2, &this->vbo);
+			//glGenBuffers(1, &this->ibo);
 			
 			updateAttribs = true;
 		}
 		
 		// bind vao
 		glBindVertexArray(this->vao);
-		// bind vbo and upload data
+		// bind vbo and upload vertex data
 		glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-		glBufferData(GL_ARRAY_BUFFER, totalbytes, column_dump, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, totalVertices * sizeof(vertex_t), column_vertex_dump, GL_STATIC_DRAW);
+		// bind ibo and upload index data
+		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibo);
+		//glBufferData(GL_ELEMENT_ARRAY_BUFFER, (int) totalIndices * sizeof(indice_t), column_index_dump, GL_STATIC_DRAW);
 		
 		if (updateAttribs)
 		{

@@ -5,12 +5,12 @@
 
 #include "blocks.hpp"
 #include "renderconst.hpp"
+#include "vertex_block.hpp"
 #include <vector>
 
 namespace cppcraft
 {
 	class Sector;
-	struct vertex_t;
 	
 	class Precomp
 	{
@@ -53,14 +53,13 @@ namespace cppcraft
 		// testdata from isolator
 		visiblefaces_t vfaces;
 		// sector as mesh source
-		Sector*     sector;
+		Sector*   sector;
 		// resulting mesh data
 		vertex_t* datadump;
-		
-		#ifdef USE_INDEXING
-			indice_t*       indidump;
-			unsigned short* indices;
-		#endif
+		// resulting index data
+		indice_t* indidump;
+		indice_t indices     [RenderConst::MAX_UNIQUE_SHADERS];
+		indice_t indexoffset [RenderConst::MAX_UNIQUE_SHADERS];
 		
 		unsigned short vertices    [RenderConst::MAX_UNIQUE_SHADERS];
 		unsigned short bufferoffset[RenderConst::MAX_UNIQUE_SHADERS];

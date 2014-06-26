@@ -86,13 +86,13 @@ namespace cppcraft
 			int dz = (p.wz - world.getWZ()) << Sector::BLOCKS_XZ_SH;
 			
 			// particle rendering position
-			vec3 fpos = p.position + vec3(dx, 0.0, dz);
+			vec3 fpos = p.position + vec3(dx, 0.0f, dz);
 			
 			// direction to particle
 			vec3 direction = normalize(fpos - playerPos);
 			
 			// check that the particle is somewhat in camera
-			if (direction.dot(look) > 0.5)
+			if (direction.dot(look) > 0.5f)
 			{
 				// rendering position
 				pv->x = fpos.x;
@@ -101,7 +101,7 @@ namespace cppcraft
 				// rendering texture tile-id
 				pv->w = p.tileID;
 				
-				float fade = 1.0;
+				float fade = 1.0f;
 				
 				if (p.TTL < p.fadeTTL)
 				{
@@ -160,7 +160,7 @@ namespace cppcraft
 				case PARTICLE_FOREST:
 					if (toolbox::rndNorm(16) > 11)
 					{
-						const double speed = 0.005;
+						const float speed = 0.005f;
 						p.acc = vec3(toolbox::rndNorm(speed), toolbox::rndNorm(speed), toolbox::rndNorm(speed));
 					}
 					
@@ -234,16 +234,16 @@ namespace cppcraft
 		
 		#define prandv(variance)  (toolbox::rndNorm(variance))
 		
-		const double var_generic = 0.01;
-		const double smoke_variance = 0.01;
-		const double var_forest = 0.025;
+		const float var_generic = 0.01f;
+		const float smoke_variance = 0.01f;
+		const float var_forest = 0.025f;
 		
 		switch (id)
 		{
 		case PARTICLE_M_GENER:
 			// small generic smoke particle
-			p.acc = vec3(0.0);
-			p.spd = vec3(prandv(var_generic), prandv(var_generic) + 0.01, prandv(var_generic));
+			p.acc = vec3(0.0f);
+			p.spd = vec3(prandv(var_generic), prandv(var_generic) + 0.01f, prandv(var_generic));
 			p.TTL = 80;
 			p.fadeTTL = 32;
 			p.tileID = 2 + 1 * tiles.partsX; // (2, 1) = smoke
@@ -257,8 +257,8 @@ namespace cppcraft
 			
 		case PARTICLE_SMOKE:
 			// slow smoke
-			p.acc = vec3(prandv(smoke_variance), 0.0, prandv(smoke_variance));
-			p.spd = vec3(0.0, 0.1 + prandv(0.1), 0.0);
+			p.acc = vec3(prandv(smoke_variance), 0.0f, prandv(smoke_variance));
+			p.spd = vec3(0.0f, 0.1f + prandv(0.1f), 0.0f);
 			p.TTL = 128;
 			p.fadeTTL = 64;
 			p.tileID = 2 + 1 * tiles.partsX; // (2, 1) = smoke
@@ -267,8 +267,8 @@ namespace cppcraft
 		case PARTICLE_LAVA:
 		case PARTICLE_WATER:
 			// water drops in the air
-			p.acc = vec3(0.0);
-			p.spd = vec3(0.0, 0.01, 0.0);
+			p.acc = vec3(0.0f);
+			p.spd = vec3(0.0f, 0.01f, 0.0f);
 			p.TTL = 80;
 			p.fadeTTL = 20;
 			p.tileID = 0 + 1 * tiles.partsX; // (0, 1) = waterdrop
@@ -276,8 +276,8 @@ namespace cppcraft
 			
 		case PARTICLE_MARSH:
 			// water drops in the air
-			p.acc = vec3(prandv(0.002), 0.0, 0.0);
-			p.spd = vec3(0.0, -0.02, 0.0);
+			p.acc = vec3(prandv(0.002f), 0.0f, 0.0f);
+			p.spd = vec3(0.0f, -0.02f, 0.0f);
 			p.TTL = 80;
 			p.fadeTTL = 20;
 			p.tileID = 0 + 1 * tiles.partsX; // (0, 1) = waterdrop
@@ -285,8 +285,8 @@ namespace cppcraft
 			
 		case PARTICLE_DANDELION:
 			// dandelions blowing in the wind
-			p.acc = vec3(0.0, 0.0, 0.002);
-			p.spd = vec3(0.0, -0.05, 0.0);
+			p.acc = vec3(0.0f, 0.0f, 0.002f);
+			p.spd = vec3(0.0f, -0.05f, 0.0f);
 			p.TTL = 160;
 			p.fadeTTL = 32;
 			p.tileID = 2 + 0 * tiles.partsX; // (2, 0) = dandelion
@@ -295,8 +295,8 @@ namespace cppcraft
 		case PARTICLE_LEAF:
 		case PARTICLE_LEAF_B:
 			// leafs blowing in the wind
-			p.acc = vec3(0.0, 0.0, 0.002);
-			p.spd = vec3(0.0, -0.05, 0.0);
+			p.acc = vec3(0.0f, 0.0f, 0.002f);
+			p.spd = vec3(0.0f, -0.05f, 0.0f);
 			p.TTL = 160;
 			p.fadeTTL = 32;
 			p.tileID = 0; // (0, 0) = leaf
@@ -304,7 +304,7 @@ namespace cppcraft
 			
 		case PARTICLE_FOREST:
 			// fairy forest
-			p.acc = vec3(0.0, 0.0, 0.0);
+			p.acc = vec3(0.0f);
 			p.spd = vec3(prandv(var_forest), prandv(var_forest), prandv(var_forest));
 			p.TTL = 160;
 			p.fadeTTL = 32;
@@ -313,8 +313,8 @@ namespace cppcraft
 			
 		case PARTICLE_SNOW:
 			// slow snow
-			p.acc = vec3(0.0, 0.0, 0.0);
-			p.spd = vec3(0.0, -0.05, 0.0);
+			p.acc = vec3(0.0f);
+			p.spd = vec3(0.0f, -0.05f, 0.0f);
 			p.TTL = 180;
 			p.fadeTTL = 32;
 			p.tileID = 1 + 1 * tiles.partsX; // (1, 1) = snow particle
@@ -322,8 +322,8 @@ namespace cppcraft
 			
 		case PARTICLE_SAND:
 			// windy sand
-			p.acc = vec3(0.0, 0.0, 0.002);
-			p.spd = vec3(0.0, -0.05, 0.2);
+			p.acc = vec3(0.0f, 0.0f, 0.002f);
+			p.spd = vec3(0.0f, -0.05f, 0.2f);
 			p.TTL = 160;
 			p.fadeTTL = 32;
 			p.tileID = 1 + 0 * tiles.partsX; // (1, 0) = sand
@@ -343,7 +343,7 @@ namespace cppcraft
 			for (int i = 0; i < 2; i++)
 			{
 				vec3 position(player.X, player.Y, player.Z);
-				position += vec3(toolbox::rndNorm(16), toolbox::rndNorm(8), toolbox::rndNorm(16));
+				position += vec3(toolbox::rndNorm(16.f), toolbox::rndNorm(8.f), toolbox::rndNorm(16.f));
 				
 				if (plogic.FullySubmerged == plogic.PS_Water)
 				{
@@ -437,7 +437,7 @@ namespace cppcraft
 				newParticle(pos, PARTICLE_SAND);
 			}
 		}
-		//else logger << "Unknown terrain: " << terrain << " in Particles::autoCreateFromTerrain()" << Log::ENDL;
+		else logger << "Unknown terrain: " << terrain << " in Particles::autoCreateFromTerrain()" << Log::ENDL;
 		
 	} // auto-create from terrain
 	

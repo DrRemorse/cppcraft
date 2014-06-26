@@ -61,14 +61,8 @@ namespace cppcraft
 		// reset light list
 		pcg.ldata.gathered = false;
 		
-		// vertex data variables
-		pcg.indic = nullptr;
-		
 		// last blockid, starting with _AIR
 		pcg.lastid = _AIR;
-		
-		// selected shaderline
-		pcg.shaderLine = 0;
 		
 		// zero out faces present
 		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
@@ -76,15 +70,11 @@ namespace cppcraft
 			pcg.vertices[i] = 0;
 		}
 		
-		// repeating big tiles
-		pcg.repeat_y = true;
 		// number of big tiles
 		pcg.bigTextures = tiles.bigTilesX * tiles.bigTilesY;
 		
-		// world coordinates
+		// Y-world coordinate
 		pcg.worldY = (sector.getY() * Sector::BLOCKS_Y) * RenderConst::VERTEX_SCALE;
-		pcg.worldY_extra = 0;
-		
 		
 		// flatland data (biome +++)
 		pcg.flatl = &flatlands(sector.getX(), sector.getZ());
@@ -101,42 +91,68 @@ namespace cppcraft
 		pcg.sector   = pc.sector;
 		pcg.testdata = &pc.vfaces;
 		
-		// iterate all
-		int bx = Sector::BLOCKS_XZ-1;
-		int by = Sector::BLOCKS_Y -1;
-		int bz = Sector::BLOCKS_XZ-1;
-		// get pointer to current block
-		Block* currentBlock = &sector(bx, by, bz);
-		// number of non-air blocks
-		int blocks = sector.blockCount();
-		
-		while (blocks)
+		if (sector.solidFlags() != Sector::MAX_HARDSOLID)
 		{
-			// ignore AIR and invalid blocks
-			if (currentBlock->getID() > AIR_END && currentBlock->getID() <= MAX_UNIQUE_IDS)
-			{
-				// process one block id, and potentially add it to mesh
-				// the generated mesh is added to a shaderline determined by its block id
-				pcg.process_block(*currentBlock, bx, by, bz);
-				
-				// count down blocks
-				blocks -= 1;
-			} // if (valid id)
+			// iterate all
+			int bx = Sector::BLOCKS_XZ-1;
+			int by = Sector::BLOCKS_Y -1;
+			int bz = Sector::BLOCKS_XZ-1;
+			// get pointer to current block
+			Block* currentBlock = &sector(bx, by, bz);
+			// number of non-air blocks
+			int blocks = sector.blockCount();
 			
-			by -= 1;
-			if (by == -1)
+			while (blocks)
 			{
-				bz -= 1;
-				if (bz == -1)
+				// ignore AIR and invalid blocks
+				if (currentBlock->getID() > AIR_END && currentBlock->getID() <= MAX_UNIQUE_IDS)
 				{
-					bx -= 1;
-					if (bx == -1) break;
-					bz = Sector::BLOCKS_XZ - 1;
+					// process one block id, and potentially add it to mesh
+					// the generated mesh is added to a shaderline determined by its block id
+					pcg.process_block(*currentBlock, bx, by, bz);
+					
+					// count down blocks
+					blocks -= 1;
+				} // if (valid id)
+				
+				by -= 1;
+				if (by == -1)
+				{
+					bz -= 1;
+					if (bz == -1)
+					{
+						bx -= 1;
+						if (bx == -1) break;
+						bz = Sector::BLOCKS_XZ - 1;
+					}
+					by = Sector::BLOCKS_Y - 1;
 				}
-				by = Sector::BLOCKS_Y - 1;
+				// current block pointer
+				currentBlock -= 1;
 			}
-			// current block pointer
-			currentBlock -= 1;
+		}
+		else
+		{
+			for (int bx = Sector::BLOCKS_XZ-1; bx >= 0; bx--)
+			for (int bz = Sector::BLOCKS_XZ-1; bz >= 0; bz--)
+			for (int by = Sector::BLOCKS_Y-1; by >= 0; by--)
+			{
+				// iterate only edges
+				if ((bx == 0 && pcg.testdata->test_x_m) || (bx == Sector::BLOCKS_XZ-1 && pcg.testdata->test_x_p) || 
+					(by == 0 && pcg.testdata->test_y_m) || (by == Sector::BLOCKS_Y-1  && pcg.testdata->test_y_p) ||
+					(bz == 0 && pcg.testdata->test_z_m) || (bz == Sector::BLOCKS_XZ-1 && pcg.testdata->test_z_p))
+				{
+					Block& currentBlock = sector(bx, by, bz);
+					// ignore AIR and invalid blocks
+					if (currentBlock.getID() > AIR_END && currentBlock.getID() <= MAX_UNIQUE_IDS)
+					{
+						// process one block id, and potentially add it to mesh
+						// the generated mesh is added to a shaderline determined by its block id
+						pcg.process_block(currentBlock, bx, by, bz);
+						
+					} // if (valid id)
+				}
+			}
 		}
 		
 		// count the number of vertices we've collected
@@ -158,13 +174,14 @@ namespace cppcraft
 		delete[] pc.datadump;
 		pc.datadump = new vertex_t[cnt];
 		
-		int bufferoffset[RenderConst::MAX_UNIQUE_SHADERS];
+		// prepare for next stage
 		cnt = 0;
-		
 		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 		{
+			pc.vertices[i] = pcg.vertices[i];
+			pc.bufferoffset[i] = cnt;
+			
 			// copy over to our local dump, but only if it had vertices
-			bufferoffset[i] = cnt;
 			if (pcg.vertices[i])
 			{
 				memcpy(pc.datadump + cnt, pcg.databuffer[i], pcg.vertices[i] * sizeof(vertex_t));
@@ -172,13 +189,6 @@ namespace cppcraft
 			}
 		}
 		
-		// prepare for next stage
-		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
-		{
-			// copy over to dump, but only if it had faces
-			pc.bufferoffset[i] = bufferoffset[i];
-			pc.vertices[i]     = pcg.vertices[i];
-		}
 		// set job as done
 		pc.result = Precomp::STATUS_DONE;
 	}

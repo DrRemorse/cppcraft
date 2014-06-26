@@ -42,6 +42,15 @@ namespace cppcraft
 		optimizeShadedMesh(precomp, RenderConst::TX_WATER);
 		optimizeShadedMesh(precomp, RenderConst::TX_LAVA);
 		
+		// recount vertices
+		cnt = precomp.vertices[0];
+		for (int i = 1; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
+		{
+			cnt += precomp.vertices[i];
+		}
+		
+		createIndices(precomp, cnt);
+		
 		// set result
 		precomp.result = Precomp::STATUS_DONE;
 	}

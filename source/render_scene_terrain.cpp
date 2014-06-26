@@ -17,9 +17,6 @@
 #include "vertex_block.hpp"
 #include <cmath>
 
-#include <library/timing/timer.hpp>
-//#define TIMING
-
 using namespace library;
 
 namespace cppcraft
@@ -259,6 +256,8 @@ namespace cppcraft
 			}
 		}
 		glBindVertexArray(cv->vao);
+		//glDrawElementsBaseVertex(GL_QUADS, cv->indices[i], GL_UNSIGNED_SHORT, (GLvoid*) (intptr_t) cv->indexoffset[i], cv->indexoffset[i]);
+		//glDrawElements(GL_QUADS, cv->indices[i], GL_UNSIGNED_SHORT, (GLvoid*) (intptr_t) cv->indexoffset[i]);
 		glDrawArrays(GL_QUADS, cv->bufferoffset[i], cv->vertices[i]);
 	}
 	
@@ -353,17 +352,6 @@ namespace cppcraft
 		GLint loc_vtrans, location;
 		vec3 position(-1.0f);
 		
-		#ifdef TIMING
-		Timer timer;
-		timer.startNewRound();
-		#endif
-		
-		// bind terrain colors at unit 2
-		/*flatlands.bindTexture(2);
-		if (flatlands.mustUpload())
-		{
-			flatlands.uploadTexture();
-		}*/
 		textureman.bind(2, Textureman::T_SKYBOX);
 		
 		// bind standard shader
@@ -453,10 +441,6 @@ namespace cppcraft
 		textureman[Textureman::T_DIFFUSE].setWrapMode(GL_REPEAT);
 		glActiveTexture(GL_TEXTURE1);
 		textureman[Textureman::T_DIFFUSE].setWrapMode(GL_REPEAT);
-		
-		#ifdef TIMING
-		logger << Log::INFO << "Time spent on terrain: " << timer.getDeltaTime() * 1000.0 << Log::ENDL;
-		#endif
 	}
 	
 	void renderReflectedColumn(Column* cv, int i, vec3& position, GLint loc_vtrans)
@@ -470,6 +454,7 @@ namespace cppcraft
 			glUniform3fv(loc_vtrans, 1, &position.x);
 		}
 		glBindVertexArray(cv->vao);
+		//glDrawElements(GL_QUADS, cv->indices[i], GL_UNSIGNED_SHORT, (GLvoid*) (intptr_t) cv->indexoffset[i]);
 		glDrawArrays(GL_QUADS, cv->bufferoffset[i], cv->vertices[i]);
 	}
 	
@@ -496,7 +481,7 @@ namespace cppcraft
 		
 		// render everything above water plane
 		
-		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
+		for (int i = 0; i < 1; i++) // RenderConst::MAX_UNIQUE_SHADERS; i++)
 		{
 			switch (i)
 			{
