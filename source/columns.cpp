@@ -210,15 +210,18 @@ namespace cppcraft
 					// macro for vertex buffer offset
 					#define m_vertoffset (v.pcdata + v.bufferoffset[i])
 					// macro for index buffer offset
-					#define m_indxoffset (v.indexdata + v.indexoffset[i])
+					#define m_indexoffset (v.indexdata + indexOffset)
 					
 					// copy vertices from each individual vbodata segment to the main vertex buffer
 					memcpy( dumpVertexOffset[i], m_vertoffset, v.vertices[i] * sizeof(vertex_t) );
 					// increase the vertex dump offset
 					dumpVertexOffset[i] += v.vertices[i];
 					
-					// copy vertices from each individual vbodata segment to the main vertex buffer
-					memcpy( dumpIndexOffset[i], m_indxoffset, v.indices[i] * sizeof(indice_t) );
+					int indexOffset = 0;
+					for (int j = 0; j < i; j++) indexOffset += v.indices[j];
+					
+					// copy indices from each individual vbodata segment to the main index buffer
+					memcpy( dumpIndexOffset[i], m_indexoffset, v.indices[i] * sizeof(indice_t) );
 					
 					// increase each index by using indexCount as offset
 					indice_t* dumpBaseIndex = dumpIndexOffset[i];

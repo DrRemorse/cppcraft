@@ -19,7 +19,6 @@ namespace cppcraft
 		unsigned short bufferoffset[RenderConst::MAX_UNIQUE_SHADERS];
 		unsigned short vertices	   [RenderConst::MAX_UNIQUE_SHADERS];
 		
-		indice_t indexoffset[RenderConst::MAX_UNIQUE_SHADERS];
 		indice_t indices    [RenderConst::MAX_UNIQUE_SHADERS];
 		
 	} vbodata_t;

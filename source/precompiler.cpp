@@ -72,9 +72,8 @@ namespace cppcraft
 			// vertices
 			v.vertices[n]     = this->vertices[n];
 			v.bufferoffset[n] = this->bufferoffset[n];
-			// and indices
+			// and indices (must be sequential memory)
 			v.indices[n]     = this->indices[n];
-			v.indexoffset[n] = this->indexoffset[n];
 		}
 		
 		// set progress to finished state

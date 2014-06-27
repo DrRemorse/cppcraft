@@ -59,7 +59,6 @@ namespace cppcraft
 		// resulting index data
 		indice_t* indidump;
 		indice_t indices     [RenderConst::MAX_UNIQUE_SHADERS];
-		indice_t indexoffset [RenderConst::MAX_UNIQUE_SHADERS];
 		
 		unsigned short vertices    [RenderConst::MAX_UNIQUE_SHADERS];
 		unsigned short bufferoffset[RenderConst::MAX_UNIQUE_SHADERS];

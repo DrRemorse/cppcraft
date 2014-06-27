@@ -9,85 +9,91 @@ using namespace library;
 
 namespace cppcraft
 {
-	void PrecompThread::createIndices(Precomp& precomp, int vertexCount)
+	void PrecompThread::createIndices(Precomp& precomp, int totalVertices)
 	{
 		// create some index bullshit
 		delete[] precomp.indidump;
-		precomp.indidump = new indice_t[vertexCount];
+		precomp.indidump = new indice_t[totalVertices];
 		
-		static const unsigned short MAX_INDEX_VALUE = 65535;
 		indice_t* indices = precomp.indidump;
-		indice_t currentIndex = 0;
-		indice_t baseIndex = 0;
 		
 		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 		{
-			if (precomp.vertices[i] != 0)
+			int indexCount = precomp.vertices[i];
+			
+			if (indexCount)
 			{
-				vertex_t* source = precomp.datadump + precomp.bufferoffset[i];
-				
-				if (i != RenderConst::TX_CROSS)
+				if (i != RenderConst::TX_CROSS && i != RenderConst::TX_2SIDED)
 				{
+					vertex_t* source = precomp.datadump + precomp.bufferoffset[i];
+					
 					// set the indices for the 4 first vertices
 					for (int vert = 0; vert < 4; vert++)
 					{
-						indices[currentIndex] = vert;
+						indices[vert] = vert;
 						source[vert].face = vert;
-						currentIndex++;
 					}
+					indices += 4;
+					vertex_t* current = source + 4;
 					
 					for (int vert = 4; vert < precomp.vertices[i]; vert++)
 					{
-						vertex_t* current = source + vert;
-						
-						// set face to MAX_INDEX_VALUE, signalling no index has been set
-						current[0].face = MAX_INDEX_VALUE;
+						// no index has been set yet
+						bool skip = false;
 						
 						// find any previous vertices that matches current
-						for (vertex_t* prev = source; prev < current; prev++)
+						for (vertex_t* prev = current-1; prev >= source; prev--)
 						{
-							// current has same texture as its next
+							// same texture tile id
 							if (current->w == prev->w)
 							// same normal
 							if (current->nx == prev->nx && current->ny == prev->ny && current->nz == prev->nz)
+							// same UVs
+							if (current->u == prev->u && current->v == prev->v)
+							// same position
+							if (current->x == prev->x && 
+								current->y == prev->y && 
+								current->z == prev->z)
 							{
-								// find matching vertices
-								if (current[0].x == prev[0].x && 
-									current[0].y == prev[0].y && 
-									current[0].z == prev[0].z)
+								// use existing vertex
+								indices[0] = prev->face;
+								indices++;
+								// prevent vertex from being used again
+								current->w = 32767;
+								current++;
+								// remove vertex
+								/*for (int i = vert+1; i < precomp.vertices[i]; i++)
 								{
-									// use existing vertex
-									current[0].face = prev[0].face;
-									indices[currentIndex] = prev[0].face;
-									currentIndex++;
-									break;
+									memcpy(source+i-1, source+i, sizeof(vertex_t));
 								}
-							} // same normal
+								precomp.vertices[i]--;
+								vert--;*/
+								skip = true; break;
+							}
 						}
-						
 						// emit index for unset vertex
-						if (current[0].face == MAX_INDEX_VALUE)
+						if (skip == false)
 						{
-							indices[currentIndex] = vert;
-							current[0].face = vert;
-							currentIndex++;
+							current->face = vert;
+							current++;
+							indices[0] = vert;
+							indices++;
 						}
 					}
 				} // supported shader path
 				else
 				{
-					// direct mapping
+					// direct vertex->index mapping
 					for (int vert = 0; vert < precomp.vertices[i]; vert++)
-					{
-						indices[currentIndex] = vert;
-						currentIndex++;
-					}
+						indices[vert] = vert;
+					
+					indices += indexCount;
 				}
+				
 			} // vertices != 0
 			
-			precomp.indices[i] = precomp.vertices[i];
-			precomp.indexoffset[i] = baseIndex;
-			baseIndex = currentIndex;
+			// MUST be set, even if 0
+			precomp.indices[i] = indexCount;
 		}
 		
 	} // createIndices()
