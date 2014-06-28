@@ -160,13 +160,13 @@ namespace cppcraft
 		int totalVertices = 0; // total amount of vertices for entire column
 		
 		indice_t* dumpIndexOffset[RenderConst::MAX_UNIQUE_SHADERS] = {nullptr};
-		indice_t totalIndices = 0; // total amount of indices for entire column
+		int totalIndices = 0; // total amount of indices for entire column
 		
 		// go through all VBOs in column and find total vertices for each shader
 		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 		{
 			int vertexCount = 0;
-			indice_t indexCount  = 0;
+			int indexCount  = 0;
 			
 			for (int vindex = 0; vindex < vboCount; vindex++)
 			{
@@ -175,9 +175,6 @@ namespace cppcraft
 				// count indices from each shader path
 				indexCount += vboList[vindex]->indices[i];
 			}
-			
-			//this->bufferoffset[i] = totalVertices;
-			//this->vertices[i]     = vertexCount;
 			
 			// base offset used later on for copying small vertex segments
 			dumpVertexOffset[i]  = column_vertex_dump + totalVertices;
@@ -229,7 +226,7 @@ namespace cppcraft
 					{
 						dumpBaseIndex[index] += baseIndex;
 					}
-					baseIndex += v.indices[i];
+					baseIndex += v.vertices[i]; // NOT indices
 					
 					// increase the index dump offset
 					dumpIndexOffset[i] += v.indices[i];

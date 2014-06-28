@@ -242,14 +242,22 @@ namespace cppcraft
 				
 				// determine color index
 				// no change if the material does not use color indexing
-				colorIndex = Biomes::idToColorIndex(id);
-				
-				// we need to re-set the biome color
-				// using the new fclid because of clid change
-				if (lastclid != colorIndex)
+				if (isColoredBlock(id) == false)
 				{
-					lastclid = colorIndex;
-					fbicrc = 256;
+					colorIndex = Biomes::idToColorIndex(id);
+					
+					// we need to re-set the biome color
+					// using the new fclid because of clid change
+					if (lastclid != colorIndex)
+					{
+						lastclid = colorIndex;
+						fbicrc = -1;
+					}
+				}
+				else
+				{
+					colorIndex = -1;
+					fbicrc = -1;
 				}
 				
 			} // lastid != id
@@ -257,60 +265,61 @@ namespace cppcraft
 			/////////////////////////////////////////////////////////
 			////  interpolated biome colors, data from flatland  ////
 			/////////////////////////////////////////////////////////
+		#ifdef USE_BIOMEDATA
+			#define BIOME_CRC()  (bx * Sector::BLOCKS_XZ + bz)
 			
-			#ifdef USE_BIOMEDATA
-				#define BIOME_CRC()  (bx * Sector::BLOCKS_XZ + bz)
-				
-				if (isColoredBlock(id))
+			if (colorIndex == -1)
+			{
+				if (isColoredBlock(id) == false)
+				{
+					fbiome[3] = fbiome[2] = fbiome[1] = fbiome[0] = 0;
+				}
+				else
 				{
 					fbiome[0] = Biomes::getSpecialColorRGBA(currentBlock.getSpecial());
 					fbiome[1] = fbiome[0];
 					fbiome[2] = fbiome[0];
 					fbiome[3] = fbiome[0];
-					fbicrc = 256;
 				}
-				else if (colorIndex == -1)
-				{
-					fbiome[3] = fbiome[2] = fbiome[1] = fbiome[0] = 0;
-				}
-				else if (fbicrc != BIOME_CRC())
-				{
-					// collect { biome_r, biome_g_, biome_b, skylevel } into a vec4:
-					fbiome[0] = flatl[0](bx, bz).fcolor[colorIndex];
-					
-					if (bx < Sector::BLOCKS_XZ-1)
-						fbiome[1] = flatl[0](bx+1, bz).fcolor[colorIndex];
-					else
-						fbiome[1] = flatl_x[0](0, bz).fcolor[colorIndex];
-					
-					if (bz < Sector::BLOCKS_XZ-1)
-						fbiome[2] = flatl[0](bx, bz+1).fcolor[colorIndex];
-					else
-						fbiome[2] = flatl_z[0](bx, 0).fcolor[colorIndex];
-					
-					if ((bx < Sector::BLOCKS_XZ-1) && (bz < Sector::BLOCKS_XZ-1))
-					{
-						fbiome[3] = flatl[0](bx+1, bz+1).fcolor[colorIndex];
-					}
-					else if (bx < Sector::BLOCKS_XZ-1)
-					{
-						fbiome[3] = flatl_z[0](bx+1, 0).fcolor[colorIndex];
-					}
-					else if (bz < Sector::BLOCKS_XZ-1)
-					{
-						fbiome[3] = flatl_x[0](0, bz+1).fcolor[colorIndex];
-					}
-					else
-					{
-						fbiome[3] = flatl_xz[0](0, 0).fcolor[colorIndex];
-					}
-					
-					// unique value
-					fbicrc = BIOME_CRC();
-					
-				} // biome colors
+			}
+			else if (fbicrc != BIOME_CRC())
+			{
+				// collect { biome_r, biome_g_, biome_b, skylevel } into a vec4:
+				fbiome[0] = flatl[0](bx, bz).fcolor[colorIndex];
 				
-			#endif
+				if (bx < Sector::BLOCKS_XZ-1)
+					fbiome[1] = flatl[0](bx+1, bz).fcolor[colorIndex];
+				else
+					fbiome[1] = flatl_x[0](0, bz).fcolor[colorIndex];
+				
+				if (bz < Sector::BLOCKS_XZ-1)
+					fbiome[2] = flatl[0](bx, bz+1).fcolor[colorIndex];
+				else
+					fbiome[2] = flatl_z[0](bx, 0).fcolor[colorIndex];
+				
+				if ((bx < Sector::BLOCKS_XZ-1) && (bz < Sector::BLOCKS_XZ-1))
+				{
+					fbiome[3] = flatl[0](bx+1, bz+1).fcolor[colorIndex];
+				}
+				else if (bx < Sector::BLOCKS_XZ-1)
+				{
+					fbiome[3] = flatl_z[0](bx+1, 0).fcolor[colorIndex];
+				}
+				else if (bz < Sector::BLOCKS_XZ-1)
+				{
+					fbiome[3] = flatl_x[0](0, bz+1).fcolor[colorIndex];
+				}
+				else
+				{
+					fbiome[3] = flatl_xz[0](0, 0).fcolor[colorIndex];
+				}
+				
+				// unique value
+				fbicrc = BIOME_CRC();
+				
+			} // biome colors
+			
+		#endif
 			
 			// vertex position in 16bits
 			short vx = (bx << RenderConst::VERTEX_SHL);
@@ -322,74 +331,75 @@ namespace cppcraft
 			///////////////////////////////
 			int vertices = 0;
 			
-			if (PC_REGULARBLOCK(model))
+			switch (model)
 			{
+			case BlockModels::MI_BLOCK:
+			case BlockModels::MI_HALFBLOCK:
+			case BlockModels::MI_LOWBLOCK:
+			case BlockModels::MI_INSET:
 				///////////////////////////////////////////////
 				////  loop through of all sides on a cube  ////
 				////   ----   ----   ----   ----   ----    ////
 				////  emit vertices & calculate lighting   ////
 				///////////////////////////////////////////////
-				
 				vertices = emitCube(currentBlock, bx, by, bz, model, sides);
-				
-			}
-			else if (model == PC_SLOPED)
-			{
+				break;
+			
+			case PC_SLOPED:
 				vertices = emitSloped(id, bx, by, bz, currentBlock.getFacing(), sides);
-			}
-			else if (model == PC_POLE)
-			{
+				break;
+			
+			case PC_POLE:
 				vertices = emitPole(id, bx, by, bz, currentBlock.getFacing());
-			}
-			else if (model == PC_STAIR)
-			{
+				break;
+			
+			case PC_STAIR:
 				vertices = emitStair(currentBlock, bx, by, bz, sides);
-			}
-			else if (model == PC_LADDER)
-			{
+				break;
+			
+			case PC_LADDER:
 				vertices = emitLadder(id, bx, by, bz, currentBlock.getFacing());
-			}
-			else if (model == PC_FENCE)
-			{
+				break;
+			
+			case PC_FENCE:
 				vertices = emitFence(currentBlock, bx, by, bz, sides);
-			}
-			else if (model == PC_DOOR)
-			{
+				break;
+			
+			case PC_DOOR:
 				vertices = emitDoor(currentBlock, bx, by, bz, sides);
-			}
-			else if (model == PC_CROSS)
-			{
+				break;
+				
+			case PC_CROSS:
 				vertices = emitCross(id, bx, by, bz);
-			}
-			else if (model == PC_TRICROSS)
-			{
+				break;
+			
+			case PC_TRICROSS:
 				vertices = emitCross(id, bx, by, bz);
 				indic += vertices;
 				emitCubeVertexPY(BlockModels::MI_BLOCK, id, bx, by-1, bz);
 				indic -= vertices;
 				vertices += 4;
 				// lift ever so slightly upwards, avoiding zfight
-				vy++;
-			}
-			else if (model == PC_FLATBOTTOM)
-			{
+				vy++; break;
+			
+			case PC_FLATBOTTOM:
 				emitCubeVertexPY(BlockModels::MI_BLOCK, id, bx, by-1, bz);
 				vertices = 4;
 				// lift ever so slightly upwards, avoiding zfight
-				vy++;
-			}
-			else if (model == PC_LANTERN)
-			{
+				vy++; break;
+			
+			case PC_LANTERN:
 				vertices = emitLantern(id, bx, by, bz);
+				break;
 			}
 			
 			// NOTE: we are assuming vertices to be non-zero, since that is ~100% usage case
 			// check for overflow
-			if (this->vertices[shaderLine] + vertices > RenderConst::MAX_FACES_PER_SECTOR * 4)
+			/*if (this->vertices[shaderLine] + vertices > RenderConst::MAX_FACES_PER_SECTOR * 4)
 			{
 				logger << Log::ERR << "Vertices for " << shaderLine << " is too much: " << 
 					this->vertices[shaderLine] << " / " << RenderConst::MAX_FACES_PER_SECTOR * 4 << Log::ENDL;
-			}
+			}*/
 			
 			// move mesh object to local grid space
 			for (int i = 0; i < vertices; i++)

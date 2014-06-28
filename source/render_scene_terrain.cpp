@@ -256,7 +256,7 @@ namespace cppcraft
 			}
 		}
 		glBindVertexArray(cv->vao);
-		glDrawElements(GL_QUADS, cv->indices[i], GL_UNSIGNED_SHORT, (GLvoid*) (intptr_t) cv->indexoffset[i]);
+		glDrawElements(GL_TRIANGLES, cv->indices[i], GL_UNSIGNED_SHORT, (GLvoid*) (intptr_t) cv->indexoffset[i]);
 		//glDrawArrays(GL_QUADS, cv->bufferoffset[i], cv->vertices[i]);
 	}
 	
@@ -453,7 +453,7 @@ namespace cppcraft
 			glUniform3fv(loc_vtrans, 1, &position.x);
 		}
 		glBindVertexArray(cv->vao);
-		glDrawElements(GL_QUADS, cv->indices[i], GL_UNSIGNED_SHORT, (GLvoid*) (intptr_t) cv->indexoffset[i]);
+		glDrawElements(GL_TRIANGLES, cv->indices[i], GL_UNSIGNED_SHORT, (GLvoid*) (intptr_t) cv->indexoffset[i]);
 		//glDrawArrays(GL_QUADS, cv->bufferoffset[i], cv->vertices[i]);
 	} // renderReflectedColumn()
 	

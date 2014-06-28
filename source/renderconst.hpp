@@ -7,7 +7,6 @@ namespace cppcraft
 	{
 	public:
 		static const int MAX_FACES_PER_SECTOR   = 10404;
-		static const int MAX_INDICES_PER_SECTOR =  4096;
 		
 		enum shaderline_t
 		{

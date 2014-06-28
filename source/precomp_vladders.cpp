@@ -60,12 +60,11 @@ namespace cppcraft
 			break;
 		}
 		
-		short tid = Block::cubeFaceById(id, 0, 0);
-		indic[0].w = tid;
-		indic[1].w = tid;
-		indic[2].w = tid;
-		indic[3].w = tid;
+		indic[0].w = Block::cubeFaceById(id, 0, 0);
+		indic[1].w = indic[0].w;
+		indic[2].w = indic[0].w;
+		indic[3].w = indic[0].w;
 		
-		return 4; //blockmodels.ladders.count(block_facing);
+		return 4; // 4 vertices
 	}
 }

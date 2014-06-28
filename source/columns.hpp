@@ -52,11 +52,8 @@ namespace cppcraft
 		
 		library::vec3 pos; // rendering position
 		
-		indice_t indices    [RenderConst::MAX_UNIQUE_SHADERS];
-		indice_t indexoffset[RenderConst::MAX_UNIQUE_SHADERS];
-		
-		//unsigned short bufferoffset[RenderConst::MAX_UNIQUE_SHADERS];
-		//unsigned short vertices	   [RenderConst::MAX_UNIQUE_SHADERS];
+		int indices    [RenderConst::MAX_UNIQUE_SHADERS];
+		int indexoffset[RenderConst::MAX_UNIQUE_SHADERS];
 		
 		unsigned int  occlusion[RenderConst::MAX_UNIQUE_SHADERS];
 		char          occluded [RenderConst::MAX_UNIQUE_SHADERS];
