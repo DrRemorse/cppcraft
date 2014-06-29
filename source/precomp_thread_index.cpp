@@ -42,6 +42,7 @@ namespace cppcraft
 						if (current->nx == vertex->nx && current->ny == vertex->ny && current->nz == vertex->nz)
 						{
 							for (int v1 = 0; v1 < 4; v1++)
+							if (vertex[v1].w != 32767)
 							for (int c1 = 0; c1 < 4; c1++)
 							{
 								// same UVs
@@ -57,7 +58,8 @@ namespace cppcraft
 									vertex[v1].face = current[c1].face;
 									//current[c1].c = 255;
 									// count up to 4, which is when its done
-									if (done++ == 4) goto doneFinding;
+									done++;
+									if (done == 4) goto doneFinding;
 									break;
 								}
 							} // check all vertices against each other
