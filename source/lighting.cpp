@@ -102,7 +102,7 @@ namespace cppcraft
 		) return 0.0;
 		
 		// avoid invalid angle
-		if (angle.y < 0) return maxlight;
+		if (angle.y < 0) angle.y = -angle.y; // return maxlight;
 		
 		block_t id;
 		float inv_reach = 1.0 / Lighting.ray_length;
