@@ -157,10 +157,10 @@ void main(void)
 	float wdepth = getDepth(refcoord) - dist;
 	
 	// COSTLY re-read to avoid reading inside terrain
-	if (wdepth < 0.0)
+	/*if (wdepth < 0.0)
 	{
 		wdepth = getDepth(texCoord) - dist;
-	}
+	}*/
 	// degamma underwater color
 	underw.rgb = pow(underw.rgb, vec3(1.0 / 2.2));
 	

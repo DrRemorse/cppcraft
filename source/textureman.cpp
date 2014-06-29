@@ -310,13 +310,17 @@ namespace cppcraft
 			textures[T_DEPTHBUFFER].createDepth(SSW, SSH);
 		}
 		
+		bool underHQ = gameconf.highq_water || gameconf.multisampling > 0;
+		int underW = gamescr.getWidth() / (underHQ ? 1 : 2);
+		int underH = gamescr.getHeight() / (underHQ ? 1 : 2);
+		
 		// fullscreen underwater texture
 		textures[T_UNDERWATERMAP] = Texture(GL_TEXTURE_2D, GL_RGBA8);
-		textures[T_UNDERWATERMAP].create(0, gamescr.getWidth(), gamescr.getHeight());
+		textures[T_UNDERWATERMAP].create(0, underW, underH);
 		textures[T_UNDERWATERMAP].setInterpolation(true);
 		// underwater depth texture
 		textures[T_UNDERWDEPTH] = Texture(GL_TEXTURE_2D, GL_DEPTH_COMPONENT24);
-		textures[T_UNDERWDEPTH].createDepth(gamescr.getWidth(), gamescr.getHeight());
+		textures[T_UNDERWDEPTH].createDepth(underW, underH);
 		
 		if (gameconf.reflections)
 		{

@@ -16,6 +16,7 @@ namespace cppcraft
 		multisampling = config.get("render.multisampling", 0);
 		anisotropy    = config.get("render.anisotropy", 1.0f);
 		
+		highq_water   = config.get("render.highq_water",   true);
 		highq_sky     = config.get("render.highq_sky",     false);
 		distance_blur = config.get("render.distance_blur", true);
 		lensflare     = config.get("render.lensflare",     true);

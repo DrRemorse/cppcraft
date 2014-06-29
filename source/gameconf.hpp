@@ -17,6 +17,7 @@ namespace cppcraft
 		int multisampling;
 		float anisotropy;
 		
+		bool highq_water;
 		bool highq_sky;
 		bool distance_blur;
 		bool lensflare;
