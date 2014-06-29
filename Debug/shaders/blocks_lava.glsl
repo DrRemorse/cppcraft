@@ -39,7 +39,7 @@ uniform sampler2D lavatex;
 uniform float frameCounter;
 
 in  vec2  wave;
-out lowp vec4 color;
+out vec4 color;
 
 void main(void)
 {

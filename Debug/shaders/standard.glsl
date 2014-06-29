@@ -17,16 +17,16 @@ in vec4 in_biome;
 in vec4 in_color;
 in vec4 in_color2;
 
-out lowp vec3 texCoord;
-out lowp vec4 biomeColor;
-out lowp vec4 lightdata;
-out lowp vec4 torchlight;
-flat out lowp float worldLight;
+out vec3 texCoord;
+out vec4 biomeColor;
+out vec4 lightdata;
+out vec4 torchlight;
+flat out float worldLight;
 
-flat out lowp float reflection;
+flat out float reflection;
 out vec3 v_pos;
-out lowp vec3 v_reflect;
-out lowp vec3 v_normals;
+out vec3 v_reflect;
+out vec3 v_normals;
 
 const int TX_REPEAT
 const int TX_SOLID
@@ -74,19 +74,19 @@ uniform samplerCube skymap;
 uniform float daylight;
 uniform float modulation;
 
-in lowp vec3 texCoord;
-in lowp vec4 biomeColor;
-in lowp vec4 lightdata;
-in lowp vec4 torchlight;
-flat in lowp float worldLight;
+in vec3 texCoord;
+in vec4 biomeColor;
+in vec4 lightdata;
+in vec4 torchlight;
+flat in float worldLight;
 
-flat in lowp float reflection;
-in lowp vec3 v_pos;
-in lowp vec3 v_reflect;
-in lowp vec3 v_normals;
+flat in float reflection;
+in vec3 v_pos;
+in vec3 v_reflect;
+in vec3 v_normals;
 
-layout(location = 0) out lowp vec4 color;
-layout(location = 1) out lowp vec4 normals;
+layout(location = 0) out vec4 color;
+layout(location = 1) out vec4 normals;
 
 const float ZFAR
 const int TX_SOLID
@@ -96,7 +96,7 @@ void main(void)
 {
 	// independent texture reads using inbound variable directly
 	// read tonecolor from tonemap
-	lowp vec4 tone = texture(tonemap, texCoord);
+	vec4 tone = texture(tonemap, texCoord);
 	tone.rgb *= biomeColor.rgb;
 	
 	// mix diffuse map

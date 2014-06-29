@@ -33,11 +33,11 @@ uniform vec3 screensize;
 in vec3 pos;
 const float ZFAR
 
-out lowp vec4 color;
+out vec4 color;
 
 void main(void)
 {
-	lowp vec2 texCoord = gl_FragCoord.xy / screensize.xy;
+	vec2 texCoord = gl_FragCoord.xy / screensize.xy;
 	color = texture(diffuse, texCoord);
 }
 

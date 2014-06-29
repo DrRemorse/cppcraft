@@ -16,11 +16,11 @@ in vec4 in_color;
 in vec4 in_color2;
 in vec4 in_biome;
 
-out lowp vec3 texCoord;
-out lowp vec4 lightdata;
-out lowp vec4 torchlight;
-out lowp vec4 biomeColor;
-flat out lowp float worldLight;
+out vec3 texCoord;
+out vec4 lightdata;
+out vec4 torchlight;
+out vec4 biomeColor;
+flat out float worldLight;
 
 const float VERTEX_SCALE_INV
 
@@ -50,21 +50,21 @@ uniform sampler2DArray tonemap;
 uniform float daylight;
 uniform float modulation;
 
-in lowp vec3 texCoord;
-in lowp vec4 lightdata;
-in lowp vec4 torchlight;
-in lowp vec4 biomeColor;
-flat in lowp float worldLight;
+in vec3 texCoord;
+in vec4 lightdata;
+in vec4 torchlight;
+in vec4 biomeColor;
+flat in float worldLight;
 
 const float ZFAR
 
-out lowp vec4 color;
+out vec4 color;
 
 void main(void)
 {
 	// independent texture reads using inbound variable directly
 	// read tonecolor from tonemap
-	lowp vec4 tone = texture(tonemap, texCoord);
+	vec4 tone = texture(tonemap, texCoord);
 	tone.rgb *= biomeColor.rgb;
 	
 	// mix diffuse map
@@ -76,7 +76,7 @@ void main(void)
 	#include "stdlight.glsl"
 	
 	// fake fog
-	lowp vec3 fogColor = vec3(1.0) * daylight;
+	vec3 fogColor = vec3(1.0) * daylight;
 	color.rgb = mix(color.rgb, fogColor, 0.1);
 }
 #endif

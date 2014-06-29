@@ -3,7 +3,6 @@
 #define FRAGMENT_PROGRAM
 
 #ifdef VERTEX_PROGRAM
-
 uniform mat4 matmvp;
 uniform vec3 v3LightPos; // The direction vector to the light source
 uniform float above;     // 1.0 above horizon, 0.0 below horizon
@@ -39,11 +38,11 @@ const float fCameraHeight = fInnerRadius; // The camera's current height
 
 in vec3 in_vertex;
 
-out lowp vec3 v3x;
-out lowp vec3 v3Direction;
-out lowp vec3 color_rayleigh;
-out lowp vec3 color_mie;
-out lowp vec3 starc;
+out vec3 v3x;
+out vec3 v3Direction;
+out vec3 color_rayleigh;
+out vec3 color_mie;
+out vec3 starc;
 
 float scale(float fCos)
 {
@@ -113,36 +112,36 @@ uniform vec3 v3LightPos;
 const float g  = -0.50; // The Mie phase asymmetry factor
 const float g2 = g * g;
 
-in lowp vec3 v3x;
-in lowp vec3 v3Direction;
-in lowp vec3 color_rayleigh;
-in lowp vec3 color_mie;
-in lowp vec3 starc;
+in vec3 v3x;
+in vec3 v3Direction;
+in vec3 color_rayleigh;
+in vec3 color_mie;
+in vec3 starc;
 
-out lowp vec4 color;
+out vec4 color;
 
 void main (void)
 {
-	lowp float fCos = dot(v3LightPos, -v3x) / length(v3x);
-	lowp float fRayleighPhase = 0.75 * (1.0 + fCos*fCos);
-	lowp float fMiePhase = 1.5 * ((1.0 - g2) / (2.0 + g2)) * (1.0 + fCos*fCos) / pow(1.0 + g2 - 2.0*g*fCos, 1.5);
+	float fCos = dot(v3LightPos, -v3x) / length(v3x);
+	float fRayleighPhase = 0.75 * (1.0 + fCos*fCos);
+	float fMiePhase = 1.5 * ((1.0 - g2) / (2.0 + g2)) * (1.0 + fCos*fCos) / pow(1.0 + g2 - 2.0*g*fCos, 1.5);
 	
 	color.rgb = fRayleighPhase * color_rayleigh + fMiePhase * color_mie;
 	
-	lowp vec3 norm = normalize(v3Direction);
+	vec3 norm = normalize(v3Direction);
 	norm.y *= (0.5 - above) * 2.0;
 	
-	lowp vec3 skyColor = texture(skymap, norm).rgb;
+	vec3 skyColor = texture(skymap, norm).rgb;
 	color.rgb = mix(color.rgb, skyColor, (color.b - color.r * 0.5) * 0.5);
 	
-	lowp float darkness = max(0.0, 0.16 - length(color.rgb)) * 6.0;
+	float darkness = max(0.0, 0.16 - length(color.rgb)) * 6.0;
 	if (darkness > 0.05)
 	{
 		// stars
-		const lowp float PI = 3.1415926;
-		lowp vec2 coord = vec2(((atan(norm.y, norm.x) + sunAngle) / PI + 1.0) * 0.5, asin(norm.z) / PI + 0.5 );
-		lowp vec3 stars = texture(starmap, coord).rgb;
-		stars = pow(stars, lowp vec3(3.0)) * starBrightness;
+		const float PI = 3.1415926;
+		vec2 coord = vec2(((atan(norm.y, norm.x) + sunAngle) / PI + 1.0) * 0.5, asin(norm.z) / PI + 0.5 );
+		vec3 stars = texture(starmap, coord).rgb;
+		stars = pow(stars, vec3(3.0)) * starBrightness;
 		
 		color.rgb = mix(color.rgb, stars, darkness * darkness);
 	}

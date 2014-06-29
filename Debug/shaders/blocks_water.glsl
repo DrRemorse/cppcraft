@@ -19,12 +19,12 @@ in vec4 in_biome;
 in vec4 in_color;
 in vec4 in_color2;
 
-out lowp vec4 waterColor;
-out lowp vec4 lightdata;
-out lowp vec4 torchlight;
+out vec4 waterColor;
+out vec4 lightdata;
+out vec4 torchlight;
 
-out lowp vec3 v_pos;
-flat out lowp vec3 v_normal;
+out vec3 v_pos;
+flat out vec3 v_normal;
 out vec4 waves;
 
 const float VERTEX_SCALE_INV
@@ -73,17 +73,17 @@ uniform float daylight;
 uniform float modulation;
 uniform vec3  v_ldir;
 
-in lowp vec4 waterColor;
-in lowp vec4 lightdata;
-in lowp vec4 torchlight;
+in vec4 waterColor;
+in vec4 lightdata;
+in vec4 torchlight;
 
-in lowp vec3 v_pos;
-flat in lowp vec3 v_normal;
+in vec3 v_pos;
+flat in vec3 v_normal;
 
 in vec4 waves; // wave positions
 
-layout(location = 0) out lowp vec4 color;
-layout(location = 1) out lowp vec4 normals;
+layout(location = 0) out vec4 color;
+layout(location = 1) out vec4 normals;
 
 const float ZNEAR
 const float ZFAR
@@ -131,7 +131,7 @@ void main(void)
 	Normal = normalize(Normal) * tbn;
 	*/
 	
-	lowp float vertdist = length(v_pos);
+	float vertdist = length(v_pos);
 	
 	vec3 vNormal = mat3(matview) * Normal;
 	#define viewNormal  v_normal
@@ -142,19 +142,19 @@ void main(void)
 	vec3 vHalf = normalize(vEye + vLight);
 	
 	// screenspace tex coords
-	lowp vec2 texCoord = gl_FragCoord.xy / screendata.xy;
+	vec2 texCoord = gl_FragCoord.xy / screendata.xy;
 	// normalized distance
-	lowp float dist = vertdist / ZFAR;
+	float dist = vertdist / ZFAR;
 	
 	//----- REFRACTION -----
 	
 	// wave modulation
-	lowp vec2 refcoord = texCoord + vNormal.xz * 0.005 * (1.0 - dist);
+	vec2 refcoord = texCoord + vNormal.xz * 0.005 * (1.0 - dist);
 	
 	// read underwater, use as base color
-	lowp vec4 underw = texture(underwatermap, refcoord);
+	vec4 underw = texture(underwatermap, refcoord);
 	// read underwater depth
-	lowp float wdepth = getDepth(refcoord) - dist;
+	float wdepth = getDepth(refcoord) - dist;
 	
 	// COSTLY re-read to avoid reading inside terrain
 	if (wdepth < 0.0)
@@ -186,10 +186,10 @@ void main(void)
 	
 #ifdef REFLECTIONS
 	// world/terrain reflection
-	lowp vec4 wreflection = texture(reflectionmap, refcoord);
+	vec4 wreflection = texture(reflectionmap, refcoord);
 	
 	//----- fresnel term -----
-	lowp float fresnel = max(0.0, dot(vEye, viewNormal));
+	float fresnel = max(0.0, dot(vEye, viewNormal));
 	fresnel = pow(1.0 - fresnel, 3.0);
 	
 	// add reflections to final color
@@ -202,19 +202,19 @@ void main(void)
 	#include "lightw.glsl"
 	
 	//- sun/specular -//
-	const lowp vec3  SUNCOLOR = vec3(0.9, 0.7, 0.5);
+	const vec3  SUNCOLOR = vec3(0.9, 0.7, 0.5);
 	
-	lowp float shine = max(0.0, dot(vHalf, viewNormal) );
-	lowp float specf = max(0.0, dot(reflect(-vLight, viewNormal), vEye));
-	lowp float spec  = dot(reflect(-vLight, vNormal), vEye);
-	lowp float specv = max(0.0, spec);
+	float shine = max(0.0, dot(vHalf, viewNormal) );
+	float specf = max(0.0, dot(reflect(-vLight, viewNormal), vEye));
+	float spec  = dot(reflect(-vLight, vNormal), vEye);
+	float specv = max(0.0, spec);
 	
 	// ocean waves + sun highlights
-	lowp vec3 highlights = pow(specv, 20.0) * vec3(0.4, 0.35, 0.3) + spec * 0.03;
+	vec3 highlights = pow(specv, 20.0) * vec3(0.4, 0.35, 0.3) + spec * 0.03;
 	color.rgb += highlights * shadow * shadow;
 	
 	// shiny/specular sun reflection
-	lowp vec3 specular = SUNCOLOR * pow(specf, 20.0) * 1.5 * pow(shine, 8.0);
+	vec3 specular = SUNCOLOR * pow(specf, 20.0) * 1.5 * pow(shine, 8.0);
 	color.rgb += specular * shadow * shadow;
 	
 	// final color

@@ -5,10 +5,10 @@
 #define brightness  lightdata.y // * modulation;
 
 // shadow is smallest between shadow-value and daylight level
-lowp float shadow = min(1.0, daylight * lightdata.x + brightness);
+float shadow = min(1.0, daylight * lightdata.x + brightness);
 
 // corner shadows and dotlight
-lowp float cornershad = smoothstep(0.0, 1.0, lightdata.z);
+float cornershad = smoothstep(0.0, 1.0, lightdata.z);
 cornershad = min(1.0, cornershad * worldLight + brightness * 0.125);
 
 // scaled shadow color
