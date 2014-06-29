@@ -32,7 +32,7 @@ namespace cppcraft
 			{
 				vertex_t* vertex = source + vert;
 				
-				if (true) //i != RenderConst::TX_2SIDED && i != RenderConst::TX_CROSS)
+				if (i != RenderConst::TX_2SIDED && i != RenderConst::TX_CROSS)
 				{
 					int done = 0;
 					
@@ -124,24 +124,24 @@ namespace cppcraft
 		vertex_t* source = precomp.datadump;
 		
 		// find total vertices
-		int total = 0;
-		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
+		int total = precomp.vertices[0];
+		for (int i = 1; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 		{
 			total += precomp.vertices[i];
 		}
 		// create new vertex array
 		precomp.datadump = new vertex_t[total];
 		
-		int offset = 0;
+		total = 0;
 		for (int i = 0; i < RenderConst::MAX_UNIQUE_SHADERS; i++)
 		{
 			if (precomp.vertices[i])
 			{
 				// copy (hopefully) smaller vertex data into new array
-				memcpy(precomp.datadump + offset, source + precomp.bufferoffset[i], precomp.vertices[i] * sizeof(vertex_t));
+				memcpy(precomp.datadump + total, source + precomp.bufferoffset[i], precomp.vertices[i] * sizeof(vertex_t));
 				// set new buffer offsets
-				precomp.bufferoffset[i] = offset;
-				offset += precomp.vertices[i];
+				precomp.bufferoffset[i] = total;
+				total += precomp.vertices[i];
 			}
 		}
 		// remove old vertex array

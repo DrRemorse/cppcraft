@@ -480,7 +480,7 @@ namespace cppcraft
 		
 		// render everything above water plane
 		
-		for (int i = 0; i < 1; i++) // RenderConst::MAX_UNIQUE_SHADERS; i++)
+		for (int i = 0; i < (int) RenderConst::TX_WATER; i++)
 		{
 			switch (i)
 			{

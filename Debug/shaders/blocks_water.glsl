@@ -107,14 +107,14 @@ void main(void)
 	
 	vec3 tx = vec3(0.0, grad.x, 2.0);
 	vec3 tz = vec3(2.0, 0.0, grad.y);
-	vec3 n1 = cross(tx, tz);
+	vec3 Normal = cross(tx, tz);
 	
-	tx = vec3(0.0, grad2.x, 2.0);
-	tz = vec3(2.0, 0.0, grad2.y);
-	vec3 n2 = cross(tx, tz);
+	tx.y = grad2.x;
+	tz.z = grad2.y;
+	Normal += cross(tx, tz);
 	
 	// average the gradients
-	vec3 Normal = normalize(n1 + n2);
+	Normal = normalize(Normal);
 	
 	/*
 	const vec3 norm = vec3(0, 1, 0);
