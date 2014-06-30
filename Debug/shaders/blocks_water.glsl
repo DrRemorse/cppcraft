@@ -157,6 +157,7 @@ void main(void)
 	float wdepth = getDepth(refcoord) - dist;
 	
 	// COSTLY re-read to avoid reading inside terrain
+	wdepth = max(0.0, wdepth);
 	/*if (wdepth < 0.0)
 	{
 		wdepth = getDepth(texCoord) - dist;

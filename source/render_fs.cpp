@@ -32,7 +32,7 @@ namespace cppcraft
 		
 		// set texture sizes
 		// lens flare
-		int factor = config.get("render.hq_lens", false) ? 2 : 4;
+		int factor = gameconf.highq_lens ? 2 : 4;
 		this->flareTxW = gamescr.getWidth() / factor;
 		this->flareTxH = gamescr.getHeight() / factor;
 		

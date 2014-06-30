@@ -19,10 +19,13 @@ namespace cppcraft
 		
 		bool highq_water;
 		bool highq_sky;
-		bool distance_blur;
-		bool lensflare;
-		
 		bool clouds;
+		
+		bool lensflare;
+		bool highq_lens;
+		
+		bool distance_blur;
+		
 		bool reflections;
 		bool hq_reflections;
 		bool reflectTerrain;
