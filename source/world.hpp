@@ -31,7 +31,7 @@ namespace cppcraft
 		static const wcoord_t WORLD_NODESIZE = 256;
 		static const wcoord_t WORLD_CENTER   = WORLD_SIZE / 2;
 		
-		static const wcoord_t WORLD_STARTING_X = WORLD_CENTER + WORLD_NODESIZE / 2;
+		static const wcoord_t WORLD_STARTING_X = WORLD_CENTER; // + WORLD_NODESIZE / 2;
 		static const wcoord_t WORLD_STARTING_Z = WORLD_STARTING_X;
 		
 		typedef struct world_t
@@ -51,7 +51,7 @@ namespace cppcraft
 		{
 			return this->folder;
 		}
-
+		
 		inline wcoord_t getWX() const { return worldCoords.x; }
 		inline wcoord_t getWY() const { return worldCoords.y; }
 		inline wcoord_t getWZ() const { return worldCoords.z; }

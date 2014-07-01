@@ -188,6 +188,9 @@ namespace cppcraft
 			totalIndices += indexCount;
 		}
 		
+		if (totalVertices > 32000)
+			logger << Log::WARN << "Many indices: " << totalIndices << Log::ENDL;
+		
 		////////////////////////////////////////////////////////
 		// loop through each sector in column and memcpy data //
 		////////////////////////////////////////////////////////

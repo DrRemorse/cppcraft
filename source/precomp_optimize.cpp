@@ -55,10 +55,10 @@ namespace cppcraft
 						if (next[1].c == current[0].c)
 						
 						// terrain color match
-						if (colorDistance(next[2].biome, next[3].biome) < 7)
-						if (colorDistance(next[0].biome, next[1].biome) < 7)
-						if (colorDistance(next[2].biome, current[3].biome) < 7)
-						if (colorDistance(next[1].biome, current[0].biome) < 7)
+						if (next[2].biome == next[3].biome)
+						if (next[0].biome == next[1].biome)
+						if (next[2].biome == current[3].biome)
+						if (next[1].biome == current[0].biome)
 						{
 							// now optimize the quad, by extending the position quad,
 							// and effectively removing the next quad
@@ -90,10 +90,10 @@ namespace cppcraft
 						if (next[1].c == current[2].c)
 						
 						// terrain color match
-						/*if (colorDistance(next[2].biome, next[3].biome) < 7)
-						if (colorDistance(next[0].biome, next[1].biome) < 7)
-						if (colorDistance(next[2].biome, current[3].biome) < 7)
-						if (colorDistance(next[1].biome, current[0].biome) < 7)*/
+						if (next[0].biome == next[3].biome)
+						if (next[1].biome == next[2].biome)
+						if (next[0].biome == current[3].biome)
+						if (next[1].biome == current[2].biome)
 						{
 							// now optimize the quad, by extending the position quad,
 							// and effectively removing the next quad
@@ -127,10 +127,10 @@ namespace cppcraft
 						if (next[1].c == current[0].c)
 						
 						// terrain color match
-						if (colorDistance(next[2].biome, next[3].biome) < 7)
-						if (colorDistance(next[0].biome, next[1].biome) < 7)
-						if (colorDistance(next[2].biome, current[3].biome) < 7)
-						if (colorDistance(next[1].biome, current[0].biome) < 7)
+						if (next[2].biome == next[3].biome)
+						if (next[0].biome == next[1].biome)
+						if (next[2].biome == current[3].biome)
+						if (next[1].biome == current[0].biome)
 						{
 							// now optimize the quad, by extending the position quad,
 							// and effectively removing the next quad
@@ -160,10 +160,10 @@ namespace cppcraft
 						if (next[1].c == current[0].c)
 						
 						// terrain color match
-						if (colorDistance(next[2].biome, next[3].biome) < 7)
-						if (colorDistance(next[0].biome, next[1].biome) < 7)
-						if (colorDistance(next[2].biome, current[3].biome) < 7)
-						if (colorDistance(next[1].biome, current[0].biome) < 7)
+						if (next[2].biome == next[3].biome)
+						if (next[0].biome == next[1].biome)
+						if (next[2].biome == current[3].biome)
+						if (next[1].biome == current[0].biome)
 						{
 							// now optimize the quad, by extending the position quad,
 							// and effectively removing the next quad
@@ -193,10 +193,10 @@ namespace cppcraft
 						if (next[1].c == current[2].c)
 						
 						// terrain color match
-						/*if (colorDistance(next[2].biome, next[3].biome) < 7)
-						if (colorDistance(next[0].biome, next[1].biome) < 7)
-						if (colorDistance(next[2].biome, current[3].biome) < 7)
-						if (colorDistance(next[1].biome, current[0].biome) < 7)*/
+						if (next[0].biome == next[3].biome)
+						if (next[1].biome == next[2].biome)
+						if (next[0].biome == current[3].biome)
+						if (next[1].biome == current[2].biome)
 						{
 							// now optimize the quad, by extending the position quad,
 							// and effectively removing the next quad

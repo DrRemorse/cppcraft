@@ -163,8 +163,6 @@ namespace cppcraft
 	{
 		if (y == 0) return BGRA8(48, 48, 48, 255);
 		
-		static const Bitmap::rgba8_t greenGrass = BGRA8(20, 120, 0, 255);
-		
 		// get the block
 		const Block& b = Spiders::getBlock(x, y, z);
 		// the final color
@@ -202,13 +200,11 @@ namespace cppcraft
 			else
 			{
 				c = fgetColor(fs, x, z, Biomes::CL_GRASS);
-				c = mixColor(c, greenGrass, 0.25);
 			}
 		}
 		else if (isCross(b.getID()))
 		{
 			c = fgetColor(fs, x, z, Biomes::CL_GRASS);
-			c = mixColor(c, greenGrass, 0.25);
 		}
 		/*else if (b.getID() == _LEAF_NEEDLE)
 		{
@@ -217,7 +213,6 @@ namespace cppcraft
 		else if (isLeaf(b.getID()))
 		{
 			c = fgetColor(fs, x, z, Biomes::CL_TREES);
-			c = mixColor(c, greenGrass, 0.25);
 		}
 		else if (isSand(b.getID()))
 		{

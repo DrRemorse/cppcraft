@@ -41,7 +41,7 @@ namespace cppcraft
 		// read datalength
 		compressed_datalength_t datalength;
 		
-		File.seekg(PL-1);
+		File.seekg(PL);
 		File.read( (char*) &datalength, sizeof(compressed_datalength_t) );
 		
 		if (datalength.lzoSize == 0)
@@ -59,12 +59,12 @@ namespace cppcraft
 		}
 		
 		// go past first struct
-		File.seekg(PL-1+sizeof(compressed_datalength_t));
+		File.seekg(PL+sizeof(compressed_datalength_t));
 		// read entire compressed block
 		File.read((char*) compressor_databuffer, datalength.lzoSize);
 		
 		// decompress data
-		if (compressor.decompress1x(compressor_databuffer, datalength.lzoSize) == false)
+		if (compressor.decompress2a(compressor_databuffer, datalength.lzoSize) == false)
 		{
 			logger << Log::ERR << "Compressor::decompress(): Failed to decompress data" << Log::ENDL;
 			throw std::string("Compressor::decompress(): Failed to decompress data");

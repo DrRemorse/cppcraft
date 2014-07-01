@@ -157,27 +157,24 @@ namespace cppcraft
 						// reset flatlands
 						//flatlands(x, z).reset();
 						
+						// for each sector on y-axis,
 						for (int y = 0; y < Sectors.getY(); y++)
 						{
-							// for each sector on y-axis,
-							Sector& currentsector = Sectors(x, y, z);
 							// clean out sector
-							currentsector.clear();
+							Sectors(x, y, z).clear();
 						}
 					}
 					
 					if (ff_open)
 					{
 						// load single-file
-						
 						for (int y = 0; y < Sectors.getY(); y++)
 						{
+							// for each sector on y-axis with entry
 							if (g_fres[dz][y][dx])
 							{
-								// for each sector on y-axis with entry
-								Sector& currentsector = Sectors(x, y, z);
 								// load sector using loadSectorEx method
-								loadSector(currentsector, ff, g_fres[dz][y][dx]);
+								loadSector(Sectors(x, y, z), ff, g_fres[dz][y][dx]);
 							}	
 							
 						}
