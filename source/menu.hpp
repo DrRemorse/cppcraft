@@ -44,6 +44,8 @@ namespace cppcraft
 	public:
 		Inventory() : changed(false), opened(false), items(nullptr) {}
 		Inventory(int w, int h);
+		~Inventory();
+		
 		InventoryItem& operator() (int x, int y);
 		
 		// getters

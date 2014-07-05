@@ -50,6 +50,10 @@ namespace cppcraft
 		this->height = h;
 		this->items = new InventoryItem[w * h]();
 	}
+	Inventory::~Inventory()
+	{
+		delete[] this->items;
+	}
 	
 	InventoryItem& Inventory::operator() (int x, int y)
 	{

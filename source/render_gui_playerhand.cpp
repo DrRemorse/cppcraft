@@ -1,11 +1,11 @@
 #include "render_gui.hpp"
 
-#include "library/log.hpp"
-#include "library/bitmap/colortools.hpp"
-#include "library/opengl/opengl.hpp"
-#include "library/opengl/vao.hpp"
-#include "library/math/toolbox.hpp"
-#include "library/math/vector.hpp"
+#include <library/log.hpp>
+#include <library/bitmap/colortools.hpp>
+#include <library/opengl/opengl.hpp>
+#include <library/opengl/vao.hpp>
+#include <library/math/toolbox.hpp>
+#include <library/math/vector.hpp>
 #include "blockmodels.hpp"
 #include "camera.hpp"
 #include "menu.hpp"
@@ -387,7 +387,7 @@ namespace cppcraft
 				cubeVAO.attrib(2, 3, GL_SHORT, GL_FALSE, offsetof(vertex_t, u));
 				cubeVAO.end();
 				
-				delete vertices;
+				delete[] vertices;
 				// finally, render...
 				cubeVAO.render(GL_QUADS);
 			}

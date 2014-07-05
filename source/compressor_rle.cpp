@@ -39,7 +39,7 @@ namespace cppcraft
 			block_t blockData = palette[ entry->palid ];
 			while (entry->count--)
 			{
-				sblock->setData(blockData); sblock++;
+				*sblock = blockData; sblock++;
 			}
 		}
 		// set sectorblock info

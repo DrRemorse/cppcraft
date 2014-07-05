@@ -68,7 +68,7 @@ namespace cppcraft
 		cbvao.attrib(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, offsetof(boxvertex_t, color));
 		cbvao.end();
 		
-		delete boxv;
+		delete[] boxv;
 	}
 	void Chatbox::openChat(bool open)
 	{

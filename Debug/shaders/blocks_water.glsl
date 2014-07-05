@@ -166,7 +166,7 @@ void main(void)
 	underw.rgb = pow(underw.rgb, vec3(1.0 / 2.2));
 	
 	// nicer depth, adding a little extra
-	wdepth += 2.0 / ZFAR;
+	wdepth += 5.0 / ZFAR;
 	
 	// above water we want the sky to appear as 100% seafloor
 	const float DEPTH_TRESHOLD = 20.0 / ZFAR;

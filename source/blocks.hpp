@@ -44,9 +44,9 @@ namespace cppcraft
 		// DOES NOTHING on default constructor
 		Block() {}
 		// constructor taking block id as parameter
-		Block(block_t id)
+		Block(block_t data)
 		{
-			this->data = id;
+			this->data = data;
 		}
 		// semi-complete constructor
 		Block(block_t id, block_t bitfield)
@@ -111,10 +111,6 @@ namespace cppcraft
 			this->data &= 1023;
 			// set new bitfield
 			this->data |= (bitf & 63) << 10;
-		}
-		inline void setData(block_t data)
-		{
-			this->data = data;
 		}
 		inline block_t getData() const
 		{
@@ -183,7 +179,6 @@ namespace cppcraft
 		
 		// human readable name of a block
 		static std::string getBlockName(block_t id);
-		
 	};
 	#pragma pack(pop)
 	

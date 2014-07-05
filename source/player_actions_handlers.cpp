@@ -79,13 +79,13 @@ namespace cppcraft
 				
 			}
 			
-			#ifdef USE_SOUND
+			/*#ifdef USE_SOUND
 				if newstate = 0 then
 					inetSoundEx(S_FX_DOOR_OPEN, 1.0, true)
 				else
 					inetSoundEx(S_FX_DOOR_CLOSE, 1.0, true)
 				endif
-			#endif
+			#endif*/
 		}
 		
 	}

@@ -80,30 +80,6 @@ namespace cppcraft
 		// copy cube-mesh object 0 (+z side)
 		blockmodels.cubes[model].copyTo(0, indic);
 		
-	#ifdef USE_SLOPING
-		// if has bottom-face:
-		if slopebot then
-			// if has +x face
-			if facing and 16 then indic[1].z -= slope_size(4) : indic[1].x -= slope_size(4)
-			// if has -x face
-			if facing and 32 then indic[0].z -= slope_size(5) : indic[0].x += slope_size(5)
-		
-		// if has top-face:
-		endif
-		if slopetop then
-			// if has +x face
-			if facing and 16 then indic[2].z -= slope_size(0) : indic[2].x -= slope_size(0)
-			// if has -x face
-			if facing and 32 then indic[3].z -= slope_size(1) : indic[3].x += slope_size(1)
-		endif
-		
-	#endif
-		
-		indic[0].biome = fbiome[2];
-		indic[1].biome = fbiome[3];
-		indic[2].biome = fbiome[3];
-		indic[3].biome = fbiome[2];
-		
 		if (shaderLine == RenderConst::TX_REPEAT)
 		{
 			if (repeat_y)
@@ -146,6 +122,10 @@ namespace cppcraft
 			indic[2].w = indic->w;
 			indic[3].w = indic->w;
 		}
+		indic[0].biome = fbiome[2];
+		indic[1].biome = fbiome[3];
+		indic[2].biome = fbiome[3];
+		indic[3].biome = fbiome[2];
 		
 	} // emitCubeVertexPZ()
 	
@@ -153,23 +133,6 @@ namespace cppcraft
 	{
 		// copy cube-mesh object 1 (-z side)
 		blockmodels.cubes[model].copyTo(1, indic);
-		
-	#ifdef USE_SLOPING
-		// if has top-face:
-		if slopebot then
-			// if has +x face
-			if facing and 16 then indic[3].z += slope_size(6) : indic[3].x -= slope_size(6)
-			// if has -x face
-			if facing and 32 then indic[0].z += slope_size(7) : indic[0].x += slope_size(7)
-		
-		endif
-		if slopetop then
-			// if has +x face
-			if facing and 16 then indic[2].z += slope_size(2) : indic[2].x -= slope_size(2)
-			// if has -x face
-			if facing and 32 then indic[1].z += slope_size(3) : indic[1].x += slope_size(3)
-		EndIf
-	#endif
 		
 		if (shaderLine == RenderConst::TX_REPEAT)
 		{
@@ -224,28 +187,8 @@ namespace cppcraft
 	void PrecompThreadData::emitCubeVertexPY(int model, block_t id, int bx, int by, int bz)
 	{
 		// 0.0, 0.0,  0.0, 1.0,  1.0, 1.0,  1.0, 0.0
-		
 		// copy cube-mesh object 2 (+y side)
 		blockmodels.cubes[model].copyTo(2, indic);
-		
-	#ifdef USE_SLOPING
-		if slopetop then
-			// if has +z face:
-			if facing and 1 then
-				// if has +x face
-				if facing and 16 then indic[2].z -= slope_size(0) : indic[2].x -= slope_size(0)
-				// if has -x face
-				if facing and 32 then indic[1].z -= slope_size(1) : indic[1].x += slope_size(1)
-			EndIf
-			// if has -z face
-			if facing and 2 then
-				// if has +x face
-				if facing and 16 then indic[3].z += slope_size(2) : indic[3].x -= slope_size(2)
-				// if has -x face
-				if facing and 32 then indic[0].z += slope_size(3) : indic[0].x += slope_size(3)
-			endif
-		endif
-	#endif
 		
 		if (shaderLine == RenderConst::TX_REPEAT)
 		{
@@ -290,25 +233,6 @@ namespace cppcraft
 		// copy cube-mesh object 3 (-y side)
 		blockmodels.cubes[model].copyTo(3, indic);
 		
-	#ifdef USE_SLOPING
-		if slopebot then
-			// if has +z face:
-			if facing and 1 then
-				// if has +x face
-				if facing and 16 then indic[2].z -= slope_size(4) : indic[2].x -= slope_size(4)
-				// if has -x face
-				if facing and 32 then indic[3].z -= slope_size(5) : indic[3].x += slope_size(5)
-			EndIf
-			// if has -z face
-			if facing and 2 then
-				// if has +x face
-				if facing and 16 then indic[1].z += slope_size(6) : indic[1].x -= slope_size(6)
-				// if has -x face
-				if facing and 32 then indic[0].z += slope_size(7) : indic[0].x += slope_size(7)
-			endif
-		endif
-	#endif
-		
 		if (shaderLine == RenderConst::TX_REPEAT)
 		{
 			// {1,1,  0,1,  0,0,  1,0}
@@ -352,24 +276,6 @@ namespace cppcraft
 	{
 		// copy cube-mesh object 4 (+x side)
 		blockmodels.cubes[model].copyTo(4, indic);
-		
-	#ifdef USE_SLOPING
-		// if has -y face:
-		if slopebot then
-			// if has +z face
-			if facing and 1 then indic[3].z -= slope_size(4) : indic[3].x -= slope_size(4)
-			// if has -z face
-			if facing and 2 then indic[0].z += slope_size(6) : indic[0].x -= slope_size(6)
-			
-		// if has +y face:
-		endif
-		if slopetop then
-			// if has +z face
-			if facing and 1 then indic[2].z -= slope_size(0) : indic[2].x -= slope_size(0)
-			// if has -z face
-			if facing and 2 then indic[1].z += slope_size(2) : indic[1].x -= slope_size(2)
-		endif
-	#endif
 		
 		if (shaderLine == RenderConst::TX_REPEAT)
 		{
@@ -428,24 +334,6 @@ namespace cppcraft
 	{
 		// copy cube-mesh object 5 (+x side)
 		blockmodels.cubes[model].copyTo(5, indic);
-		
-	#ifdef USE_SLOPING
-		// if has -y face:
-		if slopebot then
-			// if has +z face
-			if facing and 1 then indic[1].z -= slope_size(5) : indic[1].x += slope_size(5)
-			// if has -z face
-			if facing and 2 then indic[0].z += slope_size(7) : indic[0].x += slope_size(7)
-			
-		// if has +y face:
-		endif
-		if slopetop then
-			// if has +z face
-			if facing and 1 then indic[2].z -= slope_size(1) : indic[2].x += slope_size(1)
-			// if has -z face
-			if facing and 2 then indic[3].z += slope_size(3) : indic[3].x += slope_size(3)
-		EndIf
-	#endif
 		
 		if (shaderLine == RenderConst::TX_REPEAT)
 		{
