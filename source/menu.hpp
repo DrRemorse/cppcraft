@@ -48,6 +48,8 @@ namespace cppcraft
 		
 		InventoryItem& operator() (int x, int y);
 		
+		void create(int w, int h);
+		
 		// getters
 		inline int getWidth()  const { return this->width; }
 		inline int getHeight() const { return this->height; }

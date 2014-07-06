@@ -17,7 +17,7 @@ namespace cppcraft
 		this->quickbarX = 0;
 		this->quickbarY = 4;
 		
-		inventory = Inventory(9, 5);
+		inventory.create(9, 5);
 		
 		// create default inventory
 		inventory(0, quickbarY) = InventoryItem(IT_DIAMPICK, ITT_ITEM, 1);
@@ -45,6 +45,10 @@ namespace cppcraft
 	
 	Inventory::Inventory(int w, int h)
 		: Inventory()
+	{
+		create(w, h);
+	}
+	void Inventory::create(int w, int h)
 	{
 		this->width = w;
 		this->height = h;
