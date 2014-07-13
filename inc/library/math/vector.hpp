@@ -53,11 +53,11 @@ namespace library
 		vec2 reflect(const vec2& normal) const;
 		
 		// exponentiation
-		vec2& pow(double e);
+		vec2& pow(vector_t e);
 		vec2& pow(const vec2& v);
 		
 		// linear interpolation
-		vec2 mix(const vec2&, float) const;
+		vec2 mix(const vec2& v, vector_t factor) const;
 		
 		// -= vec2 operators =- //
 		
@@ -90,7 +90,7 @@ namespace library
 		bool operator != (const vec2&) const;
 		
 		// inline friends
-		inline friend vec2 pow(const vec2& v1, double e)
+		inline friend vec2 pow(const vec2& v1, vec2::vector_t e)
 		{
 			return vec2(v1).pow(e);
 		}
@@ -156,10 +156,10 @@ namespace library
 		
 		vec3 frac() const;
 		// linear interpolation
-		vec3 mix(const vec3&, float) const;
+		vec3 mix(const vec3& v, vector_t factor) const;
 		
 		// exponentiation
-		vec3& pow(double e);
+		vec3& pow(vector_t e);
 		vec3& pow(const vec3& v);
 		
 		// -= vec3 operators =- //
@@ -193,7 +193,7 @@ namespace library
 		bool operator != (const vec3&) const;
 		
 		// inline friends
-		inline friend vec3 pow(const vec3& v1, double e)
+		inline friend vec3 pow(const vec3& v1, vec3::vector_t e)
 		{
 			return vec3(v1).pow(e);
 		}
@@ -213,11 +213,17 @@ namespace library
 		
 		// -= vec4 constructors =- //
 		
-		vec4();
-		vec4(vector_t);
-		vec4(vector_t, vector_t);
-		vec4(vector_t, vector_t, vector_t, vector_t);
-		vec4(const vec3&, vector_t);
+		vec4()
+			: vec3(), w(0.0) {}
+		vec4(vector_t v)
+			: vec3(v), w(v) {}
+		vec4(vector_t v, vector_t W)
+			: vec3(v), w(W) {}
+		vec4(vector_t x, vector_t y, vector_t z, vector_t W)
+			: vec3(x, y, z), w(W) {}
+		vec4(const vec2&, const vec2&);
+		vec4(const vec3& xyz, vector_t W)
+			: vec3(xyz), w(W) {}
 		
 		// -= vec4 swizzles =- //
 		
@@ -231,18 +237,30 @@ namespace library
 	};
 	
 	// vec2 functions
-	vec2 slerp(vec2 va, vec2 vb, float t);
-	vec2 rotateTowards(vec2 from, vec2 to, vec2::vector_t dTheta);
+	vec2 slerp(const vec2& va, const vec2& vb, vec2::vector_t t);
+	vec2 rotateTowards(const vec2& from, const vec2& to, vec2::vector_t dTheta);
 	
 	// vec3 language functions
-	vec3::vector_t dot(const vec3& va, const vec3& vb);
-	vec3::vector_t distance(const vec3& va, const vec3& vb);
-	vec3 normalize(const vec3&);
-	vec3 cross(const vec3&, const vec3&);
+	inline vec3::vector_t dot(const vec3& va, const vec3& vb)
+	{
+		return va.dot(vb);
+	}
+	inline vec3::vector_t distance(const vec3& va, const vec3& vb)
+	{
+		return (va - vb).length();
+	}
+	inline vec3 normalize(const vec3& v)
+	{
+		return v.normalized();
+	}
+	inline vec3 cross(const vec3& va, const vec3& vb)
+	{
+		return va.cross(vb);
+	}
 	vec3 reflect(const vec3& I, const vec3& N);
 	vec3 refract(const vec3& I, const vec3& N, const vec3::vector_t eta);
 	// transform this vector from pitch and yaw
-	vec3 lookVector(const vec2& rot);
+	vec3 lookVector(const vec2& radians);
 	
 	// additional arithmetic operators
 	template <typename T>
@@ -292,7 +310,6 @@ namespace library
 	Log& operator<< (Log& out, const vec2& v);
 	Log& operator<< (Log& out, const vec3& v);
 	Log& operator<< (Log& out, const vec4& v);
-	
 }
 
 // cout output functions

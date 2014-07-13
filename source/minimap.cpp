@@ -67,6 +67,7 @@ namespace cppcraft
 		this->ofsX = (px - (Sectors.getXZ() * Sector::BLOCKS_XZ / 2)) / Seamless::OFFSET * 2;
 		this->ofsY = (pz - (Sectors.getXZ() * Sector::BLOCKS_XZ / 2)) / Seamless::OFFSET * 2;
 		
+		minimapMutex.lock();
 		// update synchronization
 		if (this->needs_update)
 		{
@@ -78,6 +79,7 @@ namespace cppcraft
 			texture->uploadBGRA8(*bitmap);
 			// done
 		}
+		minimapMutex.unlock();
 	}
 	
 	void Minimap::render(mat4& mvp)
@@ -270,52 +272,57 @@ namespace cppcraft
 		return c;
 	}
 	
+	void Minimap::setUpdated()
+	{
+		minimapMutex.lock();
+			this->needs_update = true;
+		minimapMutex.unlock();
+	}
+	
 	// addSector: called from Generator::generate()
 	// each time block data at skylevel is updated, this function COULD be called
 	// one solution is to wait for 8 block changes, disregard skylevel, and update
 	// the algorithm would be sectorblock::version % 8
 	void Minimap::addSector(Sector& sector)
 	{
-		if (bitmap == nullptr) return;
-		if (bitmap->isValid() == false) return;
-		
 		// read certain blocks from sector, and determine pixel value
 		// set pixel value in the correct 2x2 position on pixel table
-		Sector& s0 = Sectors(sector.getX(), 0, sector.getZ());
 		FlatlandSector& fs = flatlands(sector.getX(), sector.getZ());
 		
 		// fetch sky levels
 		int skylevel[8];
 		skylevel[0] = fgetSkylevel(fs,  3,  3);
-		skylevel[1] = fgetSkylevel(fs,  3, 12);
-		skylevel[2] = fgetSkylevel(fs, 12,  3);
-		skylevel[3] = fgetSkylevel(fs, 12, 12);
+		skylevel[1] = fgetSkylevel(fs,  4,  4);
 		
-		skylevel[4] = fgetSkylevel(fs,  4,  4);
-		skylevel[5] = fgetSkylevel(fs,  4, 11);
-		skylevel[6] = fgetSkylevel(fs, 11,  4);
+		skylevel[2] = fgetSkylevel(fs,  3, 12);
+		skylevel[3] = fgetSkylevel(fs,  4, 11);
+		
+		skylevel[4] = fgetSkylevel(fs, 12,  3);
+		skylevel[5] = fgetSkylevel(fs, 11,  4);
+		
+		skylevel[6] = fgetSkylevel(fs, 12, 12);
 		skylevel[7] = fgetSkylevel(fs, 11, 11);
 		
 		// fetch blocks at skylevels
-		int bx = s0.getX() * Sector::BLOCKS_XZ;
-		int bz = s0.getZ() * Sector::BLOCKS_XZ;
+		int bx = sector.getX() * Sector::BLOCKS_XZ;
+		int bz = sector.getZ() * Sector::BLOCKS_XZ;
 		
 		// determine colors for skylevel blocks
 		Bitmap::rgba8_t colors[4];
 		
 		colors[0] = getBlockColor(fs, bx+ 3, skylevel[0], bz+ 3);
 		colors[0] = mixColor(colors[0],
-					getBlockColor(fs, bx+ 4, skylevel[4], bz+ 4), 0.5);
+					getBlockColor(fs, bx+ 4, skylevel[1], bz+ 4), 0.5);
 		
-		colors[1] = getBlockColor(fs, bx+ 3, skylevel[1], bz+12);
+		colors[1] = getBlockColor(fs, bx+ 3, skylevel[2], bz+12);
 		colors[1] = mixColor(colors[1],
-					getBlockColor(fs, bx+ 4, skylevel[5], bz+11), 0.5);
+					getBlockColor(fs, bx+ 4, skylevel[3], bz+11), 0.5);
 		
-		colors[2] = getBlockColor(fs, bx+12, skylevel[2], bz+ 3);
+		colors[2] = getBlockColor(fs, bx+12, skylevel[4], bz+ 3);
 		colors[2] = mixColor(colors[2],
-					getBlockColor(fs, bx+11, skylevel[6], bz+ 4), 0.5);
+					getBlockColor(fs, bx+11, skylevel[5], bz+ 4), 0.5);
 		
-		colors[3] = getBlockColor(fs, bx+12, skylevel[3], bz+12);
+		colors[3] = getBlockColor(fs, bx+12, skylevel[6], bz+12);
 		colors[3] = mixColor(colors[3],
 					getBlockColor(fs, bx+11, skylevel[7], bz+11), 0.5);
 		
@@ -324,8 +331,6 @@ namespace cppcraft
 		int pz = bitmap->getHeight() / 2 - Sectors.getXZ() + 2 * sector.getZ();
 		
 		Bitmap::rgba8_t* pixels = bitmap->data();
-		if (pixels == nullptr) throw std::string("Minimap::addSector(): Bitmap had no buffer");
-		
 		int scan = bitmap->getWidth();
 		
 		pixels[ pz      * scan + px] = colors[0];
@@ -398,7 +403,9 @@ namespace cppcraft
 			memset(pixels, 0, page * 2 * sizeof(Bitmap::rgba8_t));
 		}
 		
-		// mark as updated
-		this->needs_update = true;
+		minimapMutex.lock();
+			// mark as updated
+			this->needs_update = true;
+		minimapMutex.unlock();
 	}
 }

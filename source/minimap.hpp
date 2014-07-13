@@ -23,11 +23,7 @@ namespace cppcraft
 		void addSector(Sector& s);
 		void roll(int x, int z);
 		
-		inline void setUpdated()
-		{
-			// mark as updated
-			this->needs_update = true;
-		}
+		void setUpdated();
 		
 	private:
 		library::Bitmap*  bitmap;
