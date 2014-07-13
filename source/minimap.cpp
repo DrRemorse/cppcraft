@@ -102,9 +102,14 @@ namespace cppcraft
 		return fs(x, z).skyLevel;
 	}
 	
-	inline Bitmap::rgba8_t fgetColor(FlatlandSector& fs, int x, int z, int clid)
+	Bitmap::rgba8_t fgetColor(FlatlandSector& fs, int x, int z, int clid)
 	{
-		return fs(x & (Sector::BLOCKS_XZ-1), z & (Sector::BLOCKS_XZ-1)).fcolor[clid];
+		Bitmap::rgba8_t color = fs(x, z).fcolor[clid];
+		unsigned char* p = (unsigned char*) &color;
+		unsigned char red = p[0];
+		p[0] = p[2];
+		p[2] = red;
+		return color;
 	}
 	
 	Bitmap::rgba8_t mixColor(Bitmap::rgba8_t a, Bitmap::rgba8_t b, float mixlevel)
@@ -122,18 +127,18 @@ namespace cppcraft
 	}
 	
 	// constants
-	static const float HEIGHTMAP_F = 80;
-	static const float HEIGHTMAP_R = HEIGHTMAP_F;
-	static const float HEIGHTMAP_G = HEIGHTMAP_F;
-	static const float HEIGHTMAP_B = HEIGHTMAP_F;
+	static const int HEIGHTMAP_F = 80;
+	static const int HEIGHTMAP_R = HEIGHTMAP_F;
+	static const int HEIGHTMAP_G = HEIGHTMAP_F;
+	static const int HEIGHTMAP_B = HEIGHTMAP_F;
 	
 	Bitmap::rgba8_t lowColor(Bitmap::rgba8_t c)
 	{
 		unsigned char* p = (unsigned char*)&c;
 		// overflow checks
-		p[0] = (p[0] - HEIGHTMAP_R <= 0) ? 0 : p[0] - HEIGHTMAP_R;
-		p[1] = (p[1] - HEIGHTMAP_G <= 0) ? 0 : p[1] - HEIGHTMAP_G;
-		p[2] = (p[2] - HEIGHTMAP_B <= 0) ? 0 : p[2] - HEIGHTMAP_B;
+		p[0] = (p[0] - HEIGHTMAP_R >= 0) ? p[0] - HEIGHTMAP_R : 0;
+		p[1] = (p[1] - HEIGHTMAP_G >= 0) ? p[1] - HEIGHTMAP_G : 0;
+		p[2] = (p[2] - HEIGHTMAP_B >= 0) ? p[2] - HEIGHTMAP_B : 0;
 		return c;
 	}
 	Bitmap::rgba8_t highColor(Bitmap::rgba8_t c)
