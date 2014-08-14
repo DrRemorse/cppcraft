@@ -1,10 +1,10 @@
 #include "lighting.hpp"
 
 #include <library/log.hpp>
-#include <library/config.hpp>
 #include <library/math/toolbox.hpp>
 #include "blocks.hpp"
 #include "flatlands.hpp"
+#include "gameconf.hpp"
 #include "lighttable.hpp"
 #include "renderconst.hpp"
 #include "sectors.hpp"

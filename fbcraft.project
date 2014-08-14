@@ -590,8 +590,8 @@
       <PostBuild/>
       <CustomBuild Enabled="yes">
         <RebuildCommand>make rebuild</RebuildCommand>
-        <CleanCommand>make clean</CleanCommand>
-        <BuildCommand>make -j4</BuildCommand>
+        <CleanCommand>mingw32-make clean</CleanCommand>
+        <BuildCommand>mingw32-make -j4</BuildCommand>
         <PreprocessFileCommand/>
         <SingleFileCommand>make $(currentFile)</SingleFileCommand>
         <MakefileGenerationCommand/>

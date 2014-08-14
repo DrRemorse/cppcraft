@@ -1,5 +1,5 @@
-#ifndef CONFIG_HPP
-#define CONFIG_HPP
+#ifndef LIBRARY_CONFIG_HPP
+#define LIBRARY_CONFIG_HPP
 
 #include <map>
 #include <string>
@@ -9,28 +9,35 @@ namespace library
 {
 	class Config
 	{
-		std::map<std::string, std::string> kv;
-		
 	public:
-		Config();
-		Config(std::string);
-		bool load(std::string file);
+		Config() {}
+		Config(const std::string& file);
+		bool load(const std::string& file);
 		
-		inline const char* get(std::string var, const char* def)
+		// std::string
+		std::string get(const std::string& var, const std::string& def)
 		{
-			// if variable is not found in hashmap, return default
+			// not found in hashmap -> return default
 			if (kv.find(var) == kv.end()) return def;
-			// return C-string
-			return kv[var].c_str();
+			// return result
+			return kv[var];
 		}
-		
-		template <typename ValueType>
-		inline ValueType get(std::string var, const ValueType def)
+		// const char*
+		std::string get(const std::string& var, const char* def)
+		{
+			// not found in hashmap -> return default
+			if (kv.find(var) == kv.end()) return def;
+			// return result
+			return kv[var];
+		}
+		// algebraic
+		template <typename T>
+		T get(const std::string& var, const T def)
 		{
 			// if variable is not found in hashmap, return default
 			if (kv.find(var) == kv.end()) return def;
 			// initialize result to default value
-			ValueType result;
+			T result;
 			std::stringstream convert(kv[var]);
 			// if the conversion fails, return default
 			if (!(convert >> result)) return def;
@@ -38,28 +45,25 @@ namespace library
 			return result;
 		}
 		
-		// redirect for c-strings
-		template <typename T>
-		inline T get(const char* var, T def)
-		{
-			return get(std::string(var), def);
-		}
-		
-		template <typename T>
-		inline void set(std::string key, T value)
+		void set(const std::string& key, const std::string& value)
 		{
 			if (kv.find(key) == kv.end()) 
 			{
 				kv.insert(
-					std::pair<std::string,std::string>(key, value)
+					std::make_pair(key, value)
 				);
 			}
 			else kv[key] = value;
 		}
 		
+		template <typename T>
+		void set(const std::string& key, T val)
+		{
+			set(key, std::to_string(val));
+		}
+	private:
+		std::map<std::string, std::string> kv;
 	};
-	// default config-file object
-	extern Config config;
 }
 
 #endif

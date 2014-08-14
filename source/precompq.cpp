@@ -1,10 +1,10 @@
 #include "precompq.hpp"
 
 #include <library/log.hpp>
-#include <library/config.hpp>
 #include <library/timing/timer.hpp>
 #include <library/threading/TThreadPool.hpp>
 #include "columns.hpp"
+#include "gameconf.hpp"
 #include "precompiler.hpp"
 #include "precomp_thread.hpp"
 #include "precompq_schedule.hpp"

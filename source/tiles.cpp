@@ -1,7 +1,7 @@
 #include "tiles.hpp"
 
-#include "library/log.hpp"
-#include "library/config.hpp"
+#include <library/log.hpp>
+#include "gameconf.hpp"
 
 using namespace library;
 

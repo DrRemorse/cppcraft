@@ -1,6 +1,8 @@
 #ifndef GAMECONF_HPP
 #define GAMECONF_HPP
 
+#include <library/config.hpp>
+
 namespace cppcraft
 {
 	class GameConfig
@@ -35,5 +37,6 @@ namespace cppcraft
 	};
 	extern GameConfig gameconf;
 }
+extern library::Config config;
 
 #endif

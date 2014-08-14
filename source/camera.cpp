@@ -1,8 +1,8 @@
 #include "camera.hpp"
 
-#include <library/config.hpp>
 #include <library/log.hpp>
 #include <library/opengl/window.hpp>
+#include "gameconf.hpp"
 #include "sectors.hpp"
 #include "world.hpp"
 #include <cmath>

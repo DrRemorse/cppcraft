@@ -4,6 +4,7 @@
 #include <library/config.hpp>
 
 using namespace library;
+library::Config config;
 
 namespace cppcraft
 {

@@ -6,7 +6,7 @@ namespace cppcraft
 {
 	// TODO: Use visibility to optimize fence model
 	
-	int PrecompThreadData::emitFence(const Block& currentBlock, int bx, int by, int bz, block_t visibility)
+	int PrecompThreadData::emitFence(const Block& currentBlock, int bx, int by, int bz, block_t)
 	{
 		int model = currentBlock.getFacing();
 		model = (model < 2) ? 0 : 1;

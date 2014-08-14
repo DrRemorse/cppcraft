@@ -1,9 +1,9 @@
 #include "player.hpp"
 
-#include <library/config.hpp>
 #include <library/log.hpp>
 #include <library/opengl/input.hpp>
 #include "chat.hpp"
+#include "gameconf.hpp"
 #include "menu.hpp"
 #include "network.hpp"
 #include "player_inputs.hpp"

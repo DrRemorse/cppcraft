@@ -3,6 +3,7 @@
 #include <library/config.hpp>
 #include "sectors.hpp"
 #include "flatlands.hpp"
+#include "gameconf.hpp"
 #include "player.hpp"
 #include <fstream>
 
@@ -17,7 +18,7 @@ namespace cppcraft
 	{
 		/// initialize sectors, blocks & flatlands ///
 		// default world folder
-		const std::string DEFAULT_WORLD_FOLDER = "world";
+		const std::string DEFAULT_WORLD_FOLDER = "Worlds/test";
 		
 		int sectors_xz = config.get("world.viewdist", 48);
 		Sectors.init(sectors_xz);

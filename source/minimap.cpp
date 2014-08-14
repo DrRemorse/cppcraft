@@ -106,7 +106,7 @@ namespace cppcraft
 	
 	Bitmap::rgba8_t fgetColor(FlatlandSector& fs, int x, int z, int clid)
 	{
-		Bitmap::rgba8_t color = fs(x, z).fcolor[clid];
+		Bitmap::rgba8_t color = fs(x & (Sector::BLOCKS_XZ-1), z & (Sector::BLOCKS_XZ-1)).fcolor[clid];
 		unsigned char* p = (unsigned char*) &color;
 		unsigned char red = p[0];
 		p[0] = p[2];

@@ -1,6 +1,5 @@
 #include "renderman.hpp"
 
-#include <library/config.hpp>
 #include <library/log.hpp>
 #include <library/opengl/opengl.hpp>
 #include <library/timing/timer.hpp>
@@ -8,6 +7,7 @@
 #include "camera.hpp"
 #include "compilers.hpp"
 #include "drawq.hpp"
+#include "gameconf.hpp"
 #include "player.hpp"
 #include "render_fs.hpp"
 #include "render_gui.hpp"
@@ -19,7 +19,6 @@
 #include "threading.hpp"
 #include <cmath>
 #include <deque>
-
 //#define DEBUG
 
 using namespace library;

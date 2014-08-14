@@ -1,8 +1,0 @@
-c:\mingw64\bin\g++
--Wall -Wno-write-strings -m32 -Ofast -msse4.1 -mfpmath=both -fpermissive -Wl,--add-stdcall-alias
--Igcc
--shared -Llib
-gcc
-gcc/biome
-gcc/noise
-gcc/objects

@@ -71,6 +71,7 @@ namespace library
 		void unbind();
 		void unbind(GLenum unit);
 		// copy entire screen to this texture
+		void copyScreen();
 		void copyScreen(int w, int h);
 		
 		// upload (new) data

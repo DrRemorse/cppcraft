@@ -1,9 +1,9 @@
 #include "network.hpp"
 
 #include <library/log.hpp>
-#include <library/config.hpp>
 #include <library/bitmap/colortools.hpp>
 #include "chat.hpp"
+#include "gameconf.hpp"
 #include "netplayers.hpp"
 #include "player.hpp"
 #include "player_logic.hpp"

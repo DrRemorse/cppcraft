@@ -3,6 +3,7 @@
 #include <library/config.hpp>
 #include <library/log.hpp>
 #include "blocks.hpp"
+#include "gameconf.hpp"
 
 using namespace library;
 
