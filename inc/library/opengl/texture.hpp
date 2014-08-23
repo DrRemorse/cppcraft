@@ -75,7 +75,7 @@ namespace library
 		void copyScreen(int w, int h);
 		
 		// upload (new) data
-		void uploadBGRA8(const Bitmap& bmp);
+		void upload(const Bitmap& bmp);
 		void upload3D(int sizeX, int sizeY, int sizeZ, void* pixeldata);
 		
 		// returns (raw) texture handle
@@ -101,6 +101,7 @@ namespace library
 		int width, height;
 		
 		GLenum getStorageFormat();
+		GLenum getByteFormat();
 		
 		static GLuint lastid[TEXTURE_UNITS];
 		static GLenum lastUnit;

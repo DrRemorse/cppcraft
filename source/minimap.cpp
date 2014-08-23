@@ -76,7 +76,7 @@ namespace cppcraft
 			// bind minimap texture
 			texture->bind(0);
 			// re-upload pixel data (and auto-generate mipmaps)
-			texture->uploadBGRA8(*bitmap);
+			texture->upload(*bitmap);
 			// done
 		}
 		minimapMutex.unlock();

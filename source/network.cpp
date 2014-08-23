@@ -41,7 +41,7 @@ namespace cppcraft
 			netplayers.createTestPlayer();
 		#endif
 		
-		timer.startNewRound();
+		timer.restart();
 	}
 	
 	void Network::mainLoop(WorldManager& worldman)
@@ -366,7 +366,7 @@ namespace cppcraft
 			static const double UPDATE_INTERVAL = 0.100;
 			static double lastTime = 0.0;
 			
-			double deltat = timer.getDeltaTime();
+			double deltat = timer.getTime();
 			if (deltat > lastTime + UPDATE_INTERVAL)
 			{
 				lastTime = deltat;

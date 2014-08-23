@@ -2,6 +2,7 @@
 #define VECTOR_HPP
 
 #include <iostream>
+#include <cmath>
 
 namespace library
 {
@@ -39,13 +40,19 @@ namespace library
 		{
 			return x * x + y * y;
 		}
-		vector_t length() const;
+		vector_t length() const
+		{
+			return std::sqrt(length_squared());
+		}
 		
 		vec2& rotate(vector_t angle);
 		vec2  rotated(vector_t angle) const;
 		
 		vec2& normalize();
-		vec2  normalized() const;
+		vec2  normalized() const
+		{
+			return vec2(*this).normalize();
+		}
 		
 		vector_t dot(const vec2&) const;
 		vector_t determinant(const vec2&) const;
@@ -140,9 +147,15 @@ namespace library
 		{
 			return x * x + y * y + z * z;
 		}
-		vector_t length() const;
+		vector_t length() const
+		{
+			return std::sqrt(length_squared());
+		}
 		vec3& normalize();
-		vec3  normalized() const;
+		vec3  normalized() const
+		{
+			return vec3(*this).normalize();
+		}
 		vector_t dot(const vec3&) const;
 		vec3 cross(const vec3&) const;
 		vec3 reflect(const vec3& normal) const;
@@ -221,22 +234,42 @@ namespace library
 			: vec3(v), w(W) {}
 		vec4(vector_t x, vector_t y, vector_t z, vector_t W)
 			: vec3(x, y, z), w(W) {}
-		vec4(const vec2&, const vec2&);
+		vec4(const vec2& a, const vec2& b)
+			: vec3(a.x, a.y, b.x), w(b.y) {}
 		vec4(const vec3& xyz, vector_t W)
 			: vec3(xyz), w(W) {}
+		vec4(const vector_t* v)
+			: vec4(v[0], v[1], v[2], v[3]) {}
 		
 		// -= vec4 swizzles =- //
-		
-		vec3 xyz() const;
+		vec3 xyz() const
+		{
+			return vec3(x, y, z);
+		}
 		
 		// -= vec4 operators =- //
 		
 		// unary - (negate)
-		const vec4 operator - () const;
+		const vec4 operator - () const
+		{
+			return vec4(-x, -y, -z, -w);
+		}
 		
 	};
 	
 	// vec2 functions
+	inline vec2::vector_t dot(const vec2& va, const vec2& vb)
+	{
+		return va.dot(vb);
+	}
+	inline vec2::vector_t distance(const vec2& va, const vec2& vb)
+	{
+		return (va - vb).length();
+	}
+	inline vec2 normalize(const vec2& v)
+	{
+		return v.normalized();
+	}
 	vec2 slerp(const vec2& va, const vec2& vb, vec2::vector_t t);
 	vec2 rotateTowards(const vec2& from, const vec2& to, vec2::vector_t dTheta);
 	

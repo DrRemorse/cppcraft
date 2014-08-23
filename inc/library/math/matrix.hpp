@@ -32,7 +32,7 @@ namespace library
 		// datatype must be 32bit float (or the matrix will be useless)
 		typedef float matrix_t;
 		
-		mat4();
+		mat4() {}
 		mat4(const mat4&);
 		mat4(matrix_t[]);
 		// scaling matrix constructors
@@ -74,8 +74,14 @@ namespace library
 		// new matrix from transpose
 		mat4 transposed() const;
 		
-		mat4& scale(matrix_t scale);
-		mat4& scale(matrix_t sx, matrix_t sy, matrix_t sz);
+		mat4& scale(matrix_t scale)
+		{
+			return *this *= mat4(scale);
+		}
+		mat4& scale(matrix_t sx, matrix_t sy, matrix_t sz)
+		{
+			return *this *= mat4(sx, sy, sz);
+		}
 		
 		inline mat4& translate(const vec3& v)
 		{
@@ -90,7 +96,11 @@ namespace library
 		{
 			return rotateZYX(angles.x, angles.y, angles.z);
 		}
-		mat4& rotateZYX(matrix_t ax, matrix_t ay, matrix_t az);
+		mat4& rotateZYX(matrix_t ax, matrix_t ay, matrix_t az)
+		{
+			mat4 rotationMatrix(mat4::matrix_t ax, mat4::matrix_t ay, mat4::matrix_t az);
+			return *this *= rotationMatrix(ax, ay, az);
+		}
 		
 		void batch(void* first, int stride, int count);
 		
@@ -133,6 +143,10 @@ namespace library
 	mat4 orthoMatrix(mat4::matrix_t width, mat4::matrix_t height, mat4::matrix_t znear, mat4::matrix_t zfar);
 	mat4 ortho2dMatrix(mat4::matrix_t width, mat4::matrix_t height, mat4::matrix_t znear, mat4::matrix_t zfar);
 	
+	class Log;
+	Log& operator<< (Log& out, const mat4& m);
 }
+
+std::ostream& operator<< (std::ostream& out, const library::mat4& m);
 
 #endif

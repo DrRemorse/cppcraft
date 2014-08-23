@@ -211,7 +211,7 @@ namespace cppcraft
 		
 		if (timer)
 		{
-			return timer->getDeltaTime() > timeOut;
+			return timer->getTime() > timeOut;
 		}
 		// time did not run out
 		return false;

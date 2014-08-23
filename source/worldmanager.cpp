@@ -38,14 +38,14 @@ namespace cppcraft
 		
 		// integral delta timing
 		Timer timer;
-		double localTime = timer.getDeltaTime();
+		double localTime = timer.getTime();
 		double _ticktimer = localTime;
 		
 		// world manager main loop
 		while (mtx.terminate == false)
 		{
 			// fixed timestep
-			localTime = timer.getDeltaTime();
+			localTime = timer.getTime();
 			
 			try
 			{
@@ -80,7 +80,7 @@ namespace cppcraft
 					_ticktimer += TIMING_TICKTIMER;
 					
 					// fixed timestep
-					_localtime = timer.getDeltaTime();
+					_localtime = timer.getTime();
 				}
 			}
 			catch (std::string exc)
@@ -119,7 +119,7 @@ namespace cppcraft
 				double timeOut = localTime + MAX_TIMING_WAIT;
 				
 				// check for timeout
-				if (timer.getDeltaTime() > timeOut) break;
+				if (timer.getTime() > timeOut) break;
 				
 				// update shadows if sun has travelled far
 				// but not when connected to a network
@@ -131,20 +131,20 @@ namespace cppcraft
 				///----------------------------------///
 				/// --------- PRECOMPILER ---------- ///
 				///----------------------------------///
-				//double t0 = timer.getDeltaTime();
+				//double t0 = timer.getTime();
 				//double t0 = _localtime;
 				
 				// as long as not currently 'generating' world:
 				// start precompiling sectors
 				if (precompq.run(timer, timeOut)) break;
 				
-				//double t1 = timer.getDeltaTime() - t0;
+				//double t1 = timer.getTime() - t0;
 				//if (t1 > 0.020)
 				//{
 				//	logger << "Precomp delta: " << t1 * 1000 << Log::ENDL;
 				//}
 				
-				//double t1 = timer.getDeltaTime();
+				//double t1 = timer.getTime();
 				//logger << "pcq time: " << t1 - t0 << Log::ENDL;
 				
 				teleportHandler();
@@ -155,7 +155,7 @@ namespace cppcraft
 				// precompq queue must be empty (aka ready for more stuff)
 				if (precompq.ready())
 				{
-					//double t0 = timer.getDeltaTime();
+					//double t0 = timer.getTime();
 					//double t0 = _localtime;
 					
 					try
@@ -168,13 +168,13 @@ namespace cppcraft
 						break;
 					}
 					
-					//double t1 = timer.getDeltaTime() - t0;
+					//double t1 = timer.getTime() - t0;
 					//if (t1 > 0.020)
 					//{
 					//	logger << "Worldbuilder delta: " << t1 * 1000 << Log::ENDL;
 					//}
 					
-					//double t1 = timer.getDeltaTime();
+					//double t1 = timer.getTime();
 					//logger << "WB time: " << t1 - t0 << Log::ENDL;
 				}
 				

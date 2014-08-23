@@ -27,7 +27,7 @@ namespace cppcraft
 		this->realAmbience = daylight(realRadian);
 		
 		this->setStep(900);
-		suntimer.startNewRound();
+		suntimer.restart();
 	}
 	
 	void SunClass::setRadianAngle(float angle)
@@ -49,7 +49,7 @@ namespace cppcraft
 	}
 	inline float SunClass::getStepValue()
 	{
-		return suntimer.getDeltaTime() * this->step;
+		return suntimer.getTime() * this->step;
 	}
 	
 	void SunClass::integrate(float timestep)
@@ -68,12 +68,12 @@ namespace cppcraft
 	}
 	void SunClass::travelCheck()
 	{
-		if (suntimer.getDeltaTime() > 30)
+		if (suntimer.getTime() > 30)
 		{
 			// set new sun angle (before timer reset)
 			setRadianAngle(radianAngle + getStepValue());
 			// reset timer & traveldistance
-			suntimer.startNewRound();
+			suntimer.restart();
 			// update world
 			Sectors.updateAll();
 		}

@@ -110,7 +110,7 @@ namespace cppcraft
 			{
 				// potentially add to precompiler queue
 				if (wrunPrecomp(xx, zz)) return true;
-				if (timer.getDeltaTime() > timeOut) return true;
+				if (timer.getTime() > timeOut) return true;
 			}
 			
 			this->lastPosition = 1;
@@ -123,7 +123,7 @@ namespace cppcraft
 			{
 				// potentially add to precompiler queue
 				if (wrunPrecomp(xx, zz)) return true;
-				if (timer.getDeltaTime() > timeOut) return true;
+				if (timer.getTime() > timeOut) return true;
 			}
 			
 			this->lastPosition = 2;
@@ -136,7 +136,7 @@ namespace cppcraft
 			{
 				// potentially add to precompiler queue
 				if (wrunPrecomp(xx, zz)) return true;
-				if (timer.getDeltaTime() > timeOut) return true;
+				if (timer.getTime() > timeOut) return true;
 			}
 			
 			this->lastPosition = 3;
@@ -149,7 +149,7 @@ namespace cppcraft
 			{
 				// potentially add to precompiler queue
 				if (wrunPrecomp(xx, zz)) return true;
-				if (timer.getDeltaTime() > timeOut) return true;
+				if (timer.getTime() > timeOut) return true;
 			}
 			
 			// back to start

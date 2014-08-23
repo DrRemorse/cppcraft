@@ -243,7 +243,7 @@ namespace cppcraft
 						if (startJob(precompiler[i])) nomorejobs = true;
 					}
 					// always check if time is out
-					if (timer.getDeltaTime() > timeOut) return true;
+					if (timer.getTime() > timeOut) return true;
 				}
 				else if (sector.progress == Sector::PROG_NEEDAO)
 				{
@@ -281,7 +281,7 @@ namespace cppcraft
 		}
 		
 		// always check if time is out
-		if (timer.getDeltaTime() > timeOut) return true;
+		if (timer.getTime() > timeOut) return true;
 		
 		// handle transition from this thread to rendering thread
 		// from precomp scheduler to compiler scheduler
@@ -289,7 +289,7 @@ namespace cppcraft
 		PrecompScheduler::scheduling();
 		
 		// always check if time is out
-		if (timer.getDeltaTime() > timeOut) return true;
+		if (timer.getTime() > timeOut) return true;
 		
 		return false;
 	}

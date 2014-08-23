@@ -27,6 +27,7 @@ namespace library
 		}
 		Bitmap(int w, int h);
 		Bitmap(int w, int h, rgba8_t color);
+		Bitmap(int w, int h, rgba8_t* data, int glformat = 0x80E1);
 		~Bitmap();
 		
 		// assignment operator (creates new copy)

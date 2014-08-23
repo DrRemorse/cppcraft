@@ -10,16 +10,16 @@ namespace library
 	public:
 		typedef double time_t;
 		
-		// constructor sets t0 to the current time, so that the next call
-		// to getDeltaTime will return the time between the two calls in high-precision seconds
+		//! \brief constructor sets t0 to the current time
 		Timer();
 		
-		// returns the time (in fractional seconds) between the last getDeltaTime()
-		// function call, or time since object was instantiated (whichever happened last)
-		time_t getDeltaTime();
+		//! \brief returns the time (in fractional seconds) between the last getDeltaTime()
+		//! function call, or time since object was instantiated (whichever happened last)
+		time_t getTime();
 		
-		// returns time elapsed, and sets new time, so all future rounds and deltas are calculated from new time point
-		time_t startNewRound();
+		//! \brief returns time elapsed, and sets new time, so 
+		//! all future rounds and deltas are calculated from new time point
+		time_t restart();
 		
 	private:
 		HighResClock::time_point t0;

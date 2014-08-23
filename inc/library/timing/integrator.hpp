@@ -19,9 +19,14 @@ namespace library
 		void restart();
 		void integrate();
 		
+		double getTimeStep() const
+		{
+			return timestep;
+		}
+		
 	protected:
 		// inherit this function, which will run for each <timestep> passed
-		virtual void timeStep(double timestep, double timeElapsed) = 0;
+		virtual bool timeStep(double timestep, double timeElapsed) = 0;
 		
 	private:
 		double timestep;
