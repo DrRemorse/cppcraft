@@ -147,11 +147,6 @@ namespace cppcraft
 		return 0;
 	}
 	
-	const Torchlight::lightdata_t& Torchlight::getEmitter(int id) const
-	{
-		return this->torchlights[id];
-	}
-	
 	float Torchlight::getModulation(double frameCounter)
 	{
 		const float TL_MODULATION_STRENGTH = 0.02;

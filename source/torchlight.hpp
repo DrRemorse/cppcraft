@@ -39,7 +39,10 @@ namespace cppcraft
 		
 		void init();
 		int   getEmitterId(block_t id) const;
-		const lightdata_t& getEmitter(int id) const;
+		const lightdata_t& getEmitter(short id) const
+		{
+			return this->torchlights[id];
+		}
 		
 		// light propagator
 		void lightSectorUpdates(Sector& s, bool instant);

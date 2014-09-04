@@ -1,6 +1,6 @@
 #include "compressor_rle.hpp"
 
-#include "library/log.hpp"
+#include <library/log.hpp>
 
 using namespace library;
 
