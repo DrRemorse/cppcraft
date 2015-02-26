@@ -318,7 +318,7 @@ namespace cppcraft
 				if (coords.valid)
 				{
 					block_t id = block.block.getID();
-					block_t bf = (block.block.getData()) >> 10;
+					block_t bf = block.block.getData() >> 10;
 					//logger << Log::INFO << "block: " << id << ", " << bf << Log::ENDL;
 					
 					// make world modification
