@@ -87,7 +87,7 @@ namespace cppcraft
 		block.type = NetworkBlock::BADD;
 		block.wc = badd->wcoord;
 		block.bc = badd->bcoord;
-		block.block = Block(badd->block.id, badd->block.bf);
+		block.block = Block(blockid(badd->block), blockbf(badd->block));
 		
 		network.addBlock(Network::INCOMING, block);
 	}
@@ -97,7 +97,7 @@ namespace cppcraft
 		block.type = NetworkBlock::BSET;
 		block.wc = bset->wcoord;
 		block.bc = bset->bcoord;
-		block.block = Block(bset->block.id, bset->block.bf);
+		block.block = Block(blockid(bset->block), blockbf(bset->block));
 		
 		network.addBlock(Network::INCOMING, block);
 	}
@@ -318,7 +318,7 @@ namespace cppcraft
 				if (coords.valid)
 				{
 					block_t id = block.block.getID();
-					block_t bf = block.block.getData() >> 10;
+					block_t bf = (block.block.getData()) >> 10;
 					//logger << Log::INFO << "block: " << id << ", " << bf << Log::ENDL;
 					
 					// make world modification
@@ -404,9 +404,11 @@ namespace cppcraft
 			{
 				NetworkBlock& nb = ntt.outgoing.front();
 				::block_t block;
-				block.id = nb.block.getID();
-				block.bf = nb.block.getData() >> 10;
+				//block.id = nb.block.getID();
+				//block.bf = nb.block.getData() >> 10;
 				
+                      block = nb.block.getData();
+
 				// make world modification
 				switch (nb.type)
 				{

@@ -6,6 +6,7 @@
 #include <liblattice/coordinates.h>
 #include "blocks.hpp"
 #include "world.hpp"
+#include "flatlands.hpp"
 #include <deque>
 #include <mutex>
 #include <thread>
@@ -72,6 +73,17 @@ namespace cppcraft
 		b_coord bc;
 	};
 	
+        class NetworkFlatland
+        {
+        public:
+                NetworkFlatland() {}
+                NetworkFlatland(int fx, int fz, const FlatlandSector::flatland_t &fdata);
+
+                f_coord fc;
+                FlatlandSector::flatland_t fdata[Sector::BLOCKS_XZ][Sector::BLOCKS_XZ];
+        };
+
+
 	class NetworkThreadTransfer
 	{
 	public:
