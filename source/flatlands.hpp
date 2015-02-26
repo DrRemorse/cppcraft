@@ -39,7 +39,7 @@ namespace cppcraft
 		static const int FLATLAND_SIZE = sizeof(fdata);
 		// allow chunk compressor direct access for loading
 		friend class Compressor;
-           friend class Network;
+                friend class Network;
 	};
 	
 	class FlatlandsContainer
