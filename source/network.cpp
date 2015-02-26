@@ -8,6 +8,7 @@
 #include "player.hpp"
 #include "player_logic.hpp"
 #include "sectors.hpp"
+#include "flatlands.hpp"
 #include "spiders.hpp"
 #include "sun.hpp"
 #include "world.hpp"
@@ -111,6 +112,16 @@ namespace cppcraft
 		network.addBlock(Network::INCOMING, block);
 	}
 	
+
+	void flatlandAdded(lattice_flatland* fl)
+	{
+		NetworkFlatland flatland;
+		flatland.fc = fl->fcoord;
+		memcpy(flatland.fdata, fl->fdata, sizeof(flatland.fdata));
+
+		network.addFlatland(flatland);
+	}
+
 	void userAdded(NetPlayer::userid_t userid, lattice_user* user)
 	{
 		UnpackCoordF coord(user->wpos, user->bpos);
@@ -268,6 +279,9 @@ namespace cppcraft
 			break;
 		case T_BREM:
 			blockAdded((lattice_brem*) mp->args);
+			break;
+		case T_FLATLAND:
+			flatlandAdded((lattice_flatland*) mp->args);
 			break;
 			
 		case T_LOG:
@@ -447,6 +461,13 @@ namespace cppcraft
 		{
 			ntt.outgoing.push_front(block);
 		}
+		mtx.unlock();
+	}
+
+	void Network::addFlatland(const NetworkFlatland& fl)
+	{
+		mtx.lock();
+		ntt.incoming_flatlands.push_front(fl);
 		mtx.unlock();
 	}
 	

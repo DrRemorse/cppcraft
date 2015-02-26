@@ -77,7 +77,7 @@ namespace cppcraft
         {
         public:
                 NetworkFlatland() {}
-                NetworkFlatland(int fx, int fz, const FlatlandSector::flatland_t &fdata);
+                //NetworkFlatland(int fx, int fz, const FlatlandSector::flatland_t &fdata);
 
                 f_coord fc;
                 FlatlandSector::flatland_t fdata[Sector::BLOCKS_XZ][Sector::BLOCKS_XZ];
@@ -98,6 +98,8 @@ namespace cppcraft
 		std::deque<NetworkBlock> incoming;
 		std::deque<NetworkBlock> outgoing;
 		
+               std::deque<NetworkFlatland> incoming_flatlands;
+
 		std::string outgoingChat;
 		
 		bool  updateSun = false;
@@ -119,6 +121,7 @@ namespace cppcraft
 		void handleNetworking();
 		
 		void addBlock(direction_t, const NetworkBlock&);
+                void addFlatland(const NetworkFlatland&);
 		void sendChat(const std::string& text);
 		
 		inline const std::string& getNickname() const
