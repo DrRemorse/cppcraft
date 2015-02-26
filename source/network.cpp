@@ -406,8 +406,7 @@ namespace cppcraft
 				::block_t block;
 				//block.id = nb.block.getID();
 				//block.bf = nb.block.getData() >> 10;
-				
-                      block = nb.block.getData();
+				block = nb.block.getData();
 
 				// make world modification
 				switch (nb.type)
