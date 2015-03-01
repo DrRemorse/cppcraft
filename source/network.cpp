@@ -321,6 +321,18 @@ namespace cppcraft
 			ntt.protated |= player.changedRotation;
 			if (ntt.protated) ntt.prot   = vec2(player.xrotrad, player.yrotrad);
 			
+                        // receive flatlands from network thread
+                        while (ntt.incoming_flatlands.size())
+                        {
+                                NetworkFlatland& flatland = ntt.incoming_flatlands.front();
+                                int fx = (flatland.fc.x << Sector::BLOCKS_XZ_SH) & INT_MAX;
+                                int fz = (flatland.fc.z << Sector::BLOCKS_XZ_SH) & INT_MAX;
+
+                                memcpy(flatlands(fx, fz).fdata, flatland.fdata, FlatlandSector::FLATLAND_SIZE);
+
+                                ntt.incoming_flatlands.pop_front();
+                        }
+
 			// receive blocks from network thread
 			while (ntt.incoming.size())
 			{
