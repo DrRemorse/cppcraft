@@ -77,7 +77,6 @@ namespace cppcraft
         {
         public:
                 NetworkFlatland() {}
-                //NetworkFlatland(int fx, int fz, const FlatlandSector::flatland_t &fdata);
 
                 f_coord fc;
                 FlatlandSector::flatland_t fdata[Sector::BLOCKS_XZ][Sector::BLOCKS_XZ];
