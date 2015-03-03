@@ -111,7 +111,6 @@ namespace cppcraft
 		
 		network.addBlock(Network::INCOMING, block);
 	}
-	
 
 	void flatlandAdded(lattice_flatland* fl)
 	{
@@ -342,6 +341,19 @@ namespace cppcraft
                                 memcpy(flatlands(fx, fz).fdata, flatland.fdata, FlatlandSector::FLATLAND_SIZE);
 
                                 ntt.incoming_flatlands.pop_front();
+                        }
+
+                        // receive sectors from network thread
+                        while (ntt.incoming_sectors.size())
+                        {
+                                NetworkSector& sector = ntt.incoming_sectors.front();
+                                int bx = (sector.wc.x << Sector::BLOCKS_XZ_SH) & INT_MAX;
+                                int by = (sector.wc.y << Sector::BLOCKS_Y_SH) & INT_MAX;
+                                int bz = (sector.wc.z << Sector::BLOCKS_XZ_SH) & INT_MAX;
+
+                                //memcpy(flatlands(fx, fz).fdata, flatland.fdata, FlatlandSector::FLATLAND_SIZE);
+
+                                ntt.incoming_sectors.pop_front();
                         }
 
 			// receive blocks from network thread
