@@ -117,9 +117,18 @@ namespace cppcraft
 	{
 		NetworkFlatland flatland;
 		flatland.fc = fl->fcoord;
-		memcpy(flatland.fdata, fl->fdata, sizeof(flatland.fdata));
+		memcpy(&flatland.fdata, &fl->fdata, sizeof(flatland.fdata));
 
 		network.addFlatland(flatland);
+	}
+
+	void sectorAdded(lattice_sector* s)
+	{
+		NetworkSector sector;
+		sector.wc = s->wcoord;
+		memcpy(&sector.sector, &s->s, sizeof(sector.sector));
+
+		network.addSector(sector);
 	}
 
 	void userAdded(NetPlayer::userid_t userid, lattice_user* user)
@@ -283,7 +292,9 @@ namespace cppcraft
 		case T_FLATLAND:
 			flatlandAdded((lattice_flatland*) mp->args);
 			break;
-			
+		case T_SECTOR:
+			sectorAdded((lattice_sector*) mp->args);
+			break;
 		case T_LOG:
 			logger << Log::INFO << "SERVER  " << ((const char*) mp->args) << Log::ENDL;
 			chatbox.add("SERVER", (const char*) mp->args, Chatbox::L_SERVER);
@@ -482,7 +493,12 @@ namespace cppcraft
 		ntt.incoming_flatlands.push_front(fl);
 		mtx.unlock();
 	}
-	
+	void Network::addSector(const NetworkSector& s)
+	{
+		mtx.lock();
+		ntt.incoming_sectors.push_front(s);
+		mtx.unlock();
+	}
 	void Network::sendChat(const std::string& text)
 	{
 		mtx.lock();

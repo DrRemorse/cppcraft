@@ -7,6 +7,7 @@
 #include "blocks.hpp"
 #include "world.hpp"
 #include "flatlands.hpp"
+#include "sector.hpp"
 #include <deque>
 #include <mutex>
 #include <thread>
@@ -82,6 +83,15 @@ namespace cppcraft
                 FlatlandSector::flatland_t fdata[Sector::BLOCKS_XZ][Sector::BLOCKS_XZ];
         };
 
+        class NetworkSector
+        {
+        public:
+                NetworkSector() {}
+
+                w_coord wc;
+                Sector::sectorblock_t sector;
+        };
+
 
 	class NetworkThreadTransfer
 	{
@@ -97,7 +107,8 @@ namespace cppcraft
 		std::deque<NetworkBlock> incoming;
 		std::deque<NetworkBlock> outgoing;
 		
-               std::deque<NetworkFlatland> incoming_flatlands;
+                std::deque<NetworkFlatland> incoming_flatlands;
+                std::deque<NetworkSector> incoming_sectors;
 
 		std::string outgoingChat;
 		
@@ -121,6 +132,7 @@ namespace cppcraft
 		
 		void addBlock(direction_t, const NetworkBlock&);
                 void addFlatland(const NetworkFlatland&);
+                void addSector(const NetworkSector&);
 		void sendChat(const std::string& text);
 		
 		inline const std::string& getNickname() const
