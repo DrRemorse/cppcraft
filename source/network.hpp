@@ -92,6 +92,13 @@ namespace cppcraft
                 Sector::sectorblock_t sector;
         };
 
+        class NetworkEmptySector
+        {
+        public:
+                NetworkEmptySector() {}
+
+                w_coord wc;
+        };
 
 	class NetworkThreadTransfer
 	{
@@ -109,6 +116,7 @@ namespace cppcraft
 		
                 std::deque<NetworkFlatland> incoming_flatlands;
                 std::deque<NetworkSector> incoming_sectors;
+                std::deque<NetworkEmptySector> incoming_emptysectors;
 
 		std::string outgoingChat;
 		
@@ -133,6 +141,7 @@ namespace cppcraft
 		void addBlock(direction_t, const NetworkBlock&);
                 void addFlatland(const NetworkFlatland&);
                 void addSector(const NetworkSector&);
+                void addEmptySector(const NetworkEmptySector&);
 		void sendChat(const std::string& text);
 		
 		inline const std::string& getNickname() const

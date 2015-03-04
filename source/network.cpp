@@ -130,6 +130,14 @@ namespace cppcraft
 		network.addSector(sector);
 	}
 
+	void emptysectorAdded(lattice_emptysector* s)
+	{
+		NetworkEmptySector sector;
+		sector.wc = s->wcoord;
+
+		network.addEmptySector(sector);
+	}
+
 	void userAdded(NetPlayer::userid_t userid, lattice_user* user)
 	{
 		UnpackCoordF coord(user->wpos, user->bpos);
@@ -294,6 +302,9 @@ namespace cppcraft
 		case T_SECTOR:
 			sectorAdded((lattice_sector*) mp->args);
 			break;
+		case T_EMPTYSECTOR:
+			emptysectorAdded((lattice_emptysector*) mp->args);
+			break;
 		case T_LOG:
 			logger << Log::INFO << "SERVER  " << ((const char*) mp->args) << Log::ENDL;
 			chatbox.add("SERVER", (const char*) mp->args, Chatbox::L_SERVER);
@@ -351,11 +362,22 @@ namespace cppcraft
                                 int by = (sector.wc.y << Sector::BLOCKS_Y_SH) & INT_MAX;
                                 int bz = (sector.wc.z << Sector::BLOCKS_XZ_SH) & INT_MAX;
 
-                                //memcpy(flatlands(fx, fz).fdata, flatland.fdata, FlatlandSector::FLATLAND_SIZE);
-
-                                Spiders::addsector(bx, by, bz, sector.sector);
+                                Spiders::addsector(bx, by, bz, &sector.sector);
 
                                 ntt.incoming_sectors.pop_front();
+                        }
+
+                        // receive emptysectors from network thread
+                        while (ntt.incoming_emptysectors.size())
+                        {
+                                NetworkEmptySector& emptysector = ntt.incoming_emptysectors.front();
+                                int bx = (emptysector.wc.x << Sector::BLOCKS_XZ_SH) & INT_MAX;
+                                int by = (emptysector.wc.y << Sector::BLOCKS_Y_SH) & INT_MAX;
+                                int bz = (emptysector.wc.z << Sector::BLOCKS_XZ_SH) & INT_MAX;
+
+                                Spiders::addemptysector(bx, by, bz);
+
+                                ntt.incoming_emptysectors.pop_front();
                         }
 
 			// receive blocks from network thread
@@ -511,6 +533,12 @@ namespace cppcraft
 	{
 		mtx.lock();
 		ntt.incoming_sectors.push_front(s);
+		mtx.unlock();
+	}
+	void Network::addEmptySector(const NetworkEmptySector& s)
+	{
+		mtx.lock();
+		ntt.incoming_emptysectors.push_front(s);
 		mtx.unlock();
 	}
 	void Network::sendChat(const std::string& text)
