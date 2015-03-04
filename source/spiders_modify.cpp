@@ -242,6 +242,8 @@ namespace cppcraft
 		// we have no idea if the sector is culled anymore, so remove it
 		s->culled = false;
 
+                precompq.addTruckload(*s);
+
                 /*
                 if (immediate)
                 {
@@ -278,6 +280,8 @@ namespace cppcraft
 
 		// we have no idea if the sector is culled anymore, so remove it
 		s->culled = false;
+
+                precompq.addTruckload(*s);
 
                 /*
                 if (immediate)
