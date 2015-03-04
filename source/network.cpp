@@ -353,6 +353,8 @@ namespace cppcraft
 
                                 //memcpy(flatlands(fx, fz).fdata, flatland.fdata, FlatlandSector::FLATLAND_SIZE);
 
+                                Spiders::addsector(bx, by, bz, sector.sector);
+
                                 ntt.incoming_sectors.pop_front();
                         }
 

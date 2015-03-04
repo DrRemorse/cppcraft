@@ -222,6 +222,47 @@ namespace cppcraft
 		return block;
 	}
 	
+
+	bool Spiders::addsector(int bx, int by, int bz, Sector::sectorblock_t* sectorblock)
+	{
+		if (sectorblock == nullptr) return false;
+
+		Sector* s = spiderwrap(bx, by, bz);
+		if (s == nullptr) return false;
+
+                if (!s->blockpt) malloc(sizeof(Sector::sectorblock_t));
+
+                if (!s->blockpt) return false;
+
+                memcpy(s->blockpt, sectorblock, sizeof(Sector::sectorblock_t));
+
+		// flag sector as having modified blocks
+		s->contents = Sector::CONT_SAVEDATA;
+
+		// we have no idea if the sector is culled anymore, so remove it
+		s->culled = false;
+
+                /*
+                if (immediate)
+                {
+                        precompq.addTruckload(*s);
+                }
+                else
+                {
+                        s->progress = Sector::PROG_NEEDRECOMP;
+                }
+                */
+
+		// write updated sector to disk
+		chunks.addSector(*s);
+
+		// update shadows on nearby sectors by following sun trajectory
+		skylightReachDown(*s);
+
+		return true;
+	}
+	
+
 	void Spiders::skylightReachDown(Sector& sector)
 	{
 		for (int y = 0; y < sector.getY(); y++)
