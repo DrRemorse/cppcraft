@@ -254,6 +254,9 @@ namespace cppcraft
 		// write updated sector to disk
 		chunks.addSector(*s);
 
+                // update neighboring sectors (depending on edges)
+                updateSurroundings(*s, bx, by, bz, immediate);
+
 		// update shadows on nearby sectors by following sun trajectory
 		skylightReachDown(*s);
 
@@ -299,6 +302,9 @@ namespace cppcraft
 
 		// write updated sector to disk
 		chunks.addSector(*s);
+
+                // update neighboring sectors (depending on edges)
+                updateSurroundings(*s, bx, by, bz, immediate);
 
 		// update shadows on nearby sectors by following sun trajectory
 		skylightReachDown(*s);
