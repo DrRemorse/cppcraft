@@ -230,7 +230,7 @@ namespace cppcraft
 		Sector* s = spiderwrap(bx, by, bz);
 		if (s == nullptr) return false;
 
-                if (!s->blockpt) malloc(sizeof(Sector::sectorblock_t));
+                if (!s->blockpt) s->blockpt = new Sector::sectorblock_t;
 
                 if (!s->blockpt) return false;
 
@@ -265,17 +265,28 @@ namespace cppcraft
 		Sector* s = spiderwrap(bx, by, bz);
 		if (s == nullptr) return false;
 
-                if (!s->blockpt) malloc(sizeof(Sector::sectorblock_t));
+                //if (!s->blockpt) s->blockpt = malloc(sizeof(Sector::sectorblock_t));
 
-                if (!s->blockpt) return false;
+                //if (!s->blockpt) return false;
 
-                memset(s->blockpt, 0, sizeof(Sector::sectorblock_t));
+                //memset(s->blockpt, 0, sizeof(Sector::sectorblock_t));
+
+                if (s->blockpt)
+                {
+                        free(s->blockpt);
+                        s->blockpt = nullptr;
+                }
 
 		// flag sector as having modified blocks
 		s->contents = Sector::CONT_SAVEDATA;
 
 		// we have no idea if the sector is culled anymore, so remove it
 		s->culled = false;
+
+
+                s->clear();
+                // we need to disable rendering columns that have no blocks anymore
+                checkColumn(*s);
 
                 if (immediate)
                 {
