@@ -362,7 +362,7 @@ namespace cppcraft
                                 int by = (sector.wc.y << Sector::BLOCKS_Y_SH) & INT_MAX;
                                 int bz = (sector.wc.z << Sector::BLOCKS_XZ_SH) & INT_MAX;
 
-                                Spiders::addsector(bx, by, bz, &sector.sector, false);
+                                Spiders::addsector(bx, by, bz, &sector.sector, true);
 
                                 ntt.incoming_sectors.pop_front();
                         }
@@ -375,7 +375,7 @@ namespace cppcraft
                                 int by = (emptysector.wc.y << Sector::BLOCKS_Y_SH) & INT_MAX;
                                 int bz = (emptysector.wc.z << Sector::BLOCKS_XZ_SH) & INT_MAX;
 
-                                Spiders::addemptysector(bx, by, bz, false);
+                                Spiders::addemptysector(bx, by, bz, true);
 
                                 ntt.incoming_emptysectors.pop_front();
                         }
