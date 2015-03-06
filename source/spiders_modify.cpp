@@ -223,7 +223,7 @@ namespace cppcraft
 		return block;
 	}
 
-	bool Spiders::addsector(int bx, int by, int bz, Sector::sectorblock_t* sectorblock)
+	bool Spiders::addsector(int bx, int by, int bz, Sector::sectorblock_t* sectorblock, bool immediate)
 	{
 		if (sectorblock == nullptr) return false;
 
@@ -242,9 +242,6 @@ namespace cppcraft
 		// we have no idea if the sector is culled anymore, so remove it
 		s->culled = false;
 
-                precompq.addTruckload(*s);
-
-                /*
                 if (immediate)
                 {
                         precompq.addTruckload(*s);
@@ -253,7 +250,6 @@ namespace cppcraft
                 {
                         s->progress = Sector::PROG_NEEDRECOMP;
                 }
-                */
 
 		// write updated sector to disk
 		chunks.addSector(*s);
@@ -264,7 +260,7 @@ namespace cppcraft
 		return true;
 	}
 	
-	bool Spiders::addemptysector(int bx, int by, int bz)
+	bool Spiders::addemptysector(int bx, int by, int bz, bool immediate)
 	{
 		Sector* s = spiderwrap(bx, by, bz);
 		if (s == nullptr) return false;
@@ -281,9 +277,6 @@ namespace cppcraft
 		// we have no idea if the sector is culled anymore, so remove it
 		s->culled = false;
 
-                precompq.addTruckload(*s);
-
-                /*
                 if (immediate)
                 {
                         precompq.addTruckload(*s);
@@ -292,7 +285,6 @@ namespace cppcraft
                 {
                         s->progress = Sector::PROG_NEEDRECOMP;
                 }
-                */
 
 		// write updated sector to disk
 		chunks.addSector(*s);
