@@ -288,7 +288,7 @@ namespace cppcraft
 
                 if (s->blockpt)
                 {
-                        free(s->blockpt);
+                        delete s->blockpt;
                         s->blockpt = nullptr;
                 }
 
