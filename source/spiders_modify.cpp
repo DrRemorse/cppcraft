@@ -267,7 +267,10 @@ namespace cppcraft
 		Sector* s = spiderwrap(bx, by, bz);
 		if (s == nullptr) return false;
 
-                s.clear();
+                s->clear();
+
+                // we have no idea if the sector is culled anymore, so remove it
+                s->culled = false
 
                 s->progress = Sector::PROG_NEEDRECOMP;
 
