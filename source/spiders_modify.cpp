@@ -246,16 +246,9 @@ namespace cppcraft
 		s->contents = Sector::CONT_SAVEDATA;
 
 		// we have no idea if the sector is culled anymore, so remove it
-		s->culled = false;
+		s->culled = false
 
-                if (immediate)
-                {
-                        precompq.addTruckload(*s);
-                }
-                else
-                {
-                        s->progress = Sector::PROG_NEEDRECOMP;
-                }
+                s->progress = Sector::PROG_NEEDRECOMP;
 
 		// write updated sector to disk
 		chunks.addSector(*s);
@@ -269,57 +262,20 @@ namespace cppcraft
 		return true;
 	}
 	
-	bool Spiders::addemptysector(int bx, int by, int bz, bool immediate)
+	bool Spiders::addemptysector(int bx, int by, int bz)
 	{
 		Sector* s = spiderwrap(bx, by, bz);
 		if (s == nullptr) return false;
 
-                if (s->progress == Sector::PROG_NEEDGEN || s->contents == Sector::CONT_NULLSECTOR)
-                {
-                        // we need blocks NOW
-                        s->smartAssignBlocks(true);
-                }
+                s.clear();
 
-                //if (!s->blockpt) s->blockpt = malloc(sizeof(Sector::sectorblock_t));
+                s->progress = Sector::PROG_NEEDRECOMP;
 
-                //if (!s->blockpt) return false;
-
-                //memset(s->blockpt, 0, sizeof(Sector::sectorblock_t));
-
-                if (s->blockpt)
-                {
-                        delete s->blockpt;
-                        s->blockpt = nullptr;
-                }
-
-		// flag sector as having modified blocks
-		s->contents = Sector::CONT_SAVEDATA;
-
-		// we have no idea if the sector is culled anymore, so remove it
-		s->culled = false;
-
-
-                s->clear();
-                // we need to disable rendering columns that have no blocks anymore
-                checkColumn(*s);
-
-                if (immediate)
-                {
-                        precompq.addTruckload(*s);
-                }
-                else
-                {
-                        s->progress = Sector::PROG_NEEDRECOMP;
-                }
-
-		// write updated sector to disk
-		chunks.addSector(*s);
+                // write updated sector to disk
+                chunks.addSector(*s);
 
                 // update neighboring sectors (depending on edges)
                 updateSurroundings(*s, bx, by, bz, immediate);
-
-		// update shadows on nearby sectors by following sun trajectory
-		skylightReachDown(*s);
 
 		return true;
 	}
