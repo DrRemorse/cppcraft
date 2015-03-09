@@ -246,7 +246,7 @@ namespace cppcraft
 		s->contents = Sector::CONT_SAVEDATA;
 
 		// we have no idea if the sector is culled anymore, so remove it
-		s->culled = false
+		s->culled = false;
 
                 s->progress = Sector::PROG_NEEDRECOMP;
 
@@ -270,7 +270,7 @@ namespace cppcraft
                 s->clear();
 
                 // we have no idea if the sector is culled anymore, so remove it
-                s->culled = false
+                s->culled = false;
 
                 s->progress = Sector::PROG_NEEDRECOMP;
 
