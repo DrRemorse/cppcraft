@@ -223,7 +223,7 @@ namespace cppcraft
 		return block;
 	}
 
-	bool Spiders::addsector(int bx, int by, int bz, Sector::sectorblock_t* sectorblock, bool immediate)
+	bool Spiders::addsector(int bx, int by, int bz, Sector::sectorblock_t* sectorblock)
 	{
 		if (sectorblock == nullptr) return false;
 
