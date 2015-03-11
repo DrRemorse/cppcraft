@@ -362,7 +362,10 @@ namespace cppcraft
                                 int by = (sector.wc.y << Sector::BLOCKS_Y_SH) & INT_MAX;
                                 int bz = (sector.wc.z << Sector::BLOCKS_XZ_SH) & INT_MAX;
 
-                                Spiders::addsector(bx, by, bz, &sector.sector);
+                                if(Spiders::addsector(bx, by, bz, &sector.sector) == false)
+                                {
+                                    logger << Log::INFO << "Out of Bounds Sector: (" << sector.wc.x << "," << sector.wc.y << "," << sector.wc.x << ")" << Log::ENDL;
+                                }
 
                                 ntt.incoming_sectors.pop_front();
                         }
@@ -375,7 +378,10 @@ namespace cppcraft
                                 int by = (emptysector.wc.y << Sector::BLOCKS_Y_SH) & INT_MAX;
                                 int bz = (emptysector.wc.z << Sector::BLOCKS_XZ_SH) & INT_MAX;
 
-                                Spiders::addemptysector(bx, by, bz);
+                                if (Spiders::addemptysector(bx, by, bz) == false)
+                                {
+                                    logger << Log::INFO << "Out of Bounds Empty Sector: (" << emptysector.wc.x << "," << emptysector.wc.y << "," << emptysector.wc.x << ")" << Log::ENDL;
+                                }
 
                                 ntt.incoming_emptysectors.pop_front();
                         }
