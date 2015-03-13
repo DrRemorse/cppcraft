@@ -365,6 +365,8 @@ namespace cppcraft
                                 if(Spiders::addsector(bx, by, bz, &sector.sector) == false)
                                 {
                                     logger << Log::INFO << "Failed Sector: (" << sector.wc.x << "," << sector.wc.y << "," << sector.wc.x << ")" << Log::ENDL;
+                                } else {
+                                    logger << Log::INFO << "Got Sector: (" << sector.wc.x << "," << sector.wc.y << "," << sector.wc.x << ")" << Log::ENDL;
                                 }
 
                                 ntt.incoming_sectors.pop_front();
@@ -381,6 +383,8 @@ namespace cppcraft
                                 if (Spiders::addemptysector(bx, by, bz) == false)
                                 {
                                     logger << Log::INFO << "Failed Empty Sector: (" << emptysector.wc.x << "," << emptysector.wc.y << "," << emptysector.wc.x << ")" << Log::ENDL;
+                                } else {
+                                    logger << Log::INFO << "Got Empty Sector: (" << emptysector.wc.x << "," << emptysector.wc.y << "," << emptysector.wc.x << ")" << Log::ENDL;
                                 }
 
                                 ntt.incoming_emptysectors.pop_front();
