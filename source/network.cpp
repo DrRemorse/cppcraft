@@ -346,8 +346,20 @@ namespace cppcraft
                         while (ntt.incoming_flatlands.size())
                         {
                                 NetworkFlatland& flatland = ntt.incoming_flatlands.front();
-                                int fx = (flatland.fc.x << Sector::BLOCKS_XZ_SH) & INT_MAX;
-                                int fz = (flatland.fc.z << Sector::BLOCKS_XZ_SH) & INT_MAX;
+
+                                // set final world coordinates
+                                int sx = flatland.fc.x - world.getWX();
+                                int sz = flatland.fc.z - world.getWZ();
+                                // validate position is inside our grid
+                                if (sx < 0 || sx >= Sectors.getXZ() ||
+                                    sz < 0 || sz >= Sectors.getXZ())
+                                {
+                                    ntt.incoming_flatlands.pop_front();
+                                    logger << Log::INFO << "Failed Flatland: (" << flatland.fc.x << "," << flatland.fc.z << ")" << Log::ENDL;
+                                    continue;
+                                }
+                                int fx = (sx << Sector::BLOCKS_XZ_SH);
+                                int fz = (sz << Sector::BLOCKS_XZ_SH);
 
                                 memcpy(flatlands(fx, fz).fdata, flatland.fdata, FlatlandSector::FLATLAND_SIZE);
 
@@ -358,15 +370,27 @@ namespace cppcraft
                         while (ntt.incoming_sectors.size())
                         {
                                 NetworkSector& sector = ntt.incoming_sectors.front();
-                                int bx = (sector.wc.x << Sector::BLOCKS_XZ_SH) & INT_MAX;
-                                int by = (sector.wc.y << Sector::BLOCKS_Y_SH) & INT_MAX;
-                                int bz = (sector.wc.z << Sector::BLOCKS_XZ_SH) & INT_MAX;
+
+                                // set final world coordinates
+                                int sx = sector.wc.x - world.getWX();
+                                int sy = sector.wc.y - world.getWY();
+                                int sz = sector.wc.z - world.getWZ();
+                                // validate position is inside our grid
+                                if (sx < 0 || sx >= Sectors.getXZ() ||
+                                    sy < 0 || sy >= Sectors.getY() ||
+                                    sz < 0 || sz >= Sectors.getXZ())
+                                {
+                                    ntt.incoming_sectors.pop_front();
+                                    logger << Log::INFO << "Failed Sector: (" << sector.wc.x << "," << sector.wc.y << "," << sector.wc.z << ")" << Log::ENDL;
+                                    continue;
+                                }
+                                int bx = (sx << Sector::BLOCKS_XZ_SH);
+                                int by = (sy << Sector::BLOCKS_Y_SH);
+                                int bz = (sz << Sector::BLOCKS_XZ_SH);
 
                                 if(Spiders::addsector(bx, by, bz, &sector.sector) == false)
                                 {
-                                    logger << Log::INFO << "Failed Sector: (" << sector.wc.x << "," << sector.wc.y << "," << sector.wc.x << ")" << Log::ENDL;
-                                } else {
-                                    logger << Log::INFO << "Got Sector: (" << sector.wc.x << "," << sector.wc.y << "," << sector.wc.x << ")" << Log::ENDL;
+                                    logger << Log::INFO << "Failed Sector: (" << sector.wc.x << "," << sector.wc.y << "," << sector.wc.z << ")" << Log::ENDL;
                                 }
 
                                 ntt.incoming_sectors.pop_front();
@@ -376,15 +400,27 @@ namespace cppcraft
                         while (ntt.incoming_emptysectors.size())
                         {
                                 NetworkEmptySector& emptysector = ntt.incoming_emptysectors.front();
-                                int bx = (emptysector.wc.x << Sector::BLOCKS_XZ_SH) & INT_MAX;
-                                int by = (emptysector.wc.y << Sector::BLOCKS_Y_SH) & INT_MAX;
-                                int bz = (emptysector.wc.z << Sector::BLOCKS_XZ_SH) & INT_MAX;
+
+                                // set final world coordinates
+                                int sx = emptysector.wc.x - world.getWX();
+                                int sy = emptysector.wc.y - world.getWY();
+                                int sz = emptysector.wc.z - world.getWZ();
+                                // validate position is inside our grid
+                                if (sx < 0 || sx >= Sectors.getXZ() ||
+                                    sy < 0 || sy >= Sectors.getY() ||
+                                    sz < 0 || sz >= Sectors.getXZ())
+                                {
+                                    ntt.incoming_emptysectors.pop_front();
+                                    logger << Log::INFO << "Failed Empty Sector: (" << emptysector.wc.x << "," << emptysector.wc.y << "," << emptysector.wc.z << ")" << Log::ENDL;
+                                    continue;
+                                }
+                                int bx = (sx << Sector::BLOCKS_XZ_SH);
+                                int by = (sy << Sector::BLOCKS_Y_SH);
+                                int bz = (sz << Sector::BLOCKS_XZ_SH);
 
                                 if (Spiders::addemptysector(bx, by, bz) == false)
                                 {
-                                    logger << Log::INFO << "Failed Empty Sector: (" << emptysector.wc.x << "," << emptysector.wc.y << "," << emptysector.wc.x << ")" << Log::ENDL;
-                                } else {
-                                    logger << Log::INFO << "Got Empty Sector: (" << emptysector.wc.x << "," << emptysector.wc.y << "," << emptysector.wc.x << ")" << Log::ENDL;
+                                    logger << Log::INFO << "Failed Empty Sector: (" << emptysector.wc.x << "," << emptysector.wc.y << "," << emptysector.wc.z << ")" << Log::ENDL;
                                 }
 
                                 ntt.incoming_emptysectors.pop_front();
