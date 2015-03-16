@@ -347,6 +347,7 @@ namespace cppcraft
                         {
                                 NetworkFlatland& flatland = ntt.incoming_flatlands.front();
 
+/*
                                 // set final world coordinates
                                 int sx = flatland.fc.x - world.getWX();
                                 int sz = flatland.fc.z - world.getWZ();
@@ -360,8 +361,10 @@ namespace cppcraft
                                 }
                                 int fx = (sx << Sector::BLOCKS_XZ_SH);
                                 int fz = (sz << Sector::BLOCKS_XZ_SH);
+*/
 
-                                memcpy(flatlands(fx, fz).fdata, flatland.fdata, FlatlandSector::FLATLAND_SIZE);
+                                //memcpy(flatlands(fx, fz).fdata, flatland.fdata, FlatlandSector::FLATLAND_SIZE);
+                                memcpy(flatlands(flatland.fc.x, flatland.fc.z).fdata, flatland.fdata, FlatlandSector::FLATLAND_SIZE);
 
                                 ntt.incoming_flatlands.pop_front();
                         }
