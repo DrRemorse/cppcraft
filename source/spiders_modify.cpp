@@ -13,6 +13,8 @@
 
 using namespace library;
 
+
+
 namespace cppcraft
 {
 	bool Spiders::updateBlock(int bx, int by, int bz, block_t bitfield, bool immediate)
@@ -32,7 +34,7 @@ namespace cppcraft
 		else s->progress = Sector::PROG_NEEDRECOMP;
 		
 		// write updated sector to disk
-		chunks.addSector(*s);
+		//chunks.addSector(*s);
 		
 		return true;
 	}
@@ -91,7 +93,7 @@ namespace cppcraft
 		}
 		
 		// write updated sector to disk
-		chunks.addSector(*s);
+		//chunks.addSector(*s);
 		
 		if (isLight(id))
 		{
@@ -191,7 +193,7 @@ namespace cppcraft
 		// NOTE: after this point, the sector may be cleared! don't assume blockpt exists!
 		
 		// write updated sector to disk
-		chunks.addSector(*s);
+		//chunks.addSector(*s);
 		
 		/*
 		If b.id = _TNT Then
@@ -251,7 +253,7 @@ namespace cppcraft
                 s->progress = Sector::PROG_NEEDRECOMP;
 
 		// write updated sector to disk
-		chunks.addSector(*s);
+		//chunks.addSector(*s);
 
                 // update neighboring sectors (depending on edges)
                 updateSurroundings(*s, bx, by, bz, false);
@@ -275,7 +277,7 @@ namespace cppcraft
                 s->progress = Sector::PROG_NEEDRECOMP;
 
                 // write updated sector to disk
-                chunks.addSector(*s);
+                //chunks.addSector(*s);
 
                 // update neighboring sectors (depending on edges)
                 updateSurroundings(*s, bx, by, bz, false);
