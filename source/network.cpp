@@ -387,12 +387,10 @@ namespace cppcraft
                                 int by = (sy << Sector::BLOCKS_Y_SH);
                                 int bz = (sz << Sector::BLOCKS_XZ_SH);
 
-                                /*
                                 if(Spiders::addsector(bx, by, bz, &sector.sector) == false)
                                 {
                                     logger << Log::INFO << "Failed Sector: (" << sector.wc.x << "," << sector.wc.y << "," << sector.wc.z << ")" << Log::ENDL;
                                 }
-                                */
 
                                 ntt.incoming_sectors.pop_front();
                         }
