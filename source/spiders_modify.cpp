@@ -232,11 +232,13 @@ namespace cppcraft
 		Sector* s = spiderwrap(bx, by, bz);
 		if (s == nullptr) return false;
 
+/*
                 if (s->progress == Sector::PROG_NEEDGEN || s->contents == Sector::CONT_NULLSECTOR)
                 {
                         // we need blocks NOW
                         s->smartAssignBlocks(true);
                 }
+*/
 
                 if (!s->blockpt) s->blockpt = new Sector::sectorblock_t;
 
