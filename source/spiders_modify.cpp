@@ -242,9 +242,7 @@ namespace cppcraft
 
                 if (!s->blockpt) return false;
 
-                //memcpy(s->blockpt, sectorblock, sizeof(Sector::sectorblock_t));
-
-                memset(s->blockpt, 0, sizeof(Sector::sectorblock_t));
+                memcpy(s->blockpt, sectorblock, sizeof(Sector::sectorblock_t));
 
 		// flag sector as having modified blocks
 		s->contents = Sector::CONT_SAVEDATA;
