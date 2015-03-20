@@ -360,8 +360,7 @@ namespace cppcraft
                                     continue;
                                 }
 
-                                // crash test
-                                //memcpy(flatlands(sx, sz).fdata, flatland.fdata, FlatlandSector::FLATLAND_SIZE);
+                                memcpy(flatlands(sx, sz).fdata, flatland.fdata, FlatlandSector::FLATLAND_SIZE);
 
                                 ntt.incoming_flatlands.pop_front();
                         }
