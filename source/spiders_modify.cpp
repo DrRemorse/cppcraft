@@ -238,13 +238,11 @@ namespace cppcraft
                         s->smartAssignBlocks(true);
                 }
 
+                if (!s->blockpt) s->blockpt = new Sector::sectorblock_t;
 
-                //if (!s->blockpt) s->blockpt = new Sector::sectorblock_t;
+                if (!s->blockpt) return false;
 
-                //if (!s->blockpt) return false;
-
-                //memcpy(s->blockpt, sectorblock, sizeof(Sector::sectorblock_t));
-                delete s->blockpt; s->blockpt=nullptr;
+                memcpy(s->blockpt, sectorblock, sizeof(Sector::sectorblock_t));
 
 		// flag sector as having modified blocks
 		s->contents = Sector::CONT_SAVEDATA;
