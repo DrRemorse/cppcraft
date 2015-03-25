@@ -252,7 +252,7 @@ namespace cppcraft
                 updateSurroundings(*s, bx, by, bz, false);
 
 		// update shadows on nearby sectors by following sun trajectory
-		skylightReachDown(*s);
+		//skylightReachDown(*s);
 
 		return true;
 	}
