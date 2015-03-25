@@ -231,15 +231,8 @@ namespace cppcraft
 
 		Sector* s = spiderwrap(bx, by, bz);
 		if (s == nullptr) return false;
-/*
-                if (s->progress == Sector::PROG_NEEDGEN || s->contents == Sector::CONT_NULLSECTOR)
-                {
-                        // we need blocks NOW
-                        s->smartAssignBlocks(true);
-                }
-*/
-                if (!s->blockpt) s->blockpt = new Sector::sectorblock_t;
 
+                if (!s->blockpt) s->blockpt = new Sector::sectorblock_t;
                 if (!s->blockpt) return false;
 
                 memcpy(s->blockpt, sectorblock, sizeof(Sector::sectorblock_t));
@@ -270,11 +263,6 @@ namespace cppcraft
 		if (s == nullptr) return false;
 
                 s->clear();
-
-                // we have no idea if the sector is culled anymore, so remove it
-                //s->culled = false;
-
-                //s->progress = Sector::PROG_NEEDRECOMP;
 
                 // write updated sector to disk
                 //chunks.addSector(*s);

@@ -360,7 +360,7 @@ namespace cppcraft
                                     continue;
                                 }
 
-                                memcpy(&(flatlands(sx, sz).fdata), &(flatland.fdata), FlatlandSector::FLATLAND_SIZE);
+                                memcpy(&flatlands(sx, sz).fdata, &flatland.fdata, FlatlandSector::FLATLAND_SIZE);
 
                                 ntt.incoming_flatlands.pop_front();
                         }
@@ -387,7 +387,7 @@ namespace cppcraft
                                 int by = (sy << Sector::BLOCKS_Y_SH);
                                 int bz = (sz << Sector::BLOCKS_XZ_SH);
 
-                                if(Spiders::addsector(bx, by, bz, &(sector.sector)) == false)
+                                if(Spiders::addsector(bx, by, bz, &sector.sector) == false)
                                 {
                                     logger << Log::INFO << "Failed Sector: (" << sector.wc.x << "," << sector.wc.y << "," << sector.wc.z << ")" << Log::ENDL;
                                 }
