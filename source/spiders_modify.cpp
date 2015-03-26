@@ -251,6 +251,8 @@ namespace cppcraft
                 // update neighboring sectors (depending on edges)
                 updateSurroundings(*s, bx, by, bz, false);
 
+                if (s->blockpt->lights > 0) torchlight.lightSectorUpdates(*s, false);
+
 		// update shadows on nearby sectors by following sun trajectory
 		//skylightReachDown(*s);
 
