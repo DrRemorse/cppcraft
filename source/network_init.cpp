@@ -34,6 +34,8 @@ namespace cppcraft
 		std::string uname  = config.get("net.user", "guest");
 		std::string upass  = config.get("net.pass", "guest");
 		
+                int sectors_xz = config.get("world.viewdist", 48);
+
 		/// CONNECTING TO AUTH SERVER ///
 		std::stringstream ss;
 		ss << "Connecting to " << hostn << ":" << port;
@@ -44,7 +46,7 @@ namespace cppcraft
 		// temporary nickname
 		this->nickname = uname;
 		
-		int result = authserver_login(uname.c_str(), upass.c_str(), hostn.c_str(), port, 16);
+		int result = authserver_login(uname.c_str(), upass.c_str(), hostn.c_str(), port, sectors_xz);
 		if (result < 0)
 		{
 			std::string authFailed = std::string("Authentication failed: ") + authserver_errorstring(result);
