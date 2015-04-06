@@ -36,6 +36,9 @@ namespace cppcraft
 		
                 int sectors_xz = config.get("world.viewdist", 48);
 
+                sectors_xz -= 16;
+                if (sectors_xz < 8) sectors_xz = 8;
+
 		/// CONNECTING TO AUTH SERVER ///
 		std::stringstream ss;
 		ss << "Connecting to " << hostn << ":" << port;
