@@ -148,6 +148,7 @@ struct message {
 #define T_EMPTYSECTOR    43
 #define T_SECTOR         44
 #define T_FLATLAND       45
+#define T_CSECTOR        46
 
 #define MFLAG_FROM      0x00000001         // Is fromuid set
 
@@ -424,9 +425,9 @@ typedef struct lt_packet_h {
     uint32_t marker;
     uint32_t fromuid;
     uint16_t flags;
-    uint16_t payload_argc;
     uint16_t payload_type;
-    uint16_t payload_length;
+    uint32_t payload_argc;
+    uint32_t payload_length;
 
 } lt_packet_h;
 
@@ -442,8 +443,8 @@ typedef struct lt_packet {
     (packet)->header.fromuid = 0;               \
     (packet)->header.flags = 0;                 \
     ClrPFlagFrom((packet));                     \
-    (packet)->header.payload_argc = 0;          \
     (packet)->header.payload_type = (type);     \
+    (packet)->header.payload_argc = 0;          \
     (packet)->header.payload_length = 0;        \
 } while(0)
 
@@ -452,8 +453,8 @@ typedef struct lt_packet {
     (packet)->header.fromuid = (uid);              \
     (packet)->header.flags = 0;                    \
     SetPFlagFrom((packet));                        \
-    (packet)->header.payload_argc = 0;             \
     (packet)->header.payload_type = (type);        \
+    (packet)->header.payload_argc = 0;             \
     (packet)->header.payload_length = 0;           \
 } while(0)
 

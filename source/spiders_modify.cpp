@@ -2,6 +2,7 @@
 
 #include <library/log.hpp>
 #include "blocks.hpp"
+#include "camera.hpp"
 #include "columns.hpp"
 #include "chunks.hpp"
 #include "flatlands.hpp"
@@ -9,6 +10,7 @@
 #include "precompq.hpp"
 #include "sectors.hpp"
 #include "torchlight.hpp"
+#include "worldbuilder.hpp"
 #include <cstring>
 
 using namespace library;
@@ -264,13 +266,48 @@ namespace cppcraft
 		Sector* s = spiderwrap(bx, by, bz);
 		if (s == nullptr) return false;
 
+		if (s->contents == Sector::CONT_NULLSECTOR) return true;
+
+
+		// BEFORE we clear the sector entirely, make sure conditions are ok
+
+           if (s->blockpt) {
+
+			s->culled = false;         // remove culled flag!
+
+			//s->contents = Sector::CONT_NULLSECTOR;
+
+		
+			s->blockpt->hardsolid = 0; // mui importante! TODO: OPTIMIZE
+
+			// don't render something with 0 blocks
+			s->blockpt->blocks = 0;
+			s->blockpt->lights = 0;
+			s->blockpt->special = 0;
+			s->blockpt->version = 0;
+			memset(&s->blockpt->b, 0, sizeof(s->blockpt->b));
+			//delete s->blockpt;
+			//s->blockpt = nullptr;
+
+			s->contents = Sector::CONT_SAVEDATA;
+			//s->contents = Sector::CONT_NULLSECTOR;
                 s->clear();
+ 		// we need to disable rendering columns that have no blocks anymore
+			checkColumn(*s);
+			//s->progress = Sector::PROG_NEEDRECOMP;
+			//precompq.addTruckload(*s);
+			// update neighboring sectors (depending on edges)
+			//updateSurroundings(*s, bx, by, bz, false);
+
+			skylightReachDown(*s);
+			//Sectors.updateAll();
+			//worldbuilder.reset();
+			camera.recalc  = true;
+
+		}
 
                 // write updated sector to disk
                 //chunks.addSector(*s);
-
-                // update neighboring sectors (depending on edges)
-                updateSurroundings(*s, bx, by, bz, false);
 
 		return true;
 	}

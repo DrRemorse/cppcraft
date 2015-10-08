@@ -4,8 +4,10 @@
 
 # build options
 # -Ofast -mfpmath=both -march=native
-# -ggdb3 -fstack-protector -fexceptions
-BUILDOPT = -Ofast -ffast-math -march=native
+# 
+#BUILDOPT = -ggdb3 -fstack-protector -fexceptions
+#BUILDOPT = -Ofast -ffast-math -march=native
+BUILDOPT = -ggdb3 -fstack-protector -fexceptions -g
 # output file
 OUTPUT   = ./Debug/cppcraft
 
