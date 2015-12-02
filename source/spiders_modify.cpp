@@ -285,14 +285,14 @@ namespace cppcraft
 			s->blockpt->lights = 0;
 			s->blockpt->special = 0;
 			s->blockpt->version = 0;
-			memset(&s->blockpt->b, 0, sizeof(s->blockpt->b));
-			//delete s->blockpt;
-			//s->blockpt = nullptr;
+			//memset(&s->blockpt->b, 0, sizeof(s->blockpt->b));
+			delete s->blockpt;
+			s->blockpt = nullptr;
 
-			s->contents = Sector::CONT_SAVEDATA;
-			//s->contents = Sector::CONT_NULLSECTOR;
-                s->clear();
- 		// we need to disable rendering columns that have no blocks anymore
+			//s->contents = Sector::CONT_SAVEDATA;
+			s->contents = Sector::CONT_NULLSECTOR;
+                	s->clear();
+ 			// we need to disable rendering columns that have no blocks anymore
 			checkColumn(*s);
 			//s->progress = Sector::PROG_NEEDRECOMP;
 			//precompq.addTruckload(*s);

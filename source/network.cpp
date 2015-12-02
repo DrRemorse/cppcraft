@@ -356,7 +356,7 @@ namespace cppcraft
                                     sz < 0 || sz >= Sectors.getXZ())
                                 {
                                     ntt.incoming_flatlands.pop_front();
-                                    logger << Log::INFO << "Failed Flatland: (" << flatland.fc.x << "," << flatland.fc.z << ")" << Log::ENDL;
+                                    //logger << Log::INFO << "Failed Flatland: (" << flatland.fc.x << "," << flatland.fc.z << ")" << Log::ENDL;
                                     continue;
                                 }
 
@@ -380,7 +380,7 @@ namespace cppcraft
                                     sz < 0 || sz >= Sectors.getXZ())
                                 {
                                     ntt.incoming_sectors.pop_front();
-                                    logger << Log::INFO << "Failed Sector: (" << sector.wc.x << "," << sector.wc.y << "," << sector.wc.z << ")" << Log::ENDL;
+                                    //logger << Log::INFO << "Failed Sector: (" << sector.wc.x << "," << sector.wc.y << "," << sector.wc.z << ")" << Log::ENDL;
                                     continue;
                                 }
                                 int bx = (sx << Sector::BLOCKS_XZ_SH);
@@ -389,7 +389,7 @@ namespace cppcraft
 
                                 if(Spiders::addsector(bx, by, bz, &sector.sector) == false)
                                 {
-                                    logger << Log::INFO << "Failed Sector: (" << sector.wc.x << "," << sector.wc.y << "," << sector.wc.z << ")" << Log::ENDL;
+                                    //logger << Log::INFO << "Failed Sector: (" << sector.wc.x << "," << sector.wc.y << "," << sector.wc.z << ")" << Log::ENDL;
                                 }
 
                                 ntt.incoming_sectors.pop_front();
@@ -410,7 +410,7 @@ namespace cppcraft
                                     sz < 0 || sz >= Sectors.getXZ())
                                 {
                                     ntt.incoming_emptysectors.pop_front();
-                                    logger << Log::INFO << "Failed Empty Sector: (" << emptysector.wc.x << "," << emptysector.wc.y << "," << emptysector.wc.z << ")" << Log::ENDL;
+                                    //logger << Log::INFO << "Failed Empty Sector: (" << emptysector.wc.x << "," << emptysector.wc.y << "," << emptysector.wc.z << ")" << Log::ENDL;
                                     continue;
                                 }
                                 int bx = (sx << Sector::BLOCKS_XZ_SH);
@@ -419,7 +419,7 @@ namespace cppcraft
 
                                 if (Spiders::addemptysector(bx, by, bz) == false)
                                 {
-                                    logger << Log::INFO << "Failed Empty Sector: (" << emptysector.wc.x << "," << emptysector.wc.y << "," << emptysector.wc.z << ")" << Log::ENDL;
+                                    //logger << Log::INFO << "Failed Empty Sector: (" << emptysector.wc.x << "," << emptysector.wc.y << "," << emptysector.wc.z << ")" << Log::ENDL;
                                 }
 
                                 ntt.incoming_emptysectors.pop_front();
