@@ -182,7 +182,7 @@ namespace cppcraft
 			} // world builder
 			
 			// send & receive stuff
-			network.handleNetworking();
+			network.handleNetworking(*this);
 			
 			// flush chunk write queue
 			chunks.flushChunks();

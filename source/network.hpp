@@ -122,6 +122,12 @@ namespace cppcraft
 		
 		bool  updateSun = false;
 		float newAngle;
+
+		bool pbumped = false;
+		// player bump to coordinates
+		w_coord bumpwc;
+		b_coord bumpbc;
+
 	};
 	
 	class Network
@@ -136,7 +142,7 @@ namespace cppcraft
 		void init(WorldManager& worldman);
 		void stop();
 		
-		void handleNetworking();
+		void handleNetworking(WorldManager& worldman);
 		
 		void addBlock(direction_t, const NetworkBlock&);
                 void addFlatland(const NetworkFlatland&);

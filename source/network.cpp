@@ -12,6 +12,7 @@
 #include "spiders.hpp"
 #include "sun.hpp"
 #include "world.hpp"
+#include "worldmanager.hpp"
 #include <cstring>
 #include <cmath>
 
@@ -209,9 +210,18 @@ namespace cppcraft
 	}
 	void bumpError(lattice_bump* bump)
 	{
+
+		network.ntt.pbumped = true;
+		network.ntt.bumpwc.x = bump->wcoord.x;
+		network.ntt.bumpwc.y = bump->wcoord.y;
+		network.ntt.bumpwc.z = bump->wcoord.z;
+		network.ntt.bumpbc.x = bump->bcoord.x;
+		network.ntt.bumpbc.y = bump->bcoord.y;
+		network.ntt.bumpbc.z = bump->bcoord.z;
+
 		PackCoord& pc = network.ntt.pcoord;
 		logger << Log::INFO << "Player: (" << pc.wc.x << "," << pc.wc.y << "," << pc.wc.z << ") bxyz (" << pc.bc.x << "," << pc.bc.y << "," << pc.bc.z << ")" << Log::ENDL;
-		logger << Log::INFO << "Bump: (" << bump->bad_wcoord.x << "," << bump->bad_wcoord.y << "," << bump->bad_wcoord.z << ") bxyz (" << bump->bad_bcoord.x << "," << bump->bad_bcoord.y << "," << bump->bad_bcoord.z << ")" << Log::ENDL;
+		logger << Log::INFO << "Bump: (" << bump->wcoord.x << "," << bump->wcoord.y << "," << bump->wcoord.z << ") bxyz (" << bump->bcoord.x << "," << bump->bcoord.y << "," << bump->bcoord.z << ")" << Log::ENDL;
 	}
 	
 	void message(lattice_message* mp)
@@ -333,7 +343,7 @@ namespace cppcraft
 	}
 	
 	/// from main (worldman) thread ///
-	void Network::handleNetworking()
+	void Network::handleNetworking(WorldManager& worldman)
 	{
 		mtx.lock();
 		{
@@ -342,6 +352,16 @@ namespace cppcraft
 			ntt.protated |= player.changedRotation;
 			if (ntt.protated) ntt.prot   = vec2(player.xrotrad, player.yrotrad);
 			
+			if (ntt.pbumped) {
+
+				UnpackCoordF playerCoords(ntt.bumpwc, ntt.bumpbc);
+				// teleport to player coordinates
+				World::world_t wxyz(playerCoords.wc.x, playerCoords.wc.y, playerCoords.wc.z);
+				worldman.teleport(wxyz, playerCoords.bc);
+				ntt.pbumped = false;
+
+			}
+
                         // receive flatlands from network thread
                         while (ntt.incoming_flatlands.size())
                         {
